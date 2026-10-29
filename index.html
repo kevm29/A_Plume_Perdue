@@ -362,6 +362,11 @@ const ENDING=[
   {pic:'finale',minT:10},
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
 ];
+/* intertitres muets avant la toute première lettre : pourquoi Raymond la lit */
+const TUBE=[
+  {t:"Dans la chute, le petit tube fixé à sa patte s'est fendu.\nLe papier dépasse, froissé, taché d'humidité."},
+  {t:"Article 4 : un pigeon militaire ne lit jamais le courrier.\nArticle 4 bis : si le courrier est abîmé, il vérifie qu'il est lisible.\nRaymond vérifie. Un morceau à la fois, par discrétion."}
+];
 const GAMEOVER=[
   {pic:'headless',minT:3.2,t:"Raymond a perdu la tête.\nAu sens propre."}
 ];
@@ -3607,7 +3612,7 @@ function renderLetter(t){
     if(LE.after>.8){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-12)}
     ctx.restore();
   }else{
-    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('Raymond lit le courrier. Ce n\'est pas réglementaire.',W-24,H-16);
+    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('Raymond vérifie que le courrier est lisible. Article 4 bis.',W-24,H-16);
   }
 }
 function handleLetter(dt){
@@ -3689,7 +3694,9 @@ function update(dt){
         if(G.medal)S.run.medals[li]=true;
         const b=S.best[li]||{corn:0,medal:false,deaths:9999};S.best[li]={corn:Math.max(b.corn,G.corn),medal:b.medal||G.medal,deaths:Math.min(b.deaths,G.levelDeaths)};
         S.run.stats[li]={corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};S.run.stats[li].points=levelPoints(S.run.stats[li]);save();
-        G.LE={li,chars:0,done:false,after:0,corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};G.state='levelend';G.fade=1;SFX.page();setSong('title');
+        G.LE={li,chars:0,done:false,after:0,corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};setSong('title');
+        if(li===0){G.state='intro';G.cards=TUBE;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='levelend';G.fade=1;SFX.page()}}
+        else{G.state='levelend';G.fade=1;SFX.page()}
       }
       break}
   }

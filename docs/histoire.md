@@ -33,6 +33,12 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 
 Ensuite vient la cinématique jouée dans 1-1 : le voleur, sa lampe torche, le carton qui tombe de l'armoire, la cloche qui se brise, l'éclair et le réveil lent de Raymond (« Un bombardement ! »).
 
+## Pourquoi Raymond lit la lettre
+
+Deux intertitres muets, à la fin du niveau 1-1, avant le premier fragment :
+1. « Dans la chute, le petit tube fixé à sa patte s'est fendu. Le papier dépasse, froissé, taché d'humidité. »
+2. « Article 4 : un pigeon militaire ne lit jamais le courrier. Article 4 bis : si le courrier est abîmé, il vérifie qu'il est lisible. Raymond vérifie. Un morceau à la fois, par discrétion. »
+
 ## La lettre, morceau par morceau
 
 Chaque niveau terminé révèle un fragment. Les missions 1 et 2 sont la lettre « méchante », la mission 3 révèle les ratures et la mission 4 le dos de la lettre, que la pluie fait apparaître. La mission 5 dit la vérité.

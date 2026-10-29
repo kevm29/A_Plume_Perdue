@@ -356,7 +356,7 @@ function renderLetter(t){
     if(LE.after>.8){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-12)}
     ctx.restore();
   }else{
-    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('Raymond lit le courrier. Ce n\'est pas réglementaire.',W-24,H-16);
+    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('Raymond vérifie que le courrier est lisible. Article 4 bis.',W-24,H-16);
   }
 }
 function handleLetter(dt){

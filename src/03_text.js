@@ -63,6 +63,11 @@ const ENDING=[
   {pic:'finale',minT:10},
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
 ];
+/* intertitres muets avant la toute première lettre : pourquoi Raymond la lit */
+const TUBE=[
+  {t:"Dans la chute, le petit tube fixé à sa patte s'est fendu.\nLe papier dépasse, froissé, taché d'humidité."},
+  {t:"Article 4 : un pigeon militaire ne lit jamais le courrier.\nArticle 4 bis : si le courrier est abîmé, il vérifie qu'il est lisible.\nRaymond vérifie. Un morceau à la fois, par discrétion."}
+];
 const GAMEOVER=[
   {pic:'headless',minT:3.2,t:"Raymond a perdu la tête.\nAu sens propre."}
 ];
