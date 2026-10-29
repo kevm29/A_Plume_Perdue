@@ -1,0 +1,37 @@
+<title>À Plume Perdue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=La+Belle+Aurore&display=swap">
+<style>
+/* Diorama de papier découpé : un seul univers sombre, couleurs explicites */
+:root{
+  --nuit:#110e14;
+  --papier:#e9dfc7;
+  --paille:#d9a441;
+  --f-titre:"IM Fell English SC", Georgia, serif;
+  --f-texte:"IM Fell English", Georgia, serif;
+  color-scheme:dark;
+}
+html,body{height:100%;margin:0;background:var(--nuit);color:var(--papier);overflow:hidden}
+body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#c{position:fixed;inset:0;display:block;outline:none;cursor:default}
+.tc{position:fixed;display:none;align-items:center;justify-content:center;
+  border-radius:50%;background:rgba(233,223,199,.12);border:2px solid rgba(233,223,199,.32);
+  color:var(--papier);font:24px/1 var(--f-titre);touch-action:none}
+.tc.on{display:flex}
+.tc:active,.tc.down{background:rgba(217,164,65,.35)}
+#tl{left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:68px;height:68px}
+#tr{left:calc(100px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:68px;height:68px}
+#tj{right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:86px;height:86px;font-size:15px}
+#tp{right:calc(14px + env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));width:44px;height:44px;font-size:16px}
+#rot{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;
+  background:var(--nuit);font:22px/1.4 var(--f-texte);font-style:italic;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+@media (orientation:portrait) and (pointer:coarse){#rot{display:flex}}
+</style>
+
+<canvas id="c" tabindex="0" aria-label="À Plume Perdue, jeu de plateforme"></canvas>
+<div class="tc" id="tl" aria-label="Gauche">◀</div>
+<div class="tc" id="tr" aria-label="Droite">▶</div>
+<div class="tc" id="tj" aria-label="Sauter">SAUT</div>
+<div class="tc" id="tp" aria-label="Pause">❚❚</div>
+<div id="rot">Raymond vole mieux à l'horizontale.<br>Tourne ton téléphone.</div>
