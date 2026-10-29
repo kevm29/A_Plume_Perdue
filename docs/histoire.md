@@ -69,6 +69,15 @@ Chaque niveau terminé révèle un fragment. Les étapes 1 et 2 sont la lettre �
 
 Entre deux étapes, une carte « RAVITAILLEMENT » donne autant de vies que de médailles trouvées pendant l'étape précédente.
 
+## L'arrivée sur la tombe (fin du niveau 5-4)
+
+Raymond s'arrête devant la tombe Garnier, sans comprendre :
+1. « Vasseur… Marguerite ? Ici ? Sous une pierre ? Elle a dix-neuf ans, je l'ai vue au bal du 14 Juillet. »
+2. « Garnier. Elle a épousé le fils Garnier. Et ces dates… 1989 ? Ça n'existe pas, 1989. »
+3. « Je ne comprends rien. Mais j'ai une lettre pour elle, et le règlement ne prévoit pas les tombes. »
+
+Vient alors le dernier fragment (« Je t'aime. Je t'ai toujours aimée. Lucien. »), commenté par : « Il ne reste plus qu'à la lui remettre. »
+
 ## La fin
 
 1. La tombe : **FAMILLE GARNIER · Joseph GARNIER, 1893 – 1958 · Marguerite GARNIER, née Vasseur, 1897 – 1989.**

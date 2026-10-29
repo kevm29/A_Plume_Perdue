@@ -28,7 +28,7 @@ function startLevel(i){
   if(S.run.lives<0)S.run.lives=S.run.worldLives[LEVELS[i].w]||START_LIVES;
   setSong(songKey(i));loopsOff();
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
-  parts.length=0;G.quip=null;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;L.carton=null;
+  parts.length=0;G.quip=null;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
   if(L.dome){
     const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
     if(!G.cutSeen){
@@ -118,7 +118,17 @@ function skipCut(){
 }
 
 /* ---------- mise à jour du jeu ---------- */
+const TOMB_LINES=["Vasseur… Marguerite ? Ici ? Sous une pierre ? Elle a dix-neuf ans, je l'ai vue au bal du 14 Juillet.",
+  "Garnier. Elle a épousé le fils Garnier. Et ces dates… 1989 ? Ça n'existe pas, 1989.",
+  "Je ne comprends rien. Mais j'ai une lettre pour elle, et le règlement ne prévoit pas les tombes."];
+function stepTomb(dt){
+  const S2=G.tombSeq;S2.t+=dt;P.vx=0;P.vy=Math.min(MAXFALL,P.vy+GRAV*dt);P.onGround=false;moveY(P,P.vy*dt);
+  const k=Math.floor(S2.t/4.2);
+  if(k!==S2.i&&k<TOMB_LINES.length){S2.i=k;say(TOMB_LINES[k],4.1)}
+  if(S2.t>4.2*TOMB_LINES.length+.3){G.tombSeq=null;G.quip=null;winLevel()}
+}
 function stepPlay(dt){
+  if(G.tombSeq){stepTomb(dt);return}
   G.lt+=dt;
   for(const m of L.movers){
     const px=m.x,py=m.y;m.t+=dt;const span=Math.abs(m.a1-m.a0)||1;
@@ -209,7 +219,7 @@ function stepPlay(dt){
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;G.hintI=hn;
   if(K&&K.state==='sleep'&&pc.x>L.triggerX+T)wakeChaser(K);
-  if(L.exit&&overlap(hb,L.exit))winLevel();
+  if(L.exit&&overlap(hb,L.exit)){if(L.def.exit==='tomb'&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');

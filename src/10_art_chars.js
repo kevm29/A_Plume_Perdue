@@ -337,11 +337,28 @@ function drawExit(g,e,style,t,label){
     g.fillStyle='rgba(255,200,120,.5)';g.fillRect(x+4,y+30,T-8,2*T-30);
     g.fillStyle='#e9dfc7';g.font='11px '+F_DISP;g.textAlign='center';g.fillText(label||'ABRI',x+T/2,y-16);
   }else if(style==='tomb'){
-    g.fillStyle='#9a968e';rr(g,x-24,y-10,T+48,2*T+10,8);g.fill();
-    g.fillStyle='#b4b0a6';g.beginPath();g.ellipse(x+T/2,y-10,T/2+24,22,0,Math.PI,0);g.fill();
-    g.fillStyle='#3a3a3e';g.fillRect(x+T/2-2,y-52,4,24);g.fillRect(x+T/2-10,y-46,20,4);
-    g.fillStyle='rgba(30,30,34,.75)';g.font='10px '+F_DISP;g.textAlign='center';g.fillText('VASSEUR',x+T/2,y+20);g.font='italic 9px '+F_BODY;g.fillText('famille',x+T/2,y+32);
-    for(let k=0;k<6;k++){g.fillStyle=['#c8302a','#e9dfc7','#d9a441'][k%3];g.beginPath();g.arc(x-14+k*13,y+2*T-4,4,0,7);g.fill()}
+    // la même tombe que dans la fin : stèle de granit gravée de face, dalle, pot de chrysanthèmes
+    const cx=x+T/2,gy=y+2*T,st=gy-150,sb=gy-16;
+    g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(cx+6,gy,96,8,0,0,7);g.fill();
+    g.fillStyle='#45433f';poly(g,[cx+52,st+14,cx+58,st+18,cx+58,sb,cx+52,sb]);g.fill();
+    g.save();g.beginPath();g.moveTo(cx-52,sb);g.lineTo(cx-52,st+14);g.quadraticCurveTo(cx,st-8,cx+52,st+14);g.lineTo(cx+52,sb);g.closePath();g.clip();
+    const gr=g.createLinearGradient(cx-52,st,cx+52,sb);gr.addColorStop(0,'#86837c');gr.addColorStop(1,'#5f5c57');g.fillStyle=gr;g.fillRect(cx-52,st-10,104,sb-st+10);
+    const R=mulberry(11);for(let k=0;k<140;k++){g.fillStyle=R()<.5?'rgba(0,0,0,.14)':'rgba(255,255,255,.08)';g.fillRect(cx-52+R()*104,st-8+R()*(sb-st+8),1.2,1.2)}
+    g.fillStyle='rgba(255,255,255,.08)';g.fillRect(cx-52,st-10,3,sb-st+10);g.restore();
+    g.fillStyle='#3e4a44';g.fillRect(cx-2.5,st-26,5,24);g.fillRect(cx-9,st-19,18,4);
+    const eg=(tx,yy,f)=>{g.font=f;g.fillStyle='rgba(0,0,0,.55)';g.fillText(tx,cx,yy+1);g.fillStyle='#c8a75e';g.fillText(tx,cx,yy)};
+    g.textAlign='center';
+    eg('FAMILLE GARNIER',st+24,'8px '+F_DISP);g.fillStyle='#c8a75e';g.fillRect(cx-20,st+28,40,.8);
+    eg('Joseph GARNIER',st+44,'6.5px '+F_DISP);eg('1893 – 1958',st+53,'5.5px '+F_DISP);
+    eg('Marguerite GARNIER',st+70,'6.5px '+F_DISP);eg('née VASSEUR',st+78,'italic 5.5px '+F_BODY);eg('1897 – 1989',st+87,'5.5px '+F_DISP);
+    g.fillStyle='#d8d2c4';rr(g,cx-15,st+98,30,13,2);g.fill();
+    // dalle
+    const tg=g.createLinearGradient(0,sb-14,0,sb);tg.addColorStop(0,'#77746d');tg.addColorStop(1,'#99968e');g.fillStyle=tg;poly(g,[cx-68,sb-14,cx+68,sb-14,cx+78,sb,cx-78,sb]);g.fill();
+    g.fillStyle='#625f5a';g.fillRect(cx-78,sb,156,gy-sb);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(cx-78,sb-1,156,1.2);
+    // pot de chrysanthèmes à droite
+    const px=cx+104;g.fillStyle='#8a4a2a';poly(g,[px-11,gy-24,px+11,gy-24,px+8,gy,px-8,gy]);g.fill();g.fillStyle='#b06a40';g.fillRect(px-12,gy-27,24,5);
+    g.strokeStyle='#2e4a28';g.lineWidth=1.4;for(let k=-2;k<=2;k++){g.beginPath();g.moveTo(px+k*2,gy-26);g.lineTo(px+k*5,gy-40);g.stroke()}
+    for(let k=-2;k<=2;k++){g.fillStyle=['#d9a441','#efe6d0','#c8302a'][(k+2)%3];g.beginPath();g.arc(px+k*5,gy-42-Math.abs(k),3.6,0,7);g.fill()}
   }else{
     g.fillStyle='#5a4632';g.fillRect(x+T/2-3,y-20,6,2*T+20);
     g.fillStyle='#e9dfc7';const w=Math.max(70,(label||'').length*8+20);poly(g,[x+T/2-6,y-30,x+T/2-6+w,y-30,x+T/2+w+8,y-16,x+T/2-6+w,y-2,x+T/2-6,y-2]);g.fill();
