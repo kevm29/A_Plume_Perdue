@@ -17,6 +17,7 @@ function renderWorld(lv,cx,cy,t,opts){
   const fg=ctx.createLinearGradient(0,0,0,H);fg.addColorStop(0,rgba(lv.th.fog,lv.th.outdoor?.18:.32));fg.addColorStop(1,rgba(lv.th.fog,.04));ctx.fillStyle=fg;ctx.fillRect(0,0,W,H);
   ctx.save();ctx.translate(-cx,-cy);
   for(const d of lv.decor)if(d.x>cx-460&&d.x<cx+W+460)drawDecor(ctx,d,t);
+  if(lv.backDoor)drawBackDoor(ctx,lv.backDoor.x,lv.dome.floor,lv.backDoor.open);
   if(lv.armoire)drawArmoire(ctx,lv.armoire.x,lv.dome.floor,lv.armoire.shake,lv.armoire.door);
   if(lv.tiles){const sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/RS-sx);if(sw>0)ctx.drawImage(lv.tiles,sx*RS,0,sw*RS,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/RS)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
@@ -37,7 +38,7 @@ function drawEntities(t){
     else{ctx.strokeStyle='rgba(235,245,255,.95)';ctx.lineWidth=4;ctx.beginPath();let x=b.x,y=-20;ctx.moveTo(x,y);const R=mulberry((G.lt*10|0)+b.x);while(y<floor){y+=30+R()*20;x=b.x+(R()-.5)*30;ctx.lineTo(x,Math.min(y,floor))}ctx.stroke();ctx.lineWidth=12;ctx.strokeStyle='rgba(160,190,255,.25)';ctx.stroke();ctx.fillStyle='rgba(235,245,255,.6)';ctx.beginPath();ctx.ellipse(b.x,floor,40,10,0,0,7);ctx.fill()}}
   if(L.carton&&L.carton.state!=='hold'&&L.carton.state)drawCarton(ctx,L.carton);
   else if(L.carton&&L.carton.state==='hold')drawCarton(ctx,L.carton);
-  if(G.cut&&G.cut.thief.state!=='out'){const th2=G.cut.thief;drawThief(ctx,th2.x,L.dome.floor,t,{f:th2.state==='run'?1:-1,walk:th2.state==='walk'||th2.state==='run'?1:0,run:th2.state==='run',reach:th2.state==='open',lamp:true})}
+  if(G.cut&&G.cut.thief.state!=='out'){const th2=G.cut.thief;if(th2.state!=='gone')drawThief(ctx,th2.x,L.dome.floor,G.t,{f:th2.f,head:th2.head,alpha:th2.alpha,pose:th2.state==='walk'?'walk':th2.state==='open'?'reach':th2.state==='oops'?'oops':th2.state==='look'?'look':th2.state==='sneak'||th2.state==='exit'?'sneak':'stand',lamp:th2.state!=='oops'})}
   ctx.save();ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=4;
   for(const c of L.rats)if(vis(c.x))drawWalker(ctx,c.kind,c.x+c.w/2,c.y+c.h,Math.sign(c.vx)||1,c.t);
   const K=L.chaser;

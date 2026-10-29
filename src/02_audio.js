@@ -148,8 +148,17 @@ const LOOPS={};
 function makeLoop(name){
   if(name==='drone'){const g=AC.createGain();g.gain.value=0;const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1100;g.connect(sGain);lp.connect(g);
     const o=AC.createOscillator(),o2=AC.createOscillator();o.type=o2.type='sawtooth';o.frequency.value=150;o2.frequency.value=157;const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=9;lg.gain.value=6;lf.connect(lg);lg.connect(o.frequency);o.connect(lp);o2.connect(lp);o.start();o2.start();lf.start();return{g}}
-  const s=AC.createBufferSource();s.buffer=noiseBuf;s.loop=true;const f=AC.createBiquadFilter(),g=AC.createGain();g.gain.value=0;
-  if(name==='rain'){f.type='highpass';f.frequency.value=1400}
+  const s=AC.createBufferSource();if(name!=='rain')s.buffer=noiseBuf;s.loop=true;const f=AC.createBiquadFilter(),g=AC.createGain();g.gain.value=0;
+  if(name==='rain'){
+    // pluie : nappe de bruit rose douce + gouttes, bouclée sur 6 s
+    const sr=AC.sampleRate,n=sr*6,b=AC.createBuffer(2,n,sr);
+    for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+      for(let i=0;i<n;i++){const w=Math.random()*2-1;b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;
+        d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.045;b6=w*.115926}
+      const drops=n/sr*55;for(let k=0;k<drops;k++){const at=(Math.random()*(n-sr*.03))|0,f=1800+Math.random()*3200,a=.04+Math.random()*.1,dec=.004+Math.random()*.01;
+        for(let j=0;j<sr*.03;j++){const tt=j/sr;d[at+j]+=Math.sin(2*Math.PI*f*tt*(1-tt*8))*a*Math.exp(-tt/dec)}}
+      const fade=sr*.05;for(let i=0;i<fade;i++){const m=i/fade;d[i]*=m;d[n-1-i]*=m}}
+    s.buffer=b;f.type='lowpass';f.frequency.value=3800;f.Q.value=.3}
   else if(name==='wind'){f.type='bandpass';f.frequency.value=420;f.Q.value=.8;const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=.13;lg.gain.value=260;lf.connect(lg);lg.connect(f.frequency);lf.start()}
   else if(name==='purr'){f.type='lowpass';f.frequency.value=170;const am=AC.createGain();am.gain.value=.55;const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=24;lg.gain.value=.5;lf.connect(lg);lg.connect(am.gain);lf.start();s.connect(f);f.connect(am);am.connect(g);g.connect(sGain);s.start();return{g}}
   else if(name==='crowd'){f.type='bandpass';f.frequency.value=700;f.Q.value=.6}

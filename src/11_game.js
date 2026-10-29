@@ -30,9 +30,9 @@ function startLevel(i){
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
   parts.length=0;G.quip=null;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;L.carton=null;
   if(L.dome){
-    const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};
+    const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
     if(!G.cutSeen){
-      G.cut={t:0,ray:'statue',lieT:0,thief:{x:L.dome.x+760,state:'out',t:0},flashes:[.6,8.1,10.8,13.6],blink:0};
+      G.cut={t:0,ray:'statue',lieT:0,thief:{x:L.dome.x+760,state:'out',t:0,f:-1,head:1,alpha:1},flashes:[.6],blink:0,ev:{}};
       L.carton={x:L.armoire.x-6,y:L.dome.floor-218,vx:0,vy:0,rot:0,vr:0,state:'hold'};
       P.x=L.dome.x-P.w/2;P.y=dg.feet-P.h;P.facing=1;
     }else{L.dome.broken=true;L.carton={x:L.dome.x-62,y:L.dome.floor-20,rot:-.1,state:'rest'};L.armoire.door=1;say(L.def.start,5)}
@@ -62,32 +62,49 @@ function die(kind,tiles){
 function winLevel(){if(G.sim){G.simWin=true;return}G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
 
 /* ---------- scène d'ouverture : nuit d'orage, voleur, armoire, carton ---------- */
+function cutFlash(v,thunder){G.flash=Math.max(G.flash,v);if(!G.sim)setTimeout(()=>SFX.thunder(thunder),thunder>1?120:600)}
 function stepCut(dt){
-  const C=G.cut,dg=domeGeom(L.dome),k=L.carton,A=L.armoire,th=C.thief;C.t+=dt;
-  const last=C.flashes.length-1;
-  for(let i=0;i<C.flashes.length;i++)if(C.flashes[i]!==null&&C.t>=C.flashes[i]){C.flashes[i]=null;G.flash=i===last?1:.75;if(!G.sim)setTimeout(()=>SFX.thunder(i===last?1.2:.55+i*.15),i===last?120:700-i*150);
-    if(C.ray==='lie'){if(i===1){C.blink=.18;P.sx=1.06;P.sy=.94}else if(i===2){C.blink=.9;bubble(P.x+P.w/2,P.y-14,'Rrrou… ?','#6a5a48')}}
-    if(i===last)jolt()}
+  const C=G.cut,dg=domeGeom(L.dome),k=L.carton,A=L.armoire,th=C.thief,BD=L.backDoor;C.t+=dt;
+  for(let i=0;i<C.flashes.length;i++)if(C.flashes[i]!==null&&C.t>=C.flashes[i]){C.flashes[i]=null;cutFlash(.75,.6)}
   if(C.blink>0)C.blink-=dt;
+  const once=(key,cond,fn)=>{if(!C.ev[key]&&cond){C.ev[key]=1;fn()}};
   // le voleur
-  if(th.state==='out'&&C.t>1.4){th.state='walk'}
-  if(th.state==='walk'){th.x-=230*dt;th.t+=dt;if(th.x<=A.x+58){th.x=A.x+58;th.state='open';th.t=0}}
-  else if(th.state==='open'){th.t+=dt;A.door=Math.min(1,th.t*2.5);A.shake=Math.sin(th.t*30)*.03*Math.min(1,th.t*2);if(th.t>.9&&k.state==='hold'){k.state='fall';k.vx=-270;k.vy=-60;k.vr=-3;SFX.whistle()}if(th.t>1.5){th.state='oops';th.t=0;bubble(th.x,L.dome.floor-130,'Oups.','#2a2420')}}
-  else if(th.state==='oops'){th.t+=dt;A.shake*=.9;if(th.t>.7){th.state='run';th.t=0;bubble(th.x,L.dome.floor-130,'Ni vu, ni connu…','#2a2420')}}
-  else if(th.state==='run'){th.t+=dt;th.x+=420*dt;A.shake*=.9}
+  th.t+=dt;
+  if(th.state==='out'&&C.t>1.4){th.state='walk';th.t=0}
+  if(th.state==='walk'){th.x-=200*dt;if(th.x<=A.x+58){th.x=A.x+58;th.state='open';th.t=0}}
+  else if(th.state==='open'){A.door=Math.min(1,th.t*2.5);A.shake=Math.sin(th.t*30)*.03*Math.min(1,th.t*2);if(th.t>.9&&k.state==='hold'){k.state='fall';k.vx=-270;k.vy=-60;k.vr=-3;if(!G.sim)SFX.whistle()}if(th.t>1.5){th.state='oops';th.t=0;bubble(th.x,L.dome.floor-140,'!','#2a2420')}}
+  else if(th.state==='oops'){A.shake*=.9;if(th.t>1.0){th.state='look';th.t=0}}
+  else if(th.state==='look'){
+    // il regarde la cloche, puis à droite, puis à gauche
+    th.head=th.t<.7?1:th.t<1.3?-1:th.t<1.9?1:-1;th.f=-1;
+    once('dots',th.t>.4,()=>bubble(th.x,L.dome.floor-140,'…','#2a2420'));
+    if(th.t>2.5){th.state='sneak';th.t=0;th.head=1;bubble(th.x,L.dome.floor-140,'Ni vu, ni connu…','#2a2420')}}
+  else if(th.state==='sneak'){
+    th.x-=62*dt;th.f=-1;
+    // coups d'œil par-dessus l'épaule
+    const c=th.t%1.6;th.head=c>1.1&&c<1.45?-1:1;
+    if(th.x<=BD.x+40){BD.open=Math.min(1,BD.open+dt*3)}
+    if(th.x<=BD.x+4){th.state='exit';th.t=0;if(!G.sim)SFX.squeak()}}
+  else if(th.state==='exit'){th.x-=50*dt;th.alpha=Math.max(0,1-th.t*2.2);if(th.t>.6){BD.open=Math.max(0,BD.open-dt*2.5)}if(th.t>1.1&&BD.open<=0){th.state='gone';th.t=0;if(!G.sim)SFX.land()}}
+  else if(th.state==='gone'){}
   // le carton
   if(k.state==='fall'){k.vy+=2600*dt;k.x+=k.vx*dt;k.y+=k.vy*dt;k.rot+=k.vr*dt;
     if(k.y+20>=dg.domeTop&&Math.abs(k.x-L.dome.x)<60){
-      k.state='fly';k.vx=-160;k.vy=-300;k.vr=-6;L.dome.broken=true;SFX.crash();G.shake=18;
-      for(let i=0;i<46;i++){const a=-Math.PI*rnd(),s=120+rnd()*380;parts.push({type:'glass',x:L.dome.x+(rnd()-.5)*50,y:dg.domeTop+30+rnd()*40,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0,max:40,rot:rnd()*6,vr:(rnd()-.5)*20,sz:2+rnd()*5,floor:L.dome.floor})}
+      k.state='fly';k.vx=-160;k.vy=-300;k.vr=-6;L.dome.broken=true;if(!G.sim)SFX.crash();G.shake=18;
+      for(let i=0;i<46;i++){const a=-Math.PI*rnd(),s=120+rnd()*380;parts.push({type:'glass',x:L.dome.x+(rnd()-.5)*50,y:dg.domeTop+30+rnd()*40,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0,max:40,rot:rnd()*6,vr:(rnd()-.5)*20,sz:2+rnd()*5,floor:L.dome.floor-2})}
       C.ray='fly';P.vx=120;P.vy=-430;
     }else if(k.y+20>=L.dome.floor){k.y=L.dome.floor-20;k.state='rest'}}
-  if(k.state==='fly'){k.vy+=2600*dt;k.x+=k.vx*dt;k.y+=k.vy*dt;k.rot+=k.vr*dt;if(k.x<66){k.x=66;k.vx=-k.vx*.3}
-    if(k.y+20>=L.dome.floor){k.y=L.dome.floor-20;k.state='rest';k.rot=-.1;SFX.land();G.shake=6}}
-  // Raymond
+  if(k.state==='fly'){k.vy+=2600*dt;k.x+=k.vx*dt;k.y+=k.vy*dt;k.rot+=k.vr*dt;if(k.x<L.dome.x-120){k.x=L.dome.x-120;k.vx=-k.vx*.3}
+    if(k.y+20>=L.dome.floor){k.y=L.dome.floor-20;k.state='rest';k.rot=-.1;if(!G.sim)SFX.land();G.shake=6}}
+  // Raymond : immobile tant que le voleur est là, se réveille pendant sa fuite
   if(C.ray==='fly'){P.vy+=GRAV*dt;moveX(P,P.vx*dt);P.onGround=false;moveY(P,P.vy*dt);P.spin+=dt*13;
-    if(P.onGround){C.ray='lie';C.lieT=0;P.vx=0;P.spin=Math.PI;SFX.land();puff(P.x+P.w/2,P.y+P.h,12,true)}}
-  else if(C.ray==='lie'){C.lieT+=dt}
+    if(P.onGround){C.ray='lie';C.lieT=0;P.vx=0;P.spin=Math.PI;if(!G.sim)SFX.land();puff(P.x+P.w/2,P.y+P.h,12,true)}}
+  else if(C.ray==='lie'){C.lieT+=dt;
+    const sneaking=th.state==='sneak'||th.state==='exit'||th.state==='gone';
+    once('w1',sneaking&&th.t>1.2&&th.state==='sneak',()=>{cutFlash(.7,.7);C.blink=.15;P.sx=1.06;P.sy=.94});
+    once('w2',(th.state==='sneak'&&th.t>3.3)||th.state==='exit'||th.state==='gone',()=>{cutFlash(.8,.85);C.blink=1.1;bubble(P.x+P.w/2,P.y-14,'Rrrou… ?','#6a5a48')});
+    if(th.state==='gone'&&th.t>1.0)once('w3',true,()=>{cutFlash(1,1.2);jolt()});
+  }
   else if(C.ray==='jolt'){C.jt+=dt;P.spin=Math.PI*(1+Math.min(1,C.jt/.35));if(C.jt>.35)P.spin=0;
     if(C.jt>1.0&&!C.b2){C.b2=1;bubble(P.x+P.w/2,P.y-14,'Tous aux abris !','#a8322d')}
     if(C.jt>2.6&&!C.b3){C.b3=1;P.facing=1;bubble(P.x+P.w/2,P.y-14,'Matricule 7413, au rapport !','#a8322d')}
@@ -96,7 +113,7 @@ function stepCut(dt){
 function jolt(){const C=G.cut;if(!C)return;if(C.ray!=='lie'){C.ray='lie';P.spin=Math.PI}C.ray='jolt';C.jt=0;P.vy=-200;bubble(P.x+P.w/2,P.y-14,'Tir de barrage !','#a8322d')}
 function endCut(){G.cut=null;G.cutSeen=true;P.spin=0;P.cp={x:L.spawn.x,y:L.spawn.y};say(L.def.start,5)}
 function skipCut(){
-  L.dome.broken=true;L.carton={x:L.dome.x-62,y:L.dome.floor-20,rot:-.1,state:'rest'};L.armoire.door=1;L.armoire.shake=0;
+  L.dome.broken=true;if(L.backDoor)L.backDoor.open=0;L.carton={x:L.dome.x-62,y:L.dome.floor-20,rot:-.1,state:'rest'};L.armoire.door=1;L.armoire.shake=0;
   P.x=L.dome.x+60-P.w/2;P.y=L.dome.floor-P.h;P.vx=P.vy=0;endCut();
 }
 
@@ -258,7 +275,7 @@ function animalSounds(dt){
       if(K.state==='chase'&&!P.dead){K.meowT-=dt;if(K.meowT<=0){if(rnd()<.3){SFX.hiss();bubble(K.x+K.w/2,K.y-16,'KSSSHH !','#c7742e')}else{meow(.8);bubble(K.x+K.w/2,K.y-16,pick(['MRRAOU !','MIAAAOU !','MRRR…']),'#c7742e')}K.meowT=2+rnd()*1.6}}
     }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:0);
   }
-  const rain=th.weather==='rain'||th.weather==='storm'?(th.weather==='storm'?.34:.24):th.far==='storage'?.06:0;
+  const rain=th.weather==='rain'||th.weather==='storm'?(th.weather==='storm'?.3:.22):th.far==='storage'?.07:0;
   loopSet('rain',rain);loopSet('wind',th.weather==='wind'?.32:th.weather==='storm'?.14:0);
   // éclairs d'orage
   if(th.weather==='storm'||th.weather==='rain'||th.far==='storage'){G.flashT-=dt;if(G.flashT<=0){G.flash=th.weather==='storm'?1:.7;const v=th.weather==='storm'?1:.6;setTimeout(()=>SFX.thunder(v),300+rnd()*700);G.flashT=th.weather==='storm'?3.5+rnd()*3.5:9+rnd()*7}}
