@@ -22,7 +22,7 @@ const LEVELS=[
         ["FIG. 4 — LE VOL PLANÉ","Maintenir le saut en tombant. Dignité non incluse."],
         ["CARTEL DE SAUVEGARDE","Les cartels de musée retiennent tout. C'est leur seul talent."]],
  quips:["Le plancher est défoncé. Un obus, sûrement. Ils tombent jusqu'ici, maintenant.","Des meubles sous des draps. On a évacué en vitesse. L'ennemi doit être tout proche."],
- signs:["RÉSERVE · ACCÈS INTERDIT AU PUBLIC"],
+ signs:["RÉSERVE|Accès interdit au public"],
  letter:{date:"Verdun, le 2 juin 1916.",text:"Marguerite, je t'écris pour te dire que c'est fini entre nous. Je ne reviendrai pas à Villemareuil.",comment:"Par pigeon. Il rompt par pigeon. Moi qui croyais transporter des plans de bataille."},
  segs:[`
 ........l.....
@@ -84,7 +84,7 @@ q.DDDD..E.
  hints:[["FIG. 5 — L'ÉPINGLE","Redoutable. Le pigeon qui s'y frotte y laisse des plumes. Au sens propre."],
         ["FIG. 6 — LA MITE","Tineola bisselliella. Vole toujours le même trajet, au même rythme. Observer, puis passer."]],
  quips:["Un plafond hérissé d'épingles. Interdiction de battre des ailes. Je déteste les règlements que je n'ai pas écrits.","Le docteur Laffont collectionnait les papillons. Et les épingles. Surtout les épingles."],
- signs:["GALERIE D'ENTOMOLOGIE · DON DU DR LAFFONT"],
+ signs:["GALERIE D'ENTOMOLOGIE|Don du docteur Laffont"],
  letter:{text:"Épouse plutôt le fils Garnier. Il a deux vaches, une charrette, et il a été réformé. Lui, au moins, il sera là.",comment:"Il la quitte, et il lui choisit le remplaçant. Un réformé, en plus."},
  segs:[`
 ....l...
@@ -157,7 +157,7 @@ Cq.X...X....
  hints:[["FIG. 7 — LE DIABLE","Chariot de déménageur. Monter dessus. Ne pas lui demander où il va."],
         ["FIG. 8 — RATTUS NORVEGICUS","Le rat du musée. A déjà mangé un herbier et la moitié d'une momie. Sauter par-dessus."]],
  quips:["Une salle entière pour un éléphant. Moi, au pigeonnier, j'avais un perchoir.","Une étiquette sur l'éléphant : « Lot n° 3, adjugé ». Ils vendent tout. Il doit y avoir une guerre à payer."],
- signs:["MAMMUTHUS PRIMIGENIUS · RECONSTITUTION EN PLÂTRE"],
+ signs:["MAMMUTHUS PRIMIGENIUS|Reconstitution en plâtre"],
  letter:{text:"Je ne t'ai jamais aimée. Ni ton rire au bal du 14 Juillet, ni ta robe bleue, ni ta façon de dire mon nom.",comment:"Il ne l'a jamais aimée, mais il se souvient de la couleur de la robe. Les hommes sont compliqués. Les pigeons, non."},
  segs:[`
 ...l....
@@ -218,7 +218,7 @@ Cq.DD.DDDD..
  start:"Une loge de concierge. Ça sent la soupe froide et la croquette.",
  hints:[],
  quips:["La gamelle dit BIJOU. Rien de bon ne peut sortir d'un chat qui s'appelle Bijou.","Le voilà. Bijou dort. Avancer sur la pointe des pattes. J'ai des pattes, c'est déjà ça."],
- signs:["LOGE DU GARDIEN · FRAPPER FORT"],
+ signs:["LOGE DU GARDIEN|Frapper fort"],
  letter:{text:"Brûle mes lettres. Oublie mon nom. Et ne porte jamais le noir pour moi, ça ne te va pas.",comment:"Il critique même ses toilettes. Je ne livre pas une lettre, je livre une gifle."},
  segs:[`
 ....l...
@@ -274,7 +274,7 @@ Cq....K.T.
  hints:[["ARTICLE 9 — LES BARBELÉS","Le barbelé ne fait pas la différence entre un soldat et un pigeon. Le règlement non plus."]],
  flyers:[{dy:30,amp:200,sp:1.7},{dy:-70,amp:125}],
  quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un casque rouillé sur un piquet. Pauvre gars. L'intendance n'est toujours pas passée le ramasser."],
- signs:["VERDUN · ZONE ROUGE · NE PAS QUITTER LE SENTIER"],
+ signs:["ZONE ROUGE|Ne pas quitter le sentier"],
  letter:{text:"Ici tout va bien. On mange bien, on dort beaucoup, le capitaine est gentil.",comment:"On mange bien ? J'ai vu ce qu'ils mangeaient. Même moi, je refusais."},
  segs:[`
 g.........
@@ -325,7 +325,7 @@ Cq....XX.rk.
  start:"Des moulins géants. Sans meunier, sans farine. Une arme secrète, forcément.",
  hints:[["ARTICLE 11 — LE COURANT D'AIR","Au-dessus d'un courant ascendant, on monte tout seul. Le règlement appelle ça « prendre de la hauteur »."]],
  quips:["Elles tournent sans vent. Ou alors c'est elles qui fabriquent le vent. L'ennemi est capable de tout.","Un courant d'air chaud. Le règlement interdit de se laisser porter. Le règlement n'a jamais volé."],
- signs:["CHAMP D'ÉOLIENNES · DANGER"],
+ signs:["CHAMP D'ÉOLIENNES|Danger"],
  letter:{text:"Ne garde rien de moi. Pas même la photographie. Surtout pas la photographie.",comment:"Une goutte de pluie. Il pleuvait tout le temps, à Verdun.",fx:'blot'},
  segs:[`
 g.........
@@ -424,7 +424,7 @@ Cq..........
  start:"Une tranchée. Celle-là, je la reconnais. Les rats aussi : ils n'ont pas changé.",
  hints:[],
  quips:["Des noms gravés dans le bois. Des copains du 151e. Ils ont dû partir en permission.","Le fort de Vaux est par là. J'y suis monté début juin. Après… plus rien."],
- signs:["TRANCHÉE · RESPECTEZ LE SILENCE"],
+ signs:["TRANCHÉE|Respectez le silence"],
  letter:{text:"Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août.",comment:"Le fort de Vaux. Lucien m'y a monté le lendemain, à l'aube. Après… je ne me souviens plus très bien."},
  segs:[`
 .....l....
@@ -569,7 +569,7 @@ q.XX^^XX^^XX^^^^..
  start:"Une gare. Des trains sans fumée. L'arrière s'est beaucoup modernisé, en deux ans.",
  hints:[],
  quips:["Les gens parlent tout seuls dans de petites boîtes. Des espions, tous.","« Paris en quarante-cinq minutes. » Propagande."],
- signs:["GARE DE REIMS · QUAIS"],
+ signs:["GARE DE REIMS|Accès aux quais"],
  letter:{text:"Je n'ai jamais pensé à toi ~chaque~ ~soir~ ~chaque~ ~matin~ ~à~ ~chaque~ ~obus~.",comment:"« À chaque obus. » À Verdun, ça fait beaucoup."},
  segs:[SEG_START_FLAT,`
 ..........o.o.....
@@ -610,7 +610,7 @@ q.XX...k......XX
  start:"Un square. Une vieille dame jette du pain. Je refuse. J'ai ma fierté. Bon, une miette.",
  hints:[],
  quips:["La statue regarde vers l'ouest. Moi aussi. On a au moins ça en commun.","Les pigeons du square ont fondé un syndicat. Ils me barrent la route."],
- signs:["SQUARE · PELOUSE INTERDITE"],
+ signs:["SQUARE|Pelouse interdite"],
  letter:{text:"Je ne reviendrai ~peut-être~ pas.",comment:"",silent:true},
  segs:[SEG_START_FLAT,`
 .....o......o...
@@ -651,7 +651,7 @@ Cq....XXX.....
  start:"Une route sans fin, toute droite vers l'ouest. Et une pluie à noyer un canard.",
  hints:[["ARTICLE 13 — LE SAC VOLANT","Il ne se pose jamais. Il suit le vent, toujours le même chemin."]],
  quips:["Des tables pour pique-niquer au bord de la route. En pleine guerre. L'arrière ne doute de rien.","Un sac qui vole. Ce n'est pas du papier. Je ne sais pas ce que c'est, et je n'aime pas ça."],
- signs:["AIRE DE REPOS · A4"],
+ signs:["AIRE DE REPOS|Autoroute A4"],
  letter:{text:"P.-S. Ne lis pas le dos de cette lettre, Marguerite. Brûle-la avant.",comment:"La pluie a fait apparaître une écriture au dos. Je suis un pigeon militaire. Je lis tout.",fx:'verso'},
  segs:[`
 g.........
@@ -697,7 +697,7 @@ Cq..........
  start:"Des camions grands comme des maisons. Le ravitaillement a beaucoup grossi.",
  hints:[["ARTICLE 14 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi la figure 7 : le diable."]],
  quips:["Ils roulent sans chevaux, et le chauffeur ne chante même pas. Triste époque.","Du verre partout sur la route. Un convoi s'est fait mitrailler, c'est sûr."],
- signs:["TRAVAUX · ROUTE BARRÉE"],
+ signs:["TRAVAUX|Route barrée"],
  letter:{text:"Tout ce qui est écrit de l'autre côté est faux. Je mens mal, tu le sais, comme je danse.",comment:"Faux. Et moi qui l'ai traité de goujat pendant deux cents kilomètres.",fx:'verso'},
  segs:[`
 g.........
@@ -747,7 +747,7 @@ XX^^^^^^^^^^^^^^^^^^^^^^
  start:"L'orage. Comme au fort. Je n'aime pas l'orage.",
  hints:[["ARTICLE 15 — LA FOUDRE","Elle prévient : le sol s'illumine avant qu'elle frappe. Ne jamais rester sous un éclair qui prévient."]],
  quips:["Le tonnerre. On dirait le canon. Je… je me souviens de quelque chose."],
- signs:["A4 · VENTS VIOLENTS"],
+ signs:["A4|Vents violents"],
  letter:{text:"Demain à l'aube, nous montons au fort de Vaux. Le capitaine dit qu'on en redescendra. Le capitaine ment mieux que moi.",comment:"Le fort. Ça me revient par morceaux : la fumée, le gaz, des mains qui me lancent dans le ciel… Et puis plus rien. Un trou noir. Et la remise.",fx:'verso'},
  segs:[`
 g.........
@@ -834,7 +834,7 @@ C...........
  start:"Villemareuil. Des lampions, des flonflons. La guerre est finie ? Personne ne m'a prévenu.",
  hints:[["ARTICLE 16 — L'OIE","Anser anser domesticus. Garde le village mieux qu'une sentinelle. Sauter par-dessus."]],
  quips:["Une tarte aux prunes sur un stand. Je pense à Marguerite. Enfin, à sa tarte.","Les gens dansent mal. Lucien aurait été à l'aise."],
- signs:["FÊTE DU VILLAGE · BAL CE SOIR"],
+ signs:["FÊTE DU VILLAGE|Bal ce soir"],
  letter:{text:"Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Attendre un mort à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid.",comment:"Ce n'était pas une gifle. C'était un cadeau mal emballé.",fx:'verso'},
  segs:[`
 g.........
@@ -880,7 +880,7 @@ Cq..........
  start:"Le clocher de Villemareuil. D'en haut, je verrai le pigeonnier.",
  hints:[],
  quips:["Les cloches. Chaque coup me fait trembler la paille.","Le pigeonnier Vasseur… il n'est plus là. Il y a un garage à la place. Un garage !"],
- signs:["CLOCHER · DÉFENSE DE SONNER"],
+ signs:["CLOCHER|Défense de sonner"],
  letter:{text:"Ris fort, Marguerite. Ris trop fort à tous les bals. Danse avec lui, même s'il danse aussi mal que moi.",comment:"Danser mal à deux, c'est déjà danser.",fx:'verso'},
  segs:[`
 ....l.....

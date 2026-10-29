@@ -86,9 +86,10 @@ let grainPat=null;
 
 /* ---------- sauvegarde ---------- */
 const SAVE_KEY='a-plume-perdue-v2';
-const START_LIVES=2,MAX_WEAR=4;
+const START_LIVES=0,MAX_WEAR=4;
 let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
+if(S.v!==4){S.v=4;S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{}};try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
 /* points : 10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute */
 function levelPoints(o){return Math.max(0,o.corn*10+(o.medal?100:0)+(o.deaths===0?50:0)-o.deaths*15)}
@@ -458,7 +459,7 @@ const LEVELS=[
         ["FIG. 4 — LE VOL PLANÉ","Maintenir le saut en tombant. Dignité non incluse."],
         ["CARTEL DE SAUVEGARDE","Les cartels de musée retiennent tout. C'est leur seul talent."]],
  quips:["Le plancher est défoncé. Un obus, sûrement. Ils tombent jusqu'ici, maintenant.","Des meubles sous des draps. On a évacué en vitesse. L'ennemi doit être tout proche."],
- signs:["RÉSERVE · ACCÈS INTERDIT AU PUBLIC"],
+ signs:["RÉSERVE|Accès interdit au public"],
  letter:{date:"Verdun, le 2 juin 1916.",text:"Marguerite, je t'écris pour te dire que c'est fini entre nous. Je ne reviendrai pas à Villemareuil.",comment:"Par pigeon. Il rompt par pigeon. Moi qui croyais transporter des plans de bataille."},
  segs:[`
 ........l.....
@@ -520,7 +521,7 @@ q.DDDD..E.
  hints:[["FIG. 5 — L'ÉPINGLE","Redoutable. Le pigeon qui s'y frotte y laisse des plumes. Au sens propre."],
         ["FIG. 6 — LA MITE","Tineola bisselliella. Vole toujours le même trajet, au même rythme. Observer, puis passer."]],
  quips:["Un plafond hérissé d'épingles. Interdiction de battre des ailes. Je déteste les règlements que je n'ai pas écrits.","Le docteur Laffont collectionnait les papillons. Et les épingles. Surtout les épingles."],
- signs:["GALERIE D'ENTOMOLOGIE · DON DU DR LAFFONT"],
+ signs:["GALERIE D'ENTOMOLOGIE|Don du docteur Laffont"],
  letter:{text:"Épouse plutôt le fils Garnier. Il a deux vaches, une charrette, et il a été réformé. Lui, au moins, il sera là.",comment:"Il la quitte, et il lui choisit le remplaçant. Un réformé, en plus."},
  segs:[`
 ....l...
@@ -593,7 +594,7 @@ Cq.X...X....
  hints:[["FIG. 7 — LE DIABLE","Chariot de déménageur. Monter dessus. Ne pas lui demander où il va."],
         ["FIG. 8 — RATTUS NORVEGICUS","Le rat du musée. A déjà mangé un herbier et la moitié d'une momie. Sauter par-dessus."]],
  quips:["Une salle entière pour un éléphant. Moi, au pigeonnier, j'avais un perchoir.","Une étiquette sur l'éléphant : « Lot n° 3, adjugé ». Ils vendent tout. Il doit y avoir une guerre à payer."],
- signs:["MAMMUTHUS PRIMIGENIUS · RECONSTITUTION EN PLÂTRE"],
+ signs:["MAMMUTHUS PRIMIGENIUS|Reconstitution en plâtre"],
  letter:{text:"Je ne t'ai jamais aimée. Ni ton rire au bal du 14 Juillet, ni ta robe bleue, ni ta façon de dire mon nom.",comment:"Il ne l'a jamais aimée, mais il se souvient de la couleur de la robe. Les hommes sont compliqués. Les pigeons, non."},
  segs:[`
 ...l....
@@ -654,7 +655,7 @@ Cq.DD.DDDD..
  start:"Une loge de concierge. Ça sent la soupe froide et la croquette.",
  hints:[],
  quips:["La gamelle dit BIJOU. Rien de bon ne peut sortir d'un chat qui s'appelle Bijou.","Le voilà. Bijou dort. Avancer sur la pointe des pattes. J'ai des pattes, c'est déjà ça."],
- signs:["LOGE DU GARDIEN · FRAPPER FORT"],
+ signs:["LOGE DU GARDIEN|Frapper fort"],
  letter:{text:"Brûle mes lettres. Oublie mon nom. Et ne porte jamais le noir pour moi, ça ne te va pas.",comment:"Il critique même ses toilettes. Je ne livre pas une lettre, je livre une gifle."},
  segs:[`
 ....l...
@@ -710,7 +711,7 @@ Cq....K.T.
  hints:[["ARTICLE 9 — LES BARBELÉS","Le barbelé ne fait pas la différence entre un soldat et un pigeon. Le règlement non plus."]],
  flyers:[{dy:30,amp:200,sp:1.7},{dy:-70,amp:125}],
  quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un casque rouillé sur un piquet. Pauvre gars. L'intendance n'est toujours pas passée le ramasser."],
- signs:["VERDUN · ZONE ROUGE · NE PAS QUITTER LE SENTIER"],
+ signs:["ZONE ROUGE|Ne pas quitter le sentier"],
  letter:{text:"Ici tout va bien. On mange bien, on dort beaucoup, le capitaine est gentil.",comment:"On mange bien ? J'ai vu ce qu'ils mangeaient. Même moi, je refusais."},
  segs:[`
 g.........
@@ -761,7 +762,7 @@ Cq....XX.rk.
  start:"Des moulins géants. Sans meunier, sans farine. Une arme secrète, forcément.",
  hints:[["ARTICLE 11 — LE COURANT D'AIR","Au-dessus d'un courant ascendant, on monte tout seul. Le règlement appelle ça « prendre de la hauteur »."]],
  quips:["Elles tournent sans vent. Ou alors c'est elles qui fabriquent le vent. L'ennemi est capable de tout.","Un courant d'air chaud. Le règlement interdit de se laisser porter. Le règlement n'a jamais volé."],
- signs:["CHAMP D'ÉOLIENNES · DANGER"],
+ signs:["CHAMP D'ÉOLIENNES|Danger"],
  letter:{text:"Ne garde rien de moi. Pas même la photographie. Surtout pas la photographie.",comment:"Une goutte de pluie. Il pleuvait tout le temps, à Verdun.",fx:'blot'},
  segs:[`
 g.........
@@ -860,7 +861,7 @@ Cq..........
  start:"Une tranchée. Celle-là, je la reconnais. Les rats aussi : ils n'ont pas changé.",
  hints:[],
  quips:["Des noms gravés dans le bois. Des copains du 151e. Ils ont dû partir en permission.","Le fort de Vaux est par là. J'y suis monté début juin. Après… plus rien."],
- signs:["TRANCHÉE · RESPECTEZ LE SILENCE"],
+ signs:["TRANCHÉE|Respectez le silence"],
  letter:{text:"Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août.",comment:"Le fort de Vaux. Lucien m'y a monté le lendemain, à l'aube. Après… je ne me souviens plus très bien."},
  segs:[`
 .....l....
@@ -1005,7 +1006,7 @@ q.XX^^XX^^XX^^^^..
  start:"Une gare. Des trains sans fumée. L'arrière s'est beaucoup modernisé, en deux ans.",
  hints:[],
  quips:["Les gens parlent tout seuls dans de petites boîtes. Des espions, tous.","« Paris en quarante-cinq minutes. » Propagande."],
- signs:["GARE DE REIMS · QUAIS"],
+ signs:["GARE DE REIMS|Accès aux quais"],
  letter:{text:"Je n'ai jamais pensé à toi ~chaque~ ~soir~ ~chaque~ ~matin~ ~à~ ~chaque~ ~obus~.",comment:"« À chaque obus. » À Verdun, ça fait beaucoup."},
  segs:[SEG_START_FLAT,`
 ..........o.o.....
@@ -1046,7 +1047,7 @@ q.XX...k......XX
  start:"Un square. Une vieille dame jette du pain. Je refuse. J'ai ma fierté. Bon, une miette.",
  hints:[],
  quips:["La statue regarde vers l'ouest. Moi aussi. On a au moins ça en commun.","Les pigeons du square ont fondé un syndicat. Ils me barrent la route."],
- signs:["SQUARE · PELOUSE INTERDITE"],
+ signs:["SQUARE|Pelouse interdite"],
  letter:{text:"Je ne reviendrai ~peut-être~ pas.",comment:"",silent:true},
  segs:[SEG_START_FLAT,`
 .....o......o...
@@ -1087,7 +1088,7 @@ Cq....XXX.....
  start:"Une route sans fin, toute droite vers l'ouest. Et une pluie à noyer un canard.",
  hints:[["ARTICLE 13 — LE SAC VOLANT","Il ne se pose jamais. Il suit le vent, toujours le même chemin."]],
  quips:["Des tables pour pique-niquer au bord de la route. En pleine guerre. L'arrière ne doute de rien.","Un sac qui vole. Ce n'est pas du papier. Je ne sais pas ce que c'est, et je n'aime pas ça."],
- signs:["AIRE DE REPOS · A4"],
+ signs:["AIRE DE REPOS|Autoroute A4"],
  letter:{text:"P.-S. Ne lis pas le dos de cette lettre, Marguerite. Brûle-la avant.",comment:"La pluie a fait apparaître une écriture au dos. Je suis un pigeon militaire. Je lis tout.",fx:'verso'},
  segs:[`
 g.........
@@ -1133,7 +1134,7 @@ Cq..........
  start:"Des camions grands comme des maisons. Le ravitaillement a beaucoup grossi.",
  hints:[["ARTICLE 14 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi la figure 7 : le diable."]],
  quips:["Ils roulent sans chevaux, et le chauffeur ne chante même pas. Triste époque.","Du verre partout sur la route. Un convoi s'est fait mitrailler, c'est sûr."],
- signs:["TRAVAUX · ROUTE BARRÉE"],
+ signs:["TRAVAUX|Route barrée"],
  letter:{text:"Tout ce qui est écrit de l'autre côté est faux. Je mens mal, tu le sais, comme je danse.",comment:"Faux. Et moi qui l'ai traité de goujat pendant deux cents kilomètres.",fx:'verso'},
  segs:[`
 g.........
@@ -1183,7 +1184,7 @@ XX^^^^^^^^^^^^^^^^^^^^^^
  start:"L'orage. Comme au fort. Je n'aime pas l'orage.",
  hints:[["ARTICLE 15 — LA FOUDRE","Elle prévient : le sol s'illumine avant qu'elle frappe. Ne jamais rester sous un éclair qui prévient."]],
  quips:["Le tonnerre. On dirait le canon. Je… je me souviens de quelque chose."],
- signs:["A4 · VENTS VIOLENTS"],
+ signs:["A4|Vents violents"],
  letter:{text:"Demain à l'aube, nous montons au fort de Vaux. Le capitaine dit qu'on en redescendra. Le capitaine ment mieux que moi.",comment:"Le fort. Ça me revient par morceaux : la fumée, le gaz, des mains qui me lancent dans le ciel… Et puis plus rien. Un trou noir. Et la remise.",fx:'verso'},
  segs:[`
 g.........
@@ -1270,7 +1271,7 @@ C...........
  start:"Villemareuil. Des lampions, des flonflons. La guerre est finie ? Personne ne m'a prévenu.",
  hints:[["ARTICLE 16 — L'OIE","Anser anser domesticus. Garde le village mieux qu'une sentinelle. Sauter par-dessus."]],
  quips:["Une tarte aux prunes sur un stand. Je pense à Marguerite. Enfin, à sa tarte.","Les gens dansent mal. Lucien aurait été à l'aise."],
- signs:["FÊTE DU VILLAGE · BAL CE SOIR"],
+ signs:["FÊTE DU VILLAGE|Bal ce soir"],
  letter:{text:"Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Attendre un mort à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid.",comment:"Ce n'était pas une gifle. C'était un cadeau mal emballé.",fx:'verso'},
  segs:[`
 g.........
@@ -1316,7 +1317,7 @@ Cq..........
  start:"Le clocher de Villemareuil. D'en haut, je verrai le pigeonnier.",
  hints:[],
  quips:["Les cloches. Chaque coup me fait trembler la paille.","Le pigeonnier Vasseur… il n'est plus là. Il y a un garage à la place. Un garage !"],
- signs:["CLOCHER · DÉFENSE DE SONNER"],
+ signs:["CLOCHER|Défense de sonner"],
  letter:{text:"Ris fort, Marguerite. Ris trop fort à tous les bals. Danse avec lui, même s'il danse aussi mal que moi.",comment:"Danser mal à deux, c'est déjà danser.",fx:'verso'},
  segs:[`
 ....l.....
@@ -2170,7 +2171,22 @@ function drawRaymond(g,x,y,o){
   if(d>=3){g.save();g.translate(-4,-12);g.rotate(.5);g.fillStyle='#ede4cf';rr(g,-6,-2,12,4,1.5);g.fill();g.rotate(-1.1);rr(g,-5,-2,10,4,1.5);g.fill();g.fillStyle='rgba(168,50,45,.5)';g.fillRect(-1,-1,2,2);g.restore()}
   g.save();g.translate(hb,0);
   const ng=g.createLinearGradient(4,-28,10,-16);ng.addColorStop(0,'#7a5d9e');ng.addColorStop(.55,'#4f9a7a');ng.addColorStop(1,'#8d96a8');
-  g.fillStyle=ng;g.beginPath();g.ellipse(7,-21,6,7,.3,0,7);g.fill();
+  if(o.noHead){
+    // cou tranché net : moignon recousu, paille qui s'échappe
+    g.save();g.beginPath();g.rect(-30,-23,60,40);g.clip();g.fillStyle=ng;g.beginPath();g.ellipse(7,-21,6,7,.3,0,7);g.fill();g.restore();
+    g.fillStyle='#d8c08a';g.beginPath();g.ellipse(6.4,-23,5.6,1.8,.15,0,7);g.fill();
+    g.strokeStyle='rgba(233,223,199,.8)';g.lineWidth=.7;g.setLineDash([1.2,1.2]);g.beginPath();g.ellipse(6.4,-23,5.6,1.8,.15,0,7);g.stroke();g.setLineDash([]);
+    const st=o.straw==null?1:o.straw;g.lineCap='round';
+    for(let k=0;k<9;k++){const ax=2.5+k*1,ang=-Math.PI/2+(k-4)*.22,l=(3+((k*7)%5))*st;g.strokeStyle=k%3?'#e0b04e':'#b8862e';g.lineWidth=1.1;g.beginPath();g.moveTo(ax,-23);g.lineTo(ax+Math.cos(ang)*l,-23+Math.sin(ang)*l);g.stroke()}
+  }else{
+    g.fillStyle=ng;g.beginPath();g.ellipse(7,-21,6,7,.3,0,7);g.fill();
+    raymondHead(g,d,o);
+  }
+  g.restore();
+  g.restore();
+}
+/* la tête de Raymond (dans le repère du corps) */
+function raymondHead(g,d,o){
   g.fillStyle='#929bad';g.beginPath();g.arc(9.5,-28,6,0,7);g.fill();
   if(d>=5){g.fillStyle='#ede4cf';g.save();g.translate(9,-32);g.rotate(-.3);rr(g,-6,-1.8,12,3.6,1.5);g.fill();g.restore()}
   g.fillStyle='#3a3836';poly(g,[14.5,-29.3,20,-27.6,14.5,-26.4]);g.fill();
@@ -2179,7 +2195,16 @@ function drawRaymond(g,x,y,o){
   else{g.fillStyle='#d97a2a';g.beginPath();g.arc(11,-29.5,2.7,0,7);g.fill();g.fillStyle='#f4ecd8';g.beginPath();g.arc(11,-29.5,1.7,0,7);g.fill();
     if(o.eyeClosed){g.strokeStyle='#2a2830';g.lineWidth=1.2;g.beginPath();g.moveTo(8.6,-29.2);g.quadraticCurveTo(11,-27.8,13.4,-29.2);g.stroke()}
     else{g.fillStyle='#111';g.beginPath();g.arc(12,-30.4,1.05,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(10.3,-30.6,.6,0,7);g.fill()}}
-  g.restore();
+}
+/* la tête seule, détachée : centrée sur (x,y), avec un bout de cou et de la paille */
+function drawRaymondHead(g,x,y,o){
+  o=o||{};const d=[0,2,3,5,7][Math.max(0,Math.min(4,o.wear||0))];
+  g.save();g.translate(x,y);g.rotate(o.rot||0);g.scale((o.f||1)*(o.size||1),o.size||1);g.translate(-9.5,28);
+  g.lineCap='round';
+  for(let k=0;k<7;k++){const ax=6+k*1.2,ang=Math.PI/2+(k-3)*.3;g.strokeStyle=k%2?'#e0b04e':'#b8862e';g.lineWidth=1.1;g.beginPath();g.moveTo(ax,-23);g.lineTo(ax+Math.cos(ang)*4,-23+Math.sin(ang)*4);g.stroke()}
+  const ng=g.createLinearGradient(4,-28,10,-16);ng.addColorStop(0,'#7a5d9e');ng.addColorStop(.55,'#4f9a7a');ng.addColorStop(1,'#8d96a8');
+  g.save();g.beginPath();g.rect(-30,-40,60,17);g.clip();g.fillStyle=ng;g.beginPath();g.ellipse(7,-21,6,7,.3,0,7);g.fill();g.restore();
+  raymondHead(g,d,o);
   g.restore();
 }
 function drawCat(g,x,y,f,t,walk,o){
@@ -2696,17 +2721,19 @@ function drawDecor(g,d,t){
     g.fillStyle='#4a3a2a';g.fillRect(d.x-2,d.y-4,4,13*T-d.y+4);g.fillRect(d.x-2,d.y-6,16,3);
     g.strokeStyle='#2a2420';g.lineWidth=1;g.beginPath();g.moveTo(d.x+12,d.y-4);g.lineTo(d.x+12,d.y+2);g.stroke();
     g.fillStyle='#2a2420';rr(g,d.x+5,d.y+2,14,18,3);g.fill();g.fillStyle='rgba(255,210,130,'+(.85+Math.sin(t*9+d.x)*.08)+')';g.fillRect(d.x+8,d.y+5,8,12);
-  }else if(d.t==='sign'){
-    g.font='12px '+F_DISP;const w=g.measureText(d.text).width+28;
-    g.strokeStyle='#2a221c';g.lineWidth=1;g.beginPath();g.moveTo(d.x-w/2+20,d.y-14);g.lineTo(d.x,d.y-60);g.lineTo(d.x+w/2-20,d.y-14);g.stroke();
-    g.fillStyle='#24452f';rr(g,d.x-w/2,d.y-14,w,26,3);g.fill();g.strokeStyle='#e9dfc7';g.lineWidth=1;rr(g,d.x-w/2+3,d.y-11,w-6,20,2);g.stroke();
-    g.fillStyle='#e9dfc7';g.textAlign='center';g.fillText(d.text,d.x,d.y+4);
-  }else if(d.t==='board'){
+  }else if(d.t==='sign'||d.t==='board'){
     if(!d.text)return;
-    g.font='11px '+F_DISP;const w=g.measureText(d.text).width+24;
-    g.fillStyle='#4a3a2a';g.fillRect(d.x-w/2+10,d.y+6,4,2*T-6);g.fillRect(d.x+w/2-14,d.y+6,4,2*T-6);
-    g.fillStyle='#e9dfc7';rr(g,d.x-w/2,d.y-14,w,24,2);g.fill();g.strokeStyle='#a8322d';g.lineWidth=2;rr(g,d.x-w/2+3,d.y-11,w-6,18,2);g.stroke();
-    g.fillStyle='#2a2420';g.textAlign='center';g.fillText(d.text,d.x,d.y+2);
+    // titre en grand, précision en petit dessous
+    const [main,sub]=d.text.split('|');const sign=d.t==='sign';
+    g.font=(sign?'13px ':'12px ')+F_DISP;const w1=g.measureText(main).width;
+    g.font='italic 10px '+F_BODY;const w2=sub?g.measureText(sub).width:0;
+    const w=Math.max(w1,w2)+26,h=sub?34:24,top=d.y-14;
+    if(sign){g.strokeStyle='#2a221c';g.lineWidth=1;g.beginPath();g.moveTo(d.x-w/2+18,top);g.lineTo(d.x,top-44);g.lineTo(d.x+w/2-18,top);g.stroke();
+      g.fillStyle='#24452f';rr(g,d.x-w/2,top,w,h,3);g.fill();g.strokeStyle='rgba(233,223,199,.85)';g.lineWidth=1;rr(g,d.x-w/2+3,top+3,w-6,h-6,2);g.stroke();g.fillStyle='#e9dfc7'}
+    else{g.fillStyle='#4a3a2a';g.fillRect(d.x-w/2+10,top+h,4,2*T-h+14);g.fillRect(d.x+w/2-14,top+h,4,2*T-h+14);
+      g.fillStyle='#e9dfc7';rr(g,d.x-w/2,top,w,h,2);g.fill();g.strokeStyle='#a8322d';g.lineWidth=2;rr(g,d.x-w/2+3,top+3,w-6,h-6,2);g.stroke();g.fillStyle='#2a2420'}
+    g.textAlign='center';g.font=(sign?'13px ':'12px ')+F_DISP;g.fillText(main,d.x,top+(sub?15:16));
+    if(sub){g.font='italic 10px '+F_BODY;g.globalAlpha*=.85;g.fillText(sub,d.x,top+27);g.globalAlpha/=.85}
   }else if(d.t==='mammoth'){
     drawMammoth(g,d.x,d.floor||d.y+100,t);
   }else if(d.t==='clock'){
@@ -3468,28 +3495,40 @@ function drawFinaleCard(ct){
   if(ct<1.8){ctx.fillStyle='rgba(0,0,0,'+(1-ct/1.8)+')';ctx.fillRect(0,0,W,H)}
   if(ct>10){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+Math.min(.45,(ct-10)*.3)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer',W-24,H-16)}
 }
-/* carte : Raymond perd la tête (la tête saute, roule ; la paille s'échappe du cou) */
+/* carte : Raymond perd la tête. Il tremble, la couture du cou lâche, la tête saute,
+   retombe et roule ; le corps reste debout un instant, puis s'effondre sur le côté. */
 function drawHeadlessCard(ct){
-  const fx=W/2-40,fy=300,sz=3.4,neck=fy-22*sz;
+  const fx=W/2-60,fy=290,sz=3.4,gyb=fy;
   ctx.save();
-  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(fx+60,fy+4,170,12,0,0,7);ctx.fill();
-  const pop=ct>.8,tt=Math.max(0,ct-.8);
-  const shake=pop?0:Math.sin(ct*40)*2*ct;
-  // corps sans tête, qui s'affaisse
-  const slump=pop?Math.min(1,tt/1.2):0;
-  ctx.save();ctx.beginPath();ctx.rect(0,neck+slump*10,W,H);ctx.clip();
-  drawRaymond(ctx,fx+shake,fy+slump*4,{f:1,t:0,walk:0,wear:4,size:sz,rot:slump*.12,sy:1-slump*.08});ctx.restore();
+  // sol et ombre
+  ctx.fillStyle='rgba(233,223,199,.06)';ctx.fillRect(150,gyb,W-300,1.5);
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.ellipse(fx,gyb+3,58,8,0,0,7);ctx.fill();
+  const POP=1.1,tt=ct-POP;
+  // tremblement avant
+  const shake=tt<0?Math.sin(ct*48)*Math.min(1,ct)*1.6:0;
+  // le corps : debout, puis bascule sur le côté (pivot aux pattes)
+  const fallT=tt-1.5,fall=fallT>0?Math.min(1,fallT/.55):0,fe=fall*fall*(3-2*fall);
+  const bounce=fall>=1?Math.sin(Math.min(1,(fallT-.55)/.25)*Math.PI)*.06:0;
+  if(tt<0)drawRaymond(ctx,fx+shake,gyb,{f:1,t:0,walk:0,wear:4,size:sz,eyeClosed:false});
+  else{const rr2=-fe*Math.PI+bounce;drawRaymond(ctx,fx,gyb-26*sz*Math.pow(Math.sin(rr2/2),2),{f:1,t:0,walk:0,wear:4,size:sz,noHead:true,straw:Math.min(1.6,.4+tt*2),rot:rr2})}
+  // fil qui lâche
+  if(tt<0&&ct>.6){ctx.strokeStyle='rgba(233,223,199,'+(ct-.6)*1.6+')';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fx+22*sz/3.4*3,gyb-23*sz);ctx.lineTo(fx+30*sz/3.4*3,gyb-27*sz);ctx.stroke()}
   // la tête
-  let hx=fx+shake,hy=0,hr=0;
-  if(pop){const fl=Math.min(tt,.75);hx=fx+180*fl;hy=-(520*fl-1100*fl*fl/2);if(tt>.75){const r=Math.min(tt-.75,1.6);hx=fx+135+150*(1-Math.exp(-r*2.2));hy=0}hr=(hx-fx)/285*(Math.PI*2+.45)}
-  ctx.save();ctx.translate(hx+10*sz,neck-8*sz+hy+ (pop&&tt>.75?22*sz:0));ctx.rotate(hr);ctx.translate(-(fx+10*sz),-(neck-8*sz));
-  ctx.beginPath();ctx.rect(0,0,W,neck);ctx.clip();
-  drawRaymond(ctx,fx,fy,{f:1,t:0,walk:0,wear:4,size:sz,eyeClosed:pop&&tt>1.8});ctx.restore();
-  // paille qui jaillit du cou
-  if(pop){const R=mulberry(5);ctx.strokeStyle='#e0b04e';ctx.lineCap='round';
-    for(let k=0;k<26;k++){const a=-Math.PI/2+(R()-.5)*1.6,v=120+R()*200,life=Math.min(tt,1.1+R()*.6),px=fx+4*sz+Math.cos(a)*v*life,py=neck+slump*10+Math.sin(a)*v*life+420*life*life;
-      if(py>fy+2)continue;ctx.lineWidth=1.6+R();ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+Math.cos(a+R())*8,py+Math.sin(a+R())*8);ctx.stroke()}
-    ctx.lineWidth=2;for(let k=0;k<9;k++){const ax=fx+2*sz+(k-4)*3;ctx.beginPath();ctx.moveTo(ax,neck+slump*10+2);ctx.lineTo(ax+(k-4)*2.2,neck+slump*10-8-((k*7)%6));ctx.stroke()}}
+  if(tt>=0){
+    const hx0=fx+9.5*sz,hy0=gyb-28*sz,groundY=gyb-6*sz;
+    let hx,hy,rot;
+    if(tt<.62){const u=tt;hx=hx0+210*u;hy=hy0-(620*u-1700*u*u/2)*1;rot=u*9}
+    else{const u0=.62,x1=hx0+210*u0,y1=Math.min(groundY,hy0-(620*u0-1700*u0*u0/2));const r=tt-u0,d=1-Math.exp(-r*2.6);
+      const by=Math.abs(Math.sin(Math.min(r,.6)/.6*Math.PI))*Math.max(0,.6-r)*40;
+      hx=x1+120*d;hy=Math.min(groundY,lerp(y1,groundY,Math.min(1,r*6)))-by;rot=lerp(u0*9,Math.PI*4+.3,d)}
+    // arrêt : la tête finit posée, l'œil-bouton vers nous
+    ctx.fillStyle='rgba(0,0,0,'+(tt>.62?.35:.15)+')';ctx.beginPath();ctx.ellipse(hx,groundY+6*sz,20,4,0,0,7);ctx.fill();
+    drawRaymondHead(ctx,hx,hy,{wear:4,size:sz,rot});
+    // brins de paille éjectés
+    const R=mulberry(9);ctx.lineCap='round';
+    for(let k=0;k<22;k++){const a=-Math.PI/2+(R()-.5)*1.4,v=160+R()*260,life=Math.min(tt,1.2),px=fx+6.4*sz+Math.cos(a)*v*life,py=gyb-23*sz+Math.sin(a)*v*life+700*life*life,rr=R()*6+tt*R()*8;
+      const yy=Math.min(py,gyb-1);ctx.save();ctx.translate(px,yy);ctx.rotate(yy>=gyb-1?.1*k:rr);ctx.strokeStyle=k%3?'#e0b04e':'#b8862e';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(-4,0);ctx.lineTo(4,0);ctx.stroke();ctx.restore()}
+  }
   ctx.restore();
 }
 /* bilan de fin de mission : points par niveau */

@@ -48,9 +48,10 @@ let grainPat=null;
 
 /* ---------- sauvegarde ---------- */
 const SAVE_KEY='a-plume-perdue-v2';
-const START_LIVES=2,MAX_WEAR=4;
+const START_LIVES=0,MAX_WEAR=4;
 let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
+if(S.v!==4){S.v=4;S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{}};try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
 /* points : 10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute */
 function levelPoints(o){return Math.max(0,o.corn*10+(o.medal?100:0)+(o.deaths===0?50:0)-o.deaths*15)}

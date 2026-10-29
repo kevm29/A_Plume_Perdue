@@ -29,7 +29,7 @@ La progression est sauvegardée dans le navigateur.
 ## Mécaniques
 
 - **L'état de Raymond (5 crans).** Chaque chute l'abîme d'un cran et le renvoie au dernier cartel : paille qui dépasse, pansement, bandeau, puis un bouton à la place de l'œil. Chaque touffe de paille ramassée le répare d'un cran. Une chute de plus au cinquième cran, et il perd la tête.
-- **Les vies.** Raymond commence avec 2 vies. Chaque médaille trouvée en donne une de plus (une seule fois par niveau). Une chute le renvoie au dernier cartel, ou au début du niveau. Quand il perd la tête, une vie le ramène au début de la mission (ses 4 niveaux), recousu à neuf. Sans vie, tout recommence depuis l'introduction.
+- **Les vies.** Raymond commence sans aucune vie en réserve : la première médaille trouvée devient vite vitale. Chaque médaille trouvée en donne une de plus (une seule fois par niveau). Une chute le renvoie au dernier cartel, ou au début du niveau. Quand il perd la tête, une vie le ramène au début de la mission (ses 4 niveaux), recousu à neuf. Sans vie, tout recommence depuis l'introduction.
 - **Bilan de mission.** À la fin de chaque mission, un tableau donne les points de chaque niveau : 10 par touffe de paille, 100 la médaille, 50 sans aucune chute, 15 de moins par chute.
 - **Les épingles.** Mourir sur des épingles y laisse un tas de paille, sur lequel on peut ensuite marcher.
 - **Les cartels** (panneaux « ART. » dehors) servent de points de sauvegarde.

@@ -212,28 +212,40 @@ function drawFinaleCard(ct){
   if(ct<1.8){ctx.fillStyle='rgba(0,0,0,'+(1-ct/1.8)+')';ctx.fillRect(0,0,W,H)}
   if(ct>10){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+Math.min(.45,(ct-10)*.3)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer',W-24,H-16)}
 }
-/* carte : Raymond perd la tête (la tête saute, roule ; la paille s'échappe du cou) */
+/* carte : Raymond perd la tête. Il tremble, la couture du cou lâche, la tête saute,
+   retombe et roule ; le corps reste debout un instant, puis s'effondre sur le côté. */
 function drawHeadlessCard(ct){
-  const fx=W/2-40,fy=300,sz=3.4,neck=fy-22*sz;
+  const fx=W/2-60,fy=290,sz=3.4,gyb=fy;
   ctx.save();
-  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(fx+60,fy+4,170,12,0,0,7);ctx.fill();
-  const pop=ct>.8,tt=Math.max(0,ct-.8);
-  const shake=pop?0:Math.sin(ct*40)*2*ct;
-  // corps sans tête, qui s'affaisse
-  const slump=pop?Math.min(1,tt/1.2):0;
-  ctx.save();ctx.beginPath();ctx.rect(0,neck+slump*10,W,H);ctx.clip();
-  drawRaymond(ctx,fx+shake,fy+slump*4,{f:1,t:0,walk:0,wear:4,size:sz,rot:slump*.12,sy:1-slump*.08});ctx.restore();
+  // sol et ombre
+  ctx.fillStyle='rgba(233,223,199,.06)';ctx.fillRect(150,gyb,W-300,1.5);
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.ellipse(fx,gyb+3,58,8,0,0,7);ctx.fill();
+  const POP=1.1,tt=ct-POP;
+  // tremblement avant
+  const shake=tt<0?Math.sin(ct*48)*Math.min(1,ct)*1.6:0;
+  // le corps : debout, puis bascule sur le côté (pivot aux pattes)
+  const fallT=tt-1.5,fall=fallT>0?Math.min(1,fallT/.55):0,fe=fall*fall*(3-2*fall);
+  const bounce=fall>=1?Math.sin(Math.min(1,(fallT-.55)/.25)*Math.PI)*.06:0;
+  if(tt<0)drawRaymond(ctx,fx+shake,gyb,{f:1,t:0,walk:0,wear:4,size:sz,eyeClosed:false});
+  else{const rr2=-fe*Math.PI+bounce;drawRaymond(ctx,fx,gyb-26*sz*Math.pow(Math.sin(rr2/2),2),{f:1,t:0,walk:0,wear:4,size:sz,noHead:true,straw:Math.min(1.6,.4+tt*2),rot:rr2})}
+  // fil qui lâche
+  if(tt<0&&ct>.6){ctx.strokeStyle='rgba(233,223,199,'+(ct-.6)*1.6+')';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fx+22*sz/3.4*3,gyb-23*sz);ctx.lineTo(fx+30*sz/3.4*3,gyb-27*sz);ctx.stroke()}
   // la tête
-  let hx=fx+shake,hy=0,hr=0;
-  if(pop){const fl=Math.min(tt,.75);hx=fx+180*fl;hy=-(520*fl-1100*fl*fl/2);if(tt>.75){const r=Math.min(tt-.75,1.6);hx=fx+135+150*(1-Math.exp(-r*2.2));hy=0}hr=(hx-fx)/285*(Math.PI*2+.45)}
-  ctx.save();ctx.translate(hx+10*sz,neck-8*sz+hy+ (pop&&tt>.75?22*sz:0));ctx.rotate(hr);ctx.translate(-(fx+10*sz),-(neck-8*sz));
-  ctx.beginPath();ctx.rect(0,0,W,neck);ctx.clip();
-  drawRaymond(ctx,fx,fy,{f:1,t:0,walk:0,wear:4,size:sz,eyeClosed:pop&&tt>1.8});ctx.restore();
-  // paille qui jaillit du cou
-  if(pop){const R=mulberry(5);ctx.strokeStyle='#e0b04e';ctx.lineCap='round';
-    for(let k=0;k<26;k++){const a=-Math.PI/2+(R()-.5)*1.6,v=120+R()*200,life=Math.min(tt,1.1+R()*.6),px=fx+4*sz+Math.cos(a)*v*life,py=neck+slump*10+Math.sin(a)*v*life+420*life*life;
-      if(py>fy+2)continue;ctx.lineWidth=1.6+R();ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+Math.cos(a+R())*8,py+Math.sin(a+R())*8);ctx.stroke()}
-    ctx.lineWidth=2;for(let k=0;k<9;k++){const ax=fx+2*sz+(k-4)*3;ctx.beginPath();ctx.moveTo(ax,neck+slump*10+2);ctx.lineTo(ax+(k-4)*2.2,neck+slump*10-8-((k*7)%6));ctx.stroke()}}
+  if(tt>=0){
+    const hx0=fx+9.5*sz,hy0=gyb-28*sz,groundY=gyb-6*sz;
+    let hx,hy,rot;
+    if(tt<.62){const u=tt;hx=hx0+210*u;hy=hy0-(620*u-1700*u*u/2)*1;rot=u*9}
+    else{const u0=.62,x1=hx0+210*u0,y1=Math.min(groundY,hy0-(620*u0-1700*u0*u0/2));const r=tt-u0,d=1-Math.exp(-r*2.6);
+      const by=Math.abs(Math.sin(Math.min(r,.6)/.6*Math.PI))*Math.max(0,.6-r)*40;
+      hx=x1+120*d;hy=Math.min(groundY,lerp(y1,groundY,Math.min(1,r*6)))-by;rot=lerp(u0*9,Math.PI*4+.3,d)}
+    // arrêt : la tête finit posée, l'œil-bouton vers nous
+    ctx.fillStyle='rgba(0,0,0,'+(tt>.62?.35:.15)+')';ctx.beginPath();ctx.ellipse(hx,groundY+6*sz,20,4,0,0,7);ctx.fill();
+    drawRaymondHead(ctx,hx,hy,{wear:4,size:sz,rot});
+    // brins de paille éjectés
+    const R=mulberry(9);ctx.lineCap='round';
+    for(let k=0;k<22;k++){const a=-Math.PI/2+(R()-.5)*1.4,v=160+R()*260,life=Math.min(tt,1.2),px=fx+6.4*sz+Math.cos(a)*v*life,py=gyb-23*sz+Math.sin(a)*v*life+700*life*life,rr=R()*6+tt*R()*8;
+      const yy=Math.min(py,gyb-1);ctx.save();ctx.translate(px,yy);ctx.rotate(yy>=gyb-1?.1*k:rr);ctx.strokeStyle=k%3?'#e0b04e':'#b8862e';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(-4,0);ctx.lineTo(4,0);ctx.stroke();ctx.restore()}
+  }
   ctx.restore();
 }
 /* bilan de fin de mission : points par niveau */
