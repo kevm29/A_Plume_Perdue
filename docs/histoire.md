@@ -14,7 +14,7 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 
 ## Le trajet
 
-| Monde | Lieu | Niveaux |
+| Étape | Lieu | Niveaux |
 |---|---|---|
 | 1 | Vittoncourt, le musée qui ferme | La vitrine · La galerie des insectes · La salle du mammouth · La loge du gardien |
 | 2 | Verdun, les champs de l'ancien front | Les coquelicots · Les éoliennes · Le drone · La tranchée oubliée |
@@ -35,7 +35,7 @@ Ensuite vient la cinématique jouée dans 1-1 : le voleur, sa lampe torche, le c
 
 ## La lettre, morceau par morceau
 
-Chaque niveau terminé révèle un fragment. Les mondes 1 et 2 sont la lettre « méchante », le monde 3 révèle les ratures et le monde 4 le dos de la lettre, que la pluie fait apparaître. Le monde 5 dit la vérité.
+Chaque niveau terminé révèle un fragment. Les étapes 1 et 2 sont la lettre « méchante », l'étape 3 révèle les ratures et l'étape 4 le dos de la lettre, que la pluie fait apparaître. L'étape 5 dit la vérité.
 
 | # | Fragment | Commentaire de Raymond |
 |---|---|---|
@@ -53,32 +53,33 @@ Chaque niveau terminé révèle un fragment. Les mondes 1 et 2 sont la lettre «
 | 12 | Je ne reviendrai ~~peut-être~~ pas. | *(Raymond ne dit rien.)* |
 | 13 | *(au dos)* P.-S. Ne lis pas le dos de cette lettre, Marguerite. Brûle-la avant. | Je suis un pigeon militaire. Je lis tout. |
 | 14 | Tout ce qui est écrit de l'autre côté est faux. Je mens mal, tu le sais, comme je danse. | Et moi qui l'ai traité de goujat pendant deux cents kilomètres. |
-| 15 | Demain à l'aube, nous montons au fort de Vaux. Le capitaine dit qu'on en redescendra. Le capitaine ment mieux que moi. | Je me souviens, maintenant. Je ne suis jamais arrivé. |
+| 15 | Demain à l'aube, nous montons au fort de Vaux. Le capitaine dit qu'on en redescendra. Le capitaine ment mieux que moi. | Ça me revient par morceaux : la fumée, le gaz, des mains qui me lancent dans le ciel… Et puis plus rien. Un trou noir. Et la remise. |
 | 16 | Je confie cette lettre au pigeon de ton père, celui qui a l'œil de travers. Si elle t'arrive, c'est qu'au moins l'un de nous deux s'en est sorti. | L'œil de travers. C'est moi. |
 | 17 | Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Veuve à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid. | Ce n'était pas une gifle. C'était un cadeau mal emballé. |
 | 18 | Ris fort, Marguerite. Ris trop fort à tous les bals. Danse avec lui, même s'il danse aussi mal que moi. | Danser mal à deux, c'est déjà danser. |
 | 19 | Ta tarte aux prunes était la meilleure du canton. Garde le chien. Et donne du grain au pigeon, il l'aura mérité. | Du grain. On m'avait promis du grain. |
 | 20 | Je t'aime. Je t'ai toujours aimée. Lucien. | Il ne reste plus qu'à la lui remettre. |
 
-## Transitions entre les mondes
+## Transitions entre les étapes
 
 - **1 → 2.** Raymond s'échappe par la fenêtre de la loge. Il vole mal. Il vole quand même. Direction l'ouest : le pigeonnier Vasseur, à Villemareuil. Il a décidé de livrer la gifle.
 - **2 → 3.** Il quitte Verdun avec un trou de mémoire de la taille d'un fort. Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région. C'est un détour. Il ne l'admettra jamais.
 - **3 → 4.** Les ratures l'ont rendu silencieux. Une route immense, toute droite vers l'ouest, sans chevaux ni soldats. Il pleut des cordes.
 - **4 → 5.** L'orage est passé. La lettre est trempée, et Raymond sait maintenant ce qui est écrit au dos. Le village est en fête. Personne n'attend de pigeon.
 
-Entre deux mondes, une carte « RAVITAILLEMENT » donne autant de vies que de médailles trouvées dans le monde précédent.
+Entre deux étapes, une carte « RAVITAILLEMENT » donne autant de vies que de médailles trouvées pendant l'étape précédente.
 
 ## La fin
 
-1. La tombe : **MARGUERITE GARNIER, née Vasseur, 1897 – 1989. « Elle riait fort. »**
-2. Elle a épousé le fils Garnier, comme Lucien le voulait, sans avoir jamais lu la lettre.
+1. La tombe : **FAMILLE GARNIER · Joseph GARNIER, 1893 – 1958 · Marguerite GARNIER, née Vasseur, 1897 – 1989.**
+2. Le fils Garnier s'appelait Joseph. Elle l'a épousé, comme Lucien le voulait. Elle n'a jamais reçu la lettre.
 3. La banderole de la fête : **COMMUNE DE VILLEMAREUIL · 110e ANNIVERSAIRE DE LA BATAILLE DE VERDUN · 1916 – 2026.**
 4. Raymond fait le calcul. Deux fois. « 2026. Je suis… légèrement en retard. »
-5. Il dépose la lettre sur la pierre. Mission accomplie. Pour la première fois depuis 1916, il ferme les yeux de son plein gré.
-6. Coincée sous la pierre, une enveloppe jaunie : « Au soldat Lucien Marchal, 151e régiment d'infanterie, Verdun. » Jamais envoyée.
-7. Le règlement est formel.
-8. FIN. *Peut-être un jour : Retour à l'envoyeur.*
+5. Il voudrait pleurer. À l'empaillage, on lui a retiré ça aussi.
+6. Il dépose la lettre sur la pierre. Mission accomplie. Le pigeonnier Vasseur n'existe plus : il n'a nulle part où rentrer.
+7. Alors il reste là, sur la tombe. Il ferme les yeux, de son plein gré cette fois.
+8. Dernier plan, sans texte : Raymond est couché sur la dalle, la tête sur la lettre. La caméra glisse lentement vers le pot de chrysanthèmes au pied de la tombe. Contre le pot, une enveloppe jaunie : « Au soldat Lucien Marchal, 151e régiment d'infanterie, Verdun ». La réponse de Marguerite, jamais envoyée. Raymond ne l'a pas vue.
+9. FIN. Merci d'avoir porté le courrier.
 
 ## À retravailler (prévu)
 

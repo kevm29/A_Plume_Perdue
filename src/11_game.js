@@ -55,7 +55,7 @@ function die(kind,tiles){
   G.shake=10;SFX.death();
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
   puff(cx,cy,30,true);puff(cx,cy,10,false);parts.push({type:'ring',x:cx,y:cy,life:0,max:.45});
-  if(kind==='cat'){meow(.9,true);bubble(cx,cy-30,'MIAM.','#c7742e')}
+  if(kind==='cat'){meow(.9,true);}
   if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTiles(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
@@ -137,6 +137,14 @@ function stepPlay(dt){
   }
   for(const c of L.rats){
     c.t+=dt;c.vy=Math.min(MAXFALL,c.vy+GRAV*dt);
+    if(c.kind==='rat'){
+      // le rat voit le pigeon devant lui : il fonce
+      const dx=pcx-(c.x+c.w/2),dy=Math.abs(pcy-(c.y+c.h/2)),dir=Math.sign(c.vx)||1;
+      const sees=!P.dead&&!G.cut&&dy<70&&Math.abs(dx)<320&&Math.sign(dx)===dir;
+      if(sees&&!(c.alert>0)&&!G.sim)SFX.squeak();
+      c.alert=sees?.9:Math.max(0,(c.alert||0)-dt);
+      c.vx=dir*(c.base||95)*(c.alert>0?2.2:1);
+    }
     const spd=Math.abs(c.vx)||95;
     if(moveX(c,c.vx*dt))c.vx=-(c.lastDir||1)*spd;
     c.lastDir=Math.sign(c.vx)||c.lastDir||1;
@@ -205,8 +213,8 @@ function stepPlay(dt){
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');
-  if(K.type==='cat'){K.state='wake';K.wakeT=.9;K.meowT=2.4;if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),250)}bubble(K.x+K.w/2,K.y-20,'MRRAOU ?!','#c7742e');say("Bijou est réveillé. Règlement, article 3 : en cas de chat, courir.",3.4)}
-  else{K.state=K.type==='buse'?'hover':'chase';K.pt=0;K.meowT=1.5;if(K.type==='buse'&&!G.sim)SFX.screech();bubble(K.x+K.w/2,K.y-16,K.type==='buse'?'KRIIII !':'BZZZ',K.type==='buse'?'#6a4a2a':'#2a2e36');say(L.def.chaseQuip||'',3.6)}
+  if(K.type==='cat'){K.state='wake';K.wakeT=.9;K.meowT=2.4;if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),250)}say("Bijou est réveillé. Règlement, article 3 : en cas de chat, courir.",3.4)}
+  else{K.state=K.type==='buse'?'hover':'chase';K.pt=0;K.meowT=1.5;if(K.type==='buse'&&!G.sim)SFX.screech();say(L.def.chaseQuip||'',3.6)}
 }
 function stepChaser(K,dt,pcx,pcy){
   K.t+=dt;
@@ -238,7 +246,7 @@ function stepChaser(K,dt,pcx,pcy){
   if(K.state==='hover'){
     const tx=pcx-170*P.facing-K.w/2,ty=Math.max(-20,P.y-140),dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1,sp=Math.min(330,d*3);
     K.x+=dx/d*sp*dt;K.y+=dy/d*sp*dt;K.f=pcx>K.x?1:-1;
-    if(K.pt>3.0&&!P.dead){K.state='warn';K.pt=0;if(!G.sim)SFX.screech();bubble(K.x+K.w/2,K.y-10,'KRIIII !','#6a4a2a')}
+    if(K.pt>3.0&&!P.dead){K.state='warn';K.pt=0;if(!G.sim)SFX.screech();}
   }else if(K.state==='warn'){K.y-=40*dt;if(K.pt>.6){K.state='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*520;K.vy=dy/d*520;K.f=K.vx>=0?1:-1}}
   else if(K.state==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.9||K.y>ROWS*T-60){K.state='hover';K.pt=0}}
 }
@@ -259,23 +267,23 @@ function gameOver(){
   G.cardsDone=()=>{G.cutSeen=true;startLevel(w*4)};setSong('title');
 }
 /* sons des bêtes et ambiances, une fois par image */
-const WALK_CRY={rat:['kwik !',()=>SFX.squeak()],boar:['GRONK',()=>tone(110,.3,'sawtooth',.12,80)],pigeon:['rou-rou',()=>SFX.coo()],hedgehog:['snif snif',()=>noise(.08,3000,.12,'bandpass',0,3)],goose:['KWAAK !',()=>SFX.honk()]};
+const WALK_CRY={rat:['kwik !',()=>SFX.squeak()],boar:[null,()=>SFX.grunt()],piglet:[null,()=>SFX.grunt(true)],pigeon:['rou-rou',()=>SFX.coo()],hedgehog:['snif snif',()=>noise(.08,3000,.12,'bandpass',0,3)],goose:['KWAAK !',()=>SFX.honk()]};
 const FLY_CRY={crow:['KRA !',()=>SFX.caw()],gull:['KYAA',()=>tone(1500,.3,'sawtooth',.06,900)],bag:['frrt',()=>SFX.bag()],wasp:['bzzz',()=>SFX.buzz()],bat:['tsiii',()=>tone(4200,.12,'sine',.05,3600)],moth:[null,()=>SFX.flutter()]};
 function animalSounds(dt){
   const pcx=P.x+P.w/2,pcy=P.y+P.h/2;
-  for(const c of L.rats){c.sq-=dt;const d=Math.hypot(c.x-pcx,c.y-pcy);if(d<420&&c.sq<=0){const cr=WALK_CRY[c.kind];if(cr){cr[1]();bubble(c.x+c.w/2,c.y-10,cr[0],'#4a3e36')}c.sq=2.2+rnd()*2.6}}
-  for(const m of L.moths){m.fl-=dt;if(m.near&&m.fl<=0){const cr=FLY_CRY[m.kind];if(cr){cr[1]();if(cr[0]&&rnd()<.6)bubble(m.x,m.y-16,cr[0],'#2a2420')}m.fl=m.kind==='moth'?.32:1.6+rnd()}}
-  for(const b of L.bells){b.ring=Math.max(0,b.ring-dt*.5);b.ph+=dt;if(Math.abs(b.x-pcx)<420&&b.ring<=0&&rnd()<dt*.25){SFX.bell();b.ring=1;bubble(b.x,b.y-40,'DONG','#6a4a1a')}}
+  for(const c of L.rats){c.sq-=dt;const d=Math.hypot(c.x-pcx,c.y-pcy);if(d<420&&c.sq<=0){const cr=WALK_CRY[c.kind];if(cr)cr[1]();c.sq=2.2+rnd()*2.6}}
+  for(const m of L.moths){m.fl-=dt;if(m.near&&m.fl<=0){const cr=FLY_CRY[m.kind];if(cr)cr[1]();m.fl=m.kind==='moth'?.32:1.6+rnd()}}
+  for(const b of L.bells){b.ring=Math.max(0,b.ring-dt*.5);b.ph+=dt;if(Math.abs(b.x-pcx)<420&&b.ring<=0&&rnd()<dt*.25){SFX.bell();b.ring=1}}
   const K=L.chaser,th=L.th;
   if(K){
     const d=Math.hypot(K.x+K.w/2-pcx,K.y-pcy);
     if(K.type==='cat'){
       if(K.state==='sleep'){loopSet('purr',clamp(1-d/420,0,1)*.5*(.7+.3*Math.sin(G.t*2.2)));K.rrT-=dt;if(d<260&&K.rrT<=0){bubble(K.home.x+K.w/2+20,K.home.y-6,'rrrr…','#c7742e');K.rrT=1.8}}
       else loopSet('purr',0);
-      if(K.state==='chase'&&!P.dead){K.meowT-=dt;if(K.meowT<=0){if(rnd()<.3){SFX.hiss();bubble(K.x+K.w/2,K.y-16,'KSSSHH !','#c7742e')}else{meow(.8);bubble(K.x+K.w/2,K.y-16,pick(['MRRAOU !','MIAAAOU !','MRRR…']),'#c7742e')}K.meowT=2+rnd()*1.6}}
+      if(K.state==='chase'&&!P.dead){K.meowT-=dt;if(K.meowT<=0){if(rnd()<.3)SFX.hiss();else meow(.8);K.meowT=2+rnd()*1.6}}
     }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:0);
   }
-  const rain=th.weather==='rain'||th.weather==='storm'?(th.weather==='storm'?.3:.22):th.far==='storage'?.07:0;
+  const rain=0; // son de pluie retiré à la demande : seule la pluie visuelle reste
   loopSet('rain',rain);loopSet('wind',th.weather==='wind'?.32:th.weather==='storm'?.14:0);
   // éclairs d'orage
   if(th.weather==='storm'||th.weather==='rain'||th.far==='storage'){G.flashT-=dt;if(G.flashT<=0){G.flash=th.weather==='storm'?1:.7;const v=th.weather==='storm'?1:.6;setTimeout(()=>SFX.thunder(v),300+rnd()*700);G.flashT=th.weather==='storm'?3.5+rnd()*3.5:9+rnd()*7}}

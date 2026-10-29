@@ -38,29 +38,30 @@ const INTRO=[
   {t:"Un message est toujours attaché à sa patte.\nPersonne ne l'a jamais ouvert."},
   {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui n'a pas acheté de billet."}
 ];
-/* cartes jouées entre les mondes, après la dernière lettre du monde */
+/* cartes jouées entre les étapes, après la dernière lettre de l'étape */
 const WORLD_CARDS=[
   null,
-  [{title:"FIN DU PREMIER MONDE",t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
+  [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"MONDE 2 · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
+   {title:"DEUXIÈME ÉTAPE · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
   [{t:"Raymond quitte Verdun avec un trou de mémoire\nde la taille d'un fort."},
-   {title:"MONDE 3 · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
+   {title:"TROISIÈME ÉTAPE · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
-   {title:"MONDE 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
+   {title:"QUATRIÈME ÉTAPE · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
-   {title:"MONDE 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
+   {title:"DERNIÈRE ÉTAPE · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
 const ENDING=[
   {pic:'tomb'},
-  {t:"Elle a épousé le fils Garnier, comme Lucien le voulait.\nSans avoir jamais lu la lettre."},
+  {t:"Le fils Garnier s'appelait Joseph. Elle l'a épousé, comme Lucien le voulait.\nElle n'a jamais reçu la lettre."},
   {pic:'banner'},
   {t:"Raymond fait le calcul. Deux fois.\n« 2026. Je suis… légèrement en retard. »"},
-  {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nPour la première fois depuis 1916, il ferme les yeux de son plein gré."},
-  {t:"Puis il remarque, coincée sous la pierre, une enveloppe jaunie :\n« Au soldat Lucien Marchal, 151e régiment d'infanterie, Verdun. »\nJamais envoyée."},
-  {t:"Le règlement est formel."},
-  {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier.\n\nPeut-être un jour : Retour à l'envoyeur."}
+  {t:"Il voudrait pleurer.\nÀ l'empaillage, on lui a retiré ça aussi."},
+  {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nLe pigeonnier Vasseur n'existe plus. Il n'a nulle part où rentrer."},
+  {t:"Alors il reste là, sur la tombe.\nIl ferme les yeux. De son plein gré, cette fois."},
+  {pic:'finale',minT:10},
+  {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
 ];
 const GAMEOVER=[
   {title:"PLUS DE PAILLE",t:"Raymond s'effondre en un petit tas de paille.\nUn balayeur passe, hésite, et le remet sur ses pattes."}

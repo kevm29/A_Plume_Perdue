@@ -27,6 +27,7 @@ function parseLevel(i){
       case'C':L.cps.push({x:cx,y:y+T,on:false});L.avoid.push(cx);break;
       case'E':L.exit={x:x-6,y:y-T,w:T+12,h:2*T};L.avoid.push(cx,cx+60,cx-60);break;
       case'k':if(th.walker!=='none')L.rats.push({kind:th.walker,x:cx-15,y:y+T-16,w:30,h:16,vx:th.walker==='goose'?110:th.walker==='hedgehog'?60:95,vy:0,onGround:false,t:(c*.37)%9,sq:1+(c%3)});break;
+      case'r':if(th.walker!=='none'){const pk=th.walker==='boar'?'piglet':th.walker;L.rats.push({kind:pk,x:cx-11,y:y+T-12,w:22,h:12,vx:th.walker==='boar'?95:th.walker==='goose'?110:95,vy:0,onGround:false,t:(c*.53)%9,sq:2.5})}break;
       case'm':L.moths.push({kind:th.flyer,cx,cy,axis:'h',amp:95,sp:2.3+(mi%3)*.25,t:mi*1.3,x:cx,y:cy,fl:0});mi++;break;
       case'n':L.moths.push({kind:th.flyer,cx,cy,axis:'v',amp:72,sp:2.1+(mi%3)*.25,t:mi*1.3,x:cx,y:cy,fl:0});mi++;break;
       case'M':movers.push({c,r,axis:'h',w:2,kind:'dolly'});break;
@@ -43,7 +44,7 @@ function parseLevel(i){
       case'l':L.decor.push({t:th.outdoor?'lantern':'lamp',x:cx,y:cy});L.lights.push({x:cx,y:cy+14,r:250,i:.95,warm:1});break;
       case'g':L.decor.push({t:th.outdoor?'board':'sign',x:cx,y:cy,text:def.signs[si++]||''});break;
       case'u':L.dome={x:cx,floor:y+2*T};L.avoid.push(cx,cx-60,cx+60,cx-120);break;
-      case'w':L.decor.push({t:'mammoth',x:cx,y:cy});L.avoid.push(cx,cx-200,cx-100,cx+100,cx+200);break;
+      case'w':{let fr=r+1;while(fr<ROWS&&g[fr][c]!=='#')fr++;L.decor.push({t:'mammoth',x:cx,y:cy,floor:fr*T})}L.avoid.push(cx,cx-200,cx-100,cx+100,cx+200);break;
       case'c':L.decor.push({t:'clock',x:cx,y:cy});break;
       case'y':L.decor.push({t:'stove',x:cx,y:y+2*T});L.lights.push({x:cx,y:y+2*T-40,r:170,i:.8,warm:2});L.avoid.push(cx);break;
       case'b':L.decor.push({t:'bowl',x:cx,y:y+T});L.avoid.push(cx);break;
@@ -70,6 +71,8 @@ function parseLevel(i){
   }
   for(const m of L.movers){const span=Math.abs(m.a1-m.a0);const u=(m.axis==='h'?m.x-m.a0:m.a0-m.y)/Math.max(1,span);m.t=clamp(u,0,1)*span/m.speed}
   if(def.garlands)for(let x=200;x<L.wpx-200;x+=520){L.decor.push({t:'garland',x,y:130,w:400});for(let k=1;k<8;k+=2)L.lights.push({x:x+k*50,y:150+Math.sin(k/8*Math.PI)*40,r:110,i:.55,warm:1})}
+  if(def.flyers)def.flyers.forEach((o,i)=>{const m=L.moths[i];if(!m||!o)return;if(o.dy){m.cy+=o.dy;m.y=m.cy}if(o.amp)m.amp=o.amp;if(o.sp)m.sp=o.sp});
+  for(const c of L.rats)c.base=Math.abs(c.vx);
   return L;
 }
 

@@ -181,6 +181,12 @@ const SFX={
   whistle(){tone(1500,.55,'sine',.06,380)},
   hiss(){noise(.75,4200,.4,'highpass',0,.6)},
   squeak(){const n=2+(rnd()*2|0);for(let k=0;k<n;k++)tone(2600+rnd()*900,.06,'sine',.06,3500+rnd()*600,k*.1)},
+  grunt(small){
+    // grognement de sanglier : deux ou trois « hon » rauques et nasaux
+    const n=small?3:2+(rnd()*2|0),f0=small?260:92;
+    for(let k=0;k<n;k++){const ff=f0*(1+rnd()*.15);formantCry({delay:k*(small?.13:.2),d:small?.09:.16+rnd()*.05,v:small?.35:.75,wave:'sawtooth',f:[[0,ff*1.25],[.3,ff],[1,ff*.8]],vib:[38,ff*.18],
+      formants:[[[[0,small?900:420],[1,small?750:330]],4,1],[[[0,small?2100:1150],[1,small?1800:900]],6,.5]]})}
+  },
   caw(){for(let k=0;k<2;k++)formantCry({delay:k*.28,d:.22,v:.5,f:[[0,520],[1,380]],wave:'sawtooth',formants:[[[[0,1300],[1,1000]],3,1]]})},
   honk(){for(let k=0;k<2;k++)formantCry({delay:k*.22,d:.18,v:.55,f:[[0,330],[.5,370],[1,300]],wave:'square',formants:[[[[0,900],[1,1100]],4,1]]})},
   coo(){formantCry({d:.55,v:.35,wave:'sine',f:[[0,320],[.3,360],[.6,300],[1,280]],vib:[11,25],formants:[[[[0,400],[1,380]],2,1]]})},

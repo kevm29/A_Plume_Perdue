@@ -102,6 +102,15 @@ function drawWalker(g,kind,x,y,f,t){
     g.fillStyle='#4a3a2c';poly(g,[10,-18,24,-10,22,-4,10,-6]);g.fill();g.fillStyle='#6a5444';g.fillRect(21,-10,4,5);
     g.fillStyle='#efe6d3';poly(g,[19,-6,23,-10,21,-5]);g.fill();g.fillStyle='#111';g.beginPath();g.arc(14,-14,1.4,0,7);g.fill();
     g.fillStyle='#3a2c20';poly(g,[9,-18,12,-24,14,-17]);g.fill();
+  }else if(kind==='piglet'){
+    // marcassin : petit, roux, rayé comme un pyjama
+    g.strokeStyle='#3a2a1e';g.lineWidth=2.4;g.lineCap='round';g.beginPath();g.moveTo(-5,-4);g.lineTo(-5+st*2,0);g.moveTo(5,-4);g.lineTo(5-st*2,0);g.stroke();
+    g.fillStyle='#8a5e3a';g.beginPath();g.ellipse(-1,-8,10,6.5,0,0,7);g.fill();
+    g.fillStyle='#d8b688';for(const yy of[-12,-9,-6]){g.beginPath();g.ellipse(-2,yy,8,.9,0,0,7);g.fill()}
+    g.fillStyle='#8a5e3a';poly(g,[6,-12,15,-7,14,-3,6,-4]);g.fill();g.fillStyle='#b07a5a';g.fillRect(13,-7,3,3.4);
+    g.fillStyle='#111';g.beginPath();g.arc(9,-9,1.1,0,7);g.fill();
+    g.fillStyle='#6a4428';poly(g,[5,-12,7,-16,9,-12]);g.fill();
+    g.strokeStyle='#6a4428';g.lineWidth=1.2;g.beginPath();g.moveTo(-10,-9);g.quadraticCurveTo(-14,-11,-13,-14+Math.sin(t*9)*1.5);g.stroke();
   }else if(kind==='pigeon'){
     g.strokeStyle='#b4454c';g.lineWidth=2;g.beginPath();g.moveTo(-2,-8);g.lineTo(-2+st*3,0);g.moveTo(3,-8);g.lineTo(3-st*3,0);g.stroke();
     g.fillStyle='#7a8496';g.beginPath();g.ellipse(-1,-13,11,7.5,0,0,7);g.fill();g.fillStyle='#525a6c';poly(g,[-9,-15,-19,-18,-19,-11,-9,-10]);g.fill();
@@ -363,6 +372,123 @@ function drawMover(g,m){
   if(m.axis==='h'){const sp=(m.x*.12);for(const wx of[m.x+12,m.x+m.w-12]){g.fillStyle='#222';g.beginPath();g.arc(wx,m.y+m.h+4,5,0,7);g.fill();g.strokeStyle='#888';g.lineWidth=1;g.beginPath();g.moveTo(wx,m.y+m.h+4);g.lineTo(wx+Math.cos(sp)*4,m.y+m.h+4+Math.sin(sp)*4);g.stroke()}}
   g.restore();
 }
+/* statue de bronze du square : un notable en redingote, tourné vers l'ouest */
+function drawStatue(g,x,y,t){
+  const B='#4d6b61',BL='#7c9e8e',BD='#2e443e',V='#9cc2ae';
+  g.save();g.lineJoin='round';g.lineCap='round';
+  // plaque du socle
+  g.fillStyle='#6a5a3a';rr(g,x-26,y+18,52,22,2);g.fill();g.fillStyle='#8a7a52';rr(g,x-23,y+21,46,16,1);g.fill();
+  g.fillStyle='#3a2e1a';g.font='6px '+F_DISP;g.textAlign='center';g.fillText('À NOTRE BIENFAITEUR',x,y+28);g.fillText('1841 – 1907',x,y+35);
+  // dalle
+  g.fillStyle='#8c8a82';g.fillRect(x-30,y-8,60,8);g.fillStyle='#a8a69e';g.fillRect(x-30,y-8,60,2);
+  g.translate(x,y-8);
+  const sh=(c,pts)=>{g.fillStyle=c;poly(g,pts);g.fill()};
+  // jambe arrière, jambe avant
+  sh(BD,[-9,-44,-1,-44,-3,-6,-12,-6]);
+  sh(B,[0,-44,9,-44,10,-6,1,-6]);
+  g.fillStyle=BD;rr(g,-14,-7,12,7,3);g.fill();g.fillStyle=B;rr(g,0,-7,15,7,3);g.fill();
+  // bras arrière tenant le chapeau haut-de-forme
+  sh(BD,[-12,-84,-6,-82,-12,-52,-18,-54]);
+  g.fillStyle=BD;rr(g,-24,-56,13,15,2);g.fill();g.fillRect(-27,-43,19,3);
+  // redingote
+  g.fillStyle=B;g.beginPath();g.moveTo(-12,-88);g.lineTo(12,-88);g.lineTo(15,-60);g.quadraticCurveTo(18,-42,13,-34);g.lineTo(2,-40);g.lineTo(-3,-34);g.quadraticCurveTo(-18,-38,-17,-56);g.closePath();g.fill();
+  g.fillStyle=BL;g.beginPath();g.moveTo(8,-88);g.lineTo(12,-88);g.lineTo(15,-60);g.lineTo(11,-60);g.closePath();g.fill();
+  g.strokeStyle=BD;g.lineWidth=1.2;g.beginPath();g.moveTo(3,-86);g.lineTo(5,-64);g.lineTo(2,-40);g.stroke();
+  g.fillStyle=BD;for(const yy of[-78,-70,-62]){g.beginPath();g.arc(6,yy,1.3,0,7);g.fill()}
+  // col
+  sh(BL,[-5,-90,5,-90,7,-84,0,-80,-7,-84]);
+  // bras avant replié, main sur la poitrine avec un rouleau
+  g.strokeStyle=B;g.lineWidth=7;g.beginPath();g.moveTo(8,-84);g.lineTo(14,-68);g.lineTo(4,-70);g.stroke();
+  g.fillStyle=BL;g.save();g.translate(3,-72);g.rotate(-.5);rr(g,-3,-12,6,20,3);g.fill();g.fillStyle=BD;g.fillRect(-3,-12,6,2);g.restore();
+  g.fillStyle=B;g.beginPath();g.arc(6,-70,3.6,0,7);g.fill();
+  // tête de profil, favoris, regard vers la droite
+  g.fillStyle=B;g.beginPath();g.ellipse(1,-99,8,9.5,0,0,7);g.fill();
+  sh(B,[7,-102,12,-97,7,-95]);
+  g.fillStyle=BD;g.beginPath();g.ellipse(-3,-95,4,6,0,0,7);g.fill();
+  g.fillStyle=BD;g.beginPath();g.ellipse(0,-106,8,4,0,Math.PI,0);g.fill();
+  g.fillStyle=BL;g.beginPath();g.ellipse(4,-102,3,4,0,0,7);g.fill();
+  g.strokeStyle=BD;g.lineWidth=1;g.beginPath();g.moveTo(4,-100);g.lineTo(7,-100);g.stroke();
+  // coulures de vert-de-gris
+  g.strokeStyle='rgba(156,194,174,.55)';g.lineWidth=1.5;for(const[xx,y0,l]of[[-8,-80,24],[10,-56,14],[-2,-92,10],[12,-30,18]]){g.beginPath();g.moveTo(xx,y0);g.lineTo(xx+.5,y0+l);g.stroke()}
+  // fientes
+  g.fillStyle='#ecebe4';for(const[xx,yy,l]of[[-6,-108,5],[1,-109,7],[9,-88,8],[-11,-86,4]]){g.beginPath();g.ellipse(xx,yy,2.4,1.4,0,0,7);g.fill();g.fillRect(xx-.7,yy,1.4,l)}
+  // un pigeon vivant, perché sur la tête
+  g.save();g.translate(1,-110);const bob=Math.sin(t*2.2)>0.85?-1.5:0;
+  g.fillStyle='#8a92a2';g.beginPath();g.ellipse(0,-5,7,4.5,0,0,7);g.fill();
+  g.fillStyle='#6a7282';poly(g,[-6,-6,-13,-8,-12,-3,-6,-3]);g.fill();
+  g.fillStyle='#9aa2b2';g.beginPath();g.arc(-5+0,-10+bob,3.4,0,7);g.fill();
+  g.fillStyle='#4f8a7a';g.beginPath();g.arc(-4,-7.5,2.5,0,Math.PI);g.fill();
+  g.fillStyle='#e8a050';poly(g,[-8.2,-10+bob,-11,-9.4+bob,-8.2,-8.8+bob]);g.fill();
+  g.fillStyle='#111';g.beginPath();g.arc(-6,-10.6+bob,.8,0,7);g.fill();
+  g.strokeStyle='#b4454c';g.lineWidth=1;g.beginPath();g.moveTo(-1,-1);g.lineTo(-1,1);g.moveTo(2,-1);g.lineTo(2,1);g.stroke();
+  g.restore();
+  g.restore();
+}
+/* mammouth laineux en plâtre peint (reconstitution de musée) */
+function drawMammoth(g,x,floor,t){
+  const fy=floor-24,R=mulberry(313);
+  g.save();
+  // socle
+  g.fillStyle='#3a2416';g.fillRect(x-230,fy,470,24);g.fillStyle='#5a3a24';g.fillRect(x-238,fy-6,486,8);
+  g.fillStyle='rgba(255,230,180,.12)';g.fillRect(x-238,fy-6,486,2);
+  g.fillStyle='#d9cfb4';rr(g,x-70,fy+4,140,15,2);g.fill();g.fillStyle='#3a2a20';g.font='8px '+F_BODY;g.textAlign='center';
+  g.fillText('MAMMOUTH LAINEUX · reconstitution, plâtre, 1931',x,fy+14);
+  const fur='#5e3f27',furL='#7d5636',furD='#3f2918',far='#4a311e';
+  // pattes du fond
+  const leg=(lx,c)=>{g.fillStyle=c;g.beginPath();g.moveTo(lx-22,fy-130);g.lineTo(lx+22,fy-130);g.lineTo(lx+20,fy-8);g.quadraticCurveTo(lx,fy+2,lx-20,fy-8);g.closePath();g.fill();
+    g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(lx,fy-4,19,5,0,0,7);g.fill();
+    g.fillStyle='#cdbf9e';for(let k=-2;k<=2;k++){g.beginPath();g.ellipse(lx+k*7,fy-5,3,2.2,0,0,7);g.fill()}};
+  leg(x-120,far);leg(x+95,far);
+  // défense du fond
+  g.fillStyle='#bfb294';g.beginPath();g.moveTo(x+150,fy-168);g.bezierCurveTo(x+215,fy-140,x+262,fy-175,x+252,fy-235);g.lineTo(x+244,fy-232);g.bezierCurveTo(x+246,fy-185,x+210,fy-160,x+148,fy-180);g.closePath();g.fill();
+  // corps
+  const body=new Path2D();
+  body.moveTo(x-178,fy-118);
+  body.bezierCurveTo(x-200,fy-160,x-190,fy-215,x-150,fy-228);
+  body.bezierCurveTo(x-80,fy-250,x-10,fy-268,x+50,fy-276);
+  body.bezierCurveTo(x+95,fy-300,x+150,fy-292,x+165,fy-262);
+  body.bezierCurveTo(x+182,fy-232,x+186,fy-200,x+176,fy-176);
+  body.bezierCurveTo(x+168,fy-150,x+140,fy-130,x+120,fy-120);
+  body.bezierCurveTo(x+40,fy-100,x-90,fy-98,x-178,fy-118);
+  const gr=g.createLinearGradient(0,fy-290,0,fy-100);gr.addColorStop(0,furL);gr.addColorStop(.55,fur);gr.addColorStop(1,furD);
+  g.fillStyle=gr;g.fill(body);
+  g.save();g.clip(body);
+  // mèches de fourrure
+  g.lineCap='round';
+  for(let i=0;i<190;i++){const px=x-185+R()*370,py=fy-280+R()*170,l=8+R()*16;g.strokeStyle=R()<.5?'rgba(40,24,12,.35)':'rgba(150,108,70,.28)';g.lineWidth=1.4+R()*1.6;g.beginPath();g.moveTo(px,py);g.quadraticCurveTo(px+3,py+l*.6,px+1,py+l);g.stroke()}
+  // ombre du ventre, lumière du dos
+  g.fillStyle='rgba(20,10,4,.25)';g.beginPath();g.ellipse(x-10,fy-102,200,26,0,0,7);g.fill();
+  g.fillStyle='rgba(255,220,170,.10)';g.beginPath();g.ellipse(x,fy-262,150,18,-.12,0,7);g.fill();
+  g.restore();
+  // frange de poils sous le ventre
+  for(let i=0;i<60;i++){const px=x-170+i*5.2+R()*3,py=fy-112+Math.sin(i*.3)*6,l=12+R()*18;g.strokeStyle=i%3?fur:furD;g.lineWidth=3;g.beginPath();g.moveTo(px,py-6);g.quadraticCurveTo(px+2,py+l*.5,px-1+Math.sin(t*.8+i)*.6,py+l);g.stroke()}
+  // pattes de devant
+  leg(x-70,fur);leg(x+140,fur);
+  for(const lx of[x-70,x+140])for(let k=0;k<7;k++){g.strokeStyle=furD;g.lineWidth=2.6;g.beginPath();const px=lx-18+k*6;g.moveTo(px,fy-128);g.quadraticCurveTo(px+2,fy-100,px-1,fy-78-R()*10);g.stroke()}
+  // une écaille de plâtre sur la patte
+  g.fillStyle='#e6dcc4';poly(g,[x-80,fy-60,x-66,fy-66,x-62,fy-52,x-74,fy-48]);g.fill();
+  // queue
+  g.strokeStyle=furD;g.lineWidth=4;g.beginPath();g.moveTo(x-182,fy-170);g.quadraticCurveTo(x-200,fy-140,x-196,fy-118);g.stroke();
+  g.fillStyle=furD;g.beginPath();g.ellipse(x-196,fy-114,5,9,0,0,7);g.fill();
+  // oreille, oeil
+  g.fillStyle=furD;g.beginPath();g.ellipse(x+108,fy-222,16,22,.25,0,7);g.fill();
+  g.fillStyle='#1a1008';g.beginPath();g.ellipse(x+146,fy-226,4.5,3.5,.2,0,7);g.fill();
+  g.fillStyle='rgba(255,240,210,.85)';g.beginPath();g.arc(x+147.5,fy-227.5,1.3,0,7);g.fill();
+  g.strokeStyle='rgba(30,16,6,.5)';g.lineWidth=1.5;g.beginPath();g.arc(x+146,fy-226,8,Math.PI*1.1,Math.PI*1.8);g.stroke();
+  // trompe
+  g.strokeStyle=fur;g.lineWidth=22;g.lineCap='round';g.beginPath();g.moveTo(x+172,fy-185);g.bezierCurveTo(x+192,fy-140,x+178,fy-90,x+190,fy-56);g.stroke();
+  g.lineWidth=14;g.beginPath();g.moveTo(x+190,fy-60);g.quadraticCurveTo(x+196,fy-34,x+212,fy-40);g.stroke();
+  g.strokeStyle='rgba(30,16,6,.35)';g.lineWidth=1.4;for(let k=0;k<9;k++){const yy=fy-170+k*13;g.beginPath();g.moveTo(x+170+k*1.6,yy);g.lineTo(x+192+k*.4,yy+3);g.stroke()}
+  // défense de devant (ivoire)
+  const ig=g.createLinearGradient(x+150,fy-180,x+270,fy-260);ig.addColorStop(0,'#cfc2a0');ig.addColorStop(.5,'#efe6cf');ig.addColorStop(1,'#d8cdb0');
+  g.fillStyle=ig;g.beginPath();g.moveTo(x+158,fy-160);g.bezierCurveTo(x+235,fy-120,x+300,fy-160,x+284,fy-246);g.lineTo(x+274,fy-244);g.bezierCurveTo(x+282,fy-176,x+228,fy-146,x+156,fy-178);g.closePath();g.fill();
+  g.strokeStyle='rgba(90,70,40,.35)';g.lineWidth=1;g.stroke();
+  // étiquette d'enchères pendue à la défense
+  g.strokeStyle='#8a7a5a';g.lineWidth=1;g.beginPath();g.moveTo(x+262,fy-150);g.lineTo(x+262,fy-128);g.stroke();
+  g.save();g.translate(x+262,fy-116);g.rotate(Math.sin(t*1.3)*.08);g.fillStyle='#e9dfc7';rr(g,-22,-10,44,20,2);g.fill();
+  g.fillStyle='#a8322d';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('LOT N° 3',0,3);g.restore();
+  g.restore();
+}
 /* la cloche de Raymond, identique sur l'écran-titre et dans la réserve */
 function drawDome(g,x,y,s,t,o){
   o=o||{};
@@ -430,15 +556,7 @@ function drawDecor(g,d,t){
     g.fillStyle='#e9dfc7';rr(g,d.x-w/2,d.y-14,w,24,2);g.fill();g.strokeStyle='#a8322d';g.lineWidth=2;rr(g,d.x-w/2+3,d.y-11,w-6,18,2);g.stroke();
     g.fillStyle='#2a2420';g.textAlign='center';g.fillText(d.text,d.x,d.y+2);
   }else if(d.t==='mammoth'){
-    const x=d.x,y=d.y;g.save();
-    g.strokeStyle='#cfc3a6';g.lineCap='round';
-    g.lineWidth=9;for(const[lx,ty]of[[-170,80],[-130,40],[60,-20],[100,-40]]){g.beginPath();g.moveTo(x+lx,y+ty);g.lineTo(x+lx+6,y+108);g.stroke()}
-    g.lineWidth=4;for(let k=0;k<9;k++){const rx=x-120+k*24,ry=y-50-k*14;g.beginPath();g.moveTo(rx,ry);g.quadraticCurveTo(rx+16,ry+60,rx+4,ry+86-k*4);g.stroke()}
-    g.fillStyle='#d6caae';g.beginPath();g.ellipse(x+190,y-110,40,32,.3,0,7);g.fill();
-    g.fillStyle='#3a2a28';g.beginPath();g.arc(x+200,y-118,7,0,7);g.fill();
-    g.strokeStyle='#e8dfc6';g.lineWidth=10;g.beginPath();g.moveTo(x+210,y-90);g.bezierCurveTo(x+260,y-20,x+300,y-60,x+270,y-120);g.stroke();
-    g.fillStyle='#e9dfc7';g.save();g.translate(x+120,y+20);g.rotate(.2);g.fillRect(-30,-9,60,18);g.fillStyle='#a8322d';g.font='9px '+F_DISP;g.textAlign='center';g.fillText('LOT N° 3',0,4);g.restore();
-    g.restore();
+    drawMammoth(g,d.x,d.floor||d.y+100,t);
   }else if(d.t==='clock'){
     const x=d.x,y=d.y;g.fillStyle='#5a3a22';rr(g,x-30,y-30,60,140,8);g.fill();
     g.fillStyle='#efe6d0';g.beginPath();g.arc(x,y,22,0,7);g.fill();g.strokeStyle='#2a2420';g.lineWidth=1.5;g.stroke();
@@ -462,11 +580,7 @@ function drawDecor(g,d,t){
     g.beginPath();g.moveTo(-14,10);g.quadraticCurveTo(-22,40,-34,90);g.lineTo(34,90);g.quadraticCurveTo(22,40,14,10);g.closePath();g.fill();
     g.fillStyle='#3a2a14';g.fillRect(-36,86,72,6);g.beginPath();g.arc(0,96,7,0,7);g.fill();g.restore();
   }else if(d.t==='statue'){
-    const x=d.x,y=d.y;g.fillStyle='#6a7a74';
-    g.beginPath();g.ellipse(x,y-18,12,18,0,0,7);g.fill();g.beginPath();g.arc(x,y-44,9,0,7);g.fill();
-    g.strokeStyle='#6a7a74';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(x+8,y-30);g.lineTo(x+26,y-50);g.stroke();
-    g.fillStyle='rgba(255,255,255,.18)';g.beginPath();g.ellipse(x-4,y-20,4,14,0,0,7);g.fill();
-    g.fillStyle='#e9e9e4';g.beginPath();g.ellipse(x+2,y-53,6,3,0,0,7);g.fill();
+    drawStatue(g,d.x,d.y,t);
   }else if(d.t==='garland'){
     g.strokeStyle='rgba(40,30,30,.7)';g.lineWidth=1.2;g.beginPath();for(let k=0;k<=20;k++){const xx=d.x+k*d.w/20;g.lineTo(xx,d.y+Math.sin(k/20*Math.PI)*40)}g.stroke();
     for(let k=1;k<20;k+=2){const xx=d.x+k*d.w/20,yy=d.y+Math.sin(k/20*Math.PI)*40;g.fillStyle=['#c8302a','#e0b030','#3a6aa8','#e9dfc7'][k%4];g.beginPath();g.ellipse(xx,yy+8,6,8,0,0,7);g.fill();g.fillStyle='rgba(255,220,150,.3)';g.beginPath();g.arc(xx,yy+8,12,0,7);g.fill()}

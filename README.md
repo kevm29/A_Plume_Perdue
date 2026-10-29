@@ -28,18 +28,18 @@ La progression est sauvegardée dans le navigateur.
 
 ## Mécaniques
 
-- **Les vies (la paille).** Raymond a 3 vies dans le monde 1. Au début de chaque monde suivant, il gagne autant de vies que de médailles trouvées dans le monde précédent. S'il n'a plus de paille, le monde recommence avec les vies qu'il avait en y entrant.
+- **Les vies (la paille).** Raymond a 3 vies pour la première étape. Au début de chaque étape suivante, il gagne autant de vies que de médailles trouvées pendant l'étape précédente. S'il n'a plus de paille, l'étape recommence avec les vies qu'il avait en y entrant.
 - **Rembourrage.** À chaque mort, Raymond se rafistole un peu plus : paille qui dépasse, pansements, puis un bouton à la place de l'œil. Chaque touffe de paille ramassée le rembourre d'un coup.
 - **Les épingles.** Mourir sur des épingles y laisse un tas de paille, sur lequel on peut ensuite marcher.
 - **Les cartels** (panneaux « ART. » dehors) servent de points de sauvegarde.
 - **À collecter** : des touffes de paille et une médaille cachée par niveau (la Croix du mérite colombophile).
 - **Mode vies illimitées (caché)** : sur l'écran d'accueil, cliquer sur l'œil fermé de Raymond, sous la cloche. Il fait un clin d'œil, et le compteur affiche ∞. Recliquer pour revenir au mode normal.
 - **Poursuites** : le chat Bijou (1-4), le drone (2-3) et la buse empaillée (5-3).
-- **Monde 4** : camions qui servent de plateformes et éclairs annoncés par un grésillement.
+- **L'A4** : camions dont on emprunte le toit pour franchir le verre brisé, et éclairs annoncés au sol.
 
 ## Les 20 niveaux
 
-| Monde | Niveaux |
+| Étape | Niveaux |
 |---|---|
 | 1 · Vittoncourt, le musée | La vitrine · La galerie des insectes · La salle du mammouth · La loge du gardien |
 | 2 · Verdun | Les coquelicots · Les éoliennes · Le drone · La tranchée oubliée |
