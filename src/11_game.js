@@ -270,15 +270,15 @@ function respawn(){
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
-  // Raymond a perdu la tête : une vie le ramène au début du niveau, sinon tout recommence
+  // Raymond a perdu la tête : une vie le ramène au début de la mission, sinon tout recommence
   loopsOff();G.chase=false;
-  const li=G.li,hasLife=S.run.lives>0;
-  if(hasLife){S.run.lives--;S.run.wear=0;save()}
+  const w=LEVELS[G.li].w,first=w*4,hasLife=S.run.lives>0;
+  if(hasLife){S.run.lives--;S.run.wear=0;for(let k=first;k<first+4;k++)delete S.run.stats[k];save()}
   const tail=hasLife
-    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\nIl reste ${S.run.lives} vie${S.run.lives>1?'s':''}. Retour au début du niveau.`}
+    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\n${S.run.lives?`Il reste ${S.run.lives} vie${S.run.lives>1?'s':''}.`:'Plus de vie en réserve : la prochaine fois sera la dernière.'} Retour au début de la mission : ${WORLDS[w].name}.`}
     :{title:"PLUS AUCUNE VIE",t:"Le règlement est formel : tout recommencer depuis le début.\nDepuis la remise de Vittoncourt."};
   G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;
-  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(li)}:()=>{newRun();S.unlocked=0;save();startIntro()};
+  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(first)}:()=>{newRun();S.unlocked=0;save();startIntro()};
   setSong('s5-4');
 }
 /* sons des bêtes et ambiances, une fois par image */

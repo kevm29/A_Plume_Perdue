@@ -89,7 +89,9 @@ const SAVE_KEY='a-plume-perdue-v2';
 const START_LIVES=2,MAX_WEAR=4;
 let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
-S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);
+S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
+/* points : 10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute */
+function levelPoints(o){return Math.max(0,o.corn*10+(o.medal?100:0)+(o.deaths===0?50:0)-o.deaths*15)}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 
 /* =========================================================
@@ -300,8 +302,8 @@ function toggleMute(){S.muted=!S.muted;save();if(master)master.gain.value=S.mute
    ========================================================= */
 const DEATH_Q={
   any:["Encore de la paille. D'où sort toute cette paille ?","Ça ne fait pas mal. C'est justement ça qui m'inquiète.","Je me sens plus léger. Pour un pigeon de mon grade, ce n'est pas bon signe.","Si quelqu'un demande, c'était volontaire.","Bizarre. J'aurais juré que c'était grave.","Article 7 : un pigeon ne meurt pas en service. Il y a sûrement un article 7 bis."],
-  pins:["Épinglé comme un papillon. Et cette paille qui sort de nulle part…","La paille reste accrochée. Au moins, je pourrai marcher dessus.","Aïe. Enfin, « aïe » de principe. Je ne sens rien. C'est nouveau."],
-  wire:["Les barbelés. Ça, au moins, je connais.","Le barbelé garde ma paille. Le barbelé garde tout.","Accroché au barbelé. Comme en 1916. Enfin… comme hier."],
+  pins:["Épinglé comme un papillon. Et cette paille qui sort de nulle part…","Une épingle. On m'a pris pour un papillon. Vexant.","Aïe. Enfin, « aïe » de principe. Je ne sens rien. C'est nouveau."],
+  wire:["Les barbelés. Ça, au moins, je connais.","Le barbelé garde ma paille. Le barbelé garde tout.","Accroché au barbelé. Comme la semaine dernière, devant le fort."],
   spikes:["Des pics anti-pigeons. Je vais écrire au ministère de la Guerre.","On décore les pigeons, et après on les empale. Belle reconnaissance."],
   glass:["Du verre partout. Ils ne balaient plus, à l'arrière ?"],
   pickets:["Une grille en fer forgé. Jolie. Pointue, surtout."],
@@ -335,19 +337,19 @@ const INTRO=[
   {t:"Un message est toujours attaché à sa patte.\nPersonne ne l'a jamais ouvert."},
   {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui n'a pas acheté de billet."}
 ];
-/* cartes jouées entre les étapes, après la dernière lettre de l'étape */
+/* cartes jouées entre les missions, après la dernière lettre de la mission */
 const WORLD_CARDS=[
   null,
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"DEUXIÈME ÉTAPE · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
+   {title:"MISSION 2 · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
   [{t:"Raymond quitte Verdun avec un trou de mémoire\nde la taille d'un fort."},
-   {title:"TROISIÈME ÉTAPE · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
+   {title:"MISSION 3 · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
-   {title:"QUATRIÈME ÉTAPE · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
+   {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
-   {title:"DERNIÈRE ÉTAPE · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
+   {title:"MISSION 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
 const ENDING=[
   {pic:'tomb'},
@@ -852,9 +854,9 @@ Cq..........
 {w:1,name:"La tranchée oubliée",theme:'trench',exit:'post',exitLabel:"SORTIE",seed:73,
  start:"Une tranchée. Celle-là, je la reconnais. Les rats aussi : ils n'ont pas changé.",
  hints:[],
- quips:["Des noms gravés dans le bois. Des gars de 1916. Ils ont dû partir en permission.","Le fort de Vaux est par là. J'y étais le 2 juin. Après… plus rien."],
+ quips:["Des noms gravés dans le bois. Des copains du 151e. Ils ont dû partir en permission.","Le fort de Vaux est par là. J'y suis monté début juin. Après… plus rien."],
  signs:["TRANCHÉE · RESPECTEZ LE SILENCE"],
- letter:{text:"Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août.",comment:"Le fort de Vaux. On m'y a emmené le 2 juin. Après… je ne me souviens plus très bien."},
+ letter:{text:"Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août.",comment:"Le fort de Vaux. Lucien m'y a monté le lendemain, à l'aube. Après… je ne me souviens plus très bien."},
  segs:[`
 .....l....
 ..........
@@ -903,7 +905,7 @@ Cq...XXXX...
 {w:2,name:"Les toits",theme:'roofs',exit:'post',exitLabel:"CATHÉDRALE",seed:79,
  start:"Reims. La cathédrale est debout. Je croyais qu'ils l'avaient bombardée. Ils ont réparé vite.",
  hints:[["ARTICLE 12 — LE PIGEON DES VILLES","Columba livia urbana. Même espèce que vous. Aucune solidarité."]],
- quips:["Des pigeons de la ville. Ils me regardent de haut. Moi, j'ai une médaille. Enfin, j'en avais une.","Des antennes sur tous les toits. Les télégraphistes ont gagné la guerre, apparemment."],
+ quips:["Des pigeons de la ville. Ils me regardent de haut. Moi, j'ai une médaille. Enfin, j'en avais une.","Des antennes sur tous les toits. Les télégraphistes ont pris le pouvoir, apparemment."],
  signs:["RUE DE VESLE"],
  letter:{text:"Je ne t'aime ~plus~ ~plus~ ~plus~ plus.",comment:"Rayé trois fois. Un pigeon remarque ces choses-là."},
  segs:[`
@@ -1124,7 +1126,7 @@ Cq..........
 ##########`]},
 {w:3,name:"Les camions",theme:'road',exit:'post',exitLabel:"CHÂTEAU-THIERRY",seed:103,
  start:"Des camions grands comme des maisons. Le ravitaillement a beaucoup grossi.",
- hints:[["ARTICLE 14 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi l'article 7 : le diable."]],
+ hints:[["ARTICLE 14 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi la figure 7 : le diable."]],
  quips:["Ils roulent sans chevaux, et le chauffeur ne chante même pas. Triste époque.","Du verre partout sur la route. Un convoi s'est fait mitrailler, c'est sûr."],
  signs:["TRAVAUX · ROUTE BARRÉE"],
  letter:{text:"Tout ce qui est écrit de l'autre côté est faux. Je mens mal, tu le sais, comme je danse.",comment:"Faux. Et moi qui l'ai traité de goujat pendant deux cents kilomètres.",fx:'verso'},
@@ -1261,10 +1263,10 @@ C...........
 /* ------------------------------ MONDE 5 · VILLEMAREUIL ------------------------------ */
 {w:4,name:"La fête du village",theme:'fete',exit:'post',exitLabel:"ÉGLISE",seed:113,garlands:true,
  start:"Villemareuil. Des lampions, des flonflons. La guerre est finie ? Personne ne m'a prévenu.",
- hints:[["ARTICLE 16 — L'OIE","Anser anser domesticus. Plus dangereuse qu'un régiment de uhlans. Sauter par-dessus."]],
+ hints:[["ARTICLE 16 — L'OIE","Anser anser domesticus. Garde le village mieux qu'une sentinelle. Sauter par-dessus."]],
  quips:["Une tarte aux prunes sur un stand. Je pense à Marguerite. Enfin, à sa tarte.","Les gens dansent mal. Lucien aurait été à l'aise."],
  signs:["FÊTE DU VILLAGE · BAL CE SOIR"],
- letter:{text:"Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Veuve à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid.",comment:"Ce n'était pas une gifle. C'était un cadeau mal emballé.",fx:'verso'},
+ letter:{text:"Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Attendre un mort à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid.",comment:"Ce n'était pas une gifle. C'était un cadeau mal emballé.",fx:'verso'},
  segs:[`
 g.........
 ..S...h...
@@ -3004,15 +3006,15 @@ function respawn(){
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
-  // Raymond a perdu la tête : une vie le ramène au début du niveau, sinon tout recommence
+  // Raymond a perdu la tête : une vie le ramène au début de la mission, sinon tout recommence
   loopsOff();G.chase=false;
-  const li=G.li,hasLife=S.run.lives>0;
-  if(hasLife){S.run.lives--;S.run.wear=0;save()}
+  const w=LEVELS[G.li].w,first=w*4,hasLife=S.run.lives>0;
+  if(hasLife){S.run.lives--;S.run.wear=0;for(let k=first;k<first+4;k++)delete S.run.stats[k];save()}
   const tail=hasLife
-    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\nIl reste ${S.run.lives} vie${S.run.lives>1?'s':''}. Retour au début du niveau.`}
+    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\n${S.run.lives?`Il reste ${S.run.lives} vie${S.run.lives>1?'s':''}.`:'Plus de vie en réserve : la prochaine fois sera la dernière.'} Retour au début de la mission : ${WORLDS[w].name}.`}
     :{title:"PLUS AUCUNE VIE",t:"Le règlement est formel : tout recommencer depuis le début.\nDepuis la remise de Vittoncourt."};
   G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;
-  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(li)}:()=>{newRun();S.unlocked=0;save();startIntro()};
+  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(first)}:()=>{newRun();S.unlocked=0;save();startIntro()};
   setSong('s5-4');
 }
 /* sons des bêtes et ambiances, une fois par image */
@@ -3255,7 +3257,7 @@ function ensureTitleLv(){
   computeRS();
   if(!titleLv||titleLv.rs!==RS){const tmp=parseLevel(0);const lay=loadLayers(0);const prev=L;L=tmp;tmp.far=lay.far;tmp.mid=lay.mid;tmp.windows=lay.windows;tmp.turbines=[];tmp.tiles=buildTiles(tmp);tmp.dome=null;L=prev;tmp.rs=RS;titleLv=tmp}
 }
-function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0};save()}
+function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{}};save()}
 function freshRun(){if(S.run.lives==null||S.run.lives<0)S.run.lives=START_LIVES}
 function menuItems(){
   if(G.state==='title'){
@@ -3325,7 +3327,7 @@ function renderSelect(t){
     else{ctx.font='italic 15px '+F_BODY;ctx.textAlign='center';ctx.fillText(top,x+w/2,yy+h/2+5)}
     G.boxes.push({x,y:yy,w,h,i})};
   WORLDS.forEach((wd,wi)=>{
-    const y=86+wi*76;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`ÉTAPE ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
+    const y=86+wi*76;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`MISSION ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
     wd.levels.forEach((ln,lj)=>{
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
       tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,ln);
@@ -3485,6 +3487,31 @@ function drawHeadlessCard(ct){
     ctx.lineWidth=2;for(let k=0;k<9;k++){const ax=fx+2*sz+(k-4)*3;ctx.beginPath();ctx.moveTo(ax,neck+slump*10+2);ctx.lineTo(ax+(k-4)*2.2,neck+slump*10-8-((k*7)%6));ctx.stroke()}}
   ctx.restore();
 }
+/* bilan de fin de mission : points par niveau */
+function drawStatsCard(w,ct){
+  const st=S.run.stats||{};
+  ctx.save();ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='15px '+F_DISP;ctx.fillText(`BILAN DE LA MISSION ${w+1}`,W/2,104);
+  ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText(WORLDS[w].name,W/2,140);
+  const cols=[150,470,590,690,800],hy=184;
+  ctx.font='12px '+F_DISP;ctx.fillStyle='rgba(233,223,199,.55)';
+  ['NIVEAU','PAILLE','MÉDAILLE','CHUTES','POINTS'].forEach((h,k)=>{ctx.textAlign=k?'center':'left';ctx.fillText(h,cols[k],hy)});
+  ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(140,hy+10,680,1);
+  let tot=0;
+  for(let j=0;j<4;j++){const li=w*4+j,o=st[li],y=hy+48+j*44,a=Math.min(1,Math.max(0,(ct-.2-j*.25)*4));
+    ctx.globalAlpha=a;ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='italic 20px '+F_BODY;ctx.fillText(`${w+1}–${j+1}  ${WORLDS[w].levels[j]}`,cols[0],y);
+    ctx.textAlign='center';ctx.font='18px '+F_DISP;
+    if(o){ctx.fillText(`${o.corn} / ${o.cornTotal}`,cols[1],y);
+      if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('—',cols[2],y)}
+      ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[3],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[4],y);tot+=o.points}
+    else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('non joué',cols[1],y)}
+    ctx.globalAlpha=1}
+  const ty=hy+48+4*44;ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(140,ty-28,680,1);
+  ctx.globalAlpha=Math.min(1,Math.max(0,(ct-1.3)*3));
+  ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='20px '+F_DISP;ctx.fillText('TOTAL DE LA MISSION',cols[0],ty);
+  ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='26px '+F_DISP;ctx.fillText(String(tot),cols[4],ty+2);
+  ctx.font='italic 13px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('10 par touffe de paille · 100 la médaille · 50 sans aucune chute · 15 de moins par chute',W/2,ty+40);
+  ctx.globalAlpha=1;ctx.restore();
+}
 function drawBannerCard(t){
   ctx.save();ctx.translate(W/2,H/2);
   const sw=Math.sin(t*1.5)*3;
@@ -3510,6 +3537,7 @@ function renderCards(t){
     let y=c.pic?150:H/2-20;
     if(c.pic==='dome'){drawDome(ctx,W/2,250,.62,t);y=330}
     if(c.pic==='headless'){drawHeadlessCard(G.cardT);y=372}
+    if(c.pic==='stats'){drawStatsCard(c.w,G.cardT);y=-999}
     ctx.fillStyle='#ece3cc';
     if(c.title){ctx.font='34px '+F_DISP;ctx.fillText(c.title,W/2,c.pic?y:y-50);y+=c.pic?38:0}
     if(c.t){ctx.font='italic 25px '+F_BODY;const lines=wrap(ctx,c.t,680);const y0=c.pic?y:H/2-(lines.length-1)*17+(c.title?14:0);lines.forEach((l,k)=>ctx.fillText(l,W/2,y0+k*34))}
@@ -3573,7 +3601,7 @@ function renderLetter(t){
     if(def.letter.silent){ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Raymond ne dit rien.',190,H-115)}
     else{const lines=wrap(ctx,def.letter.comment,620);lines.forEach((l,k)=>ctx.fillText(l,190,H-140+k*25))}
     ctx.font='14px '+F_DISP;ctx.fillStyle='#d9a441';
-    ctx.fillText(`PAILLE RAMASSÉE ${LE.corn} / ${LE.cornTotal}   ·   MÉDAILLE ${LE.medal?'TROUVÉE':'NON TROUVÉE'}   ·   CHUTES : ${LE.deaths}`,190,H-36);
+    ctx.fillText(`PAILLE RAMASSÉE ${LE.corn} / ${LE.cornTotal}   ·   MÉDAILLE ${LE.medal?'TROUVÉE':'NON TROUVÉE'}   ·   CHUTES : ${LE.deaths}   ·   POINTS : ${levelPoints({corn:LE.corn,medal:LE.medal,deaths:LE.deaths})}`,190,H-36);
     if(LE.after>.8){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-12)}
     ctx.restore();
   }else{
@@ -3589,10 +3617,10 @@ function handleLetter(dt){
 }
 function afterLetter(li){
   G.cutSeen=true;
-  if(li===19){S.finished=true;save();G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>goTitle();setSong('s5-4');return}
+  if(li===19){S.finished=true;save();G.state='intro';G.cards=[{pic:'stats',w:4,minT:.8}].concat(ENDING);G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>goTitle();setSong('s5-4');return}
   if(li%4===3){
     const w=LEVELS[li].w;
-    const cards=WORLD_CARDS[w+1].slice();
+    const cards=[{pic:'stats',w,minT:.8}].concat(WORLD_CARDS[w+1]);
     G.state='intro';G.cards=cards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>startLevel(li+1);setSong('title');return;
   }
   startLevel(li+1);
@@ -3657,7 +3685,8 @@ function update(dt){
       if(G.exitT>1.1){
         const li=G.li;S.unlocked=Math.min(19,Math.max(S.unlocked,li+1));
         if(G.medal)S.run.medals[li]=true;
-        const b=S.best[li]||{corn:0,medal:false,deaths:9999};S.best[li]={corn:Math.max(b.corn,G.corn),medal:b.medal||G.medal,deaths:Math.min(b.deaths,G.levelDeaths)};save();
+        const b=S.best[li]||{corn:0,medal:false,deaths:9999};S.best[li]={corn:Math.max(b.corn,G.corn),medal:b.medal||G.medal,deaths:Math.min(b.deaths,G.levelDeaths)};
+        S.run.stats[li]={corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};S.run.stats[li].points=levelPoints(S.run.stats[li]);save();
         G.LE={li,chars:0,done:false,after:0,corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};G.state='levelend';G.fade=1;SFX.page();setSong('title');
       }
       break}

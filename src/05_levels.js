@@ -423,9 +423,9 @@ Cq..........
 {w:1,name:"La tranchée oubliée",theme:'trench',exit:'post',exitLabel:"SORTIE",seed:73,
  start:"Une tranchée. Celle-là, je la reconnais. Les rats aussi : ils n'ont pas changé.",
  hints:[],
- quips:["Des noms gravés dans le bois. Des gars de 1916. Ils ont dû partir en permission.","Le fort de Vaux est par là. J'y étais le 2 juin. Après… plus rien."],
+ quips:["Des noms gravés dans le bois. Des copains du 151e. Ils ont dû partir en permission.","Le fort de Vaux est par là. J'y suis monté début juin. Après… plus rien."],
  signs:["TRANCHÉE · RESPECTEZ LE SILENCE"],
- letter:{text:"Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août.",comment:"Le fort de Vaux. On m'y a emmené le 2 juin. Après… je ne me souviens plus très bien."},
+ letter:{text:"Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août.",comment:"Le fort de Vaux. Lucien m'y a monté le lendemain, à l'aube. Après… je ne me souviens plus très bien."},
  segs:[`
 .....l....
 ..........
@@ -474,7 +474,7 @@ Cq...XXXX...
 {w:2,name:"Les toits",theme:'roofs',exit:'post',exitLabel:"CATHÉDRALE",seed:79,
  start:"Reims. La cathédrale est debout. Je croyais qu'ils l'avaient bombardée. Ils ont réparé vite.",
  hints:[["ARTICLE 12 — LE PIGEON DES VILLES","Columba livia urbana. Même espèce que vous. Aucune solidarité."]],
- quips:["Des pigeons de la ville. Ils me regardent de haut. Moi, j'ai une médaille. Enfin, j'en avais une.","Des antennes sur tous les toits. Les télégraphistes ont gagné la guerre, apparemment."],
+ quips:["Des pigeons de la ville. Ils me regardent de haut. Moi, j'ai une médaille. Enfin, j'en avais une.","Des antennes sur tous les toits. Les télégraphistes ont pris le pouvoir, apparemment."],
  signs:["RUE DE VESLE"],
  letter:{text:"Je ne t'aime ~plus~ ~plus~ ~plus~ plus.",comment:"Rayé trois fois. Un pigeon remarque ces choses-là."},
  segs:[`
@@ -695,7 +695,7 @@ Cq..........
 ##########`]},
 {w:3,name:"Les camions",theme:'road',exit:'post',exitLabel:"CHÂTEAU-THIERRY",seed:103,
  start:"Des camions grands comme des maisons. Le ravitaillement a beaucoup grossi.",
- hints:[["ARTICLE 14 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi l'article 7 : le diable."]],
+ hints:[["ARTICLE 14 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi la figure 7 : le diable."]],
  quips:["Ils roulent sans chevaux, et le chauffeur ne chante même pas. Triste époque.","Du verre partout sur la route. Un convoi s'est fait mitrailler, c'est sûr."],
  signs:["TRAVAUX · ROUTE BARRÉE"],
  letter:{text:"Tout ce qui est écrit de l'autre côté est faux. Je mens mal, tu le sais, comme je danse.",comment:"Faux. Et moi qui l'ai traité de goujat pendant deux cents kilomètres.",fx:'verso'},
@@ -832,10 +832,10 @@ C...........
 /* ------------------------------ MONDE 5 · VILLEMAREUIL ------------------------------ */
 {w:4,name:"La fête du village",theme:'fete',exit:'post',exitLabel:"ÉGLISE",seed:113,garlands:true,
  start:"Villemareuil. Des lampions, des flonflons. La guerre est finie ? Personne ne m'a prévenu.",
- hints:[["ARTICLE 16 — L'OIE","Anser anser domesticus. Plus dangereuse qu'un régiment de uhlans. Sauter par-dessus."]],
+ hints:[["ARTICLE 16 — L'OIE","Anser anser domesticus. Garde le village mieux qu'une sentinelle. Sauter par-dessus."]],
  quips:["Une tarte aux prunes sur un stand. Je pense à Marguerite. Enfin, à sa tarte.","Les gens dansent mal. Lucien aurait été à l'aise."],
  signs:["FÊTE DU VILLAGE · BAL CE SOIR"],
- letter:{text:"Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Veuve à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid.",comment:"Ce n'était pas une gifle. C'était un cadeau mal emballé.",fx:'verso'},
+ letter:{text:"Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Attendre un mort à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid.",comment:"Ce n'était pas une gifle. C'était un cadeau mal emballé.",fx:'verso'},
  segs:[`
 g.........
 ..S...h...

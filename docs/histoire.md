@@ -14,7 +14,7 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 
 ## Le trajet
 
-| Étape | Lieu | Niveaux |
+| Mission | Lieu | Niveaux |
 |---|---|---|
 | 1 | Vittoncourt, le musée qui ferme | La vitrine · La galerie des insectes · La salle du mammouth · La loge du gardien |
 | 2 | Verdun, les champs de l'ancien front | Les coquelicots · Les éoliennes · Le drone · La tranchée oubliée |
@@ -35,7 +35,7 @@ Ensuite vient la cinématique jouée dans 1-1 : le voleur, sa lampe torche, le c
 
 ## La lettre, morceau par morceau
 
-Chaque niveau terminé révèle un fragment. Les étapes 1 et 2 sont la lettre « méchante », l'étape 3 révèle les ratures et l'étape 4 le dos de la lettre, que la pluie fait apparaître. L'étape 5 dit la vérité.
+Chaque niveau terminé révèle un fragment. Les missions 1 et 2 sont la lettre « méchante », la mission 3 révèle les ratures et la mission 4 le dos de la lettre, que la pluie fait apparaître. La mission 5 dit la vérité.
 
 | # | Fragment | Commentaire de Raymond |
 |---|---|---|
@@ -46,7 +46,7 @@ Chaque niveau terminé révèle un fragment. Les étapes 1 et 2 sont la lettre �
 | 5 | Ici tout va bien. On mange bien, on dort beaucoup, le capitaine est gentil. | On mange bien ? J'ai vu ce qu'ils mangeaient. |
 | 6 | Ne garde rien de moi. Pas même la photographie. Surtout pas la photographie. *(tache)* | Une goutte de pluie. Il pleuvait tout le temps, à Verdun. |
 | 7 | Je n'ai pas peur. Les gars disent que j'ai peur, mais je n'ai pas peur. *(écriture tremblée)* | Il le dit trois fois. |
-| 8 | Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août. | Le fort de Vaux. On m'y a emmené le 2 juin. Après… |
+| 8 | Ce soir, on entend le fort de Vaux d'ici. On dirait l'orage chez nous, au mois d'août. | Le fort de Vaux. Lucien m'y a monté le lendemain, à l'aube. Après… |
 | 9 | Je ne t'aime ~~plus~~ ~~plus~~ ~~plus~~ plus. | Rayé trois fois. |
 | 10 | Si tu pleures, ~~pleure pour moi~~ pleure pour autre chose. Le fils Garnier saura te consoler. ~~Moi je ne pourrai pas.~~ | On ne raye pas une phrase qu'on ne pense pas. |
 | 11 | Je n'ai jamais pensé à toi ~~chaque soir chaque matin à chaque obus~~. | « À chaque obus. » À Verdun, ça fait beaucoup. |
@@ -55,19 +55,19 @@ Chaque niveau terminé révèle un fragment. Les étapes 1 et 2 sont la lettre �
 | 14 | Tout ce qui est écrit de l'autre côté est faux. Je mens mal, tu le sais, comme je danse. | Et moi qui l'ai traité de goujat pendant deux cents kilomètres. |
 | 15 | Demain à l'aube, nous montons au fort de Vaux. Le capitaine dit qu'on en redescendra. Le capitaine ment mieux que moi. | Ça me revient par morceaux : la fumée, le gaz, des mains qui me lancent dans le ciel… Et puis plus rien. Un trou noir. Et la remise. |
 | 16 | Je confie cette lettre au pigeon de ton père, celui qui a l'œil de travers. Si elle t'arrive, c'est qu'au moins l'un de nous deux s'en est sorti. | L'œil de travers. C'est moi. |
-| 17 | Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Veuve à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid. | Ce n'était pas une gifle. C'était un cadeau mal emballé. |
+| 17 | Je t'ai écrit des méchancetés pour que tu ne m'attendes pas. Attendre un mort à dix-neuf ans, c'est une vie gâchée. Le fils Garnier est gentil, même s'il est laid. | Ce n'était pas une gifle. C'était un cadeau mal emballé. |
 | 18 | Ris fort, Marguerite. Ris trop fort à tous les bals. Danse avec lui, même s'il danse aussi mal que moi. | Danser mal à deux, c'est déjà danser. |
 | 19 | Ta tarte aux prunes était la meilleure du canton. Garde le chien. Et donne du grain au pigeon, il l'aura mérité. | Du grain. On m'avait promis du grain. |
 | 20 | Je t'aime. Je t'ai toujours aimée. Lucien. | Il ne reste plus qu'à la lui remettre. |
 
-## Transitions entre les étapes
+## Transitions entre les missions
 
 - **1 → 2.** Raymond s'échappe par la fenêtre de la loge. Il vole mal. Il vole quand même. Direction l'ouest : le pigeonnier Vasseur, à Villemareuil. Il a décidé de livrer la gifle.
 - **2 → 3.** Il quitte Verdun avec un trou de mémoire de la taille d'un fort. Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région. C'est un détour. Il ne l'admettra jamais.
 - **3 → 4.** Les ratures l'ont rendu silencieux. Une route immense, toute droite vers l'ouest, sans chevaux ni soldats. Il pleut des cordes.
 - **4 → 5.** L'orage est passé. La lettre est trempée, et Raymond sait maintenant ce qui est écrit au dos. Le village est en fête. Personne n'attend de pigeon.
 
-Règles : 2 vies au départ, une de plus par médaille. Raymond a 5 états ; au-delà, il perd la tête (« Raymond a perdu la tête. Au sens propre. »). Une vie le ramène au début du niveau ; sans vie, tout recommence.
+Règles : 2 vies au départ, une de plus par médaille. Raymond a 5 états ; au-delà, il perd la tête (« Raymond a perdu la tête. Au sens propre. »). Chaque chute le renvoie au dernier cartel (ou au début du niveau). Quand il perd la tête, une vie le ramène au début de la mission ; sans vie, tout recommence. À la fin de chaque mission, un bilan donne les points de chaque niveau (10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute).
 
 ## L'arrivée sur la tombe (fin du niveau 5-4)
 

@@ -57,7 +57,8 @@ function update(dt){
       if(G.exitT>1.1){
         const li=G.li;S.unlocked=Math.min(19,Math.max(S.unlocked,li+1));
         if(G.medal)S.run.medals[li]=true;
-        const b=S.best[li]||{corn:0,medal:false,deaths:9999};S.best[li]={corn:Math.max(b.corn,G.corn),medal:b.medal||G.medal,deaths:Math.min(b.deaths,G.levelDeaths)};save();
+        const b=S.best[li]||{corn:0,medal:false,deaths:9999};S.best[li]={corn:Math.max(b.corn,G.corn),medal:b.medal||G.medal,deaths:Math.min(b.deaths,G.levelDeaths)};
+        S.run.stats[li]={corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};S.run.stats[li].points=levelPoints(S.run.stats[li]);save();
         G.LE={li,chars:0,done:false,after:0,corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};G.state='levelend';G.fade=1;SFX.page();setSong('title');
       }
       break}

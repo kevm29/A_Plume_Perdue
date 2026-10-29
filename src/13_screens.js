@@ -6,7 +6,7 @@ function ensureTitleLv(){
   computeRS();
   if(!titleLv||titleLv.rs!==RS){const tmp=parseLevel(0);const lay=loadLayers(0);const prev=L;L=tmp;tmp.far=lay.far;tmp.mid=lay.mid;tmp.windows=lay.windows;tmp.turbines=[];tmp.tiles=buildTiles(tmp);tmp.dome=null;L=prev;tmp.rs=RS;titleLv=tmp}
 }
-function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0};save()}
+function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{}};save()}
 function freshRun(){if(S.run.lives==null||S.run.lives<0)S.run.lives=START_LIVES}
 function menuItems(){
   if(G.state==='title'){
@@ -76,7 +76,7 @@ function renderSelect(t){
     else{ctx.font='italic 15px '+F_BODY;ctx.textAlign='center';ctx.fillText(top,x+w/2,yy+h/2+5)}
     G.boxes.push({x,y:yy,w,h,i})};
   WORLDS.forEach((wd,wi)=>{
-    const y=86+wi*76;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`ÉTAPE ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
+    const y=86+wi*76;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`MISSION ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
     wd.levels.forEach((ln,lj)=>{
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
       tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,ln);
@@ -236,6 +236,31 @@ function drawHeadlessCard(ct){
     ctx.lineWidth=2;for(let k=0;k<9;k++){const ax=fx+2*sz+(k-4)*3;ctx.beginPath();ctx.moveTo(ax,neck+slump*10+2);ctx.lineTo(ax+(k-4)*2.2,neck+slump*10-8-((k*7)%6));ctx.stroke()}}
   ctx.restore();
 }
+/* bilan de fin de mission : points par niveau */
+function drawStatsCard(w,ct){
+  const st=S.run.stats||{};
+  ctx.save();ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='15px '+F_DISP;ctx.fillText(`BILAN DE LA MISSION ${w+1}`,W/2,104);
+  ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText(WORLDS[w].name,W/2,140);
+  const cols=[150,470,590,690,800],hy=184;
+  ctx.font='12px '+F_DISP;ctx.fillStyle='rgba(233,223,199,.55)';
+  ['NIVEAU','PAILLE','MÉDAILLE','CHUTES','POINTS'].forEach((h,k)=>{ctx.textAlign=k?'center':'left';ctx.fillText(h,cols[k],hy)});
+  ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(140,hy+10,680,1);
+  let tot=0;
+  for(let j=0;j<4;j++){const li=w*4+j,o=st[li],y=hy+48+j*44,a=Math.min(1,Math.max(0,(ct-.2-j*.25)*4));
+    ctx.globalAlpha=a;ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='italic 20px '+F_BODY;ctx.fillText(`${w+1}–${j+1}  ${WORLDS[w].levels[j]}`,cols[0],y);
+    ctx.textAlign='center';ctx.font='18px '+F_DISP;
+    if(o){ctx.fillText(`${o.corn} / ${o.cornTotal}`,cols[1],y);
+      if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('—',cols[2],y)}
+      ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[3],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[4],y);tot+=o.points}
+    else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('non joué',cols[1],y)}
+    ctx.globalAlpha=1}
+  const ty=hy+48+4*44;ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(140,ty-28,680,1);
+  ctx.globalAlpha=Math.min(1,Math.max(0,(ct-1.3)*3));
+  ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='20px '+F_DISP;ctx.fillText('TOTAL DE LA MISSION',cols[0],ty);
+  ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='26px '+F_DISP;ctx.fillText(String(tot),cols[4],ty+2);
+  ctx.font='italic 13px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('10 par touffe de paille · 100 la médaille · 50 sans aucune chute · 15 de moins par chute',W/2,ty+40);
+  ctx.globalAlpha=1;ctx.restore();
+}
 function drawBannerCard(t){
   ctx.save();ctx.translate(W/2,H/2);
   const sw=Math.sin(t*1.5)*3;
@@ -261,6 +286,7 @@ function renderCards(t){
     let y=c.pic?150:H/2-20;
     if(c.pic==='dome'){drawDome(ctx,W/2,250,.62,t);y=330}
     if(c.pic==='headless'){drawHeadlessCard(G.cardT);y=372}
+    if(c.pic==='stats'){drawStatsCard(c.w,G.cardT);y=-999}
     ctx.fillStyle='#ece3cc';
     if(c.title){ctx.font='34px '+F_DISP;ctx.fillText(c.title,W/2,c.pic?y:y-50);y+=c.pic?38:0}
     if(c.t){ctx.font='italic 25px '+F_BODY;const lines=wrap(ctx,c.t,680);const y0=c.pic?y:H/2-(lines.length-1)*17+(c.title?14:0);lines.forEach((l,k)=>ctx.fillText(l,W/2,y0+k*34))}
@@ -324,7 +350,7 @@ function renderLetter(t){
     if(def.letter.silent){ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Raymond ne dit rien.',190,H-115)}
     else{const lines=wrap(ctx,def.letter.comment,620);lines.forEach((l,k)=>ctx.fillText(l,190,H-140+k*25))}
     ctx.font='14px '+F_DISP;ctx.fillStyle='#d9a441';
-    ctx.fillText(`PAILLE RAMASSÉE ${LE.corn} / ${LE.cornTotal}   ·   MÉDAILLE ${LE.medal?'TROUVÉE':'NON TROUVÉE'}   ·   CHUTES : ${LE.deaths}`,190,H-36);
+    ctx.fillText(`PAILLE RAMASSÉE ${LE.corn} / ${LE.cornTotal}   ·   MÉDAILLE ${LE.medal?'TROUVÉE':'NON TROUVÉE'}   ·   CHUTES : ${LE.deaths}   ·   POINTS : ${levelPoints({corn:LE.corn,medal:LE.medal,deaths:LE.deaths})}`,190,H-36);
     if(LE.after>.8){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-12)}
     ctx.restore();
   }else{
@@ -340,10 +366,10 @@ function handleLetter(dt){
 }
 function afterLetter(li){
   G.cutSeen=true;
-  if(li===19){S.finished=true;save();G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>goTitle();setSong('s5-4');return}
+  if(li===19){S.finished=true;save();G.state='intro';G.cards=[{pic:'stats',w:4,minT:.8}].concat(ENDING);G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>goTitle();setSong('s5-4');return}
   if(li%4===3){
     const w=LEVELS[li].w;
-    const cards=WORLD_CARDS[w+1].slice();
+    const cards=[{pic:'stats',w,minT:.8}].concat(WORLD_CARDS[w+1]);
     G.state='intro';G.cards=cards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>startLevel(li+1);setSong('title');return;
   }
   startLevel(li+1);

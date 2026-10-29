@@ -3,8 +3,8 @@
    ========================================================= */
 const DEATH_Q={
   any:["Encore de la paille. D'où sort toute cette paille ?","Ça ne fait pas mal. C'est justement ça qui m'inquiète.","Je me sens plus léger. Pour un pigeon de mon grade, ce n'est pas bon signe.","Si quelqu'un demande, c'était volontaire.","Bizarre. J'aurais juré que c'était grave.","Article 7 : un pigeon ne meurt pas en service. Il y a sûrement un article 7 bis."],
-  pins:["Épinglé comme un papillon. Et cette paille qui sort de nulle part…","La paille reste accrochée. Au moins, je pourrai marcher dessus.","Aïe. Enfin, « aïe » de principe. Je ne sens rien. C'est nouveau."],
-  wire:["Les barbelés. Ça, au moins, je connais.","Le barbelé garde ma paille. Le barbelé garde tout.","Accroché au barbelé. Comme en 1916. Enfin… comme hier."],
+  pins:["Épinglé comme un papillon. Et cette paille qui sort de nulle part…","Une épingle. On m'a pris pour un papillon. Vexant.","Aïe. Enfin, « aïe » de principe. Je ne sens rien. C'est nouveau."],
+  wire:["Les barbelés. Ça, au moins, je connais.","Le barbelé garde ma paille. Le barbelé garde tout.","Accroché au barbelé. Comme la semaine dernière, devant le fort."],
   spikes:["Des pics anti-pigeons. Je vais écrire au ministère de la Guerre.","On décore les pigeons, et après on les empale. Belle reconnaissance."],
   glass:["Du verre partout. Ils ne balaient plus, à l'arrière ?"],
   pickets:["Une grille en fer forgé. Jolie. Pointue, surtout."],
@@ -38,19 +38,19 @@ const INTRO=[
   {t:"Un message est toujours attaché à sa patte.\nPersonne ne l'a jamais ouvert."},
   {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui n'a pas acheté de billet."}
 ];
-/* cartes jouées entre les étapes, après la dernière lettre de l'étape */
+/* cartes jouées entre les missions, après la dernière lettre de la mission */
 const WORLD_CARDS=[
   null,
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"DEUXIÈME ÉTAPE · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
+   {title:"MISSION 2 · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
   [{t:"Raymond quitte Verdun avec un trou de mémoire\nde la taille d'un fort."},
-   {title:"TROISIÈME ÉTAPE · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
+   {title:"MISSION 3 · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
-   {title:"QUATRIÈME ÉTAPE · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
+   {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
-   {title:"DERNIÈRE ÉTAPE · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
+   {title:"MISSION 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
 const ENDING=[
   {pic:'tomb'},
