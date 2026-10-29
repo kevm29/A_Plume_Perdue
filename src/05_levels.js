@@ -81,7 +81,7 @@ q.DDDD..E.
 ##########`]},
 {w:0,name:"La galerie des insectes",theme:'insectes',exit:'door',seed:23,
  start:"Des papillons épinglés par centaines. Je n'aime pas l'ambiance.",
- hints:[["FIG. 5 — L'ÉPINGLE","Redoutable. Le pigeon qui s'y pique y laisse sa paille, et la paille reste : on peut ensuite marcher dessus."],
+ hints:[["FIG. 5 — L'ÉPINGLE","Redoutable. Le pigeon qui s'y frotte y laisse des plumes. Au sens propre."],
         ["FIG. 6 — LA MITE","Tineola bisselliella. Vole toujours le même trajet, au même rythme. Observer, puis passer."]],
  quips:["Un plafond hérissé d'épingles. Interdiction de battre des ailes. Je déteste les règlements que je n'ai pas écrits.","Le docteur Laffont collectionnait les papillons. Et les épingles. Surtout les épingles."],
  signs:["GALERIE D'ENTOMOLOGIE · DON DU DR LAFFONT"],
@@ -271,7 +271,7 @@ Cq....K.T.
 /* ------------------------------ MONDE 2 · VERDUN ------------------------------ */
 {w:1,name:"Les coquelicots",theme:'front',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
  start:"Verdun. Je reconnais le terrain. Enfin… il y a moins de boue. Et plus de fleurs.",
- hints:[["ARTICLE 9 — LES BARBELÉS","Le barbelé retient la paille aussi bien qu'un soldat. Ce qui reste accroché fait un bon marchepied."]],
+ hints:[["ARTICLE 9 — LES BARBELÉS","Le barbelé ne fait pas la différence entre un soldat et un pigeon. Le règlement non plus."]],
  flyers:[{dy:30,amp:200,sp:1.7},{dy:-70,amp:125}],
  quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un casque rouillé sur un piquet. Pauvre gars. L'intendance n'est toujours pas passée le ramasser."],
  signs:["VERDUN · ZONE ROUGE · NE PAS QUITTER LE SENTIER"],
