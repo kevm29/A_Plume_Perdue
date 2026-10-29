@@ -34,7 +34,7 @@ const INTRO=[
   {t:"Vittoncourt, Moselle. Octobre 2026.\nLe petit musée communal n'a plus les moyens d'ouvrir."},
   {t:"Liquidation : le mammouth en plâtre et les papillons partent aux enchères.\nCe qui ne se vend pas finit à la benne."},
   {t:"… comme lui.",pic:'dome'},
-  {title:"RAYMOND",t:"Pigeon voyageur, matricule 7413.\nTombé en service au fort de Vaux, juin 1916. Empaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
+  {title:"RAYMOND",t:"Pigeon voyageur, matricule 7413.\nTombé en service au fort de Vaux, juin 1916.\nEmpaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
   {t:"Un message est toujours attaché à sa patte.\nPersonne ne l'a jamais ouvert."},
   {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui n'a pas acheté de billet."}
 ];

@@ -333,7 +333,7 @@ const INTRO=[
   {t:"Vittoncourt, Moselle. Octobre 2026.\nLe petit musée communal n'a plus les moyens d'ouvrir."},
   {t:"Liquidation : le mammouth en plâtre et les papillons partent aux enchères.\nCe qui ne se vend pas finit à la benne."},
   {t:"… comme lui.",pic:'dome'},
-  {title:"RAYMOND",t:"Pigeon voyageur, matricule 7413.\nTombé en service au fort de Vaux, juin 1916. Empaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
+  {title:"RAYMOND",t:"Pigeon voyageur, matricule 7413.\nTombé en service au fort de Vaux, juin 1916.\nEmpaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
   {t:"Un message est toujours attaché à sa patte.\nPersonne ne l'a jamais ouvert."},
   {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui n'a pas acheté de billet."}
 ];
@@ -3526,19 +3526,21 @@ function renderCards(t){
   const c=G.cards[G.card];const fl=.94+rnd()*.06;
   ctx.fillStyle='#0b0a0c';ctx.fillRect(0,0,W,H);
   ctx.save();
-  ctx.globalAlpha=fl*Math.min(1,G.cardT*2.2);
+  // le cadre ne refait pas de fondu d'une carte à l'autre ; l'image non plus si elle ne change pas
+  const fa=Math.min(1,G.cardT*2.2),prev=G.card>0?G.cards[G.card-1]:null,keepPic=prev&&prev.pic&&prev.pic===c.pic;
+  ctx.globalAlpha=fl*(prev?1:fa);
   ctx.strokeStyle='#d9cfb4';ctx.lineWidth=2;ctx.strokeRect(70,46,W-140,H-92);ctx.lineWidth=1;ctx.strokeRect(80,56,W-160,H-112);
   for(const[x,y,sx,sy]of[[80,56,1,1],[W-80,56,-1,1],[80,H-56,1,-1],[W-80,H-56,-1,-1]]){ctx.beginPath();ctx.moveTo(x,y+sy*30);ctx.quadraticCurveTo(x+sx*4,y+sy*4,x+sx*30,y);ctx.moveTo(x+sx*8,y+sy*18);ctx.arc(x+sx*14,y+sy*14,5,0,7);ctx.stroke()}
-  ctx.fillStyle='#ece3cc';ctx.textAlign='center';
+  ctx.fillStyle='#ece3cc';ctx.textAlign='center';ctx.globalAlpha=fl*(keepPic?1:fa);
   if(c.pic==='finale'){ctx.restore();ctx.save();drawFinaleCard(G.cardT)}
   else if(c.pic==='tomb')drawTombCard(t);
   else if(c.pic==='banner')drawBannerCard(t);
   else{
     let y=c.pic?150:H/2-20;
-    if(c.pic==='dome'){drawDome(ctx,W/2,250,.62,t);y=330}
+    if(c.pic==='dome'){drawDome(ctx,W/2,226,.62,t);y=300}
     if(c.pic==='headless'){drawHeadlessCard(G.cardT);y=372}
     if(c.pic==='stats'){drawStatsCard(c.w,G.cardT);y=-999}
-    ctx.fillStyle='#ece3cc';
+    ctx.globalAlpha=fl*fa;ctx.fillStyle='#ece3cc';
     if(c.title){ctx.font='34px '+F_DISP;ctx.fillText(c.title,W/2,c.pic?y:y-50);y+=c.pic?38:0}
     if(c.t){ctx.font='italic 25px '+F_BODY;const lines=wrap(ctx,c.t,680);const y0=c.pic?y:H/2-(lines.length-1)*17+(c.title?14:0);lines.forEach((l,k)=>ctx.fillText(l,W/2,y0+k*34))}
   }
