@@ -86,9 +86,10 @@ let grainPat=null;
 
 /* ---------- sauvegarde ---------- */
 const SAVE_KEY='a-plume-perdue-v2';
-const START_LIVES=3;
+const START_LIVES=2,MAX_WEAR=4;
 let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
+S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 
 /* =========================================================
@@ -360,7 +361,7 @@ const ENDING=[
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
 ];
 const GAMEOVER=[
-  {title:"PLUS DE PAILLE",t:"Raymond s'effondre en un petit tas de paille.\nUn balayeur passe, hésite, et le remet sur ses pattes."}
+  {pic:'headless',minT:3.2,t:"Raymond a perdu la tête.\nAu sens propre."}
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
@@ -2129,7 +2130,7 @@ function drawTileFront(g,ch,x,y,cc,r,th){
    PERSONNAGES, CRÉATURES ET OBJETS ANIMÉS
    ========================================================= */
 function drawRaymond(g,x,y,o){
-  const d=o.wear||0,t=o.t||0,w=o.walk||0;
+  const d=[0,2,3,5,7][Math.max(0,Math.min(4,o.wear||0))],t=o.t||0,w=o.walk||0;
   g.save();g.translate(x,y);if(o.rot)g.rotate(o.rot);g.scale((o.f||1)*(o.sx||1),o.sy||1);
   if(o.size)g.scale(o.size,o.size);
   const step=Math.sin(t*15)*w,air=o.air;
@@ -2758,7 +2759,6 @@ function startLevel(i){
   computeRS();
   G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTiles(L);
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
-  if(S.run.lives<0)S.run.lives=S.run.worldLives[LEVELS[i].w]||START_LIVES;
   setSong(songKey(i));loopsOff();
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
   parts.length=0;G.quip=null;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
@@ -2782,8 +2782,9 @@ function die(kind,tiles){
   if(P.dead)return;
   if(G.sim){P.dead=true;return}
   P.dead=true;P.deadT=1.25;G.levelDeaths++;
-  S.run.wear=Math.min(8,(S.run.wear||0)+1);
-  if(!S.infinite){S.run.lives--;if(S.run.lives<0)G.gameOverPending=true}
+  // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
+  if((S.run.wear||0)>=MAX_WEAR&&!S.infinite)G.gameOverPending=true;
+  else S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);
   save();
   G.shake=10;SFX.death();
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
@@ -2947,7 +2948,7 @@ function stepPlay(dt){
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
     if((S.run.wear||0)>0){S.run.wear--;save();P.sx=1.15;P.sy=1.15;puff(pc.x,pc.y,6,true);if(!G.tuftSaid){G.tuftSaid=true;say(pick(TUFT_Q),3.4)}}}
-  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;SFX.medal();say(pick(MEDAL_Q),3.6)}
+  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;SFX.medal();if(!S.run.medals[G.li]&&!S.infinite){S.run.medals[G.li]=true;S.run.lives++;save();say(pick(MEDAL_Q)+' (Une vie de plus.)',4.2)}else say(pick(MEDAL_Q),3.6)}
   for(const cp of L.cps)if(!cp.on&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;G.hintI=hn;
@@ -3003,11 +3004,16 @@ function respawn(){
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
-  loopsOff();
-  const w=LEVELS[G.li].w;
-  S.run.lives=S.run.worldLives[w]||START_LIVES;save();
-  G.state='intro';G.cards=GAMEOVER.concat([{t:`On recommence ${WORLDS[w].name}, avec ${S.run.lives} poignée${S.run.lives>1?'s':''} de paille de réserve.`}]);G.card=0;G.cardT=0;G.fade=1;
-  G.cardsDone=()=>{G.cutSeen=true;startLevel(w*4)};setSong('title');
+  // Raymond a perdu la tête : une vie le ramène au début du niveau, sinon tout recommence
+  loopsOff();G.chase=false;
+  const li=G.li,hasLife=S.run.lives>0;
+  if(hasLife){S.run.lives--;S.run.wear=0;save()}
+  const tail=hasLife
+    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\nIl reste ${S.run.lives} vie${S.run.lives>1?'s':''}. Retour au début du niveau.`}
+    :{title:"PLUS AUCUNE VIE",t:"Le règlement est formel : tout recommencer depuis le début.\nDepuis la remise de Vittoncourt."};
+  G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;
+  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(li)}:()=>{newRun();S.unlocked=0;save();startIntro()};
+  setSong('s5-4');
 }
 /* sons des bêtes et ambiances, une fois par image */
 const WALK_CRY={rat:['kwik !',()=>SFX.squeak()],boar:[null,()=>SFX.grunt()],piglet:[null,()=>SFX.grunt(true)],pigeon:['rou-rou',()=>SFX.coo()],hedgehog:['snif snif',()=>noise(.08,3000,.12,'bandpass',0,3)],goose:['KWAAK !',()=>SFX.honk()]};
@@ -3169,6 +3175,8 @@ function drawForeground(cx,seed,th){
   ctx.restore();
 }
 function strawIcon(x,y,a){ctx.save();ctx.translate(x,y);ctx.globalAlpha=a;ctx.strokeStyle='#e0b04e';ctx.lineWidth=1.6;ctx.lineCap='round';for(let k=-3;k<=3;k++){ctx.beginPath();ctx.moveTo(k*1.2,7);ctx.lineTo(k*2.2,-8);ctx.stroke()}ctx.fillStyle='#a8322d';ctx.fillRect(-5,0,10,3);ctx.restore()}
+function lifeIcon(x,y){ctx.save();ctx.translate(x,y);ctx.fillStyle='#8e97a8';ctx.beginPath();ctx.arc(0,0,7,0,7);ctx.fill();ctx.fillStyle='#4f9a7a';ctx.beginPath();ctx.arc(-1,5,5,0,Math.PI);ctx.fill();
+  ctx.fillStyle='#e9dfc7';poly(ctx,[6,-1,11,0,6,2]);ctx.fill();ctx.fillStyle='#e08a3a';ctx.beginPath();ctx.arc(2,-2,2.4,0,7);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.arc(2.4,-2,1.1,0,7);ctx.fill();ctx.restore()}
 function renderHUD(){
   // étiquette du niveau
   ctx.save();
@@ -3180,19 +3188,28 @@ function renderHUD(){
   ctx.fillStyle='#2a2420';ctx.beginPath();ctx.arc(w-12,17,3.5,0,7);ctx.fill();
   ctx.textAlign='left';ctx.fillText(lbl,18,23);
   ctx.restore();
-  // compteurs : paille de réserve, paille ramassée, médaille
+  // compteurs : vies, état de Raymond, paille ramassée, médaille
   ctx.save();
   const bx=W-74,by=14;let x=bx;
   ctx.font='17px '+F_DISP;ctx.textAlign='right';
-  const panelW=S.infinite?200:Math.max(200,96+Math.max(0,S.run.lives)*13+80);
+  const nl=Math.max(0,S.run.lives),wr=Math.min(MAX_WEAR,S.run.wear||0);
+  const ctw=ctx.measureText(`${G.corn}/${G.cornTotal}`).width;
+  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+14+(S.infinite?48:Math.max(1,nl)*17+(nl===0?70:0))+8;
   ctx.fillStyle='rgba(14,12,18,.6)';rr(ctx,bx-panelW,by,panelW,36,8);ctx.fill();
   ctx.strokeStyle='rgba(233,223,199,.15)';ctx.lineWidth=1;rr(ctx,bx-panelW+.5,by+.5,panelW-1,35,8);ctx.stroke();
   x-=12;
   if(L.medal){ctx.save();ctx.globalAlpha=G.medal?1:.28;drawMedal(ctx,x-8,by+22,0);ctx.restore();x-=30}
   ctx.fillStyle='#e9dfc7';const ct=`${G.corn}/${G.cornTotal}`;ctx.fillText(ct,x,by+24);x-=ctx.measureText(ct).width+12;drawTuft(ctx,x,by+18,0);x-=22;
   ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=12;
-  if(S.infinite){ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=20;strawIcon(x,by+18,1)}
-  else{const n=Math.max(0,S.run.lives);for(let k=0;k<n;k++){strawIcon(x-k*13,by+18,1)}if(n===0){ctx.fillStyle='#c8302a';ctx.font='italic 14px '+F_BODY;ctx.fillText('plus de réserve',x,by+23)}}
+  // état : 5 crans, les crans restants sont pleins ; le dernier clignote quand il ne reste rien
+  for(let k=0;k<=MAX_WEAR;k++){const cx=x-6-(MAX_WEAR-k)*13,full=k>=wr;const warn=wr>=MAX_WEAR&&k===MAX_WEAR;
+    ctx.fillStyle=full?(warn?'rgba(200,48,42,'+(.6+.4*Math.sin(G.t*8))+')':'#d9a441'):'rgba(233,223,199,.18)';
+    rr(ctx,cx-5,by+12,10,13,3);ctx.fill()}
+  x-=MAX_WEAR*13+24;
+  ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;
+  // vies : têtes de pigeon
+  if(S.infinite){ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
+  else{for(let k=0;k<nl;k++)lifeIcon(x-6-k*17,by+19);if(nl===0){ctx.fillStyle='#c8302a';ctx.font='italic 13px '+F_BODY;ctx.fillText('dernière vie',x,by+23)}}
   ctx.restore();
   // panneau d'aide puis réplique
   let qy=64;
@@ -3239,10 +3256,11 @@ function ensureTitleLv(){
   if(!titleLv||titleLv.rs!==RS){const tmp=parseLevel(0);const lay=loadLayers(0);const prev=L;L=tmp;tmp.far=lay.far;tmp.mid=lay.mid;tmp.windows=lay.windows;tmp.turbines=[];tmp.tiles=buildTiles(tmp);tmp.dome=null;L=prev;tmp.rs=RS;titleLv=tmp}
 }
 function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0};save()}
+function freshRun(){if(S.run.lives==null||S.run.lives<0)S.run.lives=START_LIVES}
 function menuItems(){
   if(G.state==='title'){
     const it=[{label:'Nouvelle partie',act:()=>{newRun();startIntro()}}];
-    if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.unlocked,19);if(S.run.lives<0)S.run.lives=S.run.worldLives[LEVELS[li].w]||START_LIVES;startLevel(li)}});
+    if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.unlocked,19);freshRun();startLevel(li)}});
     it.push({label:'Choisir un niveau',act:openSelect});
     it.push({label:S.muted?'Son : coupé':'Son : activé',act:toggleMute});
     return it;
@@ -3329,7 +3347,7 @@ function handleSelect(){
   const go=li=>{
     if(li===20){startIntro();return}
     if(li===21){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
-    G.cutSeen=li>0;S.run.lives=S.run.worldLives[LEVELS[li].w]||START_LIVES;startLevel(li)};
+    G.cutSeen=li>0;newRun();startLevel(li)};
   if(G.click)for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){go(b.i);return}
   if(pressed.has('ok'))go(G.sel);
 }
@@ -3443,6 +3461,30 @@ function drawFinaleCard(ct){
   if(ct<1.8){ctx.fillStyle='rgba(0,0,0,'+(1-ct/1.8)+')';ctx.fillRect(0,0,W,H)}
   if(ct>10){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+Math.min(.45,(ct-10)*.3)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer',W-24,H-16)}
 }
+/* carte : Raymond perd la tête (la tête saute, roule ; la paille s'échappe du cou) */
+function drawHeadlessCard(ct){
+  const fx=W/2-40,fy=300,sz=3.4,neck=fy-22*sz;
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(fx+60,fy+4,170,12,0,0,7);ctx.fill();
+  const pop=ct>.8,tt=Math.max(0,ct-.8);
+  const shake=pop?0:Math.sin(ct*40)*2*ct;
+  // corps sans tête, qui s'affaisse
+  const slump=pop?Math.min(1,tt/1.2):0;
+  ctx.save();ctx.beginPath();ctx.rect(0,neck+slump*10,W,H);ctx.clip();
+  drawRaymond(ctx,fx+shake,fy+slump*4,{f:1,t:0,walk:0,wear:4,size:sz,rot:slump*.12,sy:1-slump*.08});ctx.restore();
+  // la tête
+  let hx=fx+shake,hy=0,hr=0;
+  if(pop){const fl=Math.min(tt,.75);hx=fx+180*fl;hy=-(520*fl-1100*fl*fl/2);if(tt>.75){const r=Math.min(tt-.75,1.6);hx=fx+135+150*(1-Math.exp(-r*2.2));hy=0}hr=(hx-fx)/285*(Math.PI*2+.45)}
+  ctx.save();ctx.translate(hx+10*sz,neck-8*sz+hy+ (pop&&tt>.75?22*sz:0));ctx.rotate(hr);ctx.translate(-(fx+10*sz),-(neck-8*sz));
+  ctx.beginPath();ctx.rect(0,0,W,neck);ctx.clip();
+  drawRaymond(ctx,fx,fy,{f:1,t:0,walk:0,wear:4,size:sz,eyeClosed:pop&&tt>1.8});ctx.restore();
+  // paille qui jaillit du cou
+  if(pop){const R=mulberry(5);ctx.strokeStyle='#e0b04e';ctx.lineCap='round';
+    for(let k=0;k<26;k++){const a=-Math.PI/2+(R()-.5)*1.6,v=120+R()*200,life=Math.min(tt,1.1+R()*.6),px=fx+4*sz+Math.cos(a)*v*life,py=neck+slump*10+Math.sin(a)*v*life+420*life*life;
+      if(py>fy+2)continue;ctx.lineWidth=1.6+R();ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+Math.cos(a+R())*8,py+Math.sin(a+R())*8);ctx.stroke()}
+    ctx.lineWidth=2;for(let k=0;k<9;k++){const ax=fx+2*sz+(k-4)*3;ctx.beginPath();ctx.moveTo(ax,neck+slump*10+2);ctx.lineTo(ax+(k-4)*2.2,neck+slump*10-8-((k*7)%6));ctx.stroke()}}
+  ctx.restore();
+}
 function drawBannerCard(t){
   ctx.save();ctx.translate(W/2,H/2);
   const sw=Math.sin(t*1.5)*3;
@@ -3467,6 +3509,7 @@ function renderCards(t){
   else{
     let y=c.pic?150:H/2-20;
     if(c.pic==='dome'){drawDome(ctx,W/2,250,.62,t);y=330}
+    if(c.pic==='headless'){drawHeadlessCard(G.cardT);y=372}
     ctx.fillStyle='#ece3cc';
     if(c.title){ctx.font='34px '+F_DISP;ctx.fillText(c.title,W/2,c.pic?y:y-50);y+=c.pic?38:0}
     if(c.t){ctx.font='italic 25px '+F_BODY;const lines=wrap(ctx,c.t,680);const y0=c.pic?y:H/2-(lines.length-1)*17+(c.title?14:0);lines.forEach((l,k)=>ctx.fillText(l,W/2,y0+k*34))}
@@ -3548,10 +3591,8 @@ function afterLetter(li){
   G.cutSeen=true;
   if(li===19){S.finished=true;save();G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>goTitle();setSong('s5-4');return}
   if(li%4===3){
-    const w=LEVELS[li].w;let bonus=0;for(let k=w*4;k<w*4+4;k++)if(S.run.medals[k])bonus++;
-    S.run.lives=Math.max(0,S.run.lives)+bonus;S.run.worldLives[w+1]=S.run.lives;save();
+    const w=LEVELS[li].w;
     const cards=WORLD_CARDS[w+1].slice();
-    cards.splice(cards.length-1,0,{title:"RAVITAILLEMENT",t:bonus?`Médailles trouvées pendant cette étape : ${bonus}.\nRaymond gagne ${bonus} poignée${bonus>1?'s':''} de paille de réserve.`:"Aucune médaille pendant cette étape.\nPas de paille de réserve en plus. Le règlement est sévère."});
     G.state='intro';G.cards=cards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>startLevel(li+1);setSong('title');return;
   }
   startLevel(li+1);

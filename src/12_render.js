@@ -122,6 +122,8 @@ function drawForeground(cx,seed,th){
   ctx.restore();
 }
 function strawIcon(x,y,a){ctx.save();ctx.translate(x,y);ctx.globalAlpha=a;ctx.strokeStyle='#e0b04e';ctx.lineWidth=1.6;ctx.lineCap='round';for(let k=-3;k<=3;k++){ctx.beginPath();ctx.moveTo(k*1.2,7);ctx.lineTo(k*2.2,-8);ctx.stroke()}ctx.fillStyle='#a8322d';ctx.fillRect(-5,0,10,3);ctx.restore()}
+function lifeIcon(x,y){ctx.save();ctx.translate(x,y);ctx.fillStyle='#8e97a8';ctx.beginPath();ctx.arc(0,0,7,0,7);ctx.fill();ctx.fillStyle='#4f9a7a';ctx.beginPath();ctx.arc(-1,5,5,0,Math.PI);ctx.fill();
+  ctx.fillStyle='#e9dfc7';poly(ctx,[6,-1,11,0,6,2]);ctx.fill();ctx.fillStyle='#e08a3a';ctx.beginPath();ctx.arc(2,-2,2.4,0,7);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.arc(2.4,-2,1.1,0,7);ctx.fill();ctx.restore()}
 function renderHUD(){
   // étiquette du niveau
   ctx.save();
@@ -133,19 +135,28 @@ function renderHUD(){
   ctx.fillStyle='#2a2420';ctx.beginPath();ctx.arc(w-12,17,3.5,0,7);ctx.fill();
   ctx.textAlign='left';ctx.fillText(lbl,18,23);
   ctx.restore();
-  // compteurs : paille de réserve, paille ramassée, médaille
+  // compteurs : vies, état de Raymond, paille ramassée, médaille
   ctx.save();
   const bx=W-74,by=14;let x=bx;
   ctx.font='17px '+F_DISP;ctx.textAlign='right';
-  const panelW=S.infinite?200:Math.max(200,96+Math.max(0,S.run.lives)*13+80);
+  const nl=Math.max(0,S.run.lives),wr=Math.min(MAX_WEAR,S.run.wear||0);
+  const ctw=ctx.measureText(`${G.corn}/${G.cornTotal}`).width;
+  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+14+(S.infinite?48:Math.max(1,nl)*17+(nl===0?70:0))+8;
   ctx.fillStyle='rgba(14,12,18,.6)';rr(ctx,bx-panelW,by,panelW,36,8);ctx.fill();
   ctx.strokeStyle='rgba(233,223,199,.15)';ctx.lineWidth=1;rr(ctx,bx-panelW+.5,by+.5,panelW-1,35,8);ctx.stroke();
   x-=12;
   if(L.medal){ctx.save();ctx.globalAlpha=G.medal?1:.28;drawMedal(ctx,x-8,by+22,0);ctx.restore();x-=30}
   ctx.fillStyle='#e9dfc7';const ct=`${G.corn}/${G.cornTotal}`;ctx.fillText(ct,x,by+24);x-=ctx.measureText(ct).width+12;drawTuft(ctx,x,by+18,0);x-=22;
   ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=12;
-  if(S.infinite){ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=20;strawIcon(x,by+18,1)}
-  else{const n=Math.max(0,S.run.lives);for(let k=0;k<n;k++){strawIcon(x-k*13,by+18,1)}if(n===0){ctx.fillStyle='#c8302a';ctx.font='italic 14px '+F_BODY;ctx.fillText('plus de réserve',x,by+23)}}
+  // état : 5 crans, les crans restants sont pleins ; le dernier clignote quand il ne reste rien
+  for(let k=0;k<=MAX_WEAR;k++){const cx=x-6-(MAX_WEAR-k)*13,full=k>=wr;const warn=wr>=MAX_WEAR&&k===MAX_WEAR;
+    ctx.fillStyle=full?(warn?'rgba(200,48,42,'+(.6+.4*Math.sin(G.t*8))+')':'#d9a441'):'rgba(233,223,199,.18)';
+    rr(ctx,cx-5,by+12,10,13,3);ctx.fill()}
+  x-=MAX_WEAR*13+24;
+  ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;
+  // vies : têtes de pigeon
+  if(S.infinite){ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
+  else{for(let k=0;k<nl;k++)lifeIcon(x-6-k*17,by+19);if(nl===0){ctx.fillStyle='#c8302a';ctx.font='italic 13px '+F_BODY;ctx.fillText('dernière vie',x,by+23)}}
   ctx.restore();
   // panneau d'aide puis réplique
   let qy=64;

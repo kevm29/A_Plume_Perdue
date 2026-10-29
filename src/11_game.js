@@ -25,7 +25,6 @@ function startLevel(i){
   computeRS();
   G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTiles(L);
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
-  if(S.run.lives<0)S.run.lives=S.run.worldLives[LEVELS[i].w]||START_LIVES;
   setSong(songKey(i));loopsOff();
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
   parts.length=0;G.quip=null;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
@@ -49,8 +48,9 @@ function die(kind,tiles){
   if(P.dead)return;
   if(G.sim){P.dead=true;return}
   P.dead=true;P.deadT=1.25;G.levelDeaths++;
-  S.run.wear=Math.min(8,(S.run.wear||0)+1);
-  if(!S.infinite){S.run.lives--;if(S.run.lives<0)G.gameOverPending=true}
+  // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
+  if((S.run.wear||0)>=MAX_WEAR&&!S.infinite)G.gameOverPending=true;
+  else S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);
   save();
   G.shake=10;SFX.death();
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
@@ -214,7 +214,7 @@ function stepPlay(dt){
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
     if((S.run.wear||0)>0){S.run.wear--;save();P.sx=1.15;P.sy=1.15;puff(pc.x,pc.y,6,true);if(!G.tuftSaid){G.tuftSaid=true;say(pick(TUFT_Q),3.4)}}}
-  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;SFX.medal();say(pick(MEDAL_Q),3.6)}
+  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;SFX.medal();if(!S.run.medals[G.li]&&!S.infinite){S.run.medals[G.li]=true;S.run.lives++;save();say(pick(MEDAL_Q)+' (Une vie de plus.)',4.2)}else say(pick(MEDAL_Q),3.6)}
   for(const cp of L.cps)if(!cp.on&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;G.hintI=hn;
@@ -270,11 +270,16 @@ function respawn(){
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
-  loopsOff();
-  const w=LEVELS[G.li].w;
-  S.run.lives=S.run.worldLives[w]||START_LIVES;save();
-  G.state='intro';G.cards=GAMEOVER.concat([{t:`On recommence ${WORLDS[w].name}, avec ${S.run.lives} poignée${S.run.lives>1?'s':''} de paille de réserve.`}]);G.card=0;G.cardT=0;G.fade=1;
-  G.cardsDone=()=>{G.cutSeen=true;startLevel(w*4)};setSong('title');
+  // Raymond a perdu la tête : une vie le ramène au début du niveau, sinon tout recommence
+  loopsOff();G.chase=false;
+  const li=G.li,hasLife=S.run.lives>0;
+  if(hasLife){S.run.lives--;S.run.wear=0;save()}
+  const tail=hasLife
+    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\nIl reste ${S.run.lives} vie${S.run.lives>1?'s':''}. Retour au début du niveau.`}
+    :{title:"PLUS AUCUNE VIE",t:"Le règlement est formel : tout recommencer depuis le début.\nDepuis la remise de Vittoncourt."};
+  G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;
+  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(li)}:()=>{newRun();S.unlocked=0;save();startIntro()};
+  setSong('s5-4');
 }
 /* sons des bêtes et ambiances, une fois par image */
 const WALK_CRY={rat:['kwik !',()=>SFX.squeak()],boar:[null,()=>SFX.grunt()],piglet:[null,()=>SFX.grunt(true)],pigeon:['rou-rou',()=>SFX.coo()],hedgehog:['snif snif',()=>noise(.08,3000,.12,'bandpass',0,3)],goose:['KWAAK !',()=>SFX.honk()]};

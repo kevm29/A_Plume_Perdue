@@ -64,7 +64,7 @@ const ENDING=[
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
 ];
 const GAMEOVER=[
-  {title:"PLUS DE PAILLE",t:"Raymond s'effondre en un petit tas de paille.\nUn balayeur passe, hésite, et le remet sur ses pattes."}
+  {pic:'headless',minT:3.2,t:"Raymond a perdu la tête.\nAu sens propre."}
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},

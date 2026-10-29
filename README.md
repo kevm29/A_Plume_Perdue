@@ -28,13 +28,13 @@ La progression est sauvegardée dans le navigateur.
 
 ## Mécaniques
 
-- **Les vies (la paille).** Raymond a 3 vies pour la première étape. Au début de chaque étape suivante, il gagne autant de vies que de médailles trouvées pendant l'étape précédente. S'il n'a plus de paille, l'étape recommence avec les vies qu'il avait en y entrant.
-- **Rembourrage.** À chaque mort, Raymond se rafistole un peu plus : paille qui dépasse, pansements, puis un bouton à la place de l'œil. Chaque touffe de paille ramassée le rembourre d'un coup.
+- **L'état de Raymond (5 crans).** Chaque chute l'abîme d'un cran et le renvoie au dernier cartel : paille qui dépasse, pansement, bandeau, puis un bouton à la place de l'œil. Chaque touffe de paille ramassée le répare d'un cran. Une chute de plus au cinquième cran, et il perd la tête.
+- **Les vies.** Raymond commence avec 2 vies. Chaque médaille trouvée en donne une de plus (une seule fois par niveau). Quand il perd la tête, une vie le ramène au début du niveau, recousu à neuf. Sans vie, tout recommence depuis l'introduction.
 - **Les épingles.** Mourir sur des épingles y laisse un tas de paille, sur lequel on peut ensuite marcher.
 - **Les cartels** (panneaux « ART. » dehors) servent de points de sauvegarde.
 - **À collecter** : des touffes de paille et une médaille cachée par niveau (la Croix du mérite colombophile).
 - **Choisir un niveau** (écran d'accueil ou menu Pause) : les 20 niveaux sont accessibles directement, ainsi que l'introduction et la fin.
-- **Mode vies illimitées (caché)** : sur l'écran d'accueil, cliquer sur l'œil fermé de Raymond, sous la cloche. Il fait un clin d'œil, et le compteur affiche ∞. Recliquer pour revenir au mode normal.
+- **Mode vies illimitées (caché)** : sur l'écran d'accueil, cliquer sur l'œil fermé de Raymond, sous la cloche. Il fait un clin d'œil, et le compteur affiche ∞ : Raymond ne perd plus jamais la tête. Recliquer pour revenir au mode normal.
 - **Poursuites** : le chat Bijou (1-4), le drone (2-3) et la buse empaillée (5-3).
 - **L'A4** : camions dont on emprunte le toit pour franchir le verre brisé, et éclairs annoncés au sol.
 

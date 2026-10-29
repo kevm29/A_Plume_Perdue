@@ -48,7 +48,8 @@ let grainPat=null;
 
 /* ---------- sauvegarde ---------- */
 const SAVE_KEY='a-plume-perdue-v2';
-const START_LIVES=3;
+const START_LIVES=2,MAX_WEAR=4;
 let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
+S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}

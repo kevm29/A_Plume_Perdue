@@ -7,10 +7,11 @@ function ensureTitleLv(){
   if(!titleLv||titleLv.rs!==RS){const tmp=parseLevel(0);const lay=loadLayers(0);const prev=L;L=tmp;tmp.far=lay.far;tmp.mid=lay.mid;tmp.windows=lay.windows;tmp.turbines=[];tmp.tiles=buildTiles(tmp);tmp.dome=null;L=prev;tmp.rs=RS;titleLv=tmp}
 }
 function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0};save()}
+function freshRun(){if(S.run.lives==null||S.run.lives<0)S.run.lives=START_LIVES}
 function menuItems(){
   if(G.state==='title'){
     const it=[{label:'Nouvelle partie',act:()=>{newRun();startIntro()}}];
-    if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.unlocked,19);if(S.run.lives<0)S.run.lives=S.run.worldLives[LEVELS[li].w]||START_LIVES;startLevel(li)}});
+    if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.unlocked,19);freshRun();startLevel(li)}});
     it.push({label:'Choisir un niveau',act:openSelect});
     it.push({label:S.muted?'Son : coupé':'Son : activé',act:toggleMute});
     return it;
@@ -97,7 +98,7 @@ function handleSelect(){
   const go=li=>{
     if(li===20){startIntro();return}
     if(li===21){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
-    G.cutSeen=li>0;S.run.lives=S.run.worldLives[LEVELS[li].w]||START_LIVES;startLevel(li)};
+    G.cutSeen=li>0;newRun();startLevel(li)};
   if(G.click)for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){go(b.i);return}
   if(pressed.has('ok'))go(G.sel);
 }
@@ -211,6 +212,30 @@ function drawFinaleCard(ct){
   if(ct<1.8){ctx.fillStyle='rgba(0,0,0,'+(1-ct/1.8)+')';ctx.fillRect(0,0,W,H)}
   if(ct>10){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+Math.min(.45,(ct-10)*.3)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer',W-24,H-16)}
 }
+/* carte : Raymond perd la tête (la tête saute, roule ; la paille s'échappe du cou) */
+function drawHeadlessCard(ct){
+  const fx=W/2-40,fy=300,sz=3.4,neck=fy-22*sz;
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(fx+60,fy+4,170,12,0,0,7);ctx.fill();
+  const pop=ct>.8,tt=Math.max(0,ct-.8);
+  const shake=pop?0:Math.sin(ct*40)*2*ct;
+  // corps sans tête, qui s'affaisse
+  const slump=pop?Math.min(1,tt/1.2):0;
+  ctx.save();ctx.beginPath();ctx.rect(0,neck+slump*10,W,H);ctx.clip();
+  drawRaymond(ctx,fx+shake,fy+slump*4,{f:1,t:0,walk:0,wear:4,size:sz,rot:slump*.12,sy:1-slump*.08});ctx.restore();
+  // la tête
+  let hx=fx+shake,hy=0,hr=0;
+  if(pop){const fl=Math.min(tt,.75);hx=fx+180*fl;hy=-(520*fl-1100*fl*fl/2);if(tt>.75){const r=Math.min(tt-.75,1.6);hx=fx+135+150*(1-Math.exp(-r*2.2));hy=0}hr=(hx-fx)/285*(Math.PI*2+.45)}
+  ctx.save();ctx.translate(hx+10*sz,neck-8*sz+hy+ (pop&&tt>.75?22*sz:0));ctx.rotate(hr);ctx.translate(-(fx+10*sz),-(neck-8*sz));
+  ctx.beginPath();ctx.rect(0,0,W,neck);ctx.clip();
+  drawRaymond(ctx,fx,fy,{f:1,t:0,walk:0,wear:4,size:sz,eyeClosed:pop&&tt>1.8});ctx.restore();
+  // paille qui jaillit du cou
+  if(pop){const R=mulberry(5);ctx.strokeStyle='#e0b04e';ctx.lineCap='round';
+    for(let k=0;k<26;k++){const a=-Math.PI/2+(R()-.5)*1.6,v=120+R()*200,life=Math.min(tt,1.1+R()*.6),px=fx+4*sz+Math.cos(a)*v*life,py=neck+slump*10+Math.sin(a)*v*life+420*life*life;
+      if(py>fy+2)continue;ctx.lineWidth=1.6+R();ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+Math.cos(a+R())*8,py+Math.sin(a+R())*8);ctx.stroke()}
+    ctx.lineWidth=2;for(let k=0;k<9;k++){const ax=fx+2*sz+(k-4)*3;ctx.beginPath();ctx.moveTo(ax,neck+slump*10+2);ctx.lineTo(ax+(k-4)*2.2,neck+slump*10-8-((k*7)%6));ctx.stroke()}}
+  ctx.restore();
+}
 function drawBannerCard(t){
   ctx.save();ctx.translate(W/2,H/2);
   const sw=Math.sin(t*1.5)*3;
@@ -235,6 +260,7 @@ function renderCards(t){
   else{
     let y=c.pic?150:H/2-20;
     if(c.pic==='dome'){drawDome(ctx,W/2,250,.62,t);y=330}
+    if(c.pic==='headless'){drawHeadlessCard(G.cardT);y=372}
     ctx.fillStyle='#ece3cc';
     if(c.title){ctx.font='34px '+F_DISP;ctx.fillText(c.title,W/2,c.pic?y:y-50);y+=c.pic?38:0}
     if(c.t){ctx.font='italic 25px '+F_BODY;const lines=wrap(ctx,c.t,680);const y0=c.pic?y:H/2-(lines.length-1)*17+(c.title?14:0);lines.forEach((l,k)=>ctx.fillText(l,W/2,y0+k*34))}
@@ -316,10 +342,8 @@ function afterLetter(li){
   G.cutSeen=true;
   if(li===19){S.finished=true;save();G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>goTitle();setSong('s5-4');return}
   if(li%4===3){
-    const w=LEVELS[li].w;let bonus=0;for(let k=w*4;k<w*4+4;k++)if(S.run.medals[k])bonus++;
-    S.run.lives=Math.max(0,S.run.lives)+bonus;S.run.worldLives[w+1]=S.run.lives;save();
+    const w=LEVELS[li].w;
     const cards=WORLD_CARDS[w+1].slice();
-    cards.splice(cards.length-1,0,{title:"RAVITAILLEMENT",t:bonus?`Médailles trouvées pendant cette étape : ${bonus}.\nRaymond gagne ${bonus} poignée${bonus>1?'s':''} de paille de réserve.`:"Aucune médaille pendant cette étape.\nPas de paille de réserve en plus. Le règlement est sévère."});
     G.state='intro';G.cards=cards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>startLevel(li+1);setSong('title');return;
   }
   startLevel(li+1);

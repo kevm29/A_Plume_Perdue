@@ -2,7 +2,7 @@
    PERSONNAGES, CRÉATURES ET OBJETS ANIMÉS
    ========================================================= */
 function drawRaymond(g,x,y,o){
-  const d=o.wear||0,t=o.t||0,w=o.walk||0;
+  const d=[0,2,3,5,7][Math.max(0,Math.min(4,o.wear||0))],t=o.t||0,w=o.walk||0;
   g.save();g.translate(x,y);if(o.rot)g.rotate(o.rot);g.scale((o.f||1)*(o.sx||1),o.sy||1);
   if(o.size)g.scale(o.size,o.size);
   const step=Math.sin(t*15)*w,air=o.air;

@@ -67,7 +67,7 @@ Chaque niveau terminé révèle un fragment. Les étapes 1 et 2 sont la lettre �
 - **3 → 4.** Les ratures l'ont rendu silencieux. Une route immense, toute droite vers l'ouest, sans chevaux ni soldats. Il pleut des cordes.
 - **4 → 5.** L'orage est passé. La lettre est trempée, et Raymond sait maintenant ce qui est écrit au dos. Le village est en fête. Personne n'attend de pigeon.
 
-Entre deux étapes, une carte « RAVITAILLEMENT » donne autant de vies que de médailles trouvées pendant l'étape précédente.
+Règles : 2 vies au départ, une de plus par médaille. Raymond a 5 états ; au-delà, il perd la tête (« Raymond a perdu la tête. Au sens propre. »). Une vie le ramène au début du niveau ; sans vie, tout recommence.
 
 ## L'arrivée sur la tombe (fin du niveau 5-4)
 
