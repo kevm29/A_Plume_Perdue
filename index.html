@@ -3269,32 +3269,40 @@ function renderTitle(t){
 function renderSelect(t){
   ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
   ctx.fillStyle='rgba(12,10,16,.84)';ctx.fillRect(0,0,W,H);
-  ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='32px '+F_DISP;ctx.fillText('Itinéraire de Raymond',W/2,52);
-  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → Verdun → Reims → A4 → Villemareuil',W/2,74);
+  ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Itinéraire de Raymond',W/2,46);
+  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → Verdun → Reims → A4 → Villemareuil',W/2,67);
   G.boxes=[];
+  const tile=(i,x,yy,w,h,top,bottom)=>{const sel=i===G.sel,done=typeof i==='number'&&i<=S.unlocked;
+    ctx.fillStyle=sel?'#efe5cc':done?'#d8cdb2':'#a89f8a';rr(ctx,x,yy,w,h,6);ctx.fill();
+    if(sel){ctx.strokeStyle='#d9a441';ctx.lineWidth=3;rr(ctx,x-3,yy-3,w+6,h+6,8);ctx.stroke()}
+    ctx.fillStyle='#2a2420';ctx.textAlign='left';
+    if(bottom){ctx.font='12px '+F_DISP;ctx.fillText(top,x+10,yy+16);ctx.font='italic 15px '+F_BODY;ctx.fillText(bottom,x+10,yy+35)}
+    else{ctx.font='italic 15px '+F_BODY;ctx.textAlign='center';ctx.fillText(top,x+w/2,yy+h/2+5)}
+    G.boxes.push({x,y:yy,w,h,i})};
   WORLDS.forEach((wd,wi)=>{
-    const y=96+wi*86;ctx.textAlign='left';ctx.font='13px '+F_DISP;ctx.fillStyle=wi*4<=S.unlocked?'#d9a441':'rgba(233,223,199,.35)';ctx.fillText(`ÉTAPE ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
+    const y=86+wi*76;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`ÉTAPE ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
     wd.levels.forEach((ln,lj)=>{
-      const li=wi*4+lj,x=70+lj*210,yy=y+14,w=196,h=52;const open=li<=S.unlocked;const sel=li===G.sel;
-      ctx.fillStyle=open?(sel?'#efe5cc':'#d8cdb2'):'rgba(233,223,199,.07)';rr(ctx,x,yy,w,h,6);ctx.fill();
-      if(sel){ctx.strokeStyle='#d9a441';ctx.lineWidth=3;rr(ctx,x-3,yy-3,w+6,h+6,8);ctx.stroke()}
-      ctx.fillStyle=open?'#2a2420':'rgba(233,223,199,.32)';ctx.font='13px '+F_DISP;ctx.fillText(`${wi+1}–${lj+1}`,x+10,yy+18);
-      ctx.font='italic 16px '+F_BODY;ctx.fillText(ln,x+10,yy+40);
-      const b=S.best[li];if(b){ctx.textAlign='right';ctx.font='12px '+F_DISP;ctx.fillText((b.medal?'✠ ':'')+`paille ${b.corn}`,x+w-8,yy+18);ctx.textAlign='left'}
-      if(open)G.boxes.push({x,y:yy,w,h,i:li});
+      const li=wi*4+lj,x=70+lj*210,yy=y+12;
+      tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,ln);
+      const b=S.best[li];if(b){ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';ctx.fillText((b.medal?'✠ ':'')+`paille ${b.corn}`,x+188,yy+16)}
     });
   });
-  ctx.textAlign='center';ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Entrée pour partir · Échap pour revenir'+(S.infinite?' · paille illimitée':''),W/2,H-12);
+  tile(20,70,474,406,30,"Revoir l'introduction");
+  tile(21,484,474,406,30,'Revoir la fin');
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Tous les niveaux sont accessibles · Entrée pour partir · Échap pour revenir'+(S.infinite?' · paille illimitée':''),W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){
   if(pressed.has('esc')||pressed.has('back')){goTitle();return}
-  const max=Math.min(S.unlocked,19);
-  if(pressed.has('left'))G.sel=Math.max(0,G.sel-1);
-  if(pressed.has('right'))G.sel=Math.min(max,G.sel+1);
-  if(pressed.has('up'))G.sel=Math.max(0,G.sel-4);
-  if(pressed.has('down'))G.sel=Math.min(max,G.sel+4);
-  const go=li=>{G.cutSeen=true;S.run.lives=S.run.worldLives[LEVELS[li].w]||START_LIVES;startLevel(li)};
+  const s=G.sel;
+  if(pressed.has('left'))G.sel=s===21?20:s<20?Math.max(0,s-1):s;
+  if(pressed.has('right'))G.sel=s===20?21:s<20?Math.min(19,s+1):s;
+  if(pressed.has('up'))G.sel=s>=20?(s===20?16:19):Math.max(0,s-4);
+  if(pressed.has('down'))G.sel=s>=16&&s<20?(s%4<2?20:21):s<16?s+4:s;
+  const go=li=>{
+    if(li===20){startIntro();return}
+    if(li===21){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
+    G.cutSeen=li>0;S.run.lives=S.run.worldLives[LEVELS[li].w]||START_LIVES;startLevel(li)};
   if(G.click)for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){go(b.i);return}
   if(pressed.has('ok'))go(G.sel);
 }
@@ -3312,57 +3320,100 @@ function drawTombCard(t){
   ctx.restore();
 }
 /* dernier plan : Raymond s'est éteint sur la tombe, travelling vers le pot de fleurs */
+function engrave(txt,x,y,font){ctx.font=font;ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillText(txt,x,y+1);ctx.fillStyle='rgba(255,255,255,.10)';ctx.fillText(txt,x,y-.6);ctx.fillStyle='#c8a75e';ctx.fillText(txt,x,y)}
+function granite(x,y,w,h,c0,c1,seed){
+  const gr=ctx.createLinearGradient(x,y,x+w,y+h);gr.addColorStop(0,c0);gr.addColorStop(1,c1);ctx.fillStyle=gr;ctx.fillRect(x,y,w,h);
+  const R=mulberry(seed);for(let k=0;k<w*h/60;k++){ctx.fillStyle=R()<.5?'rgba(0,0,0,.14)':'rgba(255,255,255,.08)';ctx.fillRect(x+R()*w,y+R()*h,1.3,1.3)}
+}
 function drawFinaleCard(ct){
   const ease=u=>u<0?0:u>1?1:u*u*(3-2*u);
-  const u=ease((ct-3.2)/5.5);
-  const camX=lerp(300,680,u),zoom=lerp(1.45,2.3,u),gy=380;
-  ctx.fillStyle='#07070b';ctx.fillRect(0,0,W,H);
-  ctx.save();ctx.translate(W/2,H/2+30);ctx.scale(zoom,zoom);ctx.translate(-camX,-lerp(300,345,u));
-  // ciel de nuit et lune voilée
-  const sk=ctx.createLinearGradient(0,-200,0,gy);sk.addColorStop(0,'#0c1020');sk.addColorStop(1,'#26304a');ctx.fillStyle=sk;ctx.fillRect(-600,-300,2000,gy+300);
-  ctx.fillStyle='rgba(230,235,255,.08)';ctx.beginPath();ctx.arc(120,40,90,0,7);ctx.fill();ctx.fillStyle='#d8dcea';ctx.beginPath();ctx.arc(120,40,26,0,7);ctx.fill();
-  const R=mulberry(91);ctx.fillStyle='rgba(255,255,255,.6)';for(let k=0;k<60;k++)ctx.fillRect(-500+R()*1800,-250+R()*380,1.2,1.2);
-  // tombes au loin, cyprès
-  for(let k=0;k<14;k++){const x=-500+k*140+R()*60,h=30+R()*30;ctx.fillStyle='#161a26';if(R()<.5){ctx.fillRect(x-3,gy-h-24,6,h+24);ctx.fillRect(x-14,gy-h-12,28,6)}else{ctx.beginPath();ctx.moveTo(x-16,gy);ctx.lineTo(x-16,gy-h);ctx.arc(x,gy-h,16,Math.PI,0);ctx.lineTo(x+16,gy);ctx.fill()}}
-  ctx.fillStyle='#10131c';for(const x of[-260,910,1180]){ctx.beginPath();ctx.ellipse(x,gy-90,26,95,0,0,7);ctx.fill()}
-  ctx.fillStyle='#1a2018';ctx.fillRect(-600,gy,2000,200);ctx.fillStyle='#232b20';ctx.fillRect(-600,gy,2000,6);
-  // la tombe Garnier : stèle et dalle
-  const top=gy-46;
-  ctx.fillStyle='#6f6c66';rr(ctx,96,gy-190,62,190,8);ctx.fill();ctx.fillStyle='#86837c';rr(ctx,100,gy-186,54,8,3);ctx.fill();
-  ctx.fillStyle='#2e2e32';ctx.fillRect(125,gy-232,4,46);ctx.fillRect(115,gy-222,24,4);
-  ctx.fillStyle='rgba(30,30,34,.8)';ctx.font='9px '+F_DISP;ctx.textAlign='center';ctx.fillText('FAMILLE',127,gy-160);ctx.fillText('GARNIER',127,gy-148);
-  ctx.font='6px '+F_DISP;ctx.fillText('JOSEPH',127,gy-124);ctx.fillText('1893 – 1958',127,gy-116);ctx.fillText('MARGUERITE',127,gy-100);ctx.fillText('née VASSEUR',127,gy-92);ctx.fillText('1897 – 1989',127,gy-84);
-  ctx.fillStyle='#5a5852';ctx.fillRect(150,top,470,46);ctx.fillStyle='#7c7972';ctx.fillRect(146,top-8,478,10);
-  ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(146,top-8,478,2);
-  ctx.fillStyle='rgba(0,0,0,.12)';for(let k=0;k<40;k++)ctx.fillRect(150+R()*466,top+R()*44,2,2);
-  // la lettre de Lucien, posée sur la pierre
-  ctx.save();ctx.translate(390,top-9);ctx.rotate(-.08);ctx.fillStyle='#e6dcc0';ctx.fillRect(-16,-6,32,6);ctx.fillStyle='#cfc3a3';ctx.fillRect(-16,-6,32,1.5);ctx.strokeStyle='#a8322d';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-6);ctx.lineTo(0,0);ctx.stroke();ctx.restore();
-  // Raymond, couché sur la dalle, l'œil fermé
-  ctx.save();ctx.beginPath();ctx.rect(-600,-300,2000,top-8+300);ctx.clip();
-  drawRaymond(ctx,330,top-8+18,{f:1,t:0,walk:0,wear:S.run.wear||0,size:1.9,eyeClosed:true,rot:.38,sy:.72});
+  const u=ease((ct-3.4)/6);
+  const gy=330;                      // pied de la tombe
+  const camX=lerp(-30,422,u),camY=lerp(gy-168,gy-16,u),zoom=lerp(1.3,3.2,u);
+  ctx.fillStyle='#06060a';ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);ctx.translate(-camX,-camY);
+  const R=mulberry(57);
+  // ciel, lune, étoiles
+  const sk=ctx.createLinearGradient(0,-120,0,gy-40);sk.addColorStop(0,'#0a0e1c');sk.addColorStop(1,'#2a3350');ctx.fillStyle=sk;ctx.fillRect(-900,-200,2200,gy+60);
+  ctx.fillStyle='rgba(225,230,255,.07)';ctx.beginPath();ctx.arc(-300,-20,110,0,7);ctx.fill();ctx.fillStyle='rgba(225,230,255,.10)';ctx.beginPath();ctx.arc(-300,-20,55,0,7);ctx.fill();
+  ctx.fillStyle='#dfe2ee';ctx.beginPath();ctx.arc(-300,-20,24,0,7);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.55)';for(let k=0;k<90;k++)ctx.fillRect(-900+R()*2200,-180+R()*260,1,1);
+  // mur du cimetière, clocher au loin, cyprès, rangée de tombes
+  ctx.fillStyle='#141824';ctx.fillRect(-900,gy-128,2200,60);ctx.fillStyle='#1a1f2c';ctx.fillRect(-900,gy-132,2200,6);
+  ctx.fillStyle='#10131c';ctx.fillRect(560,gy-250,34,130);poly(ctx,[556,gy-250,598,gy-250,577,gy-300]);ctx.fill();
+  for(const x of[-520,-380,470,720]){ctx.fillStyle='#0d1018';ctx.beginPath();ctx.ellipse(x,gy-150,22,90,0,0,7);ctx.fill()}
+  for(let k=0;k<16;k++){const x=-860+k*130+R()*40;if(Math.abs(x)<260)continue;const h=36+R()*26,w=40+R()*16;ctx.fillStyle='#1c2130';
+    ctx.fillRect(x-w/2,gy-68-h,w,h);ctx.fillStyle='#232a3a';ctx.fillRect(x-w/2-6,gy-70,w+12,12);
+    if(R()<.5){ctx.fillStyle='#161a26';ctx.fillRect(x-2,gy-68-h-18,4,18);ctx.fillRect(x-8,gy-68-h-12,16,4)}}
+  // allée de gravier
+  const gv=ctx.createLinearGradient(0,gy-70,0,gy+140);gv.addColorStop(0,'#2a2c2c');gv.addColorStop(1,'#3e3f3a');ctx.fillStyle=gv;ctx.fillRect(-900,gy-70,2200,240);
+  for(let k=0;k<900;k++){const x=-700+R()*1600,y=gy-66+R()*200;ctx.fillStyle=R()<.5?'rgba(255,255,255,.10)':'rgba(0,0,0,.25)';ctx.fillRect(x,y,1.6,1.1)}
+  // --- la tombe Garnier, vue de face ---
+  // ombre portée
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(10,gy+4,210,16,0,0,7);ctx.fill();
+  // stèle (au fond)
+  const sx0=-112,sx1=112,stTop=gy-300,stBot=gy-66;
+  ctx.fillStyle='#45433f';poly(ctx,[sx1,stTop+30,sx1+12,stTop+38,sx1+12,stBot,sx1,stBot]);ctx.fill(); // tranche droite
+  ctx.save();ctx.beginPath();ctx.moveTo(sx0,stBot);ctx.lineTo(sx0,stTop+30);ctx.quadraticCurveTo(0,stTop-14,sx1,stTop+30);ctx.lineTo(sx1,stBot);ctx.closePath();ctx.clip();
+  granite(sx0,stTop-20,sx1-sx0,stBot-stTop+20,'#86837c','#5f5c57',11);
+  ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(sx0,stTop-20,5,stBot-stTop+20);
   ctx.restore();
-  // pot de chrysanthèmes au pied de la tombe
-  const vx=650;
-  ctx.fillStyle='#8a4a2a';ctx.beginPath();ctx.moveTo(vx-22,gy-50);ctx.lineTo(vx+22,gy-50);ctx.lineTo(vx+16,gy);ctx.lineTo(vx-16,gy);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#a05a34';ctx.fillRect(vx-24,gy-54,48,8);ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(vx+6,gy-46,10,46);
-  ctx.strokeStyle='#2e4a28';ctx.lineWidth=2;for(let k=-3;k<=3;k++){ctx.beginPath();ctx.moveTo(vx+k*4,gy-52);ctx.lineTo(vx+k*9,gy-82-Math.abs(k)*2);ctx.stroke()}
-  for(let k=-3;k<=3;k++){const fx=vx+k*9,fy=gy-86-Math.abs(k)*2+Math.sin(ct*.8+k)*.6;ctx.fillStyle=['#d9a441','#e9dfc7','#c8302a'][(k+3)%3];for(let p=0;p<10;p++){const a=p/10*Math.PI*2;ctx.beginPath();ctx.ellipse(fx+Math.cos(a)*5,fy+Math.sin(a)*5,3.2,1.6,a,0,7);ctx.fill()}ctx.fillStyle='#8a5a1a';ctx.beginPath();ctx.arc(fx,fy,2.6,0,7);ctx.fill()}
-  // l'enveloppe jaunie, appuyée contre le pot, jamais envoyée
-  ctx.save();ctx.translate(vx+44,gy);ctx.rotate(-.16);
-  ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(-30,-2,62,4);
-  ctx.fillStyle='#e2d3a8';ctx.fillRect(-31,-40,62,40);ctx.fillStyle='#d1bf8f';poly(ctx,[-31,-40,31,-40,0,-22]);ctx.fill();
-  ctx.fillStyle='rgba(120,90,40,.22)';ctx.beginPath();ctx.arc(-18,-10,8,0,7);ctx.fill();ctx.beginPath();ctx.arc(22,-6,5,0,7);ctx.fill();
-  ctx.fillStyle='#b8302a';ctx.fillRect(19,-37,9,11);ctx.strokeStyle='rgba(40,30,20,.5)';ctx.lineWidth=.6;ctx.beginPath();ctx.arc(17,-31,6,0,7);ctx.stroke();
-  ctx.fillStyle='#2a2420';ctx.font='italic 4.9px '+F_BODY;ctx.textAlign='left';
-  ctx.fillText('Au soldat Lucien Marchal',-26,-16);ctx.fillText("151e régiment d'infanterie",-26,-9);ctx.fillText('Verdun',-26,-2.5);
+  ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(sx0,stTop+30);ctx.quadraticCurveTo(0,stTop-14,sx1,stTop+30);ctx.stroke();
+  // croix de bronze
+  ctx.fillStyle='#3e4a44';ctx.fillRect(-4,stTop-50,8,46);ctx.fillRect(-17,stTop-38,34,7);ctx.fillStyle='rgba(160,200,180,.25)';ctx.fillRect(-4,stTop-50,2,46);
+  // gravure dorée sur la face
+  ctx.textAlign='center';
+  engrave('FAMILLE GARNIER',0,stTop+50,'15px '+F_DISP);
+  ctx.fillStyle='#c8a75e';ctx.fillRect(-40,stTop+58,80,1);
+  engrave('Joseph GARNIER',0,stTop+88,'12px '+F_DISP);engrave('1893 – 1958',0,stTop+104,'10px '+F_DISP);
+  engrave('Marguerite GARNIER',0,stTop+134,'12px '+F_DISP);engrave('née VASSEUR',0,stTop+148,'italic 9.5px '+F_BODY);engrave('1897 – 1989',0,stTop+164,'10px '+F_DISP);
+  // plaque en porcelaine
+  ctx.fillStyle='#d8d2c4';rr(ctx,-30,stTop+186,60,26,4);ctx.fill();ctx.strokeStyle='#8a7a52';ctx.lineWidth=1;rr(ctx,-28,stTop+188,56,22,3);ctx.stroke();
+  ctx.fillStyle='#4a3e2e';ctx.font='italic 7px '+F_BODY;ctx.fillText('À nos parents',0,stTop+199);ctx.fillText('regrettés',0,stTop+207);
+  // dalle : dessus en perspective + face avant
+  const bk=gy-66,fr=gy-24;
+  ctx.fillStyle='#4a4844';poly(ctx,[150,bk,170,fr,182,fr+6,182,gy,170,gy]);ctx.fill();
+  const tg=ctx.createLinearGradient(0,bk,0,fr);tg.addColorStop(0,'#77746d');tg.addColorStop(1,'#99968e');ctx.fillStyle=tg;poly(ctx,[-150,bk,150,bk,170,fr,-170,fr]);ctx.fill();
+  ctx.save();poly(ctx,[-150,bk,150,bk,170,fr,-170,fr]);ctx.clip();const R2=mulberry(23);for(let k=0;k<500;k++){ctx.fillStyle=R2()<.5?'rgba(0,0,0,.12)':'rgba(255,255,255,.08)';ctx.fillRect(-170+R2()*340,bk+R2()*44,1.3,1.3)}
+  ctx.fillStyle='rgba(220,230,255,.10)';poly(ctx,[-120,bk+4,-40,bk+4,-60,fr-4,-150,fr-4]);ctx.fill();ctx.restore();
+  ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(-170,fr-1,340,1.5);
+  granite(-170,fr,340,gy-fr,'#6b6863','#55524d',31);
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(-170,gy-3,340,3);
+  // lichen
+  ctx.fillStyle='rgba(150,170,110,.25)';for(const[x,y,r]of[[-150,gy-8,5],[120,gy-14,4],[-100,stBot-6,6],[90,stTop+40,3]]){ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
+  // lettre de Lucien posée sur la dalle, Raymond couché dessus
+  const ly=gy-46;
+  ctx.save();ctx.translate(-8,ly);ctx.rotate(-.06);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(-15,0,32,3);ctx.fillStyle='#e6dcc0';ctx.fillRect(-16,-5,32,6);ctx.fillStyle='#cfc3a3';ctx.fillRect(-16,-5,32,1.2);ctx.restore();
+  ctx.save();ctx.beginPath();ctx.rect(-900,-300,2200,ly-2+300);ctx.clip();
+  drawRaymond(ctx,-40,ly+16,{f:1,t:0,walk:0,wear:S.run.wear||0,size:1.6,eyeClosed:true,rot:.38,sy:.72});
   ctx.restore();
-  // brume au sol
-  ctx.fillStyle='rgba(180,190,220,.06)';for(let k=0;k<6;k++){ctx.beginPath();ctx.ellipse(-200+k*260+Math.sin(ct*.15+k)*30,gy-6,200,18,0,0,7);ctx.fill()}
+  ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(-40,ly,26,3.5,0,0,7);ctx.fill();
+  // pot de chrysanthèmes posé au pied de la tombe, l'enveloppe coincée dessous
+  const px=430,pb=gy+18;
+  // l'enveloppe, posée à plat sous le pot (vue de biais), un coin dépasse
+  ctx.save();ctx.translate(px-2,pb+1);ctx.scale(1,.6);ctx.rotate(-.32);
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(-56,-30,70,38);
+  ctx.fillStyle='#e2d3a6';ctx.fillRect(-58,-34,70,38);
+  ctx.strokeStyle='rgba(120,95,50,.35)';ctx.lineWidth=.8;ctx.strokeRect(-58,-34,70,38);
+  ctx.fillStyle='rgba(110,80,40,.22)';ctx.beginPath();ctx.arc(-48,-6,7,0,7);ctx.fill();
+  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='italic 7px '+F_BODY;ctx.fillText('Au soldat',-53,-21);ctx.fillText('Lucien Marchal',-53,-12);ctx.fillText('151e R.I. — Verdun',-53,-3);
   ctx.restore();
-  // vignette et fondu d'entrée
-  const vg=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.9);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.7)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#000';ctx.fillRect(0,0,W,40);ctx.fillRect(0,H-40,W,40);
-  if(ct<1.6){ctx.fillStyle='rgba(0,0,0,'+(1-ct/1.6)+')';ctx.fillRect(0,0,W,H)}
+  // pétales tombés
+  for(const[x,y,c]of[[px-40,pb+8,'#c8302a'],[px+28,pb+6,'#d9a441'],[px-62,pb+3,'#efe6d0']]){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,3,1.3,.4,0,7);ctx.fill()}
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(px,pb,26,5,0,0,7);ctx.fill();
+  const pg=ctx.createLinearGradient(px-20,0,px+20,0);pg.addColorStop(0,'#a3603a');pg.addColorStop(.6,'#8a4a2a');pg.addColorStop(1,'#6a3820');
+  ctx.fillStyle=pg;ctx.beginPath();ctx.moveTo(px-22,pb-48);ctx.lineTo(px+22,pb-48);ctx.lineTo(px+16,pb);ctx.lineTo(px-16,pb);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#b06a40';ctx.fillRect(px-25,pb-54,50,9);ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(px-25,pb-54,50,2);
+  ctx.strokeStyle='#2e4a28';ctx.lineWidth=2;for(let k=-3;k<=3;k++){ctx.beginPath();ctx.moveTo(px+k*4,pb-52);ctx.lineTo(px+k*9,pb-82-Math.abs(k)*2);ctx.stroke()}
+  ctx.fillStyle='#3a5a30';for(let k=-3;k<=3;k++){ctx.beginPath();ctx.ellipse(px+k*7,pb-62,5,2.2,k*.4,0,7);ctx.fill()}
+  for(let k=-3;k<=3;k++){const fx=px+k*9,fy=pb-86-Math.abs(k)*2+Math.sin(ct*.7+k)*.5;ctx.fillStyle=['#d9a441','#efe6d0','#c8302a'][(k+3)%3];for(let p=0;p<12;p++){const a=p/12*Math.PI*2;ctx.beginPath();ctx.ellipse(fx+Math.cos(a)*5,fy+Math.sin(a)*5,3.2,1.5,a,0,7);ctx.fill()}ctx.fillStyle='#8a5a1a';ctx.beginPath();ctx.arc(fx,fy,2.4,0,7);ctx.fill()}
+  // brume rasante
+  for(let k=0;k<7;k++){ctx.fillStyle='rgba(180,190,220,.05)';ctx.beginPath();ctx.ellipse(-600+k*240+Math.sin(ct*.12+k)*40,gy-30+(k%2)*24,220,16,0,0,7);ctx.fill()}
+  ctx.restore();
+  // lumière de lune, vignette, bandes cinéma, fondu
+  const vg=ctx.createRadialGradient(W/2,H/2,H*.25,W/2,H/2,H*.85);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.72)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#000';ctx.fillRect(0,0,W,44);ctx.fillRect(0,H-44,W,44);
+  if(ct<1.8){ctx.fillStyle='rgba(0,0,0,'+(1-ct/1.8)+')';ctx.fillRect(0,0,W,H)}
   if(ct>10){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+Math.min(.45,(ct-10)*.3)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer',W-24,H-16)}
 }
 function drawBannerCard(t){
@@ -3394,7 +3445,7 @@ function renderCards(t){
     if(c.t){ctx.font='italic 25px '+F_BODY;const lines=wrap(ctx,c.t,680);const y0=c.pic?y:H/2-(lines.length-1)*17+(c.title?14:0);lines.forEach((l,k)=>ctx.fillText(l,W/2,y0+k*34))}
   }
   ctx.restore();
-  for(let k=0;k<2;k++){if(rnd()<.3){ctx.fillStyle='rgba(230,220,200,'+(rnd()*.1)+')';ctx.fillRect(rnd()*W,0,1+rnd(),H)}}
+  if(c.pic!=='finale')for(let k=0;k<2;k++){if(rnd()<.3){ctx.fillStyle='rgba(230,220,200,'+(rnd()*.1)+')';ctx.fillRect(rnd()*W,0,1+rnd(),H)}}
   if(G.cardT>.8&&c.pic!=='finale'){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.4+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer · Échap pour passer',W-90,H-22)}
 }
 function handleCards(dt){
