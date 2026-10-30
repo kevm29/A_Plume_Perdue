@@ -152,12 +152,13 @@ const EMB={
 /* bandeau « succès débloqué » */
 function renderToasts(dt){
   const q=G.toasts;if(!q||!q.length)return;const T0=q[0];T0.t+=dt;const a=ACH_BY[T0.id];
-  const k=Math.min(1,T0.t*4,(4-T0.t)*3),y=H-70+(1-k)*80;
-  ctx.save();ctx.globalAlpha=Math.max(0,k);
-  ctx.fillStyle='rgba(14,12,18,.88)';rr(ctx,W/2-210,y-26,420,58,10);ctx.fill();ctx.strokeStyle='rgba(201,162,74,.6)';ctx.lineWidth=1.2;rr(ctx,W/2-210,y-26,420,58,10);ctx.stroke();
-  drawAchMedal(ctx,W/2-176,y+6,T0.id,true,.8);
-  ctx.textAlign='left';ctx.fillStyle='#d9a441';ctx.font='12px '+F_DISP;ctx.fillText('SUCCÈS',W/2-146,y-6);
-  ctx.fillStyle='#efe5cc';ctx.font='18px '+F_DISP;ctx.fillText(a.t,W/2-146,y+16);
+  // dans la bande du haut, entre l'étiquette du niveau et les compteurs : ne cache rien du décor
+  const k=Math.min(1,T0.t*4,(4-T0.t)*3),y=12-(1-k)*60,cx=W/2+20;
+  ctx.save();ctx.globalAlpha=Math.max(0,k);ctx.font='15px '+F_DISP;const tw=Math.max(150,ctx.measureText(a.t).width)+70,x0=cx-tw/2;
+  ctx.fillStyle='rgba(14,12,18,.9)';rr(ctx,x0,y,tw,40,8);ctx.fill();ctx.strokeStyle='rgba(201,162,74,.6)';ctx.lineWidth=1.2;rr(ctx,x0,y,tw,40,8);ctx.stroke();
+  ctx.save();ctx.beginPath();ctx.rect(x0,y,tw,40);ctx.clip();drawAchMedal(ctx,x0+24,y+26,T0.id,true,.55);ctx.restore();
+  ctx.textAlign='left';ctx.fillStyle='#d9a441';ctx.font='10px '+F_DISP;ctx.fillText('SUCCÈS',x0+48,y+15);
+  ctx.fillStyle='#efe5cc';ctx.font='15px '+F_DISP;ctx.fillText(a.t,x0+48,y+32);
   ctx.restore();
   if(T0.t>4)q.shift();
 }

@@ -46,7 +46,7 @@ Un écran « Succès » apparaît sur l'accueil dès le premier débloqué. 28 s
 - **Les cartels** s'affichent trois secondes ; pour relire, s'éloigner puis revenir.
 - **L'action E** s'apprend au 1-1 (une poignée ouvre un portillon). Caché sous un drap, quand un gardien passe tout près, E lui jette le drap sur la tête (rien ne l'annonce dans le jeu) : il se débat une seconde, l'arrache, balaie toute la pièce de sa lampe, puis reprend sa ronde plus vite, furieux. Le drap reste par terre et découvre un meuble farfelu (buste qui louche, statue « Pudeur », ours en caleçon, comtoise à moustache, mannequin en corset) : la cachette est perdue jusqu'au prochain retour au cartel. Le chat aux yeux brillants s'y emmêle de la même façon s'il vous poursuit jusque sous un drap.
 - **Choisir un niveau** (écran d'accueil ou menu Pause) : les niveaux déjà atteints, l'introduction, et la fin une fois le jeu terminé (tout est ouvert en mode caché).
-- **Mode caché** : sur l'écran d'accueil, cliquer quatre fois de suite sur l'œil fermé de Raymond, sous la cloche. Il roucoule : vies illimitées (∞) et tous les niveaux ouverts dans « Choisir un niveau ». Quatre clics de plus pour revenir au mode normal.
+- **Mode caché** : sur l'écran d'accueil, cliquer quatre fois de suite sur l'œil fermé de Raymond, sous la cloche. Il roucoule : vies illimitées (∞), invincibilité totale (une chute hors du niveau ramène au cartel), ailes inépuisables, et tous les niveaux ouverts dans « Choisir un niveau ». Quatre clics de plus pour revenir au mode normal.
 
 ### Une mécanique par mission
 

@@ -285,7 +285,7 @@ function drawStatsCard(w,ct){
     ctx.textAlign='center';ctx.font='18px '+F_DISP;
     if(o){ctx.fillText(`${o.corn} / ${o.cornTotal}`,cols[1],y);
       if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText(o.hasMedal?'—':'·',cols[2],y)}
-      {const f=o.secFound||0,tt=o.secTotal||1;ctx.fillStyle=f?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(tt>1?`${f}/${tt}`:(f?'✓':'—'),cols[3],y)}
+      {const f=o.secFound||0,tt=o.secTotal||1;ctx.fillStyle=f?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(`${f}/${tt}`,cols[3],y)}
       ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[4],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[5],y);tot+=o.points;totMax+=o.max||levelMax(o)}
     else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('non joué',cols[1],y)}
     ctx.globalAlpha=1}
@@ -427,7 +427,7 @@ function renderLevelDone(t){
   ctx.fillStyle='#8a5a2a';ctx.font='13px '+F_DISP;ctx.textAlign='center';ctx.fillText(`MISSION ${def.w+1} · NIVEAU ${LE.li%4+1} TRAVERSÉ`,-5,-88);
   ctx.fillStyle='#2a2420';ctx.font='32px '+F_DISP;ctx.fillText(def.name,-5,-48);
   ctx.fillStyle='rgba(42,36,32,.25)';ctx.fillRect(-180,-30,350,1);
-  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',st.secTotal>1?`${st.secFound||0} / ${st.secTotal}`:(st.secFound?'trouvée':'pas trouvée')],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${st.max||levelMax(st)}`]);
+  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',`${st.secFound||0} / ${st.secTotal||1}`],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${st.max||levelMax(st)}`]);
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});

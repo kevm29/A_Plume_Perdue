@@ -174,6 +174,7 @@ LEVELS.push({w:0,name:"La galerie des insectes",theme:'insectes',exit:'door',see
 .....................#
 .....................#
 .....................#
+.....................#
 ...................o.#
 ######################
 .vvvvvvvvvvvvvvvvvvvv.

@@ -53,6 +53,8 @@ function puff(x,y,n,straw){
 function die(kind,tiles){
   if(P.dead)return;
   if(G.sim){P.dead=true;return}
+  // mode caché : rien ne tue Raymond ; une chute hors du niveau le ramène simplement au cartel
+  if(S.infinite){if(P.y>ROWS*T)resetPlayer();return}
   P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;S.run.anyAccroc=true;
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
   if((S.run.wear||0)>=MAX_WEAR&&!S.infinite)G.gameOverPending=true;
@@ -215,6 +217,7 @@ function stepPlay(dt){
   if(!left&&!right&&!held&&P.onGround&&!G.sim){P.idle=(P.idle||0)+dt;if(P.idle>60){unlock('a82');if(((P.idle-60)%2.6)<dt)bubble(P.x+P.w/2+14,P.y-10,'Zzz','#6a5a48')}}else P.idle=0;
   if(S.run.wasLow&&(S.run.wear||0)===0){S.run.wasLow=false;unlock('a24')}
   const MD=mechMods();
+  if(S.infinite){P.stam=STAM_MAX;P.torn=false;P.mudCoat=0;MD.noFly=false}
   const dir=MD.noInput?0:(right?1:0)-(left?1:0);
   if(dir)P.facing=dir;
   if(dir){P.vx+=dir*(P.onGround?ACC:AIRACC)*dt;P.vx=clamp(P.vx,-MD.run,MD.run)}

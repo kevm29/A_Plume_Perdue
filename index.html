@@ -640,6 +640,7 @@ LEVELS.push({w:0,name:"La galerie des insectes",theme:'insectes',exit:'door',see
 .....................#
 .....................#
 .....................#
+.....................#
 ...................o.#
 ######################
 .vvvvvvvvvvvvvvvvvvvv.
@@ -3906,6 +3907,8 @@ function puff(x,y,n,straw){
 function die(kind,tiles){
   if(P.dead)return;
   if(G.sim){P.dead=true;return}
+  // mode caché : rien ne tue Raymond ; une chute hors du niveau le ramène simplement au cartel
+  if(S.infinite){if(P.y>ROWS*T)resetPlayer();return}
   P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;S.run.anyAccroc=true;
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
   if((S.run.wear||0)>=MAX_WEAR&&!S.infinite)G.gameOverPending=true;
@@ -4068,6 +4071,7 @@ function stepPlay(dt){
   if(!left&&!right&&!held&&P.onGround&&!G.sim){P.idle=(P.idle||0)+dt;if(P.idle>60){unlock('a82');if(((P.idle-60)%2.6)<dt)bubble(P.x+P.w/2+14,P.y-10,'Zzz','#6a5a48')}}else P.idle=0;
   if(S.run.wasLow&&(S.run.wear||0)===0){S.run.wasLow=false;unlock('a24')}
   const MD=mechMods();
+  if(S.infinite){P.stam=STAM_MAX;P.torn=false;P.mudCoat=0;MD.noFly=false}
   const dir=MD.noInput?0:(right?1:0)-(left?1:0);
   if(dir)P.facing=dir;
   if(dir){P.vx+=dir*(P.onGround?ACC:AIRACC)*dt;P.vx=clamp(P.vx,-MD.run,MD.run)}
@@ -4832,12 +4836,13 @@ const EMB={
 /* bandeau « succès débloqué » */
 function renderToasts(dt){
   const q=G.toasts;if(!q||!q.length)return;const T0=q[0];T0.t+=dt;const a=ACH_BY[T0.id];
-  const k=Math.min(1,T0.t*4,(4-T0.t)*3),y=H-70+(1-k)*80;
-  ctx.save();ctx.globalAlpha=Math.max(0,k);
-  ctx.fillStyle='rgba(14,12,18,.88)';rr(ctx,W/2-210,y-26,420,58,10);ctx.fill();ctx.strokeStyle='rgba(201,162,74,.6)';ctx.lineWidth=1.2;rr(ctx,W/2-210,y-26,420,58,10);ctx.stroke();
-  drawAchMedal(ctx,W/2-176,y+6,T0.id,true,.8);
-  ctx.textAlign='left';ctx.fillStyle='#d9a441';ctx.font='12px '+F_DISP;ctx.fillText('SUCCÈS',W/2-146,y-6);
-  ctx.fillStyle='#efe5cc';ctx.font='18px '+F_DISP;ctx.fillText(a.t,W/2-146,y+16);
+  // dans la bande du haut, entre l'étiquette du niveau et les compteurs : ne cache rien du décor
+  const k=Math.min(1,T0.t*4,(4-T0.t)*3),y=12-(1-k)*60,cx=W/2+20;
+  ctx.save();ctx.globalAlpha=Math.max(0,k);ctx.font='15px '+F_DISP;const tw=Math.max(150,ctx.measureText(a.t).width)+70,x0=cx-tw/2;
+  ctx.fillStyle='rgba(14,12,18,.9)';rr(ctx,x0,y,tw,40,8);ctx.fill();ctx.strokeStyle='rgba(201,162,74,.6)';ctx.lineWidth=1.2;rr(ctx,x0,y,tw,40,8);ctx.stroke();
+  ctx.save();ctx.beginPath();ctx.rect(x0,y,tw,40);ctx.clip();drawAchMedal(ctx,x0+24,y+26,T0.id,true,.55);ctx.restore();
+  ctx.textAlign='left';ctx.fillStyle='#d9a441';ctx.font='10px '+F_DISP;ctx.fillText('SUCCÈS',x0+48,y+15);
+  ctx.fillStyle='#efe5cc';ctx.font='15px '+F_DISP;ctx.fillText(a.t,x0+48,y+32);
   ctx.restore();
   if(T0.t>4)q.shift();
 }
@@ -5374,7 +5379,7 @@ function drawStatsCard(w,ct){
     ctx.textAlign='center';ctx.font='18px '+F_DISP;
     if(o){ctx.fillText(`${o.corn} / ${o.cornTotal}`,cols[1],y);
       if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText(o.hasMedal?'—':'·',cols[2],y)}
-      {const f=o.secFound||0,tt=o.secTotal||1;ctx.fillStyle=f?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(tt>1?`${f}/${tt}`:(f?'✓':'—'),cols[3],y)}
+      {const f=o.secFound||0,tt=o.secTotal||1;ctx.fillStyle=f?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(`${f}/${tt}`,cols[3],y)}
       ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[4],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[5],y);tot+=o.points;totMax+=o.max||levelMax(o)}
     else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('non joué',cols[1],y)}
     ctx.globalAlpha=1}
@@ -5516,7 +5521,7 @@ function renderLevelDone(t){
   ctx.fillStyle='#8a5a2a';ctx.font='13px '+F_DISP;ctx.textAlign='center';ctx.fillText(`MISSION ${def.w+1} · NIVEAU ${LE.li%4+1} TRAVERSÉ`,-5,-88);
   ctx.fillStyle='#2a2420';ctx.font='32px '+F_DISP;ctx.fillText(def.name,-5,-48);
   ctx.fillStyle='rgba(42,36,32,.25)';ctx.fillRect(-180,-30,350,1);
-  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',st.secTotal>1?`${st.secFound||0} / ${st.secTotal}`:(st.secFound?'trouvée':'pas trouvée')],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${st.max||levelMax(st)}`]);
+  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',`${st.secFound||0} / ${st.secTotal||1}`],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${st.max||levelMax(st)}`]);
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});
