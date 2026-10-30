@@ -45,6 +45,7 @@ function drawEntities(t){
     if(K.type==='cat'){if(K.state==='sleep')drawSleepingCat(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
       else drawCat(ctx,K.x+K.w/2,K.y+K.h,K.f||1,K.t,K.state==='chase'?1.4:0,{size:1.45,col:'#c7742e',rim:'#e9a050',stripes:true,eye:'#9ad84a',mouth:K.meowT>1.6||K.state==='wake'})}
     else if(K.type==='drone')drawDrone(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.state!=='sleep');
+    if(K.type==='drone'&&K.mode==='warn'&&Math.sin(K.t*40)>0){ctx.save();const gx=K.x+K.w/2,gy=K.y+K.h/2+6;const gl=ctx.createRadialGradient(gx,gy,1,gx,gy,22);gl.addColorStop(0,'rgba(255,60,40,.8)');gl.addColorStop(1,'rgba(255,60,40,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(gx,gy,22,0,7);ctx.fill();ctx.restore()}
     else if(K.type==='guardnet'&&K.state==='sleep')drawGuardAsleep(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
     else if(K.type==='guardnet')drawGuard(ctx,K.x+K.w/2,K.y+K.h,K.t,{f:K.f||1,walk:K.state==='chase'?1.4:0,net:true});
     else if(K.type==='sweeper')drawSweeper(ctx,K,K.t);

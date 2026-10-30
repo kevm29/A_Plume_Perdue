@@ -1053,7 +1053,7 @@ LEVELS.push({w:1,name:"Le drone",theme:'front',exit:'bunker',exitLabel:"ABRI",se
  fog:true,
  start:"Le brouillard. Comme le matin du fort. On n'y voit pas à trois battements d'ailes.",
  chaseQuip:"Un pigeon mécanique qui bourdonne. Ennemi, forcément. Il m'a repéré !",
- hints:[["ARTICLE 13 — LE BROUILLARD","Dans le brouillard, les coquelicots ne poussent que sur le sol ferme. Les suivre."]],
+ hints:[["ARTICLE 13 — LE BROUILLARD","Dans le brouillard, les coquelicots ne poussent que sur la terre ferme, et les sapeurs ont laissé des lanternes sur les planches. Les suivre."]],
  quips:["Il n'y a pas d'oiseaux. Les oiseaux savent quand il faut se taire.","Il n'a pas de plumes, pas de bec, et il me suit. Je n'ai jamais été aussi insulté."],
  signs:[],
  segs:[SEG_START_FLAT,`
@@ -1087,14 +1087,40 @@ LEVELS.push({w:1,name:"Le drone",theme:'front',exit:'bunker',exitLabel:"ABRI",se
 ......o.........o.....
 ..+.......+...........
 .===.....===..........
-.....q...........+....
-####%%%%%%%%%%%%######
-####............######`,`
+.....q..,.....,..+....
+######################
+######################`,`
+........................
+...+.....+.......+......
+...==....==......==.....
+........................
+.+.................o..+.
+###..................###
+###^^^^^^^^^^^^^^^^^^###`,`
+......................
+......o.......o.......
+.+..,...+...,..+..,...
+####~~~~####~~~~######
+######################`,`
+............
+.....o.o....
+.C..+.......
+############
+############`,`
 .......*............
 .......=............
 ....................
 .+.........+.......+
 ######~~~~~~###^^###
+####################`,`
+....................
+..............+.....
+.............XXX....
+........+...........
+.......XXX..........
+..+.................
+.XXX................
+####^^^^^^^^^^^^^###
 ####################`,`
 ....................
 ....................
@@ -3548,7 +3574,9 @@ function drawMechFront(t){
     const gr=ctx.createLinearGradient(fx+120,0,fx+430,0);gr.addColorStop(0,'rgba(196,192,186,0)');gr.addColorStop(1,'rgba(196,192,186,.96)');ctx.fillStyle=gr;ctx.fillRect(fx+120,cam.y-50,1400,H+100);
     const gl=ctx.createLinearGradient(fx-200,0,fx-520,0);gl.addColorStop(0,'rgba(196,192,186,0)');gl.addColorStop(1,'rgba(196,192,186,.85)');ctx.fillStyle=gl;ctx.fillRect(fx-1600,cam.y-50,1400,H+100);
     ctx.restore();
-    for(const p of L.poppies){if(!vis(p.x))continue;for(let k=-1;k<=1;k++){const px=p.x+k*11,py=p.y-6-Math.abs(k)*3+Math.sin(t*2+p.x+k)*1;ctx.strokeStyle='#3a5a30';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(px,p.y);ctx.lineTo(px,py);ctx.stroke();ctx.fillStyle='#d8302a';ctx.beginPath();ctx.arc(px,py-2,4,0,7);ctx.fill();ctx.fillStyle='#2a1a1a';ctx.beginPath();ctx.arc(px,py-2,1.2,0,7);ctx.fill()}}}
+    for(const p of L.poppies){if(!vis(p.x))continue;
+      if(tile(Math.floor(p.x/T),Math.floor(p.y/T))==='='){const lx=p.x,ly=p.y;ctx.save();ctx.fillStyle='#2a2a2a';ctx.fillRect(lx-5,ly-4,10,3);ctx.fillStyle='rgba(255,200,110,'+(.8+Math.sin(t*7+lx)*.1)+')';rr(ctx,lx-4,ly-14,8,10,2);ctx.fill();ctx.strokeStyle='#2a2a2a';ctx.lineWidth=1.2;ctx.strokeRect(lx-4,ly-14,8,10);ctx.beginPath();ctx.moveTo(lx-4,ly-14);ctx.lineTo(lx,ly-19);ctx.lineTo(lx+4,ly-14);ctx.stroke();const gl=ctx.createRadialGradient(lx,ly-9,1,lx,ly-9,30);gl.addColorStop(0,'rgba(255,200,110,.35)');gl.addColorStop(1,'rgba(255,200,110,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(lx,ly-9,30,0,7);ctx.fill();ctx.restore();continue}
+      for(let k=-1;k<=1;k++){const px=p.x+k*11,py=p.y-6-Math.abs(k)*3+Math.sin(t*2+p.x+k)*1;ctx.strokeStyle='#3a5a30';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(px,p.y);ctx.lineTo(px,py);ctx.stroke();ctx.fillStyle='#d8302a';ctx.beginPath();ctx.arc(px,py-2,4,0,7);ctx.fill();ctx.fillStyle='#2a1a1a';ctx.beginPath();ctx.arc(px,py-2,1.2,0,7);ctx.fill()}}}
   // rafales : traînées de vent (rares pendant l'alerte, denses pendant la rafale)
   if(L.def.gust&&L.gust.state!=='calm'){const blow=L.gust.state==='blow',n=blow?34:10,dir=L.def.gust.dir||-1;ctx.save();
     for(let k=0;k<n;k++){const sp=blow?900:420,len=blow?60+(k%5)*14:30;const xx=cam.x+(((dir<0?-1:1)*G.lt*sp+k*137)%(W+200)+W+200)%(W+200)-100,yy=cam.y+20+((k*71)%(H-60));
@@ -3976,6 +4004,12 @@ function stepPlay(dt){
     m.t+=dt;const px=m.x;
     if(m.axis==='h'){m.x=m.cx+Math.sin(m.t*m.sp)*m.amp;m.y=m.cy+Math.sin(m.t*m.sp*2)*10}
     else{m.x=m.cx+Math.sin(m.t*m.sp*2)*8;m.y=m.cy+Math.sin(m.t*m.sp)*m.amp}
+    if(m.kind==='crow'){
+      // le corbeau hésite (vol irrégulier) et se laisse attirer par le pigeon quand il passe près
+      m.x+=Math.sin(m.t*1.3+m.cx)*26+Math.sin(m.t*2.9+m.cy)*12;m.y+=Math.cos(m.t*1.7+m.cx)*16+Math.sin(m.t*3.7)*6;
+      const near=!P.dead&&!G.cut&&Math.hypot(pcx-m.x,pcy-m.y)<240;m.att=clamp((m.att||0)+(near?dt*1.1:-dt*.7),0,1);
+      const k=m.att*m.att*.6;m.x+=(pcx-m.x)*k;m.y+=(pcy-8-m.y)*k;
+    }
     m.dir=m.x>=px?1:-1;
     m.near=!P.dead&&!G.cut&&Math.hypot(pcx-m.x,pcy-m.y)<200;
   }
@@ -4068,7 +4102,7 @@ function stepPlay(dt){
   for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){const ch=tile(c,r);
     if(ch==='^'&&overlap(hb,{x:c*T+5,y:r*T+T*.42,w:T-10,h:T*.58}))hit.push([c,r]);
     if(ch==='v'&&overlap(hb,{x:c*T+5,y:r*T,w:T-10,h:T*.58}))hit.push([c,r]);}
-  if(hit.length){const up=hit.filter(([c,r])=>tile(c,r)==='^');const near=[];for(const[c,r]of up){near.push([c,r]);for(const dc of[-1,1])if(tile(c+dc,r)==='^'&&Math.abs((c+dc+.5)*T-(P.x+P.w/2))<T*1.2)near.push([c+dc,r])}return die(L.th.spike,near)}
+  if(hit.length){const up=hit.filter(([c,r])=>tile(c,r)==='^');let best=null,bd=1e9;for(const[c,r]of up){const d=Math.abs((c+.5)*T-(P.x+P.w/2));if(d<bd){bd=d;best=[c,r]}}return die(L.th.spike,best?[best]:[])}
   for(const c of L.rats)if(overlap(hb,{x:c.x+3,y:c.y+3,w:c.w-6,h:c.h-3}))return die(c.kind);
   for(const m of L.moths)if(overlap(hb,{x:m.x-10,y:m.y-8,w:20,h:16}))return die(m.kind);
   for(const b of L.bolts)if(b.state==='strike'&&Math.abs(b.x-pcx)<24)return die('bolt');
@@ -4119,8 +4153,13 @@ function stepChaser(K,dt,pcx,pcy){
   if(K.state==='sleep'){K.y=K.home.y+Math.sin(K.t*2)*4;return}
   if(K.type==='buse'&&buseBurn(K,dt))return;
   if(K.type==='drone'){
-    const tx=pcx-K.w/2-P.facing*10,ty=P.y-20,dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1;
-    const sp=clamp(180+(d-200)*.3,180,270);K.x+=dx/d*sp*dt;K.y+=dy/d*sp*dt+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
+    // il se poste au-dessus de Raymond, prévient (voyant rouge), puis pique sur lui
+    K.pt=(K.pt||0)+dt;
+    if(K.mode==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.75||K.y>ROWS*T-70){K.mode=null;K.pt=0}return}
+    if(K.mode==='warn'){K.x+=Math.sin(K.t*50)*.6;K.y-=12*dt;if(K.pt>.55){K.mode='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*560;K.vy=dy/d*560;K.f=K.vx>=0?1:-1;if(!G.sim)tone(700,.4,'sawtooth',.05,1400)}return}
+    const tx=pcx-K.w/2+P.facing*40,ty=P.y-90,dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1;
+    const sp=clamp(210+(d-150)*.5,210,330);K.x+=dx/d*Math.min(sp*dt,d);K.y+=dy/d*Math.min(sp*dt,d)+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
+    if(K.pt>2.4&&d<140&&!P.dead){K.mode='warn';K.pt=0;if(!G.sim)tone(1200,.12,'square',.04)}
     return;
   }
   // buse : plane derrière, prévient, puis pique
@@ -4793,6 +4832,7 @@ function drawEntities(t){
     if(K.type==='cat'){if(K.state==='sleep')drawSleepingCat(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
       else drawCat(ctx,K.x+K.w/2,K.y+K.h,K.f||1,K.t,K.state==='chase'?1.4:0,{size:1.45,col:'#c7742e',rim:'#e9a050',stripes:true,eye:'#9ad84a',mouth:K.meowT>1.6||K.state==='wake'})}
     else if(K.type==='drone')drawDrone(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.state!=='sleep');
+    if(K.type==='drone'&&K.mode==='warn'&&Math.sin(K.t*40)>0){ctx.save();const gx=K.x+K.w/2,gy=K.y+K.h/2+6;const gl=ctx.createRadialGradient(gx,gy,1,gx,gy,22);gl.addColorStop(0,'rgba(255,60,40,.8)');gl.addColorStop(1,'rgba(255,60,40,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(gx,gy,22,0,7);ctx.fill();ctx.restore()}
     else if(K.type==='guardnet'&&K.state==='sleep')drawGuardAsleep(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
     else if(K.type==='guardnet')drawGuard(ctx,K.x+K.w/2,K.y+K.h,K.t,{f:K.f||1,walk:K.state==='chase'?1.4:0,net:true});
     else if(K.type==='sweeper')drawSweeper(ctx,K,K.t);

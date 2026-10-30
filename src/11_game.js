@@ -155,6 +155,12 @@ function stepPlay(dt){
     m.t+=dt;const px=m.x;
     if(m.axis==='h'){m.x=m.cx+Math.sin(m.t*m.sp)*m.amp;m.y=m.cy+Math.sin(m.t*m.sp*2)*10}
     else{m.x=m.cx+Math.sin(m.t*m.sp*2)*8;m.y=m.cy+Math.sin(m.t*m.sp)*m.amp}
+    if(m.kind==='crow'){
+      // le corbeau hésite (vol irrégulier) et se laisse attirer par le pigeon quand il passe près
+      m.x+=Math.sin(m.t*1.3+m.cx)*26+Math.sin(m.t*2.9+m.cy)*12;m.y+=Math.cos(m.t*1.7+m.cx)*16+Math.sin(m.t*3.7)*6;
+      const near=!P.dead&&!G.cut&&Math.hypot(pcx-m.x,pcy-m.y)<240;m.att=clamp((m.att||0)+(near?dt*1.1:-dt*.7),0,1);
+      const k=m.att*m.att*.6;m.x+=(pcx-m.x)*k;m.y+=(pcy-8-m.y)*k;
+    }
     m.dir=m.x>=px?1:-1;
     m.near=!P.dead&&!G.cut&&Math.hypot(pcx-m.x,pcy-m.y)<200;
   }
@@ -247,7 +253,7 @@ function stepPlay(dt){
   for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){const ch=tile(c,r);
     if(ch==='^'&&overlap(hb,{x:c*T+5,y:r*T+T*.42,w:T-10,h:T*.58}))hit.push([c,r]);
     if(ch==='v'&&overlap(hb,{x:c*T+5,y:r*T,w:T-10,h:T*.58}))hit.push([c,r]);}
-  if(hit.length){const up=hit.filter(([c,r])=>tile(c,r)==='^');const near=[];for(const[c,r]of up){near.push([c,r]);for(const dc of[-1,1])if(tile(c+dc,r)==='^'&&Math.abs((c+dc+.5)*T-(P.x+P.w/2))<T*1.2)near.push([c+dc,r])}return die(L.th.spike,near)}
+  if(hit.length){const up=hit.filter(([c,r])=>tile(c,r)==='^');let best=null,bd=1e9;for(const[c,r]of up){const d=Math.abs((c+.5)*T-(P.x+P.w/2));if(d<bd){bd=d;best=[c,r]}}return die(L.th.spike,best?[best]:[])}
   for(const c of L.rats)if(overlap(hb,{x:c.x+3,y:c.y+3,w:c.w-6,h:c.h-3}))return die(c.kind);
   for(const m of L.moths)if(overlap(hb,{x:m.x-10,y:m.y-8,w:20,h:16}))return die(m.kind);
   for(const b of L.bolts)if(b.state==='strike'&&Math.abs(b.x-pcx)<24)return die('bolt');
@@ -298,8 +304,13 @@ function stepChaser(K,dt,pcx,pcy){
   if(K.state==='sleep'){K.y=K.home.y+Math.sin(K.t*2)*4;return}
   if(K.type==='buse'&&buseBurn(K,dt))return;
   if(K.type==='drone'){
-    const tx=pcx-K.w/2-P.facing*10,ty=P.y-20,dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1;
-    const sp=clamp(180+(d-200)*.3,180,270);K.x+=dx/d*sp*dt;K.y+=dy/d*sp*dt+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
+    // il se poste au-dessus de Raymond, prévient (voyant rouge), puis pique sur lui
+    K.pt=(K.pt||0)+dt;
+    if(K.mode==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.75||K.y>ROWS*T-70){K.mode=null;K.pt=0}return}
+    if(K.mode==='warn'){K.x+=Math.sin(K.t*50)*.6;K.y-=12*dt;if(K.pt>.55){K.mode='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*560;K.vy=dy/d*560;K.f=K.vx>=0?1:-1;if(!G.sim)tone(700,.4,'sawtooth',.05,1400)}return}
+    const tx=pcx-K.w/2+P.facing*40,ty=P.y-90,dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1;
+    const sp=clamp(210+(d-150)*.5,210,330);K.x+=dx/d*Math.min(sp*dt,d);K.y+=dy/d*Math.min(sp*dt,d)+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
+    if(K.pt>2.4&&d<140&&!P.dead){K.mode='warn';K.pt=0;if(!G.sim)tone(1200,.12,'square',.04)}
     return;
   }
   // buse : plane derrière, prévient, puis pique
