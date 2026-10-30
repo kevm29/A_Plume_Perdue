@@ -80,7 +80,7 @@ function renderTitle(t){
   ctx.restore();
   drawMenu(W*.66,268,46);
   ctx.save();ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.textAlign='center';
-  ctx.fillText('E attraper · Échap pause · R revenir au cartel · M couper le son',W*.66,H-24);
+  ctx.fillText('Échap pause · R revenir au cartel · M couper le son',W*.66,H-24);
   ctx.restore();
 }
 function renderSelect(t){
