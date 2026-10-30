@@ -61,15 +61,22 @@ const WORLD_CARDS=[
    {title:"MISSION 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
 const ENDING=[
-  {pic:'tomb'},
-  {t:"Le fils Garnier s'appelait Joseph. Elle l'a épousé, comme Lucien le voulait.\nElle n'a jamais reçu la lettre."},
-  {pic:'banner'},
-  {t:"Raymond fait le calcul. Deux fois.\n« 2026. Je suis… légèrement en retard. »"},
+  {t:"Cent dix ans. Aucun pigeon ne vit cent dix ans."},
+  {t:"« Alors qu'est-ce que je suis ? »\nIl regarde sa patte. Une couture. Un brin de paille qui dépasse."},
+  {t:"La paille qui s'envolait à chaque chute. La buse qui a flambé comme une botte de foin.\nTout s'explique, d'un coup."},
+  {t:"Il n'est pas un pigeon qui a survécu.\nIl est ce qu'il en reste."},
   {t:"Il voudrait pleurer.\nÀ l'empaillage, on lui a retiré ça aussi."},
   {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nLe pigeonnier Vasseur n'existe plus. Il n'a nulle part où rentrer."},
   {t:"Alors il reste là, sur la tombe.\nIl ferme les yeux. De son plein gré, cette fois."},
   {pic:'finale',minT:10},
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
+];
+/* la fête foraine (fin du niveau 5-3) : Raymond apprend la date */
+const DATE_CARDS=[
+  {pic:'banner'},
+  {t:"Raymond fait le calcul. Deux fois.\n« 2026. »"},
+  {t:"Cent dix ans. La guerre est finie depuis longtemps.\nLucien, le capitaine, les gars du 151e : tout le monde."},
+  {t:"Au milieu des flonflons, Raymond s'effondre.\nPersonne ne remarque un pigeon par terre."}
 ];
 /* intertitres muets avant la toute première lettre : pourquoi Raymond la lit */
 const TUBE=[

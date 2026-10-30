@@ -16,11 +16,11 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 
 | Mission | Lieu | Niveaux |
 |---|---|---|
-| 1 | Vittoncourt, le musée qui ferme | La vitrine · La galerie des insectes · La salle du mammouth · La loge du gardien |
+| 1 | Vittoncourt, le musée qui ferme | La vitrine · La galerie des insectes · L'étage du mammouth · La loge du gardien |
 | 2 | Verdun, les champs de l'ancien front | Les coquelicots · Les éoliennes · Le drone · La tranchée oubliée |
-| 3 | Reims, les toits et la ville | Les toits · Les pics anti-pigeons · La gare · Le square |
+| 3 | Reims, la ville puis la cathédrale | La rue de Vesle · La gare · La place d'Erlon · La cathédrale |
 | 4 | L'A4 sous l'orage, vers l'ouest | L'aire de repos · Les camions · L'orage · Le pont (sur la Marne) |
-| 5 | Villemareuil, le village de Marguerite | La fête du village · Le clocher · La buse · Le cimetière |
+| 5 | Villemareuil, le village de Marguerite | La route du village · Le clocher · La fête foraine · Le cimetière |
 
 ## Introduction (cartes)
 
@@ -35,7 +35,7 @@ Ensuite vient la cinématique jouée dans 1-1 : le voleur, sa lampe torche, le c
 
 ## Pourquoi Raymond lit la lettre
 
-Deux intertitres muets, à la fin du niveau 1-1, avant le premier fragment :
+La lettre ne se lit qu'à la fin de chaque mission : ses quatre morceaux d'un coup. Avant la toute première lecture, à la fin de la mission 1, deux intertitres muets :
 1. « Dans la chute, le petit tube fixé à sa patte s'est fendu. Le papier dépasse, froissé, taché d'humidité. »
 2. « Article 4 : un pigeon militaire ne lit jamais le courrier. Article 4 bis : si le courrier est abîmé, il vérifie qu'il est lisible. Raymond vérifie. Un morceau à la fois, par discrétion. »
 
@@ -75,25 +75,35 @@ Chaque niveau terminé révèle un fragment. Les missions 1 et 2 sont la lettre 
 
 Règles : aucune vie au départ, une de plus par médaille. Raymond a 5 états ; au-delà, il perd la tête (« Raymond a perdu la tête. Au sens propre. »). Chaque chute le renvoie au dernier cartel (ou au début du niveau). Quand il perd la tête, une vie le ramène au début de la mission ; sans vie, tout recommence. À la fin de chaque mission, un bilan donne les points de chaque niveau (10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute).
 
+## Les boss et les moments clés
+
+- **1-3, le gardien au filet** : dans l'étage plongé dans le noir, le gardien de nuit prend un filet à papillons et poursuit Raymond.
+- **2-3, le drone** : poursuite dans le brouillard, sur un sol de boue et de trous d'obus.
+- **3-3, la balayeuse municipale** : elle aspire tout ce qui traîne par terre ; on lui échappe en restant en hauteur.
+- **4-3, l'orage** : l'écran avance tout seul, le front d'orage arrive par la gauche.
+- **5-1, la maison Vasseur** : au bout de la route, la maison est là, mais le pigeonnier a laissé place à un garage.
+- **5-3, la buse** : elle se présente : « Te voilà enfin, le pigeon. Je te suis depuis le musée. » Raymond : « Quel musée ? » (il ne s'en souvient pas). « Cent kilomètres que je rêve d'un pigeon rôti. Empaillée ou pas, j'ai faim. » Elle plonge dans le braséro d'un stand de churros et s'enflamme comme une botte de foin. Raymond ne comprend pas pourquoi.
+- **5-3, la date** : sous la banderole « 110e anniversaire de la bataille de Verdun · 1916 – 2026 », Raymond fait le calcul, deux fois, et s'effondre au milieu des flonflons.
+
 ## L'arrivée sur la tombe (fin du niveau 5-4)
 
-Raymond s'arrête devant la tombe Garnier, sans comprendre :
-1. « Vasseur… Marguerite ? Ici ? Sous une pierre ? Elle a dix-neuf ans, je l'ai vue au bal du 14 Juillet. »
-2. « Garnier. Elle a épousé le fils Garnier. Et ces dates… 1989 ? Ça n'existe pas, 1989. »
-3. « Je ne comprends rien. Mais j'ai une lettre pour elle, et le règlement ne prévoit pas les tombes. »
+Raymond sait l'année, maintenant. Il s'arrête devant la tombe Garnier :
+1. « Vasseur… Marguerite. 1897 – 1989. Elle a vécu jusqu'à quatre-vingt-douze ans. »
+2. « Mariée au fils Garnier. Toute une vie sans jamais recevoir la lettre. Sans savoir. »
+3. « J'ai une lettre pour elle. Le règlement ne prévoit pas les tombes. Tant pis pour le règlement. »
 
-Vient alors le dernier fragment (« Je t'aime. Je t'ai toujours aimée. Lucien. »), commenté par : « Il ne reste plus qu'à la lui remettre. »
+Vient alors la dernière lecture, les quatre derniers morceaux, jusqu'à « Je t'aime. Je t'ai toujours aimée. Lucien. », commenté par : « Il ne reste plus qu'à la lui remettre. »
 
 ## La fin
 
-1. La tombe : **FAMILLE GARNIER · Joseph GARNIER, 1893 – 1958 · Marguerite GARNIER, née Vasseur, 1897 – 1989.**
-2. Le fils Garnier s'appelait Joseph. Elle l'a épousé, comme Lucien le voulait. Elle n'a jamais reçu la lettre.
-3. La banderole de la fête : **COMMUNE DE VILLEMAREUIL · 110e ANNIVERSAIRE DE LA BATAILLE DE VERDUN · 1916 – 2026.**
-4. Raymond fait le calcul. Deux fois. « 2026. Je suis… légèrement en retard. »
+1. Cent dix ans. Aucun pigeon ne vit cent dix ans.
+2. « Alors qu'est-ce que je suis ? » Il regarde sa patte. Une couture. Un brin de paille qui dépasse.
+3. La paille qui s'envolait à chaque chute. La buse qui a flambé comme une botte de foin. Tout s'explique, d'un coup.
+4. Il n'est pas un pigeon qui a survécu. Il est ce qu'il en reste.
 5. Il voudrait pleurer. À l'empaillage, on lui a retiré ça aussi.
 6. Il dépose la lettre sur la pierre. Mission accomplie. Le pigeonnier Vasseur n'existe plus : il n'a nulle part où rentrer.
 7. Alors il reste là, sur la tombe. Il ferme les yeux, de son plein gré cette fois.
-8. Dernier plan, sans texte : Raymond est couché sur la dalle, la tête sur la lettre. La caméra glisse lentement vers le pot de chrysanthèmes au pied de la tombe. Contre le pot, une enveloppe jaunie : « Au soldat Lucien Marchal, 151e régiment d'infanterie, Verdun ». La réponse de Marguerite, jamais envoyée. Raymond ne l'a pas vue.
+8. Dernier plan, sans texte : Raymond couché sur la dalle, la tête sur la lettre. La caméra glisse vers le pot de chrysanthèmes au pied de la tombe. Dessous, une enveloppe jaunie : « Au soldat Lucien Marchal, 151e régiment d'infanterie, Verdun ». La réponse de Marguerite, jamais envoyée. Raymond ne l'a pas vue.
 9. FIN. Merci d'avoir porté le courrier.
 
 ## À retravailler (prévu)

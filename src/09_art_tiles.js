@@ -51,6 +51,13 @@ function buildTiles(L){
   // arête nette sous chaque face avant : rendu plus « carré »
   g.fillStyle='rgba(0,0,0,.35)';
   for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!isSolid(cc,r+1)&&r<ROWS-1)g.fillRect(cc*T,r*T+T-1.5,T,1.5)}
+  // coins arrondis des blocs et des bords exposés
+  g.save();g.globalCompositeOperation='destination-out';
+  const cut=(cx,cy,sx,sy,R0)=>{g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+sx*R0,cy);g.quadraticCurveTo(cx,cy,cx,cy+sy*R0);g.closePath();g.fill()};
+  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(!SOLID_ART.includes(ch)||ch==='W')continue;
+    const x=cc*T,y=r*T,up=!isSolid(cc,r-1),lf=!isSolid(cc-1,r),dn=!isSolid(cc,r+1)&&r<ROWS-1,rt=!isSolid(cc+1,r);
+    if(up&&lf)cut(x,y,1,1,8);if(dn&&lf)cut(x,y+T,1,-1,7);if(dn&&rt)cut(x+T,y+T,-1,-1,7)}
+  g.restore();
   g.save();g.globalCompositeOperation='source-atop';g.globalAlpha=.3;g.fillStyle=g.createPattern(paperC,'repeat');g.fillRect(0,-PAD,wpx,hpx);g.restore();
   return c;
 }

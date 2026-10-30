@@ -37,9 +37,9 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
 }
 /* plateformes mobiles à trajectoire propre (manège, ballons, cloches) */
 function mechMoverInit(L,m){
-  if(m.kind==='horse'){m.bx=m.c*T;m.by=m.r*T;m.amp=38;m.per=2.6;m.ph=(m.c*.8)%6;m.w=T;m.h=12}
+  if(m.kind==='horse'){m.bx=m.c*T-10;m.by=m.r*T;m.amp=34;m.per=2.8;m.ph=(m.c*.8)%6;m.w=T+20;m.h=12}
   else if(m.kind==='balloon'){m.bx=m.c*T-6;m.by=m.r*T;m.amp=7;m.per=2.2;m.ph=(m.c*.5)%6;m.w=T+12;m.h=10;m.bouncy=1}
-  else if(m.kind==='bell'){m.px=m.c*T+T/2;m.py=m.r*T;m.len=86;m.amp=.62;m.per=2.8;m.ph=(m.c*.9)%6;m.w=46;m.h=10;m.rung=0}
+  else if(m.kind==='bell'){m.px=m.c*T+T/2;m.py=m.r*T;m.len=86;m.amp=.58;m.per=3;m.ph=(m.c*.9)%6;m.w=60;m.h=10;m.rung=0}
   else return false;
   mechMoverStep(m,0);m.dx=m.dy=0;return true;
 }
@@ -145,7 +145,7 @@ function mechHit(hb){
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
-  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null){const r=30+m.wave*200,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(Math.abs(d-r)<16&&!(P.stun>0)){P.stun=.55;P.vx=(pcx>m.wx?1:-1)*260;P.vy=-220;P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
+  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<130&&Math.abs(d-r)<14&&!(P.stun>0)){P.stun=.45;P.vx=(pcx>m.wx?1:-1)*200;P.vy=-160;P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
   return null;
 }
 /* ---------- poursuivants au sol (gardien au filet, balayeuse) ---------- */
@@ -156,9 +156,10 @@ function stepGroundChaser(K,dt,pcx,pcy){
   const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
   const sp=sweep?clamp(165+(Math.abs(dist)-220)*.2,165,250):clamp(190+(Math.abs(dist)-160)*.22,190,270);
   K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*(sweep?2:5)));K.f=dir;
+  if(sweep){K.x+=K.vx*dt;K.y=K.home.y;if(!G.sim&&rnd()<.3)parts.push({type:'dust',x:K.x+(K.f>0?K.w:0),y:K.y+K.h-4,vx:-K.f*40,vy:-20,life:0,max:.5});return}
   K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
   moveX(K,K.vx*dt);K.onGround=false;moveY(K,K.vy*dt);
-  if(K.onGround&&!sweep){
+  if(K.onGround){
     const fx=dir>0?K.x+K.w+6:K.x-6,cf=Math.floor(fx/T),rf=Math.floor((K.y+K.h-2)/T);
     const la=dir>0?K.x+K.w+34:K.x-34,cl=Math.floor(la/T);
     const blocked=isSolid(cf,rf)||isSolid(cf,rf-1),gap=!groundAt(cl,rf+1)&&!isSolid(cl,rf),pins=tile(cl,rf)==='^'||tile(cf,rf)==='^',above=P.y+P.h<K.y-20&&Math.abs(dist)<110;

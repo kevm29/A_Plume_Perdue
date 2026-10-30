@@ -118,9 +118,9 @@ function skipCut(){
 }
 
 /* ---------- mise à jour du jeu ---------- */
-const TOMB_LINES=["Vasseur… Marguerite ? Ici ? Sous une pierre ? Elle a dix-neuf ans, je l'ai vue au bal du 14 Juillet.",
-  "Garnier. Elle a épousé le fils Garnier. Et ces dates… 1989 ? Ça n'existe pas, 1989.",
-  "Je ne comprends rien. Mais j'ai une lettre pour elle, et le règlement ne prévoit pas les tombes."];
+const TOMB_LINES=["Vasseur… Marguerite. 1897 – 1989. Elle a vécu jusqu'à quatre-vingt-douze ans.",
+  "Mariée au fils Garnier. Toute une vie sans jamais recevoir la lettre. Sans savoir.",
+  "J'ai une lettre pour elle. Le règlement ne prévoit pas les tombes. Tant pis pour le règlement."];
 function stepTomb(dt){
   const S2=G.tombSeq;S2.t+=dt;P.vx=0;P.vy=Math.min(MAXFALL,P.vy+GRAV*dt);P.onGround=false;moveY(P,P.vy*dt);
   const lines=L.def.exitLines||TOMB_LINES,k=Math.floor(S2.t/4.2);

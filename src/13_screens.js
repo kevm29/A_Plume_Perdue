@@ -318,6 +318,7 @@ function finishCards(){const f=G.cardsDone;G.cardsDone=null;f&&f()}
 /* lettre de Lucien */
 function tokens(text){return text.split(' ').map(w=>{const s=/^~.*~[.,]?$/.test(w);return{w:w.replace(/~/g,''),s}})}
 function renderLetter(t){
+  if(G.LE.mode==='short'){renderLevelDone(t);return}
   const LE=G.LE,def=LEVELS[LE.li],fx=def.letter.fx;
   ctx.fillStyle='#1a120c';ctx.fillRect(0,0,W,H);
   ctx.save();ctx.globalAlpha=.22;ctx.fillStyle=ctx.createPattern(paperC,'repeat');ctx.fillRect(0,0,W,H);ctx.restore();
@@ -364,19 +365,52 @@ function renderLetter(t){
     if(def.letter.silent){ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Raymond ne dit rien.',190,H-115)}
     else{const lines=wrap(ctx,def.letter.comment,620);lines.forEach((l,k)=>ctx.fillText(l,190,H-140+k*25))}
     ctx.font='14px '+F_DISP;ctx.fillStyle='#d9a441';
-    ctx.fillText(`PAILLE RAMASSÉE ${LE.corn} / ${LE.cornTotal}   ·   MÉDAILLE ${LE.medal?'TROUVÉE':'NON TROUVÉE'}   ·   CHUTES : ${LE.deaths}   ·   POINTS : ${levelPoints({corn:LE.corn,medal:LE.medal,deaths:LE.deaths})}`,190,H-36);
+    ctx.fillText(`MORCEAU ${LE.li-LE.last+4} SUR 4${LE.li<LE.last?'   ·   Raymond déplie le morceau suivant':''}`,190,H-36);
     if(LE.after>.8){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-12)}
     ctx.restore();
   }else{
     ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('Raymond vérifie que le courrier est lisible. Article 4 bis.',W-24,H-16);
   }
 }
+/* fin de niveau : court bilan ; fin de mission : les quatre morceaux de lettre */
+function endOfLevel(li){
+  const def=LEVELS[li],st=S.run.stats[li]||{corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths,points:0};
+  const after=()=>{
+    if(li%4!==3){G.state='levelend';G.LE={mode:'short',li,after:0,st};G.fade=1;SFX.page();return}
+    const first=li-3,go=()=>{G.state='levelend';G.LE={mode:'letter',li:first,last:li,chars:0,done:false,after:0};G.fade=1;SFX.page()};
+    if(def.w===0){G.state='intro';G.cards=TUBE;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=go}else go();
+  };
+  if(def.afterCards){G.state='intro';G.cards=def.afterCards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=after;if(def.afterSong)setSong(def.afterSong)}else after();
+}
 function handleLetter(dt){
-  const LE=G.LE,def=LEVELS[LE.li];
+  const LE=G.LE;const go=pressed.has('ok')||pressed.has('jump')||G.click;
+  if(LE.mode==='short'){LE.after+=dt;if(go&&LE.after>.5){G.cutSeen=true;startLevel(LE.li+1)}return}
+  const def=LEVELS[LE.li];
   const total=(def.letter.date||'').length+tokens((LE.li===0?'':'… ')+def.letter.text).reduce((s,t)=>s+t.w.length+1,0);
-  const go=pressed.has('ok')||pressed.has('jump')||G.click;
   if(!LE.done){const before=Math.floor(LE.chars);LE.chars+=dt*30;if(Math.floor(LE.chars)!==before&&Math.floor(LE.chars)%3===0)noise(.03,2600,.04,'highpass');if(go)LE.chars=total;if(LE.chars>=total){LE.done=true;LE.after=0}}
-  else{LE.after+=dt;if(go&&LE.after>.5)afterLetter(LE.li)}
+  else{LE.after+=dt;if(go&&LE.after>.5){if(LE.li<LE.last){LE.li++;LE.chars=0;LE.done=false;LE.after=0;SFX.page()}else afterLetter(LE.last)}}
+}
+function renderLevelDone(t){
+  const LE=G.LE,def=LEVELS[LE.li],st=LE.st;
+  ctx.fillStyle='#1a120c';ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.globalAlpha=.22;ctx.fillStyle=ctx.createPattern(paperC,'repeat');ctx.fillRect(0,0,W,H);ctx.restore();
+  const gl=ctx.createRadialGradient(W*.5,H*.4,40,W*.5,H*.4,520);gl.addColorStop(0,'rgba(255,200,120,.2)');gl.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=gl;ctx.fillRect(0,0,W,H);
+  const a=Math.min(1,LE.after*3);ctx.save();ctx.globalAlpha=a;
+  // étiquette de musée
+  ctx.save();ctx.translate(W/2,H/2-20);ctx.rotate(-.02);
+  ctx.fillStyle='rgba(0,0,0,.4)';rr(ctx,-250,-120,510,250,6);ctx.fill();
+  const pg=ctx.createLinearGradient(0,-130,0,120);pg.addColorStop(0,'#ece2c6');pg.addColorStop(1,'#d2c19a');ctx.fillStyle=pg;rr(ctx,-260,-130,510,250,6);ctx.fill();
+  ctx.strokeStyle='rgba(120,90,50,.45)';ctx.lineWidth=1.5;rr(ctx,-248,-118,486,226,4);ctx.stroke();
+  ctx.fillStyle='#8a5a2a';ctx.font='13px '+F_DISP;ctx.textAlign='center';ctx.fillText(`MISSION ${def.w+1} · NIVEAU ${LE.li%4+1} TRAVERSÉ`,-5,-88);
+  ctx.fillStyle='#2a2420';ctx.font='32px '+F_DISP;ctx.fillText(def.name,-5,-48);
+  ctx.fillStyle='rgba(42,36,32,.25)';ctx.fillRect(-180,-30,350,1);
+  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`],['Médaille',st.medal?'trouvée':'non trouvée'],['Chutes',String(st.deaths)],['Points',String(st.points)]];
+  rows.forEach(([k,v],i)=>{const y=0+i*28;ctx.textAlign='left';ctx.font='italic 19px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='19px '+F_DISP;ctx.fillStyle=i===3?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
+  ctx.restore();
+  drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});
+  ctx.font='italic 16px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.textAlign='left';ctx.fillText('La lettre attendra la fin de la mission.',W/2-270,H-64);
+  if(LE.after>.6){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-16)}
+  ctx.restore();
 }
 function afterLetter(li){
   G.cutSeen=true;

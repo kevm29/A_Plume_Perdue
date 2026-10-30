@@ -341,6 +341,16 @@ function drawEasel(g,x,y,label,outdoor){
 function drawExit(g,e,style,t,label){
   const x=e.x+6,y=e.y;
   if(style==='house'){drawHouse(g,e,t);return}
+  if(style==='banner'){
+    // banderole de la fête, tendue entre deux mâts
+    const cx=x+T/2,gy=y+2*T,sw=Math.sin(t*1.4)*2;g.save();
+    g.fillStyle='#5a4632';g.fillRect(cx-150,gy-150,6,150);g.fillRect(cx+144,gy-150,6,150);
+    g.fillStyle='#efe6d0';g.beginPath();g.moveTo(cx-144,gy-140+sw);g.quadraticCurveTo(cx,gy-128+sw,cx+144,gy-140+sw);g.lineTo(cx+144,gy-104+sw);g.quadraticCurveTo(cx,gy-92+sw,cx-144,gy-104+sw);g.closePath();g.fill();
+    g.fillStyle='#2a4a8a';g.fillRect(cx-144,gy-142+sw,288,3);g.fillStyle='#b8302a';g.fillRect(cx-144,gy-104+sw,288,3);
+    g.fillStyle='#2a2420';g.font='9px '+F_DISP;g.textAlign='center';g.fillText('110e ANNIVERSAIRE DE LA BATAILLE DE VERDUN',cx,gy-124+sw);
+    g.fillStyle='#a8322d';g.font='11px '+F_DISP;g.fillText('1916 – 2026',cx,gy-110+sw);
+    for(let k=0;k<9;k++){g.fillStyle=['#c8302a','#e0b030','#3a6aa8'][k%3];g.beginPath();g.moveTo(cx-140+k*35,gy-150);g.lineTo(cx-128+k*35,gy-150);g.lineTo(cx-134+k*35,gy-138);g.fill()}
+    g.restore();return}
   g.save();
   if(style==='window'){
     g.fillStyle='#1b2630';g.beginPath();g.moveTo(x-12,y+86);g.lineTo(x-12,y-40);g.arc(x+20,y-40,32,Math.PI,0);g.lineTo(x+52,y+86);g.closePath();g.fill();

@@ -126,10 +126,10 @@ function drawMechMover(g,m,t){
     const L0=m.len;g.beginPath();g.moveTo(-14,L0-2);g.quadraticCurveTo(-18,L0+40,-36,L0+56);g.lineTo(36,L0+56);g.quadraticCurveTo(18,L0+40,14,L0-2);g.closePath();g.fill();
     g.fillStyle='#4a3010';g.fillRect(-38,L0+54,76,5);
     g.strokeStyle='#5a4628';g.lineWidth=3;g.beginPath();g.moveTo(0,0);g.lineTo(0,L0);g.stroke();
-    g.fillStyle='#8a6a3a';rr(g,-24,L0-12,48,10,3);g.fill();g.fillStyle='rgba(255,230,190,.3)';g.fillRect(-24,L0-12,48,2);
+    g.fillStyle='#8a6a3a';rr(g,-31,L0-12,62,10,3);g.fill();g.fillStyle='rgba(255,230,190,.3)';g.fillRect(-31,L0-12,62,2);
     g.fillStyle='#3a2a10';g.beginPath();g.arc(0,L0+60,6,0,7);g.fill();
     g.restore();
-    if(m.wave!=null){const r=30+m.wave*200;g.strokeStyle='rgba(233,200,120,'+(1-m.wave/.6)+')';g.lineWidth=3;g.beginPath();g.arc(m.wx,m.wy,r,0,7);g.stroke()}
+    if(m.wave!=null&&m.wave<.59){const r=30+m.wave*170;g.strokeStyle='rgba(233,200,120,'+(1-m.wave/.6)+')';g.lineWidth=3;g.beginPath();g.arc(m.wx,m.wy,r,0,7);g.stroke()}
     return true}
   return false;
 }
@@ -196,6 +196,11 @@ function drawMechFront(t){
     const gl=ctx.createLinearGradient(fx-200,0,fx-520,0);gl.addColorStop(0,'rgba(196,192,186,0)');gl.addColorStop(1,'rgba(196,192,186,.85)');ctx.fillStyle=gl;ctx.fillRect(fx-1600,cam.y-50,1400,H+100);
     ctx.restore();
     for(const p of L.poppies){if(!vis(p.x))continue;for(let k=-1;k<=1;k++){const px=p.x+k*11,py=p.y-6-Math.abs(k)*3+Math.sin(t*2+p.x+k)*1;ctx.strokeStyle='#3a5a30';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(px,p.y);ctx.lineTo(px,py);ctx.stroke();ctx.fillStyle='#d8302a';ctx.beginPath();ctx.arc(px,py-2,4,0,7);ctx.fill();ctx.fillStyle='#2a1a1a';ctx.beginPath();ctx.arc(px,py-2,1.2,0,7);ctx.fill()}}}
+  // rafales : traînées de vent (rares pendant l'alerte, denses pendant la rafale)
+  if(L.def.gust&&L.gust.state!=='calm'){const blow=L.gust.state==='blow',n=blow?34:10,dir=L.def.gust.dir||-1;ctx.save();
+    for(let k=0;k<n;k++){const sp=blow?900:420,len=blow?60+(k%5)*14:30;const xx=cam.x+(((dir<0?-1:1)*G.lt*sp+k*137)%(W+200)+W+200)%(W+200)-100,yy=cam.y+20+((k*71)%(H-60));
+      ctx.strokeStyle='rgba(235,240,250,'+(blow?.42:.22)+')';ctx.lineWidth=blow?1.6:1;ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx-dir*len*.5,yy-3,xx-dir*len,yy+1);ctx.stroke()}
+    ctx.restore()}
   // front d'orage (défilement forcé)
   if(L.auto&&L.auto.on){const x=L.auto.x;ctx.save();
     const gr=ctx.createLinearGradient(x-40,0,x+150,0);gr.addColorStop(0,'rgba(8,10,18,.97)');gr.addColorStop(1,'rgba(8,10,18,0)');ctx.fillStyle=gr;ctx.fillRect(x-200,cam.y-50,350,H+100);
