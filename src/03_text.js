@@ -27,7 +27,7 @@ const DEATH_Q={
   buse:["La buse. Elle a toujours voulu ma place. Elle l'a presque.","Rattrapé par une voisine de vitrine. L'humiliation est totale."],
   bolt:["La foudre. Comme au fort. Je… je me souviens d'un éclair.","Frappé par la foudre. Ma paille sent le roussi."],
   fall:["J'avais oublié de battre des ailes. Détail technique.","Il y avait un trou. Je l'ai trouvé.","Chute libre. La liberté, on ne me l'a jamais demandée."],
-  guard:["Repéré. Le gardien m'a ramené au cartel, avec des pincettes.","Pris dans la lumière, comme un lapin. Un lapin décoré.","Il m'a vu. Il n'a pas eu l'air surpris de voir un pigeon empaillé marcher. Bizarre."],
+  guard:["Repéré. Le gardien m'a ramené au cartel, avec des pincettes.","Pris dans la lumière, comme un lapin. Un lapin décoré.","Il m'a vu. Il n'a pas eu l'air surpris de voir un pigeon se promener dans un musée en pleine nuit. Bizarre."],
   catwatch:["Il m'a vu bouger. Un chat, ça voit tout, même les yeux fermés.","J'ai bougé. Erreur de débutant."],
   guardnet:["Pris au filet comme un papillon. Le docteur Laffont aurait été ravi.","Le filet. Vexant."],
   mud:["La boue d'ici. Elle ne rend jamais rien.","Englouti. Il fallait avancer, ne jamais s'arrêter."],
@@ -35,7 +35,7 @@ const DEATH_Q={
   fire:["Trop près du feu. La paille, ça n'aime pas ça."],
   storm:["L'orage m'a rattrapé. Il ne fallait pas traîner."],
   sweeper:["Aspiré par la balayeuse. Classé avec les mégots.","Ramassé par la voirie. Comme un vieux journal."],
-  drown:["De l'eau partout. Un pigeon empaillé, ça flotte mal."]
+  drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
 };
 const TUFT_Q=["De la paille. Bizarre, je me sens tout de suite plus épais.","Tiens, de la paille. Je ne sais pas pourquoi, ça me fait du bien.","Encore de la paille. Je ne comprends pas, mais je ne me plains pas."];
 const MEDAL_Q=["Une médaille du mérite colombophile. On me reconnaît enfin.","Une médaille. Je l'épinglerai à côté de l'autre. J'en avais une autre, non ?","Décoré. Le règlement prévoit un grain de maïs en plus. Je le réclamerai."];

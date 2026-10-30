@@ -166,9 +166,9 @@ function chaserReenter(K){
 
 /* ---------- la « fiente » : faute de mieux, une bille de verre ---------- */
 const MARBLE_Q=["Oups. Le règlement n'en parle pas, donc ce n'est pas arrivé.","Pardon. C'est nerveux.","Bombardement de précision. Le génie serait fier de moi.",
- "Une bille ? J'ai pondu une bille ? Mais ils m'ont rempli de quoi, au juste ?","Une bille de verre. Taxidermiste, je te maudis sur sept générations.",
+ "Une bille ? J'ai pondu une bille ? Mais ils m'ont rempli de quoi, au juste ?","Une bille de verre. Le vétérinaire du régiment aura des comptes à me rendre.",
  "Ça rebondit. Ça ne devrait pas rebondir. Je ne suis pas médecin, mais ça ne devrait pas rebondir.","Soulagé. Enfin… plus léger. Enfin… bref.",
- "Pigeon un jour, pigeon toujours. Même empaillé, on garde ses habitudes."];
+ "Pigeon un jour, pigeon toujours. On garde ses habitudes, même en mission."];
 function elevated(){if(!P.onGround)return false;if(P.onMover)return true;const r=Math.floor((P.y+P.h+2)/T),c0=Math.floor((P.x+4)/T),c1=Math.floor((P.x+P.w-4)/T);for(let c=c0;c<=c1;c++){const ch=tile(c,r);if(ch&&ch!=='.'&&ch!=='#'&&ch!=='~')return true}return false}
 function dropMarble(){
   if(!elevated()||G.cut||G.tombSeq)return;if(!L.marbles)L.marbles=[];if(L.marbles.length>2)return;

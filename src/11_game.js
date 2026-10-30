@@ -65,7 +65,7 @@ function die(kind,tiles){
   if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
-const TORN_Q=["Mon aile gauche vient de déposer un préavis de grève.","Ça craque aux coutures. Le taxidermiste avait dit « garanti cent ans ». Il ne mentait pas, c'est fini.","Elle se décroche ! Non. Si. Presque. Ne plus bouger d'une plume.",
+const TORN_Q=["Mon aile gauche vient de déposer un préavis de grève.","Ça craque aux coutures. Des coutures ? Depuis quand j'ai des coutures, moi ?","Elle se décroche ! Non. Si. Presque. Ne plus bouger d'une plume.",
  "Une aile cousue au fil de 1916. Il a de la bouteille, le fil.","Si je perds une aile, je deviens un pigeon de salon. Quelle déchéance.","Repos, l'aile. C'est un ordre. Elle n'obéit plus à personne.",
  "J'entends un petit « crac ». J'espère que c'est le plancher.","Pour un oiseau voyageur, je voyage beaucoup à pied, ces temps-ci."];
 function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;unlock('a68');tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});
