@@ -59,5 +59,7 @@ S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
    600 pour toute la paille (700 s'il n'y a pas de médaille dans le niveau), 100 la médaille, 100 la cachette,
    200 sans accroc (50 de moins par accroc) */
 const LEVEL_MAX=1000;
-function levelPoints(o){const cp=o.hasMedal?600:700;const sec=o.secTotal?o.secFound/o.secTotal:(o.secret?1:0);return Math.round(cp*o.corn/Math.max(1,o.cornTotal))+(o.medal?100:0)+Math.round(100*sec)+Math.max(0,200-50*(o.deaths||0))}
+/* le score d'un niveau, c'est ce qu'on y a trouvé : 10 points par paille, par médaille et par cachette */
+function levelPoints(o){return 10*((o.corn||0)+(o.medal?1:0)+(o.secFound||0))}
+function levelMax(o){return 10*((o.cornTotal||0)+(o.hasMedal?1:0)+(o.secTotal||0))}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}

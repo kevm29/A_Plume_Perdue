@@ -21,7 +21,7 @@ const ACH=[
  ['a24','C','Rembourré à neuf',"Revenir à cinq crans pleins après être descendu au dernier."],
  ['a26','C','Bardé de décorations',"Trouver les cinq médailles dans une même partie."],
  ['a30','C',"Rien ne m'échappe","Trouver toutes les cachettes du jeu."],
- ['a35','C','Mission parfaite',"Faire 4000 points sur une mission."],
+ ['a35','C','Mission parfaite',"Tout trouver dans une mission."],
  ['a49','D','Recousu de travers',"Perdre la tête une première fois."],
  ['a50','D','Depuis la remise',"Perdre sa dernière vie et tout recommencer."],
  ['a53','E','Fantôme du musée',"Jeter un drap sur la tête d'un gardien."],
@@ -34,7 +34,7 @@ const ACH=[
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de cachettes (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=22;
+const SECRET_TOTAL=23;
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -48,8 +48,8 @@ function achLetter(li){achState();S.achStats.letters[li]=1;if(Object.keys(S.achS
 /* fin de mission (après la lettre) */
 function achMission(w){
   unlock('a'+(4+w));
-  let pts=0,acc=0;for(let k=w*4;k<w*4+4;k++){const o=S.run.stats[k];if(o){pts+=o.points||0;acc+=o.deaths||0}else acc+=99}
-  if(pts>=4000)unlock('a35');if(acc===0)unlock('a12');
+  let pts=0,mx=0,acc=0;for(let k=w*4;k<w*4+4;k++){const o=S.run.stats[k];if(o){pts+=o.points||0;mx+=o.max||1;acc+=o.deaths||0}else{acc+=99;mx+=1}}
+  if(pts>=mx)unlock('a35');if(acc===0)unlock('a12');
   if(w===4){unlock('a9');if(!S.run.headLost&&!S.run.usedInf)unlock('a10');if(!S.run.anyAccroc&&!S.run.usedInf)unlock('a11')}
   if(Object.keys(S.run.medals||{}).length>=5)unlock('a26');
 }

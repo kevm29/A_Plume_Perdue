@@ -281,21 +281,20 @@ function drawStatsCard(w,ct){
   ctx.font='12px '+F_DISP;ctx.fillStyle='rgba(233,223,199,.55)';
   ['NIVEAU','PAILLE','MÉDAILLE','CACHETTE','ACCROCS','POINTS'].forEach((h,k)=>{ctx.textAlign=k?'center':'left';ctx.fillText(h,cols[k],hy)});
   ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(110,hy+10,750,1);
-  let tot=0;
+  let tot=0,totMax=0;
   for(let j=0;j<4;j++){const li=w*4+j,o=st[li],y=hy+48+j*44,a=Math.min(1,Math.max(0,(ct-.2-j*.25)*4));
     ctx.globalAlpha=a;ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='italic 20px '+F_BODY;ctx.fillText(`${w+1}–${j+1}  ${WORLDS[w].levels[j]}`,cols[0],y);
     ctx.textAlign='center';ctx.font='18px '+F_DISP;
     if(o){ctx.fillText(`${o.corn} / ${o.cornTotal}`,cols[1],y);
       if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText(o.hasMedal?'—':'·',cols[2],y)}
       {const f=o.secFound||0,tt=o.secTotal||1;ctx.fillStyle=f?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(tt>1?`${f}/${tt}`:(f?'✓':'—'),cols[3],y)}
-      ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[4],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[5],y);tot+=o.points}
+      ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[4],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[5],y);tot+=o.points;totMax+=o.max||levelMax(o)}
     else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('non joué',cols[1],y)}
     ctx.globalAlpha=1}
   const ty=hy+48+4*44;ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(110,ty-28,750,1);
   ctx.globalAlpha=Math.min(1,Math.max(0,(ct-1.3)*3));
   ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='20px '+F_DISP;ctx.fillText('TOTAL DE LA MISSION',cols[0],ty);
-  ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='26px '+F_DISP;ctx.fillText(`${tot} / ${4*LEVEL_MAX}`,cols[5]-20,ty+2);
-  ctx.font='italic 13px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('1000 points par niveau : 600 la paille (700 sans médaille) · 100 la médaille · 100 la cachette · 200 sans accroc (−50 par accroc)',W/2,ty+40);
+  ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='26px '+F_DISP;ctx.fillText(totMax?`${tot} / ${totMax}`:String(tot),cols[5]-20,ty+2);
   ctx.globalAlpha=1;ctx.restore();
 }
 function drawBannerCard(t){
@@ -430,7 +429,7 @@ function renderLevelDone(t){
   ctx.fillStyle='#8a5a2a';ctx.font='13px '+F_DISP;ctx.textAlign='center';ctx.fillText(`MISSION ${def.w+1} · NIVEAU ${LE.li%4+1} TRAVERSÉ`,-5,-88);
   ctx.fillStyle='#2a2420';ctx.font='32px '+F_DISP;ctx.fillText(def.name,-5,-48);
   ctx.fillStyle='rgba(42,36,32,.25)';ctx.fillRect(-180,-30,350,1);
-  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',st.secTotal>1?`${st.secFound||0} / ${st.secTotal}`:(st.secFound?'trouvée':'pas trouvée')],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${LEVEL_MAX}`]);
+  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',st.secTotal>1?`${st.secFound||0} / ${st.secTotal}`:(st.secFound?'trouvée':'pas trouvée')],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${st.max||levelMax(st)}`]);
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});

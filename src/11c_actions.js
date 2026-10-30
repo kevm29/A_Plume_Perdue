@@ -46,7 +46,7 @@ function nearAct(){
 function tryAct(){
   if(P.dead||G.cut||G.tombSeq||P.wake>0)return;
   P.peck=.28;
-  const n=nearAct();if(!n)return;
+  const n=nearAct();if(!n){dropMarble();return}
   if(n.type==='tangle'){
     // le drap sous lequel on se cachait lui tombe dessus : Raymond est à découvert
     const g=n.o,c=coverHere();g.tangle=1.1;g.sweep=0;if(c){c.gone=true;c.on=g}
@@ -159,3 +159,34 @@ function chaserReenter(K){
   while(r<ROWS-1&&!groundAt(c,r+1))r++;
   K.x=x;K.y=(r+1)*T-K.h;K.vx=0;K.vy=0;
 }
+
+/* ---------- la « fiente » : faute de mieux, une bille de verre ---------- */
+const MARBLE_Q=["Oups. Le règlement n'en parle pas, donc ce n'est pas arrivé.","Pardon. C'est nerveux.","Bombardement de précision. Le génie serait fier de moi.",
+ "Une bille ? J'ai pondu une bille ? Mais ils m'ont rempli de quoi, au juste ?","Une bille de verre. Taxidermiste, je te maudis sur sept générations.",
+ "Ça rebondit. Ça ne devrait pas rebondir. Je ne suis pas médecin, mais ça ne devrait pas rebondir.","Soulagé. Enfin… plus léger. Enfin… bref.",
+ "Pigeon un jour, pigeon toujours. Même empaillé, on garde ses habitudes."];
+function elevated(){if(!P.onGround)return false;if(P.onMover)return true;const r=Math.floor((P.y+P.h+2)/T),c0=Math.floor((P.x+4)/T),c1=Math.floor((P.x+P.w-4)/T);for(let c=c0;c<=c1;c++){const ch=tile(c,r);if(ch&&ch!=='.'&&ch!=='#'&&ch!=='~')return true}return false}
+function dropMarble(){
+  if(!elevated()||G.cut||G.tombSeq)return;if(!L.marbles)L.marbles=[];if(L.marbles.length>2)return;
+  L.marbles.push({x:P.x+P.w/2-P.facing*6,y:P.y+P.h-6,w:8,h:8,vx:-P.facing*30,vy:40,t:0,b:0,heard:false,col:pick(['#4a8ac8','#c84a4a','#4ac87a','#d8b04a'])});
+  P.sx=1.12;P.sy=.9;
+  if(!G.sim){noise(.08,1200,.08,'bandpass');G.marbleN=(G.marbleN||0)+1;if(G.marbleN===1||rnd()<.5)setTimeout(()=>say(pick(MARBLE_Q),3.6),350)}
+}
+function marbleStep(dt){
+  if(!L.marbles)return;
+  for(let i=L.marbles.length-1;i>=0;i--){const m=L.marbles[i];m.t+=dt;
+    m.vy=Math.min(MAXFALL,m.vy+GRAV*dt);const vy0=m.vy;m.onGround=false;moveX(m,m.vx*dt);moveY(m,m.vy*dt);
+    if(m.onGround&&vy0>120){m.vy=-vy0*.55;m.b++;m.vx*=.8;if(!G.sim)tone(1900+rnd()*500,.05,'sine',.06+.04/(m.b),null);if(!m.heard){m.heard=true;marbleHeard(m)}}
+    else if(m.onGround){m.vy=0;m.vx*=Math.pow(.05,dt)}
+    if(m.t>6||m.y>ROWS*T+40)L.marbles.splice(i,1)}
+}
+/* les bêtes entendent la bille : elles se tournent vers le bruit, et les chats qui somnolent bondissent */
+function marbleHeard(m){
+  const R2=320;
+  for(const c of L.rats)if(Math.hypot(c.x+c.w/2-m.x,c.y-m.y)<R2){const d=Math.sign(m.x-(c.x+c.w/2))||1;c.vx=Math.abs(c.vx||c.base||95)*d;c.lastDir=d;c.lure=m.x}
+  for(const g of L.guards)if(!(g.tangle>0)&&!(g.sweep>0)&&Math.hypot(g.x+g.w/2-m.x,g.y+g.h-m.y)<R2+80){g.dir=Math.sign(m.x-(g.x+g.w/2))||g.dir;g.pause=1.2;g.noFlip=true;if(!G.sim)bubble(g.x+g.w/2,g.y-14,'Hein ?','#2a3a5a')}
+  for(const w of L.watchers)if((w.mode==='sit'||!w.mode)&&Math.hypot(w.x-m.x,w.y-m.y)<R2+120){w.seen=true;w.mode='chase';w.ct=0;w.k={x:w.x-22,y:w.y-26,w:44,h:26,vx:0,vy:-380,onGround:false,f:P.x>w.x?1:-1};if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),200)}}
+}
+function drawMarbles(){if(!L.marbles)return;for(const m of L.marbles){const x=m.x+m.w/2,y=m.y+m.h/2;ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x+2,m.y+m.h+1,4,1.5,0,0,7);ctx.fill();
+  const gr=ctx.createRadialGradient(x-1.5,y-1.5,.5,x,y,4.5);gr.addColorStop(0,'#ffffff');gr.addColorStop(.35,m.col);gr.addColorStop(1,'#1a1a2a');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(x,y,4.2,0,7);ctx.fill();ctx.restore()}}

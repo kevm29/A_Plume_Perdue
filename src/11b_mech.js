@@ -37,8 +37,8 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
     case'R':return false;
     case'f':return false;   // carton creux : dessiné comme un bloc, on peut y entrer
     case't':return false;   // planche invisible
-    case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=(L.g[r][c-1]==='f'||L.g[r][c+1]==='f')?'f':'.';return false}
-    case'x':{let fr=r+1;while(fr<ROWS&&L.g[fr][c]!=='#')fr++;L.decor.push({t:'wardrobe',x:c*T,y:r*T,w:2*T,floor:fr*T});L.g[r][c]='=';if(L.g[r][c+1]==='.')L.g[r][c+1]='=';return false}
+    case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=(L.g[r][c-1]==='f'||L.g[r][c+1]==='f'||(L.g[r-1]&&L.g[r-1][c]==='f')||(L.g[r+1]&&L.g[r+1][c]==='f'))?'f':'.';return false}
+    case'x':{let fr=r+1;while(fr<ROWS&&L.g[fr][c]!=='#')fr++;{const ac={kind:'secret',style:'wardrobe',x:c*T+T,y:fr*T,open:0,t:0,used:false};(L.acts=L.acts||[]).push(ac);L.decor.push({t:'wardrobe',x:c*T,y:r*T,w:2*T,floor:fr*T,act:ac})}L.g[r][c]='=';if(L.g[r][c+1]==='.')L.g[r][c+1]='=';return false}
   }
   return false;
 }
@@ -92,12 +92,12 @@ function mechStep(dt,pcx,pcy){
   for(const g of L.guards){
     g.t+=dt;
     if(g.tangle>0){g.tangle-=dt;g.sees=false;
-      if(g.tangle<=0){g.sweep=2.6;g.sweepAng=g.dir>0?0:Math.PI;g.angry=true;const c=L.covers.find(c=>c.on===g);if(c){c.on=null;c.sheetX=g.x+g.w/2+22*g.dir}if(!G.sim){bubble(g.x+g.w/2,g.y-16,'Où il est, ce pigeon ?!','#a8322d');noise(.25,900,.2,'bandpass')}}
+      if(g.tangle<=0){g.sweep=1.4;g.sweepAng=g.dir>0?0:Math.PI;g.angry=true;const c=L.covers.find(c=>c.on===g);if(c){c.on=null;c.sheetX=g.x+g.w/2+22*g.dir}if(!G.sim){bubble(g.x+g.w/2,g.y-16,'Où il est, ce pigeon ?!','#a8322d');noise(.25,900,.2,'bandpass')}}
       continue}
     // il arrache le drap et balaie tout autour de lui avec sa lampe, furieux
-    if(g.sweep>0){g.sweep-=dt;g.sweepAng+=dt*3.4;g.look=0;g.sees=!G.cut&&!P.dead&&guardSees(g,pcx,pcy);continue}
-    if(g.pause>0){g.pause-=dt;g.look=Math.sin(g.t*3)*.18;if(g.pause<=0)g.dir=-g.dir}
-    else{g.look=0;g.x+=g.dir*g.speed*(g.angry?1.6:1)*dt;
+    if(g.sweep>0){g.sweep-=dt;g.sweepAng+=dt*7.5;g.look=0;g.sees=!G.cut&&!P.dead&&guardSees(g,pcx,pcy);continue}
+    if(g.pause>0){g.pause-=dt;g.look=Math.sin(g.t*3)*.18;if(g.pause<=0){if(g.noFlip)g.noFlip=false;else g.dir=-g.dir}}
+    else{g.look=0;g.x+=g.dir*g.speed*(g.angry?2.3:1)*dt;
       if(g.dir>0&&g.x+g.w>=g.a1){g.x=g.a1-g.w;g.pause=1.1}
       else if(g.dir<0&&g.x<=g.a0){g.x=g.a0;g.pause=1.1}}
     g.sees=!G.cut&&!P.dead&&guardSees(g,pcx,pcy);
@@ -114,7 +114,7 @@ function guardSees(g,pcx,pcy){
   if(d>b.len)return false;
   let a=Math.atan2(dy,dx)-b.ang;a=Math.atan2(Math.sin(a),Math.cos(a));if(Math.abs(a)>b.half)return false;
   if(hiddenNow())return false;
-  for(let k=1;k<10;k++){const x=b.ex+dx*k/10,y=b.ey+dy*k/10;if(isSolid(Math.floor(x/T),Math.floor(y/T)))return false}
+  for(let k=1;k<10;k++){const x=b.ex+dx*k/10,y=b.ey+dy*k/10,c=Math.floor(x/T),r=Math.floor(y/T);if(isSolid(c,r)||tile(c,r)==='f')return false}
   return true;
 }
 /* ---------- modificateurs de la physique du joueur ---------- */

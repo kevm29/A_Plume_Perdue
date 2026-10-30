@@ -65,7 +65,12 @@ function die(kind,tiles){
   if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
-function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;unlock('a68');tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});if(!G.tornSaid){G.tornSaid=true;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}}
+const TORN_Q=["Mon aile gauche vient de déposer un préavis de grève.","Ça craque aux coutures. Le taxidermiste avait dit « garanti cent ans ». Il ne mentait pas, c'est fini.","Elle se décroche ! Non. Si. Presque. Ne plus bouger d'une plume.",
+ "Une aile cousue au fil de 1916. Il a de la bouteille, le fil.","Si je perds une aile, je deviens un pigeon de salon. Quelle déchéance.","Repos, l'aile. C'est un ordre. Elle n'obéit plus à personne.",
+ "J'entends un petit « crac ». J'espère que c'est le plancher.","Pour un oiseau voyageur, je voyage beaucoup à pied, ces temps-ci."];
+function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;unlock('a68');tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});
+  if(!G.tornSaid){G.tornSaid=true;G.tornT=G.t;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}
+  else if(G.t-(G.tornT||0)>8&&rnd()<.6){G.tornT=G.t;say(pick(TORN_Q),3.6)}}
 function winLevel(){if(G.sim){G.simWin=true;return}if(G.li===2)unlock('a56');G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
 
 /* ---------- scène d'ouverture : nuit d'orage, voleur, armoire, carton ---------- */
@@ -174,7 +179,7 @@ function stepPlay(dt){
     }
   }
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);actStep(dt);
+  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -237,7 +242,9 @@ function stepPlay(dt){
   if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();if(!S.run.medals[G.li]&&!S.infinite){S.run.medals[G.li]=true;S.run.lives++;save();say(pick(MEDAL_Q)+' (Une vie de plus.)',4.2)}else say(pick(MEDAL_Q),3.6)}
   for(const cp of L.cps)if(!cp.on&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
-  let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;G.hintI=hn;
+  // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir
+  let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;
+  if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0}G.hintT=(G.hintT||0)+dt;G.hintI=hn>=0&&G.hintT<3?hn:-1;
   if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
   if(L.exit&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}

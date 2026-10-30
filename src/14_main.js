@@ -62,7 +62,7 @@ function update(dt){
         const li=G.li;S.unlocked=Math.min(19,Math.max(S.unlocked,li+1));
         if(G.medal)S.run.medals[li]=true;
         const gt=gotOf(li);
-        S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secFound:gt.sec.length,secTotal:L.secretTotal||0,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);
+        S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secFound:gt.sec.length,secTotal:L.secretTotal||0,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);S.run.stats[li].max=levelMax(S.run.stats[li]);
         const b=S.best[li]||{corn:0,medal:false,deaths:9999,points:0};S.best[li]={corn:Math.max(b.corn,gt.c.length),medal:b.medal||gt.m,secret:Math.max(b.secret||0,gt.sec.length),deaths:Math.min(b.deaths,gt.d),points:Math.max(b.points||0,S.run.stats[li].points)};save();
         setSong('title');endOfLevel(li);
       }
