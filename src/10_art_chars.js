@@ -484,8 +484,6 @@ function drawMammoth(g,x,floor,t){
   // socle
   g.fillStyle='#3a2416';g.fillRect(x-230,fy,470,24);g.fillStyle='#5a3a24';g.fillRect(x-238,fy-6,486,8);
   g.fillStyle='rgba(255,230,180,.12)';g.fillRect(x-238,fy-6,486,2);
-  g.fillStyle='#d9cfb4';rr(g,x-70,fy+4,140,15,2);g.fill();g.fillStyle='#3a2a20';g.font='8px '+F_BODY;g.textAlign='center';
-  g.fillText('MAMMOUTH LAINEUX · reconstitution, plâtre, 1931',x,fy+14);
   const fur='#5e3f27',furL='#7d5636',furD='#3f2918',far='#4a311e';
   // pattes du fond
   const leg=(lx,c)=>{g.fillStyle=c;g.beginPath();g.moveTo(lx-22,fy-130);g.lineTo(lx+22,fy-130);g.lineTo(lx+20,fy-8);g.quadraticCurveTo(lx,fy+2,lx-20,fy-8);g.closePath();g.fill();
@@ -541,6 +539,8 @@ function drawMammoth(g,x,floor,t){
   g.save();g.translate(x+262,fy-116);g.rotate(Math.sin(t*1.3)*.08);g.fillStyle='#e9dfc7';rr(g,-22,-10,44,20,2);g.fill();
   g.fillStyle='#a8322d';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('LOT N° 3',0,3);g.restore();
   g.restore();
+  // cartel posé devant le socle
+  {g.save();g.font='9px '+F_BODY;const lb='MAMMOUTH LAINEUX · reconstitution, plâtre, 1931',lw=g.measureText(lb).width+18;g.fillStyle='#3a2a20';g.fillRect(x+150-1,fy-12,2,12);g.fillRect(x+150+lw-1-0,fy-12,2,12);g.fillStyle='#d9cfb4';rr(g,x+150,fy-30,lw,18,2);g.fill();g.fillStyle='#3a2a20';g.textAlign='left';g.fillText(lb,x+159,fy-18);g.restore()}
 }
 /* la cloche de Raymond, identique sur l'écran-titre et dans la réserve */
 function drawDome(g,x,y,s,t,o){

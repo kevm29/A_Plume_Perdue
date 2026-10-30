@@ -285,6 +285,11 @@ LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',seed:139,
 ######################
 ######################`]});
 
+/* une cachette secrète par niveau (le 1-1 a la sienne : la porte du voleur) */
+const SECRETS={1:[156,7],2:[62,2],3:[116,9],4:[128,7],5:[114,11],6:[115,9],7:[124,6],8:[126,5],9:[139,7],10:[125,7],11:[6,6],12:[106,10],13:[86,10],14:[110,9],15:[103,7],16:[100,8],17:[72,6],18:[171,7],19:[79,7]};
+LEVELS.forEach((l,i)=>{if(SECRETS[i])l.secretAt=SECRETS[i]});
+/* une seule médaille par mission : au 1-1 (la première vie), puis au deuxième niveau de chaque mission */
+LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=4&&i%4===1)});
 /* chaque niveau reçoit son morceau de lettre (lu à la fin de la mission) */
 LEVELS.forEach((l,i)=>{l.letter=LETTERS_SRC[i]});
 /* les noms affichés au choix des niveaux suivent ceux des niveaux */

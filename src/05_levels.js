@@ -43,13 +43,15 @@ function full(lines){return '\n'+lines.join('\n')}
 
 /* ------------------------------ MISSION 1 · VITTONCOURT ------------------------------ */
 LEVELS.push({w:0,name:"La vitrine",theme:'vitrine',exit:'door',seed:11,
+ leverQuip:"Le portillon remonte. Le bec : l'outil le plus sous-estimé de l'armée française.",
  start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Vasseur, à Villemareuil : je connais le chemin.",
  hints:[["FIG. 1 — LA MARCHE","← → (ou Q / D). Le pigeon avance. Sans grâce, mais il avance."],
         ["FIG. 2 — LE SAUT","Espace, Z ou ↑. Le saut, inventé par les puces, perfectionné par personne."],
         ["FIG. 3 — LE BATTEMENT D'AILES","Rappuyer en l'air. Deux battements maximum : les ailes sont cousues."],
         ["CARTEL DE SAUVEGARDE","Les cartels de musée retiennent tout. C'est leur seul talent."],
+        ["FIG. 3 bis — LE BEC","E (ou F). Tirer une poignée, ouvrir un tiroir, chiper ce qui dépasse. Un pigeon a un bec : qu'il s'en serve."],
         ["FIG. 4 — LE VOL PLANÉ","Maintenir le saut en tombant. Dignité non incluse."],
-        ["FIG. 5 — LA MITE","Tineola bisselliella. Vole toujours le même trajet, au même rythme. Observer, puis passer."]],
+        ["FIG. 5 — LA MITE","Tineola bisselliella. Elle suit toujours le même trajet, au même rythme. Observer, puis passer."]],
  quips:["Le plancher est défoncé. Un obus, sûrement. Ils tombent jusqu'ici, maintenant.","Des meubles sous des draps. On a évacué en vitesse. L'ennemi doit être tout proche.","Une mite. Ça grignote les uniformes et les pigeons. Méfiance."],
  signs:["RÉSERVE|Accès interdit au public"],
  segs:[`
@@ -91,7 +93,22 @@ g...................
 ..............
 .h..C.....o...
 ##############
-##############`,`
+##############`,full([
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........W.........',
+'..........R.........',
+'..h....z..R...o..o..',
+'####################',
+'####################']),`
 .......................
 .......................
 .....o....o....o.......
@@ -120,13 +137,13 @@ g...................
 ###....####...####`,`
 ..o.o.......
 ............
-C.....E.....
+......E.....
 ############
 ############`]});
 
 LEVELS.push({w:0,name:"La galerie des insectes",theme:'insectes',exit:'door',seed:23,
  start:"Des papillons épinglés par centaines. Et quelqu'un qui marche, là-bas, avec une lampe.",
- hints:[["FIG. 6 — LE GARDIEN DE NUIT","Il fait sa ronde, toujours la même. Sa lampe éclaire devant lui. Se glisser sous un drap, ou passer dans son dos."],
+ hints:[["FIG. 6 — LE GARDIEN DE NUIT","Il fait sa ronde, toujours la même. Sa lampe éclaire devant lui. Se glisser sous un drap, ou passer dans son dos. Et s'il frôle le drap : E."],
         ["FIG. 7 — L'ÉPINGLE","Redoutable. Le pigeon qui s'y frotte y laisse des plumes. Au sens propre."]],
  quips:["Une sentinelle. Il ne m'a pas vu. Les sentinelles ne voient jamais les pigeons.","Un plafond hérissé d'épingles. Interdiction de battre des ailes. Je déteste les règlements que je n'ai pas écrits.","Le docteur Laffont collectionnait les papillons. Et les épingles. Surtout les épingles."],
  signs:["GALERIE D'ENTOMOLOGIE|Don du docteur Laffont"],
@@ -156,7 +173,7 @@ LEVELS.push({w:0,name:"La galerie des insectes",theme:'insectes',exit:'door',see
 ######################`,`
 ..............
 ......o.o.....
-C..|...k...|..
+...|...k...|C.
 ##############
 ##############`,`
 ........................
@@ -188,7 +205,7 @@ C..|...k...|..
 ####################`,`
 ..o.o.......
 ............
-C.&...E.....
+..&...E.....
 ############
 ############`]});
 
@@ -238,7 +255,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '..g.....................',
 '......====.........o....',
 '..o.................q...',
-'..........w.............',
+'.....|....w...G.....|...',
 '########################',
 '########################',
 '########################',
@@ -253,7 +270,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '..............',
 '.......o.o....',
 '..............',
-'C.............',
+'..........C...',
 '##############',
 '##############',
 '##############',
@@ -283,7 +300,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '................',
 '................',
 '.q..............',
-'.H.....T....C...',
+'.H..........C...',
 '################',
 '################',
 '################',
@@ -296,9 +313,9 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '........................',
 '........................',
 '........................',
-'..........o.............',
+'..........o.....m.......',
 '.....XX.........XX......',
-'.....XX....o....XX......',
+'.....XX....o....XX..k...',
 '#########...############',
 '#########...############',
 '#########...############',
@@ -311,9 +328,9 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '........................',
 '........................',
 '..........====..........',
-'....o..............o....',
+'....o.......n......o....',
 '...XXX..............XX..',
-'...XXX......o.......XX..',
+'...XXX..k...o.......XX..',
 '##########...###########',
 '##########...###########',
 '##########...###########',
@@ -340,7 +357,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 LEVELS.push({w:0,name:"La loge du gardien",theme:'loge',exit:'window',seed:53,
  dark:{base:.86,period:3.8},
  start:"Une loge de concierge. Ça sent la soupe froide et la croquette.",
- hints:[["FIG. 10 — LE CHAT DU GARDIEN","Il fait semblant de dormir. Quand ses yeux s'allument, ne plus bouger d'une plume."]],
+ hints:[["FIG. 10 — LE CHAT DU GARDIEN","Il fait semblant de dormir. Quand ses yeux s'allument, ne plus bouger d'une plume : s'il voit bouger, il bondit. Un drap le décourage."]],
  quips:["La gamelle dit BIJOU. Rien de bon ne peut sortir d'un chat qui s'appelle Bijou.","Des yeux qui brillent dans le noir. Un chat. Ne pas bouger. Surtout ne pas bouger.","La fenêtre est ouverte. L'air frais. La liberté. Et l'orage."],
  signs:["LOGE DU GARDIEN|Frapper fort"],
  segs:[`
@@ -370,7 +387,7 @@ LEVELS.push({w:0,name:"La loge du gardien",theme:'loge',exit:'window',seed:53,
 ######################`,`
 ............
 .....o.o....
-C...........
+.........C..
 ############
 ############`,`
 .......................

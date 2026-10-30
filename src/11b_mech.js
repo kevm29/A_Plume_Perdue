@@ -19,9 +19,9 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
   const def=L.def;
   switch(ch){
     case'&':L.covers.push({x:x-8,y:y-T,w:T+16,h:2*T});return true;
-    case'G':{const g={x:cx-12,y:y+T-60,w:24,h:60,r,c,dir:1,speed:62,pause:0,look:0,t:c*.3,a0:null,a1:null,sees:false};L.guards.push(g);return true}
-    case'Y':L.watchers.push({x:cx,y:y+T,t:(c*.7)%5,state:'closed',open:0});L.avoid.push(cx);return true;
-    case'H':L.chaser={type:'guardnet',home:{x:cx-14,y:y+T-60},x:cx-14,y:y+T-60,w:28,h:60,vx:0,vy:0,state:'sleep',onGround:true,t:0,f:1,meowT:2};return true;
+    case'G':{const g={x:cx-12,y:y+T-60,w:24,h:60,r,c,dir:1,speed:84,pause:0,look:0,t:c*.3,a0:null,a1:null,sees:false};L.guards.push(g);return true}
+    case'Y':L.watchers.push({x:cx,y:y+T,t:0,state:'closed',open:0,mode:'sit',seen:false});L.avoid.push(cx);return true;
+    case'H':L.triggerX=Math.min(L.triggerX,cx);L.chaser={type:'guardnet',home:{x:cx-14,y:y+T-60},x:cx-14,y:y+T-60,w:28,h:60,vx:0,vy:0,state:'sleep',onGround:true,t:0,f:1,meowT:2};return true;
     case'P':L.chaser={type:'sweeper',home:{x:cx-60,y:y+T-64},x:cx-60,y:y+T-64,w:120,h:64,vx:0,vy:0,state:'sleep',onGround:true,t:0,f:1,meowT:2};return true;
     case'O':L.gargoyles.push({x:cx,y:cy,dir:def.gargoyleDir||(c%2?-1:1),ph:(c*.61)%3});return true;
     case'L':movers.push({c,r,axis:'h',w:6,kind:'tram'});return true;
@@ -32,6 +32,9 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
     case'+':L.poppies.push({x:cx,y:y+T});return true;
     case'%':L.crumbles.push({c,r,state:'solid',t:0});return false;   // reste dans la grille
     case'J':L.shutters.push({c,r});return false;
+    case'e':(L.acts=L.acts||[]).push({kind:'secret',x:cx,y:y+T,open:0,t:0,used:false});return true;
+    case'z':(L.acts=L.acts||[]).push({kind:'lever',x:cx,y:y+T,open:0,t:0,used:false});return true;
+    case'R':return false;
   }
   return false;
 }
@@ -84,15 +87,15 @@ function mechStep(dt,pcx,pcy){
   // gardiens : ronde, pauses, faisceau
   for(const g of L.guards){
     g.t+=dt;
+    if(g.tangle>0){g.tangle-=dt;g.sees=false;continue}
     if(g.pause>0){g.pause-=dt;g.look=Math.sin(g.t*3)*.18;if(g.pause<=0)g.dir=-g.dir}
     else{g.look=0;g.x+=g.dir*g.speed*dt;
-      if(g.dir>0&&g.x+g.w>=g.a1){g.x=g.a1-g.w;g.pause=1.4}
-      else if(g.dir<0&&g.x<=g.a0){g.x=g.a0;g.pause=1.4}}
+      if(g.dir>0&&g.x+g.w>=g.a1){g.x=g.a1-g.w;g.pause=1.1}
+      else if(g.dir<0&&g.x<=g.a0){g.x=g.a0;g.pause=1.1}}
     g.sees=!G.cut&&!P.dead&&guardSees(g,pcx,pcy);
   }
   // le chat aux yeux brillants : fermés, puis prévient, puis ouverts
-  for(const w of L.watchers){w.t+=dt;const cyc=(w.t)%5.6;w.state=cyc<3.1?'closed':cyc<3.8?'warn':'open';
-    w.open=w.state==='open'?Math.min(1,(cyc-3.8)*6):w.state==='warn'?.18:0}
+  for(const w of L.watchers)watchStep(w,dt,pcx,pcy);
   // gargouilles : goutte d'avertissement, puis jet
   for(const o of L.gargoyles){const cyc=(G.lt+o.ph)%3.2;o.state=cyc<1.6?'idle':cyc<2.2?'warn':'jet';o.len=o.state==='jet'?Math.min(170,(cyc-2.2)*900):0}
 }
@@ -141,7 +144,7 @@ function mechAfterMove(dt,vyBefore){
 function mechHit(hb){
   const pcx=hb.x+hb.w/2,pcy=hb.y+hb.h/2;
   for(const g of L.guards)if(g.sees){if(!G.sim){bubble(g.x+g.w/2,g.y-14,'Hé ! Toi !','#2a3a5a')}return'guard'}
-  for(const w of L.watchers)if(w.state==='open'&&w.open>.6&&Math.abs(w.x-pcx)<560&&Math.abs(w.y-pcy)<260&&(Math.abs(P.vx)>35||!P.onGround))return'catwatch';
+  for(const w of L.watchers)if(w.mode==='chase'&&w.k&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
@@ -154,8 +157,8 @@ function stepGroundChaser(K,dt,pcx,pcy){
   if(K.state!=='chase')return;
   const sweep=K.type==='sweeper';
   const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
-  const sp=sweep?clamp(160+(Math.abs(dist)-220)*.2,160,240):clamp(175+(Math.abs(dist)-160)*.2,175,245);
-  K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*(sweep?2:5)));K.f=dir;
+  const sp=sweep?clamp(160+(Math.abs(dist)-220)*.2,160,240):clamp(205+(Math.abs(dist)-160)*.22,205,280);
+  K.leapT=(K.leapT||0)-dt;if(!(K.leapT>0&&!K.onGround))K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*(sweep?2:5)));K.f=dir;
   if(sweep){K.x+=K.vx*dt;K.y=K.home.y;if(!G.sim&&rnd()<.3)parts.push({type:'dust',x:K.x+(K.f>0?K.w:0),y:K.y+K.h-4,vx:-K.f*40,vy:-20,life:0,max:.5});return}
   K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
   moveX(K,K.vx*dt);K.onGround=false;moveY(K,K.vy*dt);
@@ -163,9 +166,9 @@ function stepGroundChaser(K,dt,pcx,pcy){
     const fx=dir>0?K.x+K.w+6:K.x-6,cf=Math.floor(fx/T),rf=Math.floor((K.y+K.h-2)/T);
     const la=dir>0?K.x+K.w+34:K.x-34,cl=Math.floor(la/T);
     const blocked=isSolid(cf,rf)||isSolid(cf,rf-1),gap=!groundAt(cl,rf+1)&&!isSolid(cl,rf),pins=tile(cl,rf)==='^'||tile(cf,rf)==='^',above=P.y+P.h<K.y-20&&Math.abs(dist)<110;
-    if(blocked||gap||pins||above)K.vy=-800;
+    if(blocked||gap||pins||above)chaserLeap(K,dir,rf);
   }
-  if(K.y>ROWS*T+60){K.x=P.x-360;K.y=P.y-200;K.vy=0}
+  if(K.y>ROWS*T+60)chaserReenter(K);
 }
 /* la buse traverse un braséro : elle prend feu */
 function buseBurn(K,dt){
@@ -186,7 +189,7 @@ function sayQueue(list){G.quipQ=list.slice(1);const f=list[0];say(f[1],f[2]||4,f
 /* ---------- lumières supplémentaires (faisceaux, yeux, feux) ---------- */
 function mechLights(){
   const out=[];
-  for(const g of L.guards){const b=guardBeam(g);out.push({x:b.ex+Math.cos(b.ang)*110,y:b.ey+Math.sin(b.ang)*110,r:150,i:.85,warm:1})}
+  for(const g of L.guards){if(g.tangle>0)continue;const b=guardBeam(g);out.push({x:b.ex+Math.cos(b.ang)*110,y:b.ey+Math.sin(b.ang)*110,r:150,i:.85,warm:1})}
   if(L.chaser&&L.chaser.type==='guardnet'&&L.chaser.state!=='sleep'){const K=L.chaser;out.push({x:K.x+K.w/2+K.f*80,y:K.y+24,r:160,i:.8,warm:1})}
   for(const w of L.watchers)if(w.open>0)out.push({x:w.x+6,y:w.y-40,r:60,i:.5*w.open});
   for(const f of L.fires)out.push({x:f.x,y:f.y-30,r:180,i:.6,warm:2});
@@ -197,4 +200,5 @@ function mechLights(){
 function mechPostParse(L){
   for(const g of L.guards){let a=g.c-4,b=g.c+4;for(let c=g.c-1;c>=0;c--)if(L.mark.has(c+','+g.r)){a=c+1;break}for(let c=g.c+1;c<L.w;c++)if(L.mark.has(c+','+g.r)){b=c;break}g.a0=a*T;g.a1=b*T}
   if(L.def.auto)L.auto={speed:L.def.auto.speed||110,on:false,x:0};
+  actPost(L);
 }

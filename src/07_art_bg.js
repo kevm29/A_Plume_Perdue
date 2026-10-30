@@ -116,7 +116,10 @@ function buildInteriorFar(L,g,wpx,hpx,R){
     }
     if(th.far==='lodge'){
       const t=R();
-      if(t<.5){g.fillStyle='#c7b48a';g.fillRect(x,140,90,120);g.fillStyle='#3a6a8a';g.fillRect(x+8,148,74,56);g.fillStyle='#d9c79a';g.beginPath();g.arc(x+60,166,8,0,7);g.fill();g.fillStyle='#2b2016';g.font='12px '+F_DISP;g.textAlign='center';g.fillText('LA POSTE',x+45,224);g.fillText('CALENDRIER',x+45,242);g.fillStyle='#8a2a22';g.fillRect(x+42,134,6,10)}
+      if(t<.5){// almanach des Postes accroché au mur, et le tableau des clefs du gardien
+        g.fillStyle='#c7b48a';rr(g,x,170,46,62,2);g.fill();g.fillStyle='#4a6a7a';g.fillRect(x+5,175,36,26);g.fillStyle='#d9c79a';g.beginPath();g.arc(x+30,183,4,0,7);g.fill();g.fillStyle='#6a7a4a';g.fillRect(x+5,193,36,8);
+        g.fillStyle='#2b2016';g.font='6px '+F_DISP;g.textAlign='center';g.fillText('ALMANACH',x+23,212);g.fillText('1916',x+23,222);g.fillStyle='#8a2a22';g.fillRect(x+21,164,4,7);
+        g.fillStyle='#5a3a22';rr(g,x+70,180,60,44,3);g.fill();for(let i=0;i<4;i++)for(let j=0;j<2;j++){g.fillStyle='#c9a24a';g.beginPath();g.arc(x+80+i*13,190+j*18,1.6,0,7);g.fill();g.strokeStyle='#b8a46a';g.lineWidth=1.2;g.beginPath();g.moveTo(x+80+i*13,191+j*18);g.lineTo(x+80+i*13,199+j*18);g.stroke()}}
       else{g.fillStyle='#3a2a1c';g.fillRect(x,240,140,8);for(let i=0;i<5;i++){g.fillStyle=['#7a8a5a','#a8742f','#5a6a7a','#8a4a3a','#c9b27a'][i];rr(g,x+10+i*26,206,20,34,4);g.fill();g.fillStyle='rgba(233,223,199,.7)';g.fillRect(x+13+i*26,218,14,8)}}
       x+=200+R()*160;continue;
     }
@@ -215,6 +218,8 @@ function buildOutdoorFar(L,g,wpx,hpx,R){
   const hz2=g.createLinearGradient(0,300,0,hpx);hz2.addColorStop(0,rgba(th.fog,0));hz2.addColorStop(1,rgba(th.fog,.55));g.fillStyle=hz2;g.fillRect(0,300,wpx,hpx-300);
 }
 /* hauteur d'un plan de fond : le décor (dessiné pour 600 px) reste calé en bas */
+/* voile de brume (autrefois peint à chaque image) cuit dans les calques */
+function bakeFog(g,th,wpx,op){g.save();g.globalCompositeOperation=op;const fg=g.createLinearGradient(0,0,0,600);fg.addColorStop(0,rgba(th.fog,th.outdoor?.18:.32));fg.addColorStop(1,rgba(th.fog,.04));g.fillStyle=fg;g.fillRect(0,0,wpx,600);g.fillStyle=rgba(th.fog,th.outdoor?.18:.32);g.fillRect(0,-2000,wpx,2000);g.restore()}
 function layerH(pf){return Math.max(600,Math.ceil((ROWS*T-H)*pf+H+8))}
 function buildFar(L){
   const R=mulberry(L.def.seed);
@@ -226,6 +231,7 @@ function buildFar(L){
   g.translate(0,Math.max(0,yOff));
   if(L.th.outdoor)buildOutdoorFar(L,g,wpx,600,R);else buildInteriorFar(L,g,wpx,600,R);
   for(const tb of L.turbines)tb.y+=Math.max(0,yOff);
+  bakeFog(g,L.th,wpx,'source-over');
   return c;
 }
 function buildMid(L){
@@ -266,6 +272,7 @@ function buildMid(L){
       else{const w=90+R()*70,h=90+R()*50;g.fillRect(x,525-h,w,h);poly(g,[x-8,525-h,x+w/2,525-h-w*.45,x+w+8,525-h]);g.fill();const on=R()<.6;g.fillStyle=on?'rgba(255,200,120,.6)':'rgba(0,0,0,.25)';g.fillRect(x+w*.2,525-h*.7,16,20);g.fillRect(x+w*.65,525-h*.7,16,20);x+=w+40+R()*80}
     }
   }
-  g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,th.outdoor?.3:.35);g.fillRect(0,0,wpx,hpx);
+  g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,th.outdoor?.3:.35);g.fillRect(0,-hpx,wpx,hpx*2);
+  bakeFog(g,th,wpx,'source-atop');
   return c;
 }

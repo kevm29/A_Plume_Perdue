@@ -148,9 +148,12 @@ function drawMechBack(t){
   // braséros
   for(const f of L.fires){if(!vis(f.x))continue;drawFire(ctx,f.x,f.y,t)}
   // gardiens
-  for(const gd of L.guards){if(!vis(gd.x))continue;drawGuard(ctx,gd.x+gd.w/2,gd.y+gd.h,t,{f:gd.dir,walk:gd.pause>0?0:1,look:gd.look})}
-  // chats qui guettent
-  for(const w of L.watchers)if(vis(w.x))drawWatchCat(ctx,w,t);
+  for(const gd of L.guards){if(!vis(gd.x))continue;if(gd.tangle>0)drawGuardTangled(ctx,gd,t);else drawGuard(ctx,gd.x+gd.w/2,gd.y+gd.h,t,{f:gd.dir,walk:gd.pause>0?0:1,look:gd.look})}
+  // chats qui guettent (ou qui courent)
+  for(const w of L.watchers){if(w.mode!=='sit'&&w.k){if(vis(w.k.x))drawWatchCatRun(ctx,w,t)}else if(vis(w.x))drawWatchCat(ctx,w,t)}
+  // portillons, poignées, cachettes
+  for(const gt of L.gates)if(vis(gt.c*T))drawGate(ctx,gt,t);
+  for(const a of L.acts){if(!vis(a.x)||a.style==='backdoor')continue;if(a.kind==='lever')drawLever(ctx,a,t);else drawSecretProp(ctx,a,t)}
   // gargouilles
   for(const o of L.gargoyles){if(!vis(o.x))continue;drawGargoyle(ctx,o,t)}
 }
@@ -176,7 +179,7 @@ function drawGargoyle(g,o,t){
 function drawMechFront(t){
   const vis=x=>x>cam.x-300&&x<cam.x+W+300;
   // faisceaux des gardiens
-  for(const gd of L.guards)if(vis(gd.x))drawBeam(ctx,guardBeam(gd),gd.sees);
+  for(const gd of L.guards)if(vis(gd.x)&&!(gd.tangle>0))drawBeam(ctx,guardBeam(gd),gd.sees);
   if(L.chaser&&L.chaser.type==='guardnet'&&L.chaser.state!=='sleep'){const K=L.chaser;drawBeam(ctx,{ex:K.x+K.w/2+K.f*14,ey:K.y+20,ang:K.f>0?0:Math.PI,len:200,half:.3},false)}
   // cachettes : draps sur les meubles
   for(const c of L.covers){if(!vis(c.x))continue;const hid=!P.dead&&hiddenNow()&&P.x+P.w/2>c.x&&P.x+P.w/2<c.x+c.w;

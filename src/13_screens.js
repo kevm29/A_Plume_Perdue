@@ -6,7 +6,7 @@ function ensureTitleLv(){
   computeRS();
   if(!titleLv||titleLv.rs!==RS){const tmp=parseLevel(0);const lay=loadLayers(0);const prev=L;L=tmp;tmp.far=lay.far;tmp.mid=lay.mid;tmp.windows=lay.windows;tmp.turbines=[];tmp.tiles=buildTiles(tmp);tmp.dome=null;L=prev;tmp.rs=RS;titleLv=tmp}
 }
-function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{}};save()}
+function newRun(){S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}};save()}
 function freshRun(){if(S.run.lives==null||S.run.lives<0)S.run.lives=START_LIVES}
 function menuItems(){
   if(G.state==='title'){
@@ -253,24 +253,25 @@ function drawStatsCard(w,ct){
   const st=S.run.stats||{};
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='15px '+F_DISP;ctx.fillText(`BILAN DE LA MISSION ${w+1}`,W/2,104);
   ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText(WORLDS[w].name,W/2,140);
-  const cols=[150,470,590,690,800],hy=184;
+  const cols=[120,440,530,620,710,820],hy=184;
   ctx.font='12px '+F_DISP;ctx.fillStyle='rgba(233,223,199,.55)';
-  ['NIVEAU','PAILLE','MÉDAILLE','CHUTES','POINTS'].forEach((h,k)=>{ctx.textAlign=k?'center':'left';ctx.fillText(h,cols[k],hy)});
-  ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(140,hy+10,680,1);
+  ['NIVEAU','PAILLE','MÉDAILLE','CACHETTE','ACCROCS','POINTS'].forEach((h,k)=>{ctx.textAlign=k?'center':'left';ctx.fillText(h,cols[k],hy)});
+  ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(110,hy+10,750,1);
   let tot=0;
   for(let j=0;j<4;j++){const li=w*4+j,o=st[li],y=hy+48+j*44,a=Math.min(1,Math.max(0,(ct-.2-j*.25)*4));
     ctx.globalAlpha=a;ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='italic 20px '+F_BODY;ctx.fillText(`${w+1}–${j+1}  ${WORLDS[w].levels[j]}`,cols[0],y);
     ctx.textAlign='center';ctx.font='18px '+F_DISP;
     if(o){ctx.fillText(`${o.corn} / ${o.cornTotal}`,cols[1],y);
-      if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('—',cols[2],y)}
-      ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[3],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[4],y);tot+=o.points}
+      if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText(o.hasMedal?'—':'·',cols[2],y)}
+      ctx.fillStyle=o.secret?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(o.secret?'✓':'—',cols[3],y);
+      ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[4],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[5],y);tot+=o.points}
     else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('non joué',cols[1],y)}
     ctx.globalAlpha=1}
-  const ty=hy+48+4*44;ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(140,ty-28,680,1);
+  const ty=hy+48+4*44;ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(110,ty-28,750,1);
   ctx.globalAlpha=Math.min(1,Math.max(0,(ct-1.3)*3));
   ctx.textAlign='left';ctx.fillStyle='#efe5cc';ctx.font='20px '+F_DISP;ctx.fillText('TOTAL DE LA MISSION',cols[0],ty);
-  ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='26px '+F_DISP;ctx.fillText(String(tot),cols[4],ty+2);
-  ctx.font='italic 13px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('10 par touffe de paille · 100 la médaille · 50 sans aucune chute · 15 de moins par chute',W/2,ty+40);
+  ctx.textAlign='center';ctx.fillStyle='#d9a441';ctx.font='26px '+F_DISP;ctx.fillText(`${tot} / ${4*LEVEL_MAX}`,cols[5]-20,ty+2);
+  ctx.font='italic 13px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('1000 points par niveau : 600 la paille (700 sans médaille) · 100 la médaille · 100 la cachette · 200 sans accroc (−50 par accroc)',W/2,ty+40);
   ctx.globalAlpha=1;ctx.restore();
 }
 function drawBannerCard(t){
@@ -404,8 +405,8 @@ function renderLevelDone(t){
   ctx.fillStyle='#8a5a2a';ctx.font='13px '+F_DISP;ctx.textAlign='center';ctx.fillText(`MISSION ${def.w+1} · NIVEAU ${LE.li%4+1} TRAVERSÉ`,-5,-88);
   ctx.fillStyle='#2a2420';ctx.font='32px '+F_DISP;ctx.fillText(def.name,-5,-48);
   ctx.fillStyle='rgba(42,36,32,.25)';ctx.fillRect(-180,-30,350,1);
-  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`],['Médaille',st.medal?'trouvée':'non trouvée'],['Chutes',String(st.deaths)],['Points',String(st.points)]];
-  rows.forEach(([k,v],i)=>{const y=0+i*28;ctx.textAlign='left';ctx.font='italic 19px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='19px '+F_DISP;ctx.fillStyle=i===3?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
+  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push(['Cachette',st.secret?'trouvée':'pas trouvée'],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${LEVEL_MAX}`]);
+  rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});
   ctx.font='italic 16px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.textAlign='left';ctx.fillText('La lettre attendra la fin de la mission.',W/2-270,H-64);

@@ -2,7 +2,7 @@
    ENTRÉES ET BOUCLE PRINCIPALE
    ========================================================= */
 const keys=new Set(),pressed=new Set();
-const KMAP={ArrowLeft:['left'],KeyA:['left'],ArrowRight:['right'],KeyD:['right'],ArrowUp:['jump','up'],KeyW:['jump','up'],KeyZ:['jump','up'],Space:['jump','ok'],ArrowDown:['down'],KeyS:['down'],Enter:['ok'],NumpadEnter:['ok'],Escape:['esc'],KeyP:['esc'],Backspace:['back']};
+const KMAP={ArrowLeft:['left'],KeyA:['left'],ArrowRight:['right'],KeyD:['right'],ArrowUp:['jump','up'],KeyW:['jump','up'],KeyZ:['jump','up'],Space:['jump','ok'],ArrowDown:['down'],KeyS:['down'],KeyE:['act'],KeyF:['act'],Enter:['ok'],NumpadEnter:['ok'],Escape:['esc'],KeyP:['esc'],Backspace:['back']};
 addEventListener('keydown',e=>{
   ensureAudio();
   const a=KMAP[e.code];
@@ -20,10 +20,10 @@ function bindTouch(id,act){
   const off=e=>{e.preventDefault();keys.delete(act);el.classList.remove('down')};
   el.addEventListener('pointerdown',on);el.addEventListener('pointerup',off);el.addEventListener('pointercancel',off);el.addEventListener('pointerleave',off);
 }
-bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');
+bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch('te','act');
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
 let touchUI=false;
-function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp'])document.getElementById(id).classList.add('on')}
+function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on')}
 if(matchMedia('(pointer: coarse)').matches)showTouch();
 addEventListener('touchstart',showTouch,{passive:true});
 
@@ -46,6 +46,7 @@ function update(dt){
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
       if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly()}
       if(pressed.has('jump')&&!G.cut)P.jumpBuf=.12;
+      if(pressed.has('act')&&!G.cut)tryAct();
       acc+=dt;let n=0;while(acc>=STEP&&n<12){stepPlay(STEP);acc-=STEP;n++;if(G.state!=='play')break}
       if(acc>STEP)acc=0;
       if(G.state==='play'){animalSounds(dt);updateCamera(dt)}
@@ -57,8 +58,9 @@ function update(dt){
       if(G.exitT>1.1){
         const li=G.li;S.unlocked=Math.min(19,Math.max(S.unlocked,li+1));
         if(G.medal)S.run.medals[li]=true;
-        const b=S.best[li]||{corn:0,medal:false,deaths:9999};S.best[li]={corn:Math.max(b.corn,G.corn),medal:b.medal||G.medal,deaths:Math.min(b.deaths,G.levelDeaths)};
-        S.run.stats[li]={corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths};S.run.stats[li].points=levelPoints(S.run.stats[li]);save();
+        const gt=gotOf(li);
+        S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secret:gt.s,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);
+        const b=S.best[li]||{corn:0,medal:false,deaths:9999,points:0};S.best[li]={corn:Math.max(b.corn,gt.c.length),medal:b.medal||gt.m,secret:b.secret||gt.s,deaths:Math.min(b.deaths,gt.d),points:Math.max(b.points||0,S.run.stats[li].points)};save();
         setSong('title');endOfLevel(li);
       }
       break}
@@ -111,5 +113,5 @@ async function boot(){
   try{await Promise.race([Promise.all([document.fonts.load('30px "IM Fell English SC"'),document.fonts.load('italic 20px "IM Fell English"'),document.fonts.load('20px "IM Fell English"'),document.fonts.load('30px "La Belle Aurore"')]),new Promise(r=>setTimeout(r,2500))])}catch(e){}
   ensureTitleLv();G.state='title';G.fade=1;setSong('title');
 }
-window.__apl={G,P,S,startLevel,stepPlay,get L(){return L},keys,pressed,cam,compileSong,LEVELS};
+window.__apl={G,P,S,startLevel,stepPlay,render,renderWorld,renderLighting,renderWeather,renderGrain,renderHUD,update,get L(){return L},keys,pressed,cam,compileSong,LEVELS};
 boot();requestAnimationFrame(frame);

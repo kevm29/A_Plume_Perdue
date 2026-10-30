@@ -30,12 +30,14 @@ function startLevel(i){
   parts.length=0;G.quip=null;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
   if(L.dome){
     const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
+    L.acts.push({kind:'secret',style:'backdoor',x:L.backDoor.x+6,y:L.dome.floor,open:0,t:0,used:false});
     if(!G.cutSeen){
       G.cut={t:0,ray:'statue',lieT:0,thief:{x:L.dome.x+760,state:'out',t:0,f:-1,head:1,alpha:1},flashes:[.6],blink:0,ev:{}};
       L.carton={x:L.armoire.x-6,y:L.dome.floor-218,vx:0,vy:0,rot:0,vr:0,state:'hold'};
       P.x=L.dome.x-P.w/2;P.y=dg.feet-P.h;P.facing=1;
     }else{L.dome.broken=true;L.carton={x:L.dome.x-62,y:L.dome.floor-20,rot:-.1,state:'rest'};L.armoire.door=1;say(L.def.start,5)}
   }else say(L.def.start,5);
+  applyGot(i);
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
 }
 function resetPlayer(){
@@ -47,7 +49,7 @@ function puff(x,y,n,straw){
 function die(kind,tiles){
   if(P.dead)return;
   if(G.sim){P.dead=true;return}
-  P.dead=true;P.deadT=1.25;G.levelDeaths++;
+  P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
   if((S.run.wear||0)>=MAX_WEAR&&!S.infinite)G.gameOverPending=true;
   else S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);
@@ -152,8 +154,9 @@ function stepPlay(dt){
       // le rat voit le pigeon devant lui : il fonce
       const dx=pcx-(c.x+c.w/2),dy=Math.abs(pcy-(c.y+c.h/2)),dir=Math.sign(c.vx)||1;
       const sees=!P.dead&&!G.cut&&dy<70&&Math.abs(dx)<320&&Math.sign(dx)===dir;
-      if(sees&&!(c.alert>0)&&!G.sim)SFX.squeak();
-      c.alert=sees?.9:Math.max(0,(c.alert||0)-dt);
+      // il voit le pigeon : un sprint d'une seconde, puis il se calme (et ne repart pas tout de suite)
+      c.cool=Math.max(0,(c.cool||0)-dt);c.alert=Math.max(0,(c.alert||0)-dt);
+      if(sees&&c.cool<=0){c.alert=1.1;c.cool=4;if(!G.sim)SFX.squeak()}
       c.vx=dir*(c.base||95)*(c.alert>0?2.2:1);
     }
     const spd=Math.abs(c.vx)||95;
@@ -166,7 +169,7 @@ function stepPlay(dt){
     }
   }
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);
+  mechStep(dt,pcx,pcy);actStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -217,20 +220,20 @@ function stepPlay(dt){
   if(K&&K.state!=='sleep'&&K.state!=='wake'&&K.state!=='burn'&&K.state!=='dead'&&overlap(hb,{x:K.x+6,y:K.y+5,w:K.w-12,h:K.h-6}))return die(K.type);
   if(P.y>ROWS*T+40)return die(L.th.horizon==='bridge'?'drown':'fall');
   const pc={x:pcx,y:P.y+P.h/2};
-  for(const k of L.corn)if(!k.taken&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
+  for(const k of L.corn)if(!k.taken&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
     if((S.run.wear||0)>0){S.run.wear--;save();P.sx=1.15;P.sy=1.15;puff(pc.x,pc.y,6,true);if(!G.tuftSaid){G.tuftSaid=true;say(pick(TUFT_Q),3.4)}}}
-  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;SFX.medal();if(!S.run.medals[G.li]&&!S.infinite){S.run.medals[G.li]=true;S.run.lives++;save();say(pick(MEDAL_Q)+' (Une vie de plus.)',4.2)}else say(pick(MEDAL_Q),3.6)}
+  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();if(!S.run.medals[G.li]&&!S.infinite){S.run.medals[G.li]=true;S.run.lives++;save();say(pick(MEDAL_Q)+' (Une vie de plus.)',4.2)}else say(pick(MEDAL_Q),3.6)}
   for(const cp of L.cps)if(!cp.on&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;G.hintI=hn;
-  if(K&&K.state==='sleep'&&pc.x>L.triggerX+T)wakeChaser(K);
+  if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
   if(L.exit&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');
   if(K.type==='cat'){K.state='wake';K.wakeT=.9;K.meowT=2.4;if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),250)}say("Bijou est réveillé. Règlement, article 3 : en cas de chat, courir.",3.4)}
-  else if(K.type==='guardnet'){K.state='wake';K.wakeT=1;if(!G.sim)SFX.whistle();bubble(K.x+K.w/2,K.y-16,'Je te tiens, toi !','#2a3a5a');say(L.def.chaseQuip||'',3.6)}
+  else if(K.type==='guardnet'){K.state='wake';K.wakeT=1.1;if(!G.sim)SFX.whistle();bubble(K.x+K.w/2,K.y-16,'Un papillon ! Un gros !','#2a3a5a');say(L.def.chaseQuip||'',3.6)}
   else if(K.type==='sweeper'){K.state='wake';K.wakeT=.8;if(!G.sim)SFX.honk();say(L.def.chaseQuip||'',3.6)}
   else if(K.type==='buse'){K.state='hover';K.pt=-2.2;if(!G.sim)SFX.screech();sayQueue(L.def.chaseLines||[['RAYMOND',L.def.chaseQuip||'',3.6]])}
   else{K.state='chase';K.pt=0;K.meowT=1.5;say(L.def.chaseQuip||'',3.6)}
@@ -243,16 +246,16 @@ function stepChaser(K,dt,pcx,pcy){
     if(K.state!=='chase')return;
     const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
     const sp=clamp(205+(Math.abs(dist)-160)*.25,205,300);
-    K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*6));K.f=dir;
+    K.leapT=(K.leapT||0)-dt;if(!(K.leapT>0&&!K.onGround))K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*6));K.f=dir;
     K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
     moveX(K,K.vx*dt);K.onGround=false;moveY(K,K.vy*dt);
     if(K.onGround){
       const fx=dir>0?K.x+K.w+6:K.x-6,cf=Math.floor(fx/T),rf=Math.floor((K.y+K.h-2)/T);
       const la=dir>0?K.x+K.w+34:K.x-34,cl=Math.floor(la/T);
       const blocked=isSolid(cf,rf)||isSolid(cf,rf-1),gap=!groundAt(cl,rf+1)&&!isSolid(cl,rf),pins=tile(cl,rf)==='^'||tile(cf,rf)==='^',above=P.y+P.h<K.y-20&&Math.abs(dist)<110;
-      if(blocked||gap||pins||above)K.vy=-820;
+      if(blocked||gap||pins||above)chaserLeap(K,dir,rf);
     }
-    if(K.y>ROWS*T+60){K.x=P.x-320;K.y=0;K.vy=0}
+    if(K.y>ROWS*T+60)chaserReenter(K);
     return;
   }
   if(K.state==='sleep'){K.y=K.home.y+Math.sin(K.t*2)*4;return}
@@ -277,18 +280,18 @@ function respawn(){
   if(K){
     if(K.state==='dead'){}
     else if(K.type==='cat'||P.cp.x<L.triggerX){K.state='sleep';K.x=K.home.x;K.y=K.home.y;K.vx=K.vy=0;G.chase=false;setSong(songKey(G.li))}
-    else if(K.type==='guardnet'||K.type==='sweeper'){K.x=P.x-(K.type==='sweeper'?520:420);K.y=P.y+P.h-K.h;K.vx=K.vy=0;K.state='chase'}
+    else if(K.type==='guardnet'||K.type==='sweeper'){K.x=P.x-(K.type==='sweeper'?520:440);K.y=P.y+P.h-K.h;K.vx=K.vy=0;K.state='chase'}
     else{K.x=P.x-460;K.y=P.y-220;K.state=K.type==='buse'?'hover':'chase';K.pt=0}
   }
   if(L.auto&&L.auto.on){L.auto.x=Math.max(0,P.x-300);cam.x=L.auto.x}
-  P.stun=0;P.mud=0;
+  P.stun=0;P.mud=0;actRespawn();
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
   // Raymond a perdu la tête : une vie le ramène au début de la mission, sinon tout recommence
   loopsOff();G.chase=false;
   const w=LEVELS[G.li].w,first=w*4,hasLife=S.run.lives>0;
-  if(hasLife){S.run.lives--;S.run.wear=0;for(let k=first;k<first+4;k++)delete S.run.stats[k];save()}
+  if(hasLife){S.run.lives--;S.run.wear=0;save()}
   const tail=hasLife
     ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\n${S.run.lives?`Il reste ${S.run.lives} vie${S.run.lives>1?'s':''}.`:'Plus de vie en réserve : la prochaine fois sera la dernière.'} Retour au début de la mission : ${WORLDS[w].name}.`}
     :{title:"PLUS AUCUNE VIE",t:"Le règlement est formel : tout recommencer depuis le début.\nDepuis la remise de Vittoncourt."};
@@ -322,6 +325,7 @@ function updateParticles(dt){
   for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.life+=dt;if(p.life>=p.max){parts.splice(i,1);continue}
     if(p.type==='straw'||p.type==='feather'){p.vy+=(p.type==='feather'?300:900)*dt;p.vx*=1-dt*(p.type==='feather'?3:1.2);if(p.type==='feather')p.vy=Math.min(p.vy,60);p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt}
     else if(p.type==='dust'){p.x+=p.vx*dt;p.y+=p.vy*dt}
+    else if(p.type==='tuftpop'){}
     else if(p.type==='glass'){if(!p.rest){p.vy+=1800*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;if(p.y>=p.floor-2){p.y=p.floor-2;if(Math.abs(p.vy)<120){p.rest=true}else{p.vy*=-.3;p.vx*=.5;p.vr*=.5}}}}}
   for(let i=G.bubbles.length-1;i>=0;i--){const b=G.bubbles[i];b.t+=dt;if(b.t>b.max)G.bubbles.splice(i,1)}
   G.flash=Math.max(0,G.flash-dt*2.4);

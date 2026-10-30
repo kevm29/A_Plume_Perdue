@@ -13,8 +13,9 @@ const ctx=cv.getContext('2d');
 let dpr=1,scale=1,offX=0,offY=0,RS=1;
 
 function resize(){
-  dpr=Math.min(window.devicePixelRatio||1,2);
   const w=innerWidth,h=innerHeight;
+  // résolution interne plafonnée (≈ 2× la taille logique) : au-delà, le jeu rame sans gain visible
+  {const sc=Math.min(w/W,h/H);dpr=Math.min(window.devicePixelRatio||1,2,Math.max(1,1920/(W*sc)))}
   cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
   cv.style.width=w+'px';cv.style.height=h+'px';
   scale=Math.min(w/W,h/H);offX=(w-W*scale)/2;offY=(h-H*scale)/2;
@@ -52,8 +53,11 @@ const SAVE_KEY='a-plume-perdue-v2';
 const START_LIVES=0,MAX_WEAR=4;
 let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
-if(S.v!==4){S.v=4;S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{}};try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
+if(S.v!==5){S.v=5;S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}};try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
-/* points : 10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute */
-function levelPoints(o){return Math.max(0,o.corn*10+(o.medal?100:0)+(o.deaths===0?50:0)-o.deaths*15)}
+/* points : chaque niveau vaut 1000 points.
+   600 pour toute la paille (700 s'il n'y a pas de médaille dans le niveau), 100 la médaille, 100 la cachette,
+   200 sans accroc (50 de moins par accroc) */
+const LEVEL_MAX=1000;
+function levelPoints(o){const cp=o.hasMedal?600:700;return Math.round(cp*o.corn/Math.max(1,o.cornTotal))+(o.medal?100:0)+(o.secret?100:0)+Math.max(0,200-50*(o.deaths||0))}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}

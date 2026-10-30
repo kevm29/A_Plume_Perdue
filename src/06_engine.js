@@ -25,7 +25,7 @@ function parseLevel(i){
     switch(ch){
       case'S':L.spawn={x:cx,y:y+T};L.avoid.push(cx);break;
       case'o':L.corn.push({x:cx,y:cy,taken:false,ph:c*.7+r});break;
-      case'*':L.medal={x:cx,y:cy,taken:false};break;
+      case'*':if(def.medalOn)L.medal={x:cx,y:cy,taken:false};break;
       case'C':L.cps.push({x:cx,y:y+T,on:false});L.avoid.push(cx);break;
       case'E':L.exit={x:x-6,y:y-T,w:T+12,h:2*T};L.avoid.push(cx,cx+60,cx-60);break;
       case'k':if(th.walker!=='none')L.rats.push({kind:th.walker,x:cx-15,y:y+T-16,w:30,h:16,vx:th.walker==='goose'?110:th.walker==='hedgehog'?60:95,vy:0,onGround:false,t:(c*.37)%9,sq:1+(c%3)});break;
@@ -83,7 +83,7 @@ function parseLevel(i){
 
 /* ---------- grille et collisions ---------- */
 let L=null;
-const SOLID='#XWD%',SOLID_ART='#XWD';
+const SOLID='#XWD%R',SOLID_ART='#XWD';
 function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0||r>=ROWS)return'.';return L.g[r][c]}
 function isSolid(c,r){return SOLID.includes(tile(c,r))}
 function owTop(ch,c){return(ch==='='||ch==='B'||ch==='A')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
