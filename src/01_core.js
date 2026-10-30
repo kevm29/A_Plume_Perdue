@@ -31,6 +31,18 @@ function shade(h,a){let[r,g,b]=hexRgb(h);if(a<0){r*=1+a;g*=1+a;b*=1+a}else{r+=(2
 function rgba(h,a){const[r,g,b]=hexRgb(h);return`rgba(${r},${g},${b},${a})`}
 function mix(a,b,t){const A=hexRgb(a),B=hexRgb(b);return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
 function mk(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));return c}
+/* grands calques (décor, tuiles) découpés en bandes de 2048 px : au-delà, la carte graphique
+   ne sait plus les garder en mémoire et le navigateur repasse en dessin lent.
+   Le dessin est envoyé à toutes les bandes à la fois, chacune décalée de sa position. */
+const LAYER_CHUNK=2048;
+function multiCtx(cs){const one=new Set(['createLinearGradient','createRadialGradient','createPattern','measureText','getImageData','isPointInPath']);
+  return new Proxy({},{get(_,k){const v=cs[0][k];if(typeof v!=='function')return v;if(one.has(k))return(...a)=>cs[0][k](...a);return(...a)=>{let r;for(const c of cs)r=c[k](...a);return r}},set(_,k,v){for(const c of cs)c[k]=v;return true}})}
+function mkLayer(w,h){w=Math.ceil(w);h=Math.ceil(h);const chunks=[];for(let x=0;x<w;x+=LAYER_CHUNK){const c=mk(Math.min(LAYER_CHUNK,w-x),h),g=c.getContext('2d');g.translate(-x,0);chunks.push({x,c,g})}
+  return{layer:{width:w,height:h,chunks},g:multiCtx(chunks.map(k=>k.g))}}
+/* copie d'une portion d'un calque découpé (coordonnées source en pixels du calque) */
+function blitLayer(ctx,L2,sx,sy,sw,sh,dx,dy,dw,dh){const kx=dw/sw,ky=dh/sh;
+  for(const ch of L2.chunks){const a=Math.max(sx,ch.x),b=Math.min(sx+sw,ch.x+ch.c.width);if(b<=a)continue;
+    ctx.drawImage(ch.c,a-ch.x,sy,b-a,sh,dx+(a-sx)*kx,dy,(b-a)*kx,dh)}}
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 function poly(g,pts){g.beginPath();g.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)g.lineTo(pts[i],pts[i+1]);g.closePath()}
 function wrap(g,text,maxW){const out=[];for(const para of text.split('\n')){let line='';for(const w of para.split(' ')){const t=line?line+' '+w:w;if(g.measureText(t).width>maxW&&line){out.push(line);line=w}else line=t}out.push(line)}return out}

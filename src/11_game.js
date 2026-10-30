@@ -14,7 +14,7 @@ const BOLT_PERIOD=3.0;
    (une seconde par battement). Vidée, l'aile est « décousue » : plus de battement ni de vol plané avant 60. */
 const STAM_MAX=100,STAM_FLAP=30,STAM_GLIDE=15,STAM_REGEN=30,STAM_RESUME=60;
 
-function say(text,dur,who){G.quip={text,t:0,dur:dur||3.8,who:who||'RAYMOND'}}
+function say(text,dur,who){G.quip={text,t:0,dur:Math.min(3,dur||3),who:who||'RAYMOND'}}
 function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:1.2+text.length*.035,col:col||'#a8322d',rot:(rnd()-.5)*.25})}
 function wear(){return S.run.wear||0}
 function loadLayers(i){
@@ -172,10 +172,10 @@ function stepPlay(dt){
       // le sanglier voit Raymond sur SA plateforme : il charge, et ses marcassins sortent de derrière lui
       const dx=pcx-(c.x+c.w/2),dir=Math.sign(c.vx)||1;
       const same=!P.dead&&!G.cut&&P.onGround&&Math.abs((P.y+P.h)-(c.y+c.h))<8&&samePlatform(c.x+c.w/2,pcx,Math.floor((c.y+c.h-2)/T));
-      if(same&&Math.abs(dx)<420&&Math.sign(dx)===dir){if(!(c.charge>0)&&!G.sim)SFX.grunt();c.charge=1.6;
+      if(same&&Math.abs(dx)<420&&(Math.sign(dx)===dir||Math.abs(dx)<300)){if(Math.sign(dx)!==dir){c.vx=-c.vx}if(!(c.charge>0)&&!G.sim)SFX.grunt();c.charge=1.6;
         if(!c.spawned){c.spawned=true;for(let k=0;k<2;k++)L.rats.push({kind:'piglet',chase:true,x:c.x+c.w/2-dir*(18+k*16),y:c.y+c.h-12,w:22,h:12,vx:0,vy:-200-k*80,onGround:false,t:k,sq:1,delay:.35+k*.3,base:230});if(!G.sim&&!G.boarSaid){G.boarSaid=true;say("Des marcassins ! Ils me prennent pour un gland. Un gland décoré.",3.4)}}}
       c.charge=Math.max(0,(c.charge||0)-dt);
-      c.vx=dir*(c.base||95)*(c.charge>0?2:1);
+      const d2=Math.sign(c.vx)||1;c.vx=d2*(c.base||95)*(c.charge>0?2:1);
     }
     if(c.chase){
       // marcassin lancé : il fonce vers Raymond, sans voir les trous
@@ -369,7 +369,7 @@ function animalSounds(dt){
     }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:0);
   }
   const rain=0; // son de pluie retiré à la demande : seule la pluie visuelle reste
-  loopSet('rain',rain);loopSet('wind',th.weather==='wind'?.32:th.weather==='storm'?.14:0);
+  loopSet('rain',rain);loopSet('wind',L.def.gust&&L.gust&&L.gust.state==='blow'?.2:th.weather==='wind'?.05:th.weather==='storm'?.1:0);
   // éclairs d'orage
   if(th.weather==='storm'||th.weather==='rain'||th.far==='storage'){G.flashT-=dt;if(G.flashT<=0){G.flash=th.weather==='storm'?1:.7;const v=th.weather==='storm'?1:.6;setTimeout(()=>SFX.thunder(v),300+rnd()*700);G.flashT=th.weather==='storm'?3.5+rnd()*3.5:9+rnd()*7}}
 }

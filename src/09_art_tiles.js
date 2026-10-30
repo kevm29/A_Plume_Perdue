@@ -24,7 +24,7 @@ function matCols(ch,th){
 function buildTiles(L){
   const th=L.th,R=mulberry(L.def.seed+9);
   const wpx=L.wpx+DX+8,hpx=ROWS*T+PAD;
-  const c=mk(wpx*RS,hpx*RS),g=c.getContext('2d');g.scale(RS,RS);g.translate(0,PAD);
+  const {layer:c,g}=mkLayer(wpx*RS,hpx*RS);g.scale(RS,RS);g.translate(0,PAD);
   if(!th.outdoor){
     for(let x=60;x<L.wpx;x+=180+R()*260){if(R()<.6)cobweb(g,x,-4,40+R()*40);else{g.strokeStyle='rgba(120,100,80,.5)';g.lineWidth=1.5;g.beginPath();g.moveTo(x,-10);g.quadraticCurveTo(x+30,60+R()*40,x+70,-10);g.stroke()}}
     for(let r=11;r<ROWS;r++)for(let cc=0;cc<L.w;cc++)if(L.g[r][cc]==='#'&&!isSolid(cc,r-1)){g.fillStyle=shade(th.wains,-.1);g.fillRect(cc*T+DX,r*T+DY-9,T,9);g.fillStyle=shade(th.wains,.25);g.fillRect(cc*T+DX,r*T+DY-9,T,1.5)}

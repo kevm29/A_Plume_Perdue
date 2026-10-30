@@ -38,7 +38,7 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
     case',':L.mines.push({x:cx,y:y+T,state:'idle',t:0});return true;
     case'f':return false;   // carton creux : dessiné comme un bloc, on peut y entrer
     case't':return false;   // planche invisible
-    case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=(L.g[r][c-1]==='f'||L.g[r][c+1]==='f'||(L.g[r-1]&&L.g[r-1][c]==='f')||(L.g[r+1]&&L.g[r+1][c]==='f'))?'f':'.';return false}
+    case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=((L.def.fakeStash||[]).some(([a,b])=>a===c&&b===r)||L.g[r][c-1]==='f'||L.g[r][c+1]==='f'||(L.g[r-1]&&L.g[r-1][c]==='f')||(L.g[r+1]&&L.g[r+1][c]==='f'))?'f':'.';return false}
     case'x':{let fr=r+1;while(fr<ROWS&&L.g[fr][c]!=='#')fr++;{const ac={kind:'secret',style:'wardrobe',x:c*T+T,y:fr*T,open:0,t:0,used:false};(L.acts=L.acts||[]).push(ac);L.decor.push({t:'wardrobe',x:c*T,y:r*T,w:2*T,floor:fr*T,act:ac})}L.g[r][c]='=';if(L.g[r][c+1]==='.')L.g[r][c+1]='=';return false}
   }
   return false;

@@ -19,6 +19,7 @@ function parseLevel(i){
   // trous creusés dans le sol (cachettes) et paille cachée
   for(const[c,r]of def.holes||[])g[r][c]='.';
   for(const[c,r]of def.stashCells||[])g[r][c]='s';
+  for(const[c,r]of def.fakes||[])g[r][c]='f';
   const L={def,i,w:wT,wpx:wT*T,g,th,corn:[],medal:null,cps:[],exit:null,rats:[],moths:[],movers:[],hints:[],quips:[],decor:[],lights:[],mark:new Set(),
     chaser:null,triggerX:Infinity,spawn:null,dome:null,avoid:[],updrafts:[],bolts:[],bells:[]};
   mechInit(L);
@@ -91,7 +92,7 @@ let L=null;
 const SOLID='#XWD%R',SOLID_ART='#XWD';
 function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0||r>=ROWS)return'.';return L.g[r][c]}
 function isSolid(c,r){return SOLID.includes(tile(c,r))}
-function owTop(ch,c,r){if(ch==='f')return r!=null&&tile(c,r-1)!=='f'?0:-1;return(ch==='='||ch==='B'||ch==='A'||ch==='t')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
+function owTop(ch,c,r){if(ch==='f')return r!=null&&tile(c,r-1)!=='f'&&!(L.def.openTop&&L.def.openTop.some(([a,b])=>a===c&&b===r))?0:-1;return(ch==='='||ch==='B'||ch==='A'||ch==='t')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
 function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch,c,r)>=0}
 function moveX(e,dx){
   if(!dx)return false;e.x+=dx;

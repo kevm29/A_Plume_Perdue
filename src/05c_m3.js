@@ -1,6 +1,6 @@
 /* ------------------------------ MISSION 3 · REIMS ------------------------------ */
 LEVELS.push({w:2,name:"La rue de Vesle",theme:'square',exit:'post',exitLabel:"GARE",seed:79,
- start:"Reims. La cathédrale est debout. Je croyais qu'ils l'avaient bombardée. Ils ont réparé vite.",
+ start:"Reims. La cathédrale est debout. Je croyais qu'ils l'avaient bombardée. Ils l'ont réparé bien vite.",
  hints:[["ARTICLE 14 — L'AUVENT","Toile tendue, pigeon lancé. Atterrir dessus fait rebondir très haut."],
         ["ARTICLE 15 — LE TRAMWAY","Il roule sans chevaux et s'arrête à chaque bout de la rue. Son toit est un excellent perchoir."]],
  quips:["Des pigeons de la ville. Ils me regardent de haut. Moi, j'ai une médaille. Enfin, j'en avais une.","Des pics sur tous les trottoirs. Pour empêcher les pigeons de se poser. Des PIGEONS.","Des antennes sur tous les toits. Les télégraphistes ont pris le pouvoir, apparemment."],

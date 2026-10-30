@@ -23,6 +23,7 @@ function actPost(L){
   // portillons : colonnes de R
   for(let c=0;c<L.w;c++){let r=0;while(r<ROWS){if(L.g[r][c]==='R'){let r1=r;while(r1+1<ROWS&&L.g[r1+1][c]==='R')r1++;L.gates.push({c,r0:r,r1,open:0,opening:false});r=r1+1}else r++}}
   for(const a of L.acts)if(a.kind==='lever'){let best=null,bd=1e9;for(const g of L.gates){const d=Math.abs(g.c*T-a.x);if(d<bd){bd=d;best=g}}a.gate=best}
+  {let k=0;const sq=L.def.stashQuips||[];for(const a of L.acts)if(a.kind==='stash'){a.q=sq[k]?[sq[k]]:null;k++}}
   if(L.def.helmetAt){const[c,r]=L.def.helmetAt;L.acts.push({kind:'secret',style:'helmet',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Le casque tombe. Et dedans, de la paille. Quelqu'un avait gardé un nid pour l'hiver."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
@@ -82,7 +83,7 @@ function coverHere(){const cx=P.x+P.w/2,cy=P.y+P.h/2;for(const c of L.covers)if(
 /* dans un faux mur (carton creux) */
 function inFake(){const c=Math.floor((P.x+P.w/2)/T),r=Math.floor((P.y+P.h/2)/T);return tile(c,r)==='f'}
 /* tuiles creuses : dessinées comme des blocs, mais on peut y entrer */
-function buildTilesF(L){const fk=[];for(let r=0;r<ROWS;r++)for(let c=0;c<L.w;c++)if(L.g[r][c]==='f'){fk.push([r,c]);let n='D';for(const[dr,dc]of[[0,-1],[0,1],[1,0],[-1,0],[0,-2],[0,2]]){const v=(L.g[r+dr]||[])[c+dc];if(v==='X'||v==='D'){n=v;break}}L.g[r][c]=n}const t=buildTiles(L);for(const[r,c]of fk)L.g[r][c]='f';return t}
+function buildTilesF(L){const fk=[],fw=[];for(const[c,r]of L.def.fakeWire||[])if(L.g[r][c]==='.'){fw.push([r,c]);L.g[r][c]='^'}for(let r=0;r<ROWS;r++)for(let c=0;c<L.w;c++)if(L.g[r][c]==='f'){fk.push([r,c]);let n='D';for(const[dr,dc]of[[0,-1],[0,1],[1,0],[-1,0],[0,-2],[0,2]]){const v=(L.g[r+dr]||[])[c+dc];if(v==='X'||v==='D'||v==='#'){n=v;break}}L.g[r][c]=n}const t=buildTiles(L);for(const[r,c]of fk)L.g[r][c]='f';for(const[r,c]of fw)L.g[r][c]='.';return t}
 
 /* ---------- mise à jour ---------- */
 function actStep(dt){
@@ -207,6 +208,8 @@ function mineStep(dt){
 }
 function drawMines(t){
   for(const m of L.mines){if(m.x<cam.x-60||m.x>cam.x+W+60)continue;const x=m.x,y=m.y;ctx.save();
+    // enterrées : on ne les devine qu'à deux pas (sauf une fois déclenchées)
+    if(m.state==='idle'){const d=Math.hypot(P.x+P.w/2-x,P.y+P.h-y);ctx.globalAlpha=clamp(1-(d-30)/40,0,.85);if(ctx.globalAlpha<=0){ctx.restore();continue}}
     if(m.state==='gone'){ctx.fillStyle='rgba(20,14,8,.8)';ctx.beginPath();ctx.ellipse(x,y-1,20,5,0,0,7);ctx.fill();ctx.fillStyle='rgba(60,50,40,.6)';for(let k=-2;k<=2;k++){ctx.beginPath();ctx.arc(x+k*9,y-4-Math.abs(k),3,0,7);ctx.fill()}}
     else{ctx.fillStyle='#3a3a2e';ctx.beginPath();ctx.ellipse(x,y-2,13,6,0,Math.PI,0);ctx.fill();ctx.fillStyle='#55553e';ctx.beginPath();ctx.ellipse(x,y-5,9,3,0,0,7);ctx.fill();
       ctx.fillStyle='#6a6a50';ctx.fillRect(x-1.5,y-12,3,7);ctx.fillStyle='#2a2a20';ctx.fillRect(x-4,y-13,8,2);

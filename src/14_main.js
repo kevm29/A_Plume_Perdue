@@ -36,7 +36,7 @@ function update(dt){
   G.t+=dt;
   if(G.fade>0)G.fade=Math.max(0,G.fade-dt*2.2);
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt*30);
-  if(G.quip){G.quip.t+=dt;if(G.quip.t>G.quip.dur){G.quip=null;if(G.quipQ&&G.quipQ.length){const f=G.quipQ.shift();say(f[1],f[2]||4,f[0])}}}
+  if(G.quip&&!(G.state==='play'&&G.hintI>=0)){G.quip.t+=dt;if(G.quip.t>G.quip.dur){G.quip=null;if(G.quipQ&&G.quipQ.length){const f=G.quipQ.shift();say(f[1],f[2]||4,f[0])}}}
   if(G.state!=='play')loopsOff();
   switch(G.state){
     case'title':handleMenu();break;
