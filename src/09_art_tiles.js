@@ -33,9 +33,10 @@ function buildTiles(L){
   while(x<L.wpx-120){
     const p=PROPS[list[pi%list.length]],w=p.w;
     const c0=Math.floor(x/T),c1=Math.floor((x+w)/T);let ok=true;
-    for(let cc=c0;cc<=c1;cc++)if(tile(cc,13)!=='#'||isSolid(cc,12))ok=false;
+    const gr=cc=>{for(let r=1;r<ROWS;r++){const ch=L.g[r][cc];if(ch==='#')return r;if(ch!=='.')return -1}return -1};const g0=gr(c0);
+    for(let cc=c0;cc<=c1;cc++)if(g0<0||gr(cc)!==g0)ok=false;
     for(const a of L.avoid)if(a>x-50&&a<x+w+50)ok=false;
-    if(ok){g.save();p.d(g,x+DX,13*T+DY,R);g.restore();pi++;x+=w+70+R()*200}else x+=40;
+    if(ok){g.save();p.d(g,x+DX,g0*T+DY,R);g.restore();pi++;x+=w+70+R()*200}else x+=40;
   }
   g.save();g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,th.outdoor?.22:.28);g.fillRect(0,-PAD,wpx,hpx);g.restore();
   const sh=mk(wpx,hpx),sg=sh.getContext('2d');sg.translate(0,PAD);sg.fillStyle='#000';

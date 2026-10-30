@@ -156,7 +156,7 @@ function drawMechBack(t){
   drawFakeAndStash(t);
   // portillons, poignées, cachettes
   for(const gt of L.gates)if(vis(gt.c*T))drawGate(ctx,gt,t);
-  for(const a of L.acts){if(!vis(a.x)||a.style==='backdoor')continue;if(a.kind==='lever')drawLever(ctx,a,t);else drawSecretProp(ctx,a,t)}
+  for(const a of L.acts){if(!vis(a.x)||a.style==='backdoor')continue;if(a.kind==='lever')drawLever(ctx,a,t);else if(a.kind==='secret')drawSecretProp(ctx,a,t)}
   // gargouilles
   for(const o of L.gargoyles){if(!vis(o.x))continue;drawGargoyle(ctx,o,t)}
 }

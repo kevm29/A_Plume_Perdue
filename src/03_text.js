@@ -28,7 +28,7 @@ const DEATH_Q={
   guard:["Repéré. Le gardien m'a ramené au cartel, avec des pincettes.","Pris dans la lumière, comme un lapin. Un lapin décoré.","Il m'a vu. Il n'a pas eu l'air surpris de voir un pigeon empaillé marcher. Bizarre."],
   catwatch:["Il m'a vu bouger. Un chat, ça voit tout, même les yeux fermés.","J'ai bougé. Erreur de débutant."],
   guardnet:["Pris au filet comme un papillon. Le docteur Laffont aurait été ravi.","Le filet. Vexant."],
-  mud:["La boue de Verdun. Elle ne rend jamais rien.","Englouti. Il fallait avancer, ne jamais s'arrêter."],
+  mud:["La boue d'ici. Elle ne rend jamais rien.","Englouti. Il fallait avancer, ne jamais s'arrêter."],
   water:["Une gargouille m'a craché dessus. Même les statues m'en veulent."],
   fire:["Trop près du feu. La paille, ça n'aime pas ça."],
   storm:["L'orage m'a rattrapé. Il ne fallait pas traîner."],
@@ -52,11 +52,11 @@ const WORLD_CARDS=[
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"MISSION 2 · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
+   {title:"MISSION 2 · LES COQUELICOTS",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
   [{t:"Raymond quitte Verdun avec un trou de mémoire\nde la taille d'un fort."},
    {title:"MISSION 3 · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
-   {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
+   {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCe soir, le vent se lève."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
    {title:"MISSION 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
@@ -88,7 +88,7 @@ const GAMEOVER=[
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Verdun",levels:["Les coquelicots","Les éoliennes","Le drone","La tranchée oubliée"]},
+  {name:"Les coquelicots",levels:["Les coquelicots","Les éoliennes","Le drone","La tranchée oubliée"]},
   {name:"Reims",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}

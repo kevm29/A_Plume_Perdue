@@ -40,6 +40,7 @@ function update(dt){
     case'pause':if(pressed.has('esc')){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
+    case'ach':handleAch();break;
     case'intro':handleCards(dt);break;
     case'levelend':handleLetter(dt);break;
     case'play':{
@@ -61,8 +62,8 @@ function update(dt){
         const li=G.li;S.unlocked=Math.min(19,Math.max(S.unlocked,li+1));
         if(G.medal)S.run.medals[li]=true;
         const gt=gotOf(li);
-        S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secret:gt.s,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);
-        const b=S.best[li]||{corn:0,medal:false,deaths:9999,points:0};S.best[li]={corn:Math.max(b.corn,gt.c.length),medal:b.medal||gt.m,secret:b.secret||gt.s,deaths:Math.min(b.deaths,gt.d),points:Math.max(b.points||0,S.run.stats[li].points)};save();
+        S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secFound:gt.sec.length,secTotal:L.secretTotal||0,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);
+        const b=S.best[li]||{corn:0,medal:false,deaths:9999,points:0};S.best[li]={corn:Math.max(b.corn,gt.c.length),medal:b.medal||gt.m,secret:Math.max(b.secret||0,gt.sec.length),deaths:Math.min(b.deaths,gt.d),points:Math.max(b.points||0,S.run.stats[li].points)};save();
         setSong('title');endOfLevel(li);
       }
       break}
@@ -79,6 +80,7 @@ function render(){
     case'loading':ctx.fillStyle='#110e14';ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(233,223,199,.6)';ctx.font='italic 20px Georgia, serif';ctx.textAlign='center';ctx.fillText('On rembourre Raymond…',W/2,H/2);break;
     case'title':renderTitle(t);renderGrain();break;
     case'select':renderSelect(t);renderGrain();break;
+    case'ach':renderAch(t);renderGrain();break;
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;
     case'play':case'pause':case'exiting':case'confirm':{
@@ -105,11 +107,12 @@ function render(){
       break}
   }
   if(G.fade>0){ctx.fillStyle='rgba(11,10,12,'+G.fade+')';ctx.fillRect(0,0,W,H)}
+  renderToasts(G.dtLast||1/60);
   ctx.restore();
 }
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  try{update(dt);render()}catch(err){console.error(err)}
+  G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);
 }
 async function boot(){

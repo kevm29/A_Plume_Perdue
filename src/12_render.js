@@ -66,7 +66,7 @@ function drawEntities(t){
   if(!P.dead){
     const C=G.cut;
     const walk=P.onGround&&!C?Math.min(1,Math.abs(P.vx)/RUN):0;
-    const closed=!!C&&(C.ray==='statue'||C.ray==='fly'||C.ray==='lie')&&!(C.blink>0);
+    const closed=(!!C&&(C.ray==='statue'||C.ray==='fly'||C.ray==='lie')&&!(C.blink>0))||P.idle>60;
     ctx.save();ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=0;
     const lift=P.spin?-30*Math.pow(Math.sin(P.spin/2),2):0;
     drawRaymond(ctx,P.x+P.w/2,P.y+P.h+lift,{f:P.facing,t:G.t,walk,air:!P.onGround&&!C,flap:P.flapT,glide:P.gliding||P.lift,wear:wear(),sx:P.sx,sy:P.sy,size:1.15,rot:P.spin,eyeClosed:closed});

@@ -99,7 +99,7 @@ S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
    600 pour toute la paille (700 s'il n'y a pas de médaille dans le niveau), 100 la médaille, 100 la cachette,
    200 sans accroc (50 de moins par accroc) */
 const LEVEL_MAX=1000;
-function levelPoints(o){const cp=o.hasMedal?600:700;return Math.round(cp*o.corn/Math.max(1,o.cornTotal))+(o.medal?100:0)+(o.secret?100:0)+Math.max(0,200-50*(o.deaths||0))}
+function levelPoints(o){const cp=o.hasMedal?600:700;const sec=o.secTotal?o.secFound/o.secTotal:(o.secret?1:0);return Math.round(cp*o.corn/Math.max(1,o.cornTotal))+(o.medal?100:0)+Math.round(100*sec)+Math.max(0,200-50*(o.deaths||0))}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 
 /* =========================================================
@@ -335,7 +335,7 @@ const DEATH_Q={
   guard:["Repéré. Le gardien m'a ramené au cartel, avec des pincettes.","Pris dans la lumière, comme un lapin. Un lapin décoré.","Il m'a vu. Il n'a pas eu l'air surpris de voir un pigeon empaillé marcher. Bizarre."],
   catwatch:["Il m'a vu bouger. Un chat, ça voit tout, même les yeux fermés.","J'ai bougé. Erreur de débutant."],
   guardnet:["Pris au filet comme un papillon. Le docteur Laffont aurait été ravi.","Le filet. Vexant."],
-  mud:["La boue de Verdun. Elle ne rend jamais rien.","Englouti. Il fallait avancer, ne jamais s'arrêter."],
+  mud:["La boue d'ici. Elle ne rend jamais rien.","Englouti. Il fallait avancer, ne jamais s'arrêter."],
   water:["Une gargouille m'a craché dessus. Même les statues m'en veulent."],
   fire:["Trop près du feu. La paille, ça n'aime pas ça."],
   storm:["L'orage m'a rattrapé. Il ne fallait pas traîner."],
@@ -359,11 +359,11 @@ const WORLD_CARDS=[
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"MISSION 2 · VERDUN",t:"Les champs de l'ancien front.\nRaymond trouve qu'on a beaucoup nettoyé."}],
+   {title:"MISSION 2 · LES COQUELICOTS",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
   [{t:"Raymond quitte Verdun avec un trou de mémoire\nde la taille d'un fort."},
    {title:"MISSION 3 · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
-   {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCette nuit, il pleut des cordes."}],
+   {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCe soir, le vent se lève."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
    {title:"MISSION 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
@@ -395,7 +395,7 @@ const GAMEOVER=[
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Verdun",levels:["Les coquelicots","Les éoliennes","Le drone","La tranchée oubliée"]},
+  {name:"Les coquelicots",levels:["Les coquelicots","Les éoliennes","Le drone","La tranchée oubliée"]},
   {name:"Reims",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
@@ -504,12 +504,13 @@ const LETTERS_SRC=[
 function full(lines){return '\n'+lines.join('\n')}
 
 /* ------------------------------ MISSION 1 · VITTONCOURT ------------------------------ */
-LEVELS.push({w:0,name:"La vitrine",theme:'vitrine',exit:'door',seed:11,rows:20,deep:3,camY:.62,
+LEVELS.push({w:0,name:"La vitrine",theme:'vitrine',exit:'door',seed:11,
+ stashQuips:["Un passage dans les cartons. Quelqu'un s'est creusé une cachette. Un rat, sûrement. Un rat qui aime la paille."],rows:20,deep:3,camY:.62,
  leverQuip:"Le portillon remonte. Le bec : l'outil le plus sous-estimé de l'armée française.",
  start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Vasseur, à Villemareuil : je connais le chemin.",
  hints:[["FIG. 1 — LA MARCHE","← → (ou Q / D). Le pigeon avance. Sans grâce, mais il avance."],
         ["FIG. 2 — LE SAUT","Espace, Z ou ↑. Le saut, inventé par les puces, perfectionné par personne."],
-        ["FIG. 3 — LE BATTEMENT D'AILES","Rappuyer en l'air. Deux battements maximum : les ailes sont cousues. Chaque battement use l'aile ; posé, il lui faut deux secondes pour s'en remettre."],
+        ["FIG. 3 — LE BATTEMENT D'AILES","Rappuyer en l'air. Deux battements maximum : les ailes sont cousues. Chaque battement use l'aile ; posé, il lui faut une seconde par battement pour s'en remettre."],
         ["CARTEL DE SAUVEGARDE","Les cartels de musée retiennent tout. C'est leur seul talent."],
         ["FIG. 3 bis — LE BEC","E (ou F). Tirer une poignée, ouvrir un tiroir, chiper ce qui dépasse. Un pigeon a un bec : qu'il s'en serve."],
         ["FIG. 4 — LE VOL PLANÉ","Battre des ailes au plus haut, puis maintenir le saut en tombant. Planer use l'aile aussi : quand la jauge est vide, on tombe. Dignité non incluse."],
@@ -547,14 +548,14 @@ g...................
 ....................
 ...............o....
 ..........o...XXX...
-.......XXXXX..XXX...
-...o..XXXXXX..XXX...
-#####.XXXXXX..XXX.##
+.......ffXXX..XXX...
+...o..XXffXX..XXX...
+#####.XXXfsX..XXX.##
 #####.XXXXXX..XXX.##`,`
 ...q..........
 ..............
 .h..C.....o...
-##############
+######...#####
 ##############`,full([
 '..........W.........',
 '..........W.........',
@@ -912,12 +913,12 @@ C...........
 ##########`]});
 
 /* ------------------------------ MISSION 2 · VERDUN ------------------------------ */
-LEVELS.push({w:1,name:"Les coquelicots",theme:'front',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
- start:"Verdun. Je reconnais le terrain. Enfin… il y a moins de boue. Et plus de fleurs.",
- hints:[["ARTICLE 9 — LA BOUE","La boue de Verdun avale ce qui s'arrête. Avancer, toujours, même au ralenti."],
+LEVELS.push({w:1,name:"Le sentier",theme:'front',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
+ start:"Je reconnais le terrain. Enfin… il y a moins de boue. Et plus de fleurs.",
+ hints:[["ARTICLE 9 — LA BOUE","La boue avale ce qui s'arrête. Avancer, toujours, même au ralenti."],
         ["ARTICLE 10 — LE TROU D'OBUS","Le sol miné tremble avant de céder. Ne pas s'y attarder."]],
  flyers:[{dy:30,amp:200,sp:1.7},{dy:-70,amp:125}],
- quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un sanglier et son petit. Ils ont pris le front. Personne ne les a arrêtés.","Un casque rouillé sur un piquet. Pauvre gars. L'intendance n'est toujours pas passée le ramasser."],
+ quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un sanglier et son petit. Ils ont pris le front. Personne ne les a arrêtés.","Un panneau rouillé : « VERDUN 6 km ». Verdun… C'est d'ici que je suis parti. Je crois. Je ne sais plus très bien."],
  signs:["ZONE ROUGE|Ne pas quitter le sentier"],
  segs:[SEG_START_FLAT,`
 ....................
@@ -2463,9 +2464,10 @@ function buildTiles(L){
   while(x<L.wpx-120){
     const p=PROPS[list[pi%list.length]],w=p.w;
     const c0=Math.floor(x/T),c1=Math.floor((x+w)/T);let ok=true;
-    for(let cc=c0;cc<=c1;cc++)if(tile(cc,13)!=='#'||isSolid(cc,12))ok=false;
+    const gr=cc=>{for(let r=1;r<ROWS;r++){const ch=L.g[r][cc];if(ch==='#')return r;if(ch!=='.')return -1}return -1};const g0=gr(c0);
+    for(let cc=c0;cc<=c1;cc++)if(g0<0||gr(cc)!==g0)ok=false;
     for(const a of L.avoid)if(a>x-50&&a<x+w+50)ok=false;
-    if(ok){g.save();p.d(g,x+DX,13*T+DY,R);g.restore();pi++;x+=w+70+R()*200}else x+=40;
+    if(ok){g.save();p.d(g,x+DX,g0*T+DY,R);g.restore();pi++;x+=w+70+R()*200}else x+=40;
   }
   g.save();g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,th.outdoor?.22:.28);g.fillRect(0,-PAD,wpx,hpx);g.restore();
   const sh=mk(wpx,hpx),sg=sh.getContext('2d');sg.translate(0,PAD);sg.fillStyle='#000';
@@ -3237,8 +3239,16 @@ function drawArmoire(g,x,floor,shake,doorOpen){
 }
 function drawCarton(g,c){
   g.save();g.translate(c.x,c.y);g.rotate(c.rot);
-  g.fillStyle='#b08a5a';g.fillRect(-24,-20,48,40);g.fillStyle='#c9a06b';poly(g,[-24,-20,24,-20,30,-26,-18,-26]);g.fill();
-  g.fillStyle='rgba(230,210,160,.6)';g.fillRect(-4,-20,8,40);
+  const st=c.step||0;
+  if(st>=3){// dedans : paille de calage et… une enclume
+    g.fillStyle='#2a2216';g.fillRect(-22,-22,44,6);
+    g.fillStyle='#4a4a50';poly(g,[-14,-20,8,-20,18,-27,8,-24,-10,-24]);g.fill();g.fillRect(-8,-30,12,8);
+    g.strokeStyle='#e0b04e';g.lineWidth=1.3;for(let k=0;k<9;k++){const x=-20+k*5;g.beginPath();g.moveTo(x,-20);g.lineTo(x+(k%2?3:-3),-29-(k%3)*2);g.stroke()}}
+  g.fillStyle='#b08a5a';g.fillRect(-24,-20,48,40);
+  if(st>=2){g.fillStyle='#c9a06b';poly(g,[-24,-20,-6,-20,-14,-40,-30,-34]);g.fill();poly(g,[24,-20,6,-20,14,-42,30,-36]);g.fill()}
+  else{g.fillStyle='#c9a06b';poly(g,[-24,-20,24,-20,30,-26,-18,-26]);g.fill()}
+  if(st<1){g.fillStyle='rgba(230,210,160,.6)';g.fillRect(-4,-20,8,40)}
+  else{g.fillStyle='rgba(230,210,160,.6)';g.fillRect(-4,-4,8,24);poly(g,[-4,-4,4,-4,8,-14,0,-10]);g.fill()}
   g.save();g.rotate(-.15);g.fillStyle='rgba(160,40,30,.85)';g.font='bold 9px '+F_DISP;g.textAlign='center';g.fillText('FRAGILE',0,4);g.restore();
   g.restore();
 }
@@ -3457,7 +3467,7 @@ function drawMechBack(t){
   drawFakeAndStash(t);
   // portillons, poignées, cachettes
   for(const gt of L.gates)if(vis(gt.c*T))drawGate(ctx,gt,t);
-  for(const a of L.acts){if(!vis(a.x)||a.style==='backdoor')continue;if(a.kind==='lever')drawLever(ctx,a,t);else drawSecretProp(ctx,a,t)}
+  for(const a of L.acts){if(!vis(a.x)||a.style==='backdoor')continue;if(a.kind==='lever')drawLever(ctx,a,t);else if(a.kind==='secret')drawSecretProp(ctx,a,t)}
   // gargouilles
   for(const o of L.gargoyles){if(!vis(o.x))continue;drawGargoyle(ctx,o,t)}
 }
@@ -3619,7 +3629,7 @@ function drawGate(g,gt,t){
 function drawActPrompt(t){
   if(P.dead||G.cut||G.tombSeq)return;
   const n=nearAct();if(!n)return;
-  let x,y;if(n.type==='tangle'){x=P.x+P.w/2;y=P.y-30}else if(n.type==='secret'){return}else{x=n.o.x;y=n.o.y-74}
+  let x,y;if(n.type==='tangle'){x=P.x+P.w/2;y=P.y-30}else if(n.type==='secret'||n.type==='carton'){return}else{x=n.o.x;y=n.o.y-74}
   const b=Math.sin(t*5)*2;
   ctx.save();ctx.translate(x,y+b);
   ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();
@@ -3761,9 +3771,9 @@ const motes=[];
 for(let i=0;i<70;i++)motes.push({x:rnd()*W,y:rnd()*H,z:.3+rnd()*.9,s:.6+rnd()*1.6,ph:rnd()*9});
 const GRAV=2200,MAXFALL=900,GLIDE=190,RUN=290,ACC=2400,AIRACC=1700,FRIC=2600,JUMPV=730,FLAPV=560,MAXFLAPS=2;
 const BOLT_PERIOD=3.0;
-/* robustesse des ailes : un battement coûte 30, planer 15 par seconde ; au sol elle revient à 15 par seconde
-   (deux secondes par battement). Vidée, l'aile est « décousue » : plus de battement ni de vol plané avant 60. */
-const STAM_MAX=100,STAM_FLAP=30,STAM_GLIDE=15,STAM_REGEN=15,STAM_RESUME=60;
+/* robustesse des ailes : un battement coûte 30, planer 15 par seconde ; au sol elle revient à 30 par seconde
+   (une seconde par battement). Vidée, l'aile est « décousue » : plus de battement ni de vol plané avant 60. */
+const STAM_MAX=100,STAM_FLAP=30,STAM_GLIDE=15,STAM_REGEN=30,STAM_RESUME=60;
 
 function say(text,dur,who){G.quip={text,t:0,dur:dur||3.8,who:who||'RAYMOND'}}
 function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:1.2+text.length*.035,col:col||'#a8322d',rot:(rnd()-.5)*.25})}
@@ -3785,17 +3795,18 @@ function startLevel(i){
   if(L.dome){
     const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
     L.acts.push({kind:'secret',style:'backdoor',x:L.backDoor.x+6,y:L.dome.floor,open:0,t:0,used:false});
+    L.acts.push({kind:'carton',x:L.dome.x-62,y:L.dome.floor,open:0,t:0,used:false,step:0});
     if(!G.cutSeen){
       G.cut={t:0,ray:'statue',lieT:0,thief:{x:L.dome.x+760,state:'out',t:0,f:-1,head:1,alpha:1},flashes:[.6],blink:0,ev:{}};
       L.carton={x:L.armoire.x-6,y:L.dome.floor-218,vx:0,vy:0,rot:0,vr:0,state:'hold'};
       P.x=L.dome.x-P.w/2;P.y=dg.feet-P.h;P.facing=1;
     }else{L.dome.broken=true;L.carton={x:L.dome.x-62,y:L.dome.floor-20,rot:-.1,state:'rest'};L.armoire.door=1;say(L.def.start,5)}
   }else say(L.def.start,5);
-  applyGot(i);
+  applyGot(i);if(S.infinite)S.run.usedInf=true;
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
 }
 function resetPlayer(){
-  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;
+  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;
 }
 function puff(x,y,n,straw){
   for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,s=60+rnd()*260;parts.push({type:straw?'straw':'feather',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,life:0,max:.9+rnd()*1.1,rot:rnd()*6,vr:(rnd()-.5)*14,len:4+rnd()*7})}
@@ -3803,10 +3814,10 @@ function puff(x,y,n,straw){
 function die(kind,tiles){
   if(P.dead)return;
   if(G.sim){P.dead=true;return}
-  P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;
+  P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;S.run.anyAccroc=true;
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
   if((S.run.wear||0)>=MAX_WEAR&&!S.infinite)G.gameOverPending=true;
-  else S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);
+  else{S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);if(S.run.wear>=MAX_WEAR)S.run.wasLow=true}
   save();
   G.shake=10;SFX.death();
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
@@ -3815,8 +3826,8 @@ function die(kind,tiles){
   if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
-function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});if(!G.tornSaid){G.tornSaid=true;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}}
-function winLevel(){if(G.sim){G.simWin=true;return}G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
+function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;unlock('a68');tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});if(!G.tornSaid){G.tornSaid=true;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}}
+function winLevel(){if(G.sim){G.simWin=true;return}if(G.li===2)unlock('a56');G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
 
 /* ---------- scène d'ouverture : nuit d'orage, voleur, armoire, carton ---------- */
 function cutFlash(v,thunder){G.flash=Math.max(G.flash,v);if(!G.sim)setTimeout(()=>SFX.thunder(thunder),thunder>1?120:600)}
@@ -3932,6 +3943,9 @@ function stepPlay(dt){
   if(P.wake>0){P.wake-=dt;P.vy+=GRAV*dt;P.onGround=false;moveY(P,P.vy*dt);return}
   if(P.onMover){const m=P.onMover;moveX(P,m.dx);P.y=m.y-P.h}
   const left=keys.has('left'),right=keys.has('right'),held=keys.has('jump');
+  // immobile une minute : Raymond s'endort
+  if(!left&&!right&&!held&&P.onGround&&!G.sim){P.idle=(P.idle||0)+dt;if(P.idle>60){unlock('a82');if(((P.idle-60)%2.6)<dt)bubble(P.x+P.w/2+14,P.y-10,'Zzz','#6a5a48')}}else P.idle=0;
+  if(S.run.wasLow&&(S.run.wear||0)===0){S.run.wasLow=false;unlock('a24')}
   const MD=mechMods();
   const dir=MD.noInput?0:(right?1:0)-(left?1:0);
   if(dir)P.facing=dir;
@@ -4050,6 +4064,7 @@ function gameOver(){
   // Raymond a perdu la tête : une vie le ramène au début de la mission, sinon tout recommence
   loopsOff();G.chase=false;
   const w=LEVELS[G.li].w,first=w*4,hasLife=S.run.lives>0;
+  unlock('a49');S.run.headLost=true;if(!hasLife)unlock('a50');
   if(hasLife){S.run.lives--;S.run.wear=0;save()}
   const tail=hasLife
     ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\n${S.run.lives?`Il reste ${S.run.lives} vie${S.run.lives>1?'s':''}.`:'Plus de vie en réserve : la prochaine fois sera la dernière.'} Retour au début de la mission : ${WORLDS[w].name}.`}
@@ -4091,8 +4106,12 @@ function updateParticles(dt){
 }
 function updateCamera(dt){
   let tx=clamp(P.x+P.w/2-W/2+P.facing*70,0,L.wpx-W);
+  // vertical : la caméra suit le dernier sol touché, pas les sauts (on ne voit pas ce qui est au-dessus en sautant)
+  if(P.onGround||P.lastGY==null)P.lastGY=P.y;
   if(L.auto&&L.auto.on){tx=Math.max(L.auto.x,Math.min(tx,L.auto.x+120));cam.x=Math.max(cam.x,L.auto.x)}
-  const ty=clamp(P.y-H*(L.def.camY||.5),0,ROWS*T-H);
+  let ty=P.lastGY-H*(L.def.camY||.5);
+  if(P.y-ty<40)ty=P.y-40;if(P.y+P.h-ty>H-50)ty=P.y+P.h-H+50;
+  ty=clamp(ty,0,ROWS*T-H);
   const k=1-Math.exp(-dt*5);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k;
 }
 
@@ -4319,7 +4338,8 @@ function mechPostParse(L){
 
 /* ce que Raymond a déjà pris dans un niveau, pour toute la partie en cours :
    après une mort avec une vie, on ne reprend pas deux fois la même paille ni la même médaille */
-function gotOf(li){if(!S.run.got)S.run.got={};return S.run.got[li]||(S.run.got[li]={c:[],m:false,s:false,d:0})}
+function gotOf(li){if(!S.run.got)S.run.got={};const g=S.run.got[li]||(S.run.got[li]={c:[],m:false,sec:[],d:0});if(!g.sec)g.sec=g.s?[0]:[];return g}
+const isSecretAct=a=>a.kind==='secret'||a.kind==='stash'||a.kind==='carton';
 
 const SECRET_STYLE={vitrine:'drawer',insectes:'case',mammouth:'drawer',loge:'mailbox',front:'crate',turbines:'crate',trench:'crate',
   roofs:'postbox',station:'locker',square:'postbox',cathedral:'chest',aire:'bin',road:'bin',storm:'phone',bridge:'bin',
@@ -4342,15 +4362,15 @@ function applyGot(i){
   for(const k of gt.c)if(L.corn[k]&&!L.corn[k].taken){L.corn[k].taken=true;n++}
   G.corn=n;
   if(gt.m&&L.medal){L.medal.taken=true;G.medal=true}
-  if(gt.s)for(const a of L.acts)if(a.kind==='secret'||a.kind==='stash')a.used=true;
-  G.secret=gt.s;G.key=false;
+  let k=0;for(const a of L.acts)if(isSecretAct(a)){a.sid=k++;if(gt.sec.includes(a.sid)){a.used=true;if(a.kind==='carton')a.step=3}}
+  L.secretTotal=k;G.key=false;
 }
 
 /* ---------- ce qui est à portée de bec ---------- */
 function nearAct(){
   const pcx=P.x+P.w/2,pb=P.y+P.h;
   if(hiddenNow())for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
-  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
+  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }
 function tryAct(){
@@ -4360,11 +4380,19 @@ function tryAct(){
   if(n.type==='tangle'){
     // le drap sous lequel on se cachait lui tombe dessus : Raymond est à découvert
     const g=n.o,c=coverHere();g.tangle=1.1;g.sweep=0;if(c){c.gone=true;c.on=g}
+    unlock('a53');if(!G.sim)achKey();
     if(!G.sim){SFX.flap();noise(.35,700,.25,'bandpass');bubble(g.x+g.w/2,g.y-16,'Hé ! Qui a éteint ?','#2a3a5a');if(!G.tangleSaid){G.tangleSaid=true;say("Le drap sur la tête. Il va être de très mauvaise humeur en sortant de là. Filer.",3.8)}}
     return;
   }
   const a=n.o;
-  if(a.kind==='lever'){a.used=true;a.t=0;if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
+  if(a.kind==='carton'){
+    // le carton FRAGILE qui a libéré Raymond : trois coups de bec pour l'ouvrir
+    if(a.step>=3){if(!G.sim)say("Une enclume. Dans un carton FRAGILE. Le règlement ne prévoit pas ce cas.",3);return}
+    a.step++;if(L.carton)L.carton.step=a.step;
+    if(!G.sim){noise(.25,2600,.18,'highpass');if(a.step===1)say("Du scotch. Du bon scotch d'avant-guerre. Il résiste.",3);else if(a.step===2)say("Les rabats. Du papier journal froissé… de 1931.",3)}
+    if(a.step===3){grantSecret(a,a.y-40);if(!G.sim)sayQueue([['RAYMOND',"De la paille de calage. Et au fond… une enclume de cordonnier.",3.6],['RAYMOND',"Étiquetée « FRAGILE ». Voilà donc ce qui m'a libéré.",3.6]])}
+    return}
+  if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
   if(a.kind==='secret'){
     if(a.used){a.t=0;a.anim=1;if(!G.sim)say(pick(["Vide. J'ai déjà tout pris.","Plus rien là-dedans. Je repasserai à la prochaine guerre."]),2.6);return}
     if(a.locked&&!G.key){if(!G.sim){tone(220,.12,'square',.05);say("Fermé à clef. Le gardien a les clefs. Le gardien a toujours les clefs.",3.4)}return}
@@ -4372,7 +4400,7 @@ function tryAct(){
   }
 }
 function grantSecret(a,py){
-  a.used=true;gotOf(G.li).s=true;G.secret=true;
+  a.used=true;{const gt=gotOf(G.li);if(!gt.sec.includes(a.sid))gt.sec.push(a.sid)}achSecret(G.li,a.sid);if(a.style==='backdoor')unlock('a2');
   if((S.run.wear||0)>0){S.run.wear--;P.sx=1.15;P.sy=1.15}
   save();
   if(!G.sim){SFX.secret();setTimeout(()=>SFX.straw(),180);parts.push({type:'tuftpop',x:a.x,y:py,life:0,max:1.3});puff(a.x,py+4,8,true);say(pick(a.q||SECRET_Q),3.8)}
@@ -4382,7 +4410,7 @@ function coverHere(){const cx=P.x+P.w/2,cy=P.y+P.h/2;for(const c of L.covers)if(
 /* dans un faux mur (carton creux) */
 function inFake(){const c=Math.floor((P.x+P.w/2)/T),r=Math.floor((P.y+P.h/2)/T);return tile(c,r)==='f'}
 /* tuiles creuses : dessinées comme des blocs, mais on peut y entrer */
-function buildTilesF(L){const fk=[];for(let r=0;r<ROWS;r++)for(let c=0;c<L.w;c++)if(L.g[r][c]==='f'){fk.push([r,c]);L.g[r][c]='D'}const t=buildTiles(L);for(const[r,c]of fk)L.g[r][c]='f';return t}
+function buildTilesF(L){const fk=[];for(let r=0;r<ROWS;r++)for(let c=0;c<L.w;c++)if(L.g[r][c]==='f'){fk.push([r,c]);let n='D';for(const[dr,dc]of[[0,-1],[0,1],[1,0],[-1,0],[0,-2],[0,2]]){const v=(L.g[r+dr]||[])[c+dc];if(v==='X'||v==='D'){n=v;break}}L.g[r][c]=n}const t=buildTiles(L);for(const[r,c]of fk)L.g[r][c]='f';return t}
 
 /* ---------- mise à jour ---------- */
 function actStep(dt){
@@ -4392,6 +4420,7 @@ function actStep(dt){
     else if(a.anim){a.open=a.t<.22?a.t/.22:a.t<1.5?1:Math.max(0,1-(a.t-1.5)*4);if(a.t>1.8)a.anim=0}
     else a.open=0;
     if(a.style==='backdoor'&&L.backDoor&&!G.cut)L.backDoor.open=a.open;
+    if(a.kind==='carton'&&L.carton)L.carton.step=a.step;
   }
   for(const g of L.gates)if(g.opening&&g.open<1){g.open=Math.min(1,g.open+dt*1.6);if(g.open>.55)for(let r=g.r0;r<=g.r1;r++)if(L.g[r][g.c]==='R')L.g[r][g.c]='.'}
   if(P.peck>0)P.peck-=dt;
@@ -4427,7 +4456,7 @@ function watchStep(w,dt,pcx,pcy){
   const hid=w.mode==='chase'?coverHere():null;
   let target=w.mode==='chase'?(hid?hid.x+hid.w/2:pcx):w.x;
   const dist=target-(k.x+k.w/2),dir=Math.sign(dist)||1;
-  if(hid&&Math.abs(dist)<18&&k.onGround){w.mode='tangle';w.ct=0;w.cover=hid;hid.gone=true;hid.on=w;if(!G.sim){SFX.hiss();noise(.3,800,.2,'bandpass')}return}
+  if(hid&&Math.abs(dist)<18&&k.onGround){w.mode='tangle';w.ct=0;w.cover=hid;hid.gone=true;hid.on=w;unlock('a54');if(!G.sim){SFX.hiss();noise(.3,800,.2,'bandpass')}return}
   if(w.mode==='chase'&&!hid&&(w.ct>6.5||Math.abs(dist)>640||P.dead)){w.mode='back';w.ct=0}
   if(w.mode==='back'&&Math.abs(dist)<8&&k.onGround){w.mode='sit';w.k=null;w.t=0;w.state='closed';w.open=0;return}
   const sp=w.mode==='chase'?clamp(220+(Math.abs(dist)-150)*.25,220,300):170;
@@ -4459,6 +4488,117 @@ function chaserReenter(K){
   const c=Math.floor((x+K.w/2)/T);let r=Math.floor(P.y/T)-2;r=clamp(r,0,ROWS-1);
   while(r<ROWS-1&&!groundAt(c,r+1))r++;
   K.x=x;K.y=(r+1)*T-K.h;K.vx=0;K.vy=0;
+}
+
+/* =========================================================
+   SUCCÈS — ceux retenus pour l'instant (les autres viendront plus tard)
+   Catégories (pour le médaillon) : P progression · C collecte · D accrocs · E ennemis · S adresse · X curiosités
+   ========================================================= */
+const ACH=[
+ ['a1','P','Matricule 7413, au rapport',"Terminer l'introduction."],
+ ['a2','P','Finalement, on aurait pu sortir par là',"Ouvrir la porte par où le voleur est parti."],
+ ['a3','P','Le bec, outil réglementaire',"Ouvrir le portillon du 1-1 en tirant la poignée."],
+ ['a4','P','Fin de la remise',"Terminer la mission 1."],
+ ['a5','P','Retour au front',"Terminer la mission 2."],
+ ['a6','P','Le sacre',"Terminer la mission 3."],
+ ['a7','P','Route nationale',"Terminer la mission 4."],
+ ['a8','P',"Le pigeonnier n'existe plus","Terminer la mission 5."],
+ ['a9','P','Courrier distribué',"Finir le jeu."],
+ ['a10','P',"Facteur d'élite","Finir le jeu sans jamais perdre la tête."],
+ ['a11','P','Pas un brin',"Finir le jeu sans perdre une seule paille."],
+ ['a12','P',"Tout d'une traite","Finir une mission sans un seul accroc."],
+ ['a13','P','Cent dix ans de retard',"Lire la banderole de la fête foraine."],
+ ['a15','P','Le pot de fleurs',"Voir la fin du jeu."],
+ ['a17','P','Article 4 bis',"Lire les vingt morceaux de la lettre."],
+ ['a24','C','Rembourré à neuf',"Revenir à cinq crans pleins après être descendu au dernier."],
+ ['a26','C','Bardé de décorations',"Trouver les cinq médailles dans une même partie."],
+ ['a30','C',"Rien ne m'échappe","Trouver toutes les cachettes du jeu."],
+ ['a35','C','Mission parfaite',"Faire 4000 points sur une mission."],
+ ['a49','D','Recousu de travers',"Perdre la tête une première fois."],
+ ['a50','D','Depuis la remise',"Perdre sa dernière vie et tout recommencer."],
+ ['a53','E','Fantôme du musée',"Jeter un drap sur la tête d'un gardien."],
+ ['a54','E',"Bijou s'emmêle","Faire s'emmêler le chat dans un drap."],
+ ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
+ ['c1','E','Instinct de pie',"Chiper dix clefs aux gardiens."],
+ ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
+ ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond et l'entendre roucouler."],
+ ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."]
+];
+const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
+/* nombre total de cachettes (1-1 : trois ; les autres niveaux : une) */
+const SECRET_TOTAL=22;
+function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
+function unlock(id){
+  if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
+  st[id]=Date.now();save();
+  G.toasts=G.toasts||[];G.toasts.push({id,t:0});
+  if(AC&&!S.muted){[523,659,784,1047].forEach((f,i)=>tone(f,.35,'triangle',.11,null,i*.09))}
+}
+function achSecret(li,sid){achState();S.achStats.secrets[li+':'+sid]=1;if(Object.keys(S.achStats.secrets).length>=SECRET_TOTAL)unlock('a30')}
+function achKey(){achState();S.achStats.keys=(S.achStats.keys||0)+1;save();if(S.achStats.keys>=10)unlock('c1')}
+function achLetter(li){achState();S.achStats.letters[li]=1;if(Object.keys(S.achStats.letters).length>=20)unlock('a17')}
+/* fin de mission (après la lettre) */
+function achMission(w){
+  unlock('a'+(4+w));
+  let pts=0,acc=0;for(let k=w*4;k<w*4+4;k++){const o=S.run.stats[k];if(o){pts+=o.points||0;acc+=o.deaths||0}else acc+=99}
+  if(pts>=4000)unlock('a35');if(acc===0)unlock('a12');
+  if(w===4){unlock('a9');if(!S.run.headLost&&!S.run.usedInf)unlock('a10');if(!S.run.anyAccroc&&!S.run.usedInf)unlock('a11')}
+  if(Object.keys(S.run.medals||{}).length>=5)unlock('a26');
+}
+
+/* ---------- médaillon d'un succès ---------- */
+const ACH_RIBBON={P:['#a8322d','#e9dfc7'],C:['#c9a24a','#5a3a1a'],D:['#3a3a48','#a8322d'],E:['#2a3f6a','#e9dfc7'],S:['#4f7a5a','#e9dfc7'],X:['#6a3a6a','#c9a24a']};
+function drawAchMedal(g,x,y,cat,on,s){
+  s=s||1;g.save();g.translate(x,y);g.scale(s,s);
+  const rb=ACH_RIBBON[cat]||ACH_RIBBON.P;
+  g.globalAlpha=on?1:.35;
+  g.fillStyle=rb[0];g.fillRect(-9,-34,18,18);g.fillStyle=rb[1];g.fillRect(-3,-34,6,18);
+  poly(g,[-9,-16,9,-16,6,-12,-6,-12]);g.fillStyle='rgba(0,0,0,.25)';g.fill();
+  const gr=g.createRadialGradient(-6,-6,2,0,0,22);
+  if(on){gr.addColorStop(0,'#f6e3a0');gr.addColorStop(.55,'#c9a24a');gr.addColorStop(1,'#6a4a16')}else{gr.addColorStop(0,'#8a8a8a');gr.addColorStop(1,'#3a3a3a')}
+  g.fillStyle=gr;g.beginPath();g.arc(0,0,18,0,7);g.fill();
+  g.strokeStyle=on?'rgba(70,46,10,.6)':'rgba(0,0,0,.4)';g.lineWidth=1.4;g.beginPath();g.arc(0,0,14.5,0,7);g.stroke();
+  // dentelure du bord
+  g.fillStyle=on?'#a8822e':'#4a4a4a';for(let k=0;k<20;k++){const a=k/20*Math.PI*2;g.beginPath();g.arc(Math.cos(a)*18,Math.sin(a)*18,1.4,0,7);g.fill()}
+  g.strokeStyle=on?'#4a3410':'#222';g.fillStyle=g.strokeStyle;g.lineWidth=1.8;g.lineCap='round';g.lineJoin='round';
+  if(cat==='P'){g.strokeRect(-8,-5,16,11);g.beginPath();g.moveTo(-8,-5);g.lineTo(0,1.5);g.lineTo(8,-5);g.stroke()}
+  else if(cat==='C'){for(let k=-3;k<=3;k++){g.beginPath();g.moveTo(k*1.1,7);g.quadraticCurveTo(k*2.2,0,k*3,-8+Math.abs(k));g.stroke()}g.beginPath();g.moveTo(-5,4);g.lineTo(5,4);g.stroke()}
+  else if(cat==='D'){g.beginPath();g.moveTo(-7,8);g.lineTo(5,-6);g.stroke();g.beginPath();g.arc(6,-7,3,0,7);g.fill()}
+  else if(cat==='E'){g.fillRect(-9,-2.5,9,5);g.globalAlpha=(on?1:.35)*.55;poly(g,[0,-4,9,-8,9,8,0,4]);g.fill()}
+  else if(cat==='S'){g.beginPath();g.moveTo(-9,5);g.quadraticCurveTo(-3,-9,9,-6);g.quadraticCurveTo(2,-1,5,5);g.quadraticCurveTo(-1,2,-9,5);g.fill()}
+  else{g.beginPath();g.ellipse(0,0,9,5.5,0,0,7);g.stroke();g.beginPath();g.arc(0,0,2.8,0,7);g.fill()}
+  if(on){g.globalAlpha=.35;g.fillStyle='#fff';g.beginPath();g.ellipse(-7,-8,5,2.5,-.6,0,7);g.fill()}
+  g.restore();
+}
+/* bandeau « succès débloqué » */
+function renderToasts(dt){
+  const q=G.toasts;if(!q||!q.length)return;const T0=q[0];T0.t+=dt;const a=ACH_BY[T0.id];
+  const k=Math.min(1,T0.t*4,(4-T0.t)*3),y=H-70+(1-k)*80;
+  ctx.save();ctx.globalAlpha=Math.max(0,k);
+  ctx.fillStyle='rgba(14,12,18,.88)';rr(ctx,W/2-210,y-26,420,58,10);ctx.fill();ctx.strokeStyle='rgba(201,162,74,.6)';ctx.lineWidth=1.2;rr(ctx,W/2-210,y-26,420,58,10);ctx.stroke();
+  drawAchMedal(ctx,W/2-176,y+8,a.cat,true,.85);
+  ctx.textAlign='left';ctx.fillStyle='#d9a441';ctx.font='12px '+F_DISP;ctx.fillText('SUCCÈS',W/2-146,y-6);
+  ctx.fillStyle='#efe5cc';ctx.font='18px '+F_DISP;ctx.fillText(a.t,W/2-146,y+16);
+  ctx.restore();
+  if(T0.t>4)q.shift();
+}
+/* écran des succès (depuis l'accueil, seulement si au moins un est débloqué) */
+function openAch(){G.state='ach';G.fade=1;G.achScroll=0}
+function handleAch(){if(pressed.has('esc')||pressed.has('back')||pressed.has('ok')||G.click)goTitle();if(pressed.has('down'))G.achScroll=Math.min(G.achScroll+1,3);if(pressed.has('up'))G.achScroll=Math.max(0,G.achScroll-1)}
+function renderAch(t){
+  ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
+  ctx.fillStyle='rgba(12,10,16,.88)';ctx.fillRect(0,0,W,H);
+  const st=achState(),n=ACH.filter(a=>st[a[0]]).length;
+  ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Décorations de Raymond',W/2,44);
+  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText(`${n} sur ${ACH.length}`,W/2,66);
+  const cols=2,cw=430,rh=58,x0=W/2-cw-5,y0=88;
+  ACH.forEach((a,i)=>{const on=!!st[a[0]],c=i%cols,r=Math.floor(i/cols),x=x0+c*(cw+10),y=y0+r*rh-G.achScroll*rh*2;if(y<70||y>H-40)return;
+    ctx.fillStyle=on?'rgba(233,223,199,.07)':'rgba(233,223,199,.025)';rr(ctx,x,y,cw,rh-6,6);ctx.fill();
+    drawAchMedal(ctx,x+30,y+30,a[1],on,.78);
+    ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.4)';ctx.font='16px '+F_DISP;ctx.fillText(a[2],x+60,y+21);
+    ctx.font='italic 13px '+F_BODY;ctx.fillStyle=on?'rgba(233,223,199,.7)':'rgba(233,223,199,.32)';ctx.fillText(a[3],x+60,y+39)});
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('↑ ↓ défiler · appuyer pour revenir',W/2,H-12);
+  ctx.restore();
 }
 
 /* =========================================================
@@ -4529,7 +4669,7 @@ function drawEntities(t){
   if(!P.dead){
     const C=G.cut;
     const walk=P.onGround&&!C?Math.min(1,Math.abs(P.vx)/RUN):0;
-    const closed=!!C&&(C.ray==='statue'||C.ray==='fly'||C.ray==='lie')&&!(C.blink>0);
+    const closed=(!!C&&(C.ray==='statue'||C.ray==='fly'||C.ray==='lie')&&!(C.blink>0))||P.idle>60;
     ctx.save();ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=0;
     const lift=P.spin?-30*Math.pow(Math.sin(P.spin/2),2):0;
     drawRaymond(ctx,P.x+P.w/2,P.y+P.h+lift,{f:P.facing,t:G.t,walk,air:!P.onGround&&!C,flap:P.flapT,glide:P.gliding||P.lift,wear:wear(),sx:P.sx,sy:P.sy,size:1.15,rot:P.spin,eyeClosed:closed});
@@ -4689,6 +4829,7 @@ function menuItems(){
     const it=[{label:'Nouvelle partie',act:()=>{newRun();startIntro()}}];
     if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.resume!=null?S.resume:S.unlocked,19);freshRun();startLevel(li)}});
     it.push({label:'Choisir un niveau',act:openSelect});
+    if(Object.keys(achState()).length)it.push({label:'Succès',act:openAch});
     it.push({label:S.muted?'Son : coupé':'Son : activé',act:toggleMute});
     return it;
   }
@@ -4716,7 +4857,7 @@ function renderConfirm(){
 }
 function goTitle(){G.state='title';G.menuSel=0;G.fade=1;setSong('title');loopsOff()}
 function openSelect(){G.state='select';G.sel=Math.min(S.unlocked,19);G.fade=1;setSong('title');loopsOff()}
-function startIntro(){G.state='intro';G.cards=INTRO;G.card=0;G.cardT=0;G.cutSeen=false;G.cardsDone=()=>startLevel(0);G.fade=1;setSong('title')}
+function startIntro(){G.state='intro';G.cards=INTRO;G.card=0;G.cardT=0;G.cutSeen=false;G.cardsDone=()=>{unlock('a1');startLevel(0)};G.fade=1;setSong('title')}
 function handleMenu(){
   const it=menuItems();if(!it.length)return;
   if(pressed.has('up'))G.menuSel=(G.menuSel-1+it.length)%it.length;
@@ -4725,7 +4866,7 @@ function handleMenu(){
     // l'œil de Raymond : quatre clics rapprochés, et il roucoule (vies illimitées, tous les niveaux ouverts)
     if(G.state==='title'){const ex=W*.3+11*3.2,ey=460-29.5*3.2;if(Math.hypot(G.click.x-ex,G.click.y-ey)<16){
       if(G.t-(G.eyeT||-9)>1.4)G.eyeN=0;G.eyeT=G.t;G.eyeN=(G.eyeN||0)+1;G.wink=.18;SFX.tick();
-      if(G.eyeN>=4){G.eyeN=0;S.infinite=!S.infinite;save();SFX.coo();G.wink=.9}return}}
+      if(G.eyeN>=4){G.eyeN=0;S.infinite=!S.infinite;save();SFX.coo();G.wink=.9;if(S.infinite)unlock('a81')}return}}
     for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.menuSel=b.i;it[b.i].act();return}
   }
   if(pressed.has('ok'))it[G.menuSel].act();
@@ -4764,7 +4905,7 @@ function renderSelect(t){
   ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
   ctx.fillStyle='rgba(12,10,16,.84)';ctx.fillRect(0,0,W,H);
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Itinéraire de Raymond',W/2,46);
-  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → Verdun → Reims → A4 → Villemareuil',W/2,67);
+  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → les coquelicots → Reims → A4 → Villemareuil',W/2,67);
   G.boxes=[];
   const tile=(i,x,yy,w,h,top,bottom)=>{const sel=i===G.sel,open=selectOpen(i);
     ctx.save();if(!open)ctx.globalAlpha=.35;ctx.fillStyle=sel?'#efe5cc':'#d8cdb2';rr(ctx,x,yy,w,h,6);ctx.fill();
@@ -4962,7 +5103,7 @@ function drawStatsCard(w,ct){
     ctx.textAlign='center';ctx.font='18px '+F_DISP;
     if(o){ctx.fillText(`${o.corn} / ${o.cornTotal}`,cols[1],y);
       if(o.medal)drawMedal(ctx,cols[2],y-6,0);else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText(o.hasMedal?'—':'·',cols[2],y)}
-      ctx.fillStyle=o.secret?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(o.secret?'✓':'—',cols[3],y);
+      {const f=o.secFound||0,tt=o.secTotal||1;ctx.fillStyle=f?'#efe5cc':'rgba(233,223,199,.35)';ctx.fillText(tt>1?`${f}/${tt}`:(f?'✓':'—'),cols[3],y)}
       ctx.fillStyle='#efe5cc';ctx.fillText(String(o.deaths),cols[4],y);ctx.fillStyle='#d9a441';ctx.fillText(String(o.points),cols[5],y);tot+=o.points}
     else{ctx.fillStyle='rgba(233,223,199,.35)';ctx.fillText('non joué',cols[1],y)}
     ctx.globalAlpha=1}
@@ -5080,6 +5221,7 @@ function endOfLevel(li){
     const first=li-3,go=()=>{G.state='levelend';G.LE={mode:'letter',li:first,last:li,chars:0,done:false,after:0};G.fade=1;SFX.page()};
     if(def.w===0){G.state='intro';G.cards=TUBE;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=go}else go();
   };
+  if(li===18)unlock('a13');
   if(def.afterCards){G.state='intro';G.cards=def.afterCards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=after;if(def.afterSong)setSong(def.afterSong)}else after();
 }
 function handleLetter(dt){
@@ -5087,7 +5229,7 @@ function handleLetter(dt){
   if(LE.mode==='short'){LE.after+=dt;if(go&&LE.after>.5){G.cutSeen=true;startLevel(LE.li+1)}return}
   const def=LEVELS[LE.li];
   const total=(def.letter.date||'').length+tokens((LE.li===0?'':'… ')+def.letter.text).reduce((s,t)=>s+t.w.length+1,0);
-  if(!LE.done){const before=Math.floor(LE.chars);LE.chars+=dt*30;if(Math.floor(LE.chars)!==before&&Math.floor(LE.chars)%3===0)noise(.03,2600,.04,'highpass');if(go)LE.chars=total;if(LE.chars>=total){LE.done=true;LE.after=0}}
+  if(!LE.done){const before=Math.floor(LE.chars);LE.chars+=dt*30;if(Math.floor(LE.chars)!==before&&Math.floor(LE.chars)%3===0)noise(.03,2600,.04,'highpass');if(go)LE.chars=total;if(LE.chars>=total){LE.done=true;LE.after=0;achLetter(LE.li)}}
   else{LE.after+=dt;if(go&&LE.after>.5){if(LE.li<LE.last){LE.li++;LE.chars=0;LE.done=false;LE.after=0;SFX.page()}else afterLetter(LE.last)}}
 }
 function renderLevelDone(t){
@@ -5104,7 +5246,7 @@ function renderLevelDone(t){
   ctx.fillStyle='#8a5a2a';ctx.font='13px '+F_DISP;ctx.textAlign='center';ctx.fillText(`MISSION ${def.w+1} · NIVEAU ${LE.li%4+1} TRAVERSÉ`,-5,-88);
   ctx.fillStyle='#2a2420';ctx.font='32px '+F_DISP;ctx.fillText(def.name,-5,-48);
   ctx.fillStyle='rgba(42,36,32,.25)';ctx.fillRect(-180,-30,350,1);
-  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push(['Cachette',st.secret?'trouvée':'pas trouvée'],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${LEVEL_MAX}`]);
+  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',st.secTotal>1?`${st.secFound||0} / ${st.secTotal}`:(st.secFound?'trouvée':'pas trouvée')],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${LEVEL_MAX}`]);
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});
@@ -5113,7 +5255,8 @@ function renderLevelDone(t){
 }
 function afterLetter(li){
   G.cutSeen=true;
-  if(li===19){S.finished=true;save();G.state='intro';G.cards=[{pic:'stats',w:4,minT:.8}].concat(ENDING);G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>goTitle();setSong('s5-4');return}
+  if(li%4===3)achMission(LEVELS[li].w);
+  if(li===19){S.finished=true;save();G.state='intro';G.cards=[{pic:'stats',w:4,minT:.8}].concat(ENDING);G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{unlock('a15');goTitle()};setSong('s5-4');return}
   if(li%4===3){
     const w=LEVELS[li].w;
     const cards=[{pic:'stats',w,minT:.8}].concat(WORLD_CARDS[w+1]);
@@ -5164,6 +5307,7 @@ function update(dt){
     case'pause':if(pressed.has('esc')){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
+    case'ach':handleAch();break;
     case'intro':handleCards(dt);break;
     case'levelend':handleLetter(dt);break;
     case'play':{
@@ -5185,8 +5329,8 @@ function update(dt){
         const li=G.li;S.unlocked=Math.min(19,Math.max(S.unlocked,li+1));
         if(G.medal)S.run.medals[li]=true;
         const gt=gotOf(li);
-        S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secret:gt.s,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);
-        const b=S.best[li]||{corn:0,medal:false,deaths:9999,points:0};S.best[li]={corn:Math.max(b.corn,gt.c.length),medal:b.medal||gt.m,secret:b.secret||gt.s,deaths:Math.min(b.deaths,gt.d),points:Math.max(b.points||0,S.run.stats[li].points)};save();
+        S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secFound:gt.sec.length,secTotal:L.secretTotal||0,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);
+        const b=S.best[li]||{corn:0,medal:false,deaths:9999,points:0};S.best[li]={corn:Math.max(b.corn,gt.c.length),medal:b.medal||gt.m,secret:Math.max(b.secret||0,gt.sec.length),deaths:Math.min(b.deaths,gt.d),points:Math.max(b.points||0,S.run.stats[li].points)};save();
         setSong('title');endOfLevel(li);
       }
       break}
@@ -5203,6 +5347,7 @@ function render(){
     case'loading':ctx.fillStyle='#110e14';ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(233,223,199,.6)';ctx.font='italic 20px Georgia, serif';ctx.textAlign='center';ctx.fillText('On rembourre Raymond…',W/2,H/2);break;
     case'title':renderTitle(t);renderGrain();break;
     case'select':renderSelect(t);renderGrain();break;
+    case'ach':renderAch(t);renderGrain();break;
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;
     case'play':case'pause':case'exiting':case'confirm':{
@@ -5229,11 +5374,12 @@ function render(){
       break}
   }
   if(G.fade>0){ctx.fillStyle='rgba(11,10,12,'+G.fade+')';ctx.fillRect(0,0,W,H)}
+  renderToasts(G.dtLast||1/60);
   ctx.restore();
 }
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  try{update(dt);render()}catch(err){console.error(err)}
+  G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);
 }
 async function boot(){

@@ -8,7 +8,8 @@
 
 /* ce que Raymond a déjà pris dans un niveau, pour toute la partie en cours :
    après une mort avec une vie, on ne reprend pas deux fois la même paille ni la même médaille */
-function gotOf(li){if(!S.run.got)S.run.got={};return S.run.got[li]||(S.run.got[li]={c:[],m:false,s:false,d:0})}
+function gotOf(li){if(!S.run.got)S.run.got={};const g=S.run.got[li]||(S.run.got[li]={c:[],m:false,sec:[],d:0});if(!g.sec)g.sec=g.s?[0]:[];return g}
+const isSecretAct=a=>a.kind==='secret'||a.kind==='stash'||a.kind==='carton';
 
 const SECRET_STYLE={vitrine:'drawer',insectes:'case',mammouth:'drawer',loge:'mailbox',front:'crate',turbines:'crate',trench:'crate',
   roofs:'postbox',station:'locker',square:'postbox',cathedral:'chest',aire:'bin',road:'bin',storm:'phone',bridge:'bin',
@@ -31,15 +32,15 @@ function applyGot(i){
   for(const k of gt.c)if(L.corn[k]&&!L.corn[k].taken){L.corn[k].taken=true;n++}
   G.corn=n;
   if(gt.m&&L.medal){L.medal.taken=true;G.medal=true}
-  if(gt.s)for(const a of L.acts)if(a.kind==='secret'||a.kind==='stash')a.used=true;
-  G.secret=gt.s;G.key=false;
+  let k=0;for(const a of L.acts)if(isSecretAct(a)){a.sid=k++;if(gt.sec.includes(a.sid)){a.used=true;if(a.kind==='carton')a.step=3}}
+  L.secretTotal=k;G.key=false;
 }
 
 /* ---------- ce qui est à portée de bec ---------- */
 function nearAct(){
   const pcx=P.x+P.w/2,pb=P.y+P.h;
   if(hiddenNow())for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
-  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
+  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }
 function tryAct(){
@@ -49,11 +50,19 @@ function tryAct(){
   if(n.type==='tangle'){
     // le drap sous lequel on se cachait lui tombe dessus : Raymond est à découvert
     const g=n.o,c=coverHere();g.tangle=1.1;g.sweep=0;if(c){c.gone=true;c.on=g}
+    unlock('a53');if(!G.sim)achKey();
     if(!G.sim){SFX.flap();noise(.35,700,.25,'bandpass');bubble(g.x+g.w/2,g.y-16,'Hé ! Qui a éteint ?','#2a3a5a');if(!G.tangleSaid){G.tangleSaid=true;say("Le drap sur la tête. Il va être de très mauvaise humeur en sortant de là. Filer.",3.8)}}
     return;
   }
   const a=n.o;
-  if(a.kind==='lever'){a.used=true;a.t=0;if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
+  if(a.kind==='carton'){
+    // le carton FRAGILE qui a libéré Raymond : trois coups de bec pour l'ouvrir
+    if(a.step>=3){if(!G.sim)say("Une enclume. Dans un carton FRAGILE. Le règlement ne prévoit pas ce cas.",3);return}
+    a.step++;if(L.carton)L.carton.step=a.step;
+    if(!G.sim){noise(.25,2600,.18,'highpass');if(a.step===1)say("Du scotch. Du bon scotch d'avant-guerre. Il résiste.",3);else if(a.step===2)say("Les rabats. Du papier journal froissé… de 1931.",3)}
+    if(a.step===3){grantSecret(a,a.y-40);if(!G.sim)sayQueue([['RAYMOND',"De la paille de calage. Et au fond… une enclume de cordonnier.",3.6],['RAYMOND',"Étiquetée « FRAGILE ». Voilà donc ce qui m'a libéré.",3.6]])}
+    return}
+  if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
   if(a.kind==='secret'){
     if(a.used){a.t=0;a.anim=1;if(!G.sim)say(pick(["Vide. J'ai déjà tout pris.","Plus rien là-dedans. Je repasserai à la prochaine guerre."]),2.6);return}
     if(a.locked&&!G.key){if(!G.sim){tone(220,.12,'square',.05);say("Fermé à clef. Le gardien a les clefs. Le gardien a toujours les clefs.",3.4)}return}
@@ -61,7 +70,7 @@ function tryAct(){
   }
 }
 function grantSecret(a,py){
-  a.used=true;gotOf(G.li).s=true;G.secret=true;
+  a.used=true;{const gt=gotOf(G.li);if(!gt.sec.includes(a.sid))gt.sec.push(a.sid)}achSecret(G.li,a.sid);if(a.style==='backdoor')unlock('a2');
   if((S.run.wear||0)>0){S.run.wear--;P.sx=1.15;P.sy=1.15}
   save();
   if(!G.sim){SFX.secret();setTimeout(()=>SFX.straw(),180);parts.push({type:'tuftpop',x:a.x,y:py,life:0,max:1.3});puff(a.x,py+4,8,true);say(pick(a.q||SECRET_Q),3.8)}
@@ -71,7 +80,7 @@ function coverHere(){const cx=P.x+P.w/2,cy=P.y+P.h/2;for(const c of L.covers)if(
 /* dans un faux mur (carton creux) */
 function inFake(){const c=Math.floor((P.x+P.w/2)/T),r=Math.floor((P.y+P.h/2)/T);return tile(c,r)==='f'}
 /* tuiles creuses : dessinées comme des blocs, mais on peut y entrer */
-function buildTilesF(L){const fk=[];for(let r=0;r<ROWS;r++)for(let c=0;c<L.w;c++)if(L.g[r][c]==='f'){fk.push([r,c]);L.g[r][c]='D'}const t=buildTiles(L);for(const[r,c]of fk)L.g[r][c]='f';return t}
+function buildTilesF(L){const fk=[];for(let r=0;r<ROWS;r++)for(let c=0;c<L.w;c++)if(L.g[r][c]==='f'){fk.push([r,c]);let n='D';for(const[dr,dc]of[[0,-1],[0,1],[1,0],[-1,0],[0,-2],[0,2]]){const v=(L.g[r+dr]||[])[c+dc];if(v==='X'||v==='D'){n=v;break}}L.g[r][c]=n}const t=buildTiles(L);for(const[r,c]of fk)L.g[r][c]='f';return t}
 
 /* ---------- mise à jour ---------- */
 function actStep(dt){
@@ -81,6 +90,7 @@ function actStep(dt){
     else if(a.anim){a.open=a.t<.22?a.t/.22:a.t<1.5?1:Math.max(0,1-(a.t-1.5)*4);if(a.t>1.8)a.anim=0}
     else a.open=0;
     if(a.style==='backdoor'&&L.backDoor&&!G.cut)L.backDoor.open=a.open;
+    if(a.kind==='carton'&&L.carton)L.carton.step=a.step;
   }
   for(const g of L.gates)if(g.opening&&g.open<1){g.open=Math.min(1,g.open+dt*1.6);if(g.open>.55)for(let r=g.r0;r<=g.r1;r++)if(L.g[r][g.c]==='R')L.g[r][g.c]='.'}
   if(P.peck>0)P.peck-=dt;
@@ -116,7 +126,7 @@ function watchStep(w,dt,pcx,pcy){
   const hid=w.mode==='chase'?coverHere():null;
   let target=w.mode==='chase'?(hid?hid.x+hid.w/2:pcx):w.x;
   const dist=target-(k.x+k.w/2),dir=Math.sign(dist)||1;
-  if(hid&&Math.abs(dist)<18&&k.onGround){w.mode='tangle';w.ct=0;w.cover=hid;hid.gone=true;hid.on=w;if(!G.sim){SFX.hiss();noise(.3,800,.2,'bandpass')}return}
+  if(hid&&Math.abs(dist)<18&&k.onGround){w.mode='tangle';w.ct=0;w.cover=hid;hid.gone=true;hid.on=w;unlock('a54');if(!G.sim){SFX.hiss();noise(.3,800,.2,'bandpass')}return}
   if(w.mode==='chase'&&!hid&&(w.ct>6.5||Math.abs(dist)>640||P.dead)){w.mode='back';w.ct=0}
   if(w.mode==='back'&&Math.abs(dist)<8&&k.onGround){w.mode='sit';w.k=null;w.t=0;w.state='closed';w.open=0;return}
   const sp=w.mode==='chase'?clamp(220+(Math.abs(dist)-150)*.25,220,300):170;

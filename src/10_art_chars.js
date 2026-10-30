@@ -581,8 +581,16 @@ function drawArmoire(g,x,floor,shake,doorOpen){
 }
 function drawCarton(g,c){
   g.save();g.translate(c.x,c.y);g.rotate(c.rot);
-  g.fillStyle='#b08a5a';g.fillRect(-24,-20,48,40);g.fillStyle='#c9a06b';poly(g,[-24,-20,24,-20,30,-26,-18,-26]);g.fill();
-  g.fillStyle='rgba(230,210,160,.6)';g.fillRect(-4,-20,8,40);
+  const st=c.step||0;
+  if(st>=3){// dedans : paille de calage et… une enclume
+    g.fillStyle='#2a2216';g.fillRect(-22,-22,44,6);
+    g.fillStyle='#4a4a50';poly(g,[-14,-20,8,-20,18,-27,8,-24,-10,-24]);g.fill();g.fillRect(-8,-30,12,8);
+    g.strokeStyle='#e0b04e';g.lineWidth=1.3;for(let k=0;k<9;k++){const x=-20+k*5;g.beginPath();g.moveTo(x,-20);g.lineTo(x+(k%2?3:-3),-29-(k%3)*2);g.stroke()}}
+  g.fillStyle='#b08a5a';g.fillRect(-24,-20,48,40);
+  if(st>=2){g.fillStyle='#c9a06b';poly(g,[-24,-20,-6,-20,-14,-40,-30,-34]);g.fill();poly(g,[24,-20,6,-20,14,-42,30,-36]);g.fill()}
+  else{g.fillStyle='#c9a06b';poly(g,[-24,-20,24,-20,30,-26,-18,-26]);g.fill()}
+  if(st<1){g.fillStyle='rgba(230,210,160,.6)';g.fillRect(-4,-20,8,40)}
+  else{g.fillStyle='rgba(230,210,160,.6)';g.fillRect(-4,-4,8,24);poly(g,[-4,-4,4,-4,8,-14,0,-10]);g.fill()}
   g.save();g.rotate(-.15);g.fillStyle='rgba(160,40,30,.85)';g.font='bold 9px '+F_DISP;g.textAlign='center';g.fillText('FRAGILE',0,4);g.restore();
   g.restore();
 }

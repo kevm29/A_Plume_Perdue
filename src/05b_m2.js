@@ -1,10 +1,10 @@
 /* ------------------------------ MISSION 2 · VERDUN ------------------------------ */
-LEVELS.push({w:1,name:"Les coquelicots",theme:'front',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
- start:"Verdun. Je reconnais le terrain. Enfin… il y a moins de boue. Et plus de fleurs.",
- hints:[["ARTICLE 9 — LA BOUE","La boue de Verdun avale ce qui s'arrête. Avancer, toujours, même au ralenti."],
+LEVELS.push({w:1,name:"Le sentier",theme:'front',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
+ start:"Je reconnais le terrain. Enfin… il y a moins de boue. Et plus de fleurs.",
+ hints:[["ARTICLE 9 — LA BOUE","La boue avale ce qui s'arrête. Avancer, toujours, même au ralenti."],
         ["ARTICLE 10 — LE TROU D'OBUS","Le sol miné tremble avant de céder. Ne pas s'y attarder."]],
  flyers:[{dy:30,amp:200,sp:1.7},{dy:-70,amp:125}],
- quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un sanglier et son petit. Ils ont pris le front. Personne ne les a arrêtés.","Un casque rouillé sur un piquet. Pauvre gars. L'intendance n'est toujours pas passée le ramasser."],
+ quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un sanglier et son petit. Ils ont pris le front. Personne ne les a arrêtés.","Un panneau rouillé : « VERDUN 6 km ». Verdun… C'est d'ici que je suis parti. Je crois. Je ne sais plus très bien."],
  signs:["ZONE ROUGE|Ne pas quitter le sentier"],
  segs:[SEG_START_FLAT,`
 ....................

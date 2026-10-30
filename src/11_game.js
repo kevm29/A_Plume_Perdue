@@ -10,9 +10,9 @@ const motes=[];
 for(let i=0;i<70;i++)motes.push({x:rnd()*W,y:rnd()*H,z:.3+rnd()*.9,s:.6+rnd()*1.6,ph:rnd()*9});
 const GRAV=2200,MAXFALL=900,GLIDE=190,RUN=290,ACC=2400,AIRACC=1700,FRIC=2600,JUMPV=730,FLAPV=560,MAXFLAPS=2;
 const BOLT_PERIOD=3.0;
-/* robustesse des ailes : un battement coûte 30, planer 15 par seconde ; au sol elle revient à 15 par seconde
-   (deux secondes par battement). Vidée, l'aile est « décousue » : plus de battement ni de vol plané avant 60. */
-const STAM_MAX=100,STAM_FLAP=30,STAM_GLIDE=15,STAM_REGEN=15,STAM_RESUME=60;
+/* robustesse des ailes : un battement coûte 30, planer 15 par seconde ; au sol elle revient à 30 par seconde
+   (une seconde par battement). Vidée, l'aile est « décousue » : plus de battement ni de vol plané avant 60. */
+const STAM_MAX=100,STAM_FLAP=30,STAM_GLIDE=15,STAM_REGEN=30,STAM_RESUME=60;
 
 function say(text,dur,who){G.quip={text,t:0,dur:dur||3.8,who:who||'RAYMOND'}}
 function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:1.2+text.length*.035,col:col||'#a8322d',rot:(rnd()-.5)*.25})}
@@ -34,17 +34,18 @@ function startLevel(i){
   if(L.dome){
     const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
     L.acts.push({kind:'secret',style:'backdoor',x:L.backDoor.x+6,y:L.dome.floor,open:0,t:0,used:false});
+    L.acts.push({kind:'carton',x:L.dome.x-62,y:L.dome.floor,open:0,t:0,used:false,step:0});
     if(!G.cutSeen){
       G.cut={t:0,ray:'statue',lieT:0,thief:{x:L.dome.x+760,state:'out',t:0,f:-1,head:1,alpha:1},flashes:[.6],blink:0,ev:{}};
       L.carton={x:L.armoire.x-6,y:L.dome.floor-218,vx:0,vy:0,rot:0,vr:0,state:'hold'};
       P.x=L.dome.x-P.w/2;P.y=dg.feet-P.h;P.facing=1;
     }else{L.dome.broken=true;L.carton={x:L.dome.x-62,y:L.dome.floor-20,rot:-.1,state:'rest'};L.armoire.door=1;say(L.def.start,5)}
   }else say(L.def.start,5);
-  applyGot(i);
+  applyGot(i);if(S.infinite)S.run.usedInf=true;
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
 }
 function resetPlayer(){
-  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;
+  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;
 }
 function puff(x,y,n,straw){
   for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,s=60+rnd()*260;parts.push({type:straw?'straw':'feather',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,life:0,max:.9+rnd()*1.1,rot:rnd()*6,vr:(rnd()-.5)*14,len:4+rnd()*7})}
@@ -52,10 +53,10 @@ function puff(x,y,n,straw){
 function die(kind,tiles){
   if(P.dead)return;
   if(G.sim){P.dead=true;return}
-  P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;
+  P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;S.run.anyAccroc=true;
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
   if((S.run.wear||0)>=MAX_WEAR&&!S.infinite)G.gameOverPending=true;
-  else S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);
+  else{S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);if(S.run.wear>=MAX_WEAR)S.run.wasLow=true}
   save();
   G.shake=10;SFX.death();
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
@@ -64,8 +65,8 @@ function die(kind,tiles){
   if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
-function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});if(!G.tornSaid){G.tornSaid=true;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}}
-function winLevel(){if(G.sim){G.simWin=true;return}G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
+function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;unlock('a68');tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});if(!G.tornSaid){G.tornSaid=true;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}}
+function winLevel(){if(G.sim){G.simWin=true;return}if(G.li===2)unlock('a56');G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
 
 /* ---------- scène d'ouverture : nuit d'orage, voleur, armoire, carton ---------- */
 function cutFlash(v,thunder){G.flash=Math.max(G.flash,v);if(!G.sim)setTimeout(()=>SFX.thunder(thunder),thunder>1?120:600)}
@@ -181,6 +182,9 @@ function stepPlay(dt){
   if(P.wake>0){P.wake-=dt;P.vy+=GRAV*dt;P.onGround=false;moveY(P,P.vy*dt);return}
   if(P.onMover){const m=P.onMover;moveX(P,m.dx);P.y=m.y-P.h}
   const left=keys.has('left'),right=keys.has('right'),held=keys.has('jump');
+  // immobile une minute : Raymond s'endort
+  if(!left&&!right&&!held&&P.onGround&&!G.sim){P.idle=(P.idle||0)+dt;if(P.idle>60){unlock('a82');if(((P.idle-60)%2.6)<dt)bubble(P.x+P.w/2+14,P.y-10,'Zzz','#6a5a48')}}else P.idle=0;
+  if(S.run.wasLow&&(S.run.wear||0)===0){S.run.wasLow=false;unlock('a24')}
   const MD=mechMods();
   const dir=MD.noInput?0:(right?1:0)-(left?1:0);
   if(dir)P.facing=dir;
@@ -299,6 +303,7 @@ function gameOver(){
   // Raymond a perdu la tête : une vie le ramène au début de la mission, sinon tout recommence
   loopsOff();G.chase=false;
   const w=LEVELS[G.li].w,first=w*4,hasLife=S.run.lives>0;
+  unlock('a49');S.run.headLost=true;if(!hasLife)unlock('a50');
   if(hasLife){S.run.lives--;S.run.wear=0;save()}
   const tail=hasLife
     ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\n${S.run.lives?`Il reste ${S.run.lives} vie${S.run.lives>1?'s':''}.`:'Plus de vie en réserve : la prochaine fois sera la dernière.'} Retour au début de la mission : ${WORLDS[w].name}.`}
@@ -340,7 +345,11 @@ function updateParticles(dt){
 }
 function updateCamera(dt){
   let tx=clamp(P.x+P.w/2-W/2+P.facing*70,0,L.wpx-W);
+  // vertical : la caméra suit le dernier sol touché, pas les sauts (on ne voit pas ce qui est au-dessus en sautant)
+  if(P.onGround||P.lastGY==null)P.lastGY=P.y;
   if(L.auto&&L.auto.on){tx=Math.max(L.auto.x,Math.min(tx,L.auto.x+120));cam.x=Math.max(cam.x,L.auto.x)}
-  const ty=clamp(P.y-H*(L.def.camY||.5),0,ROWS*T-H);
+  let ty=P.lastGY-H*(L.def.camY||.5);
+  if(P.y-ty<40)ty=P.y-40;if(P.y+P.h-ty>H-50)ty=P.y+P.h-H+50;
+  ty=clamp(ty,0,ROWS*T-H);
   const k=1-Math.exp(-dt*5);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k;
 }
