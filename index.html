@@ -2061,8 +2061,8 @@ let L=null;
 const SOLID='#XWD%R',SOLID_ART='#XWD';
 function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0||r>=ROWS)return'.';return L.g[r][c]}
 function isSolid(c,r){return SOLID.includes(tile(c,r))}
-function owTop(ch,c){return(ch==='='||ch==='B'||ch==='A'||ch==='t')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
-function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch,c)>=0}
+function owTop(ch,c,r){if(ch==='f')return r!=null&&tile(c,r-1)!=='f'?0:-1;return(ch==='='||ch==='B'||ch==='A'||ch==='t')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
+function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch,c,r)>=0}
 function moveX(e,dx){
   if(!dx)return false;e.x+=dx;
   const r0=Math.floor(e.y/T),r1=Math.floor((e.y+e.h-.01)/T);
@@ -2078,7 +2078,7 @@ function moveY(e,dy){
     for(let c=c0;c<=c1;c++){
       const ch=tile(c,r);
       if(SOLID.includes(ch)){e.y=r*T-e.h;e.vy=0;e.onGround=true;return true}
-      const o=owTop(ch,c);
+      const o=owTop(ch,c,r);
       if(o>=0){const top=r*T+o;if(prevB<=top+.5&&b>=top){e.y=top-e.h;e.vy=0;e.onGround=true;return true}}
     }
   }else if(dy<0){
