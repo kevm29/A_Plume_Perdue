@@ -41,7 +41,7 @@ La lettre ne se lit qu'à la fin de chaque mission : ses quatre morceaux d'un co
 
 ## La lettre, morceau par morceau
 
-Chaque niveau terminé révèle un fragment. Les missions 1 et 2 sont la lettre « méchante », la mission 3 révèle les ratures et la mission 4 le dos de la lettre, que la pluie fait apparaître. La mission 5 dit la vérité.
+Chaque niveau terminé révèle un fragment, mais Raymond ne lit les quatre morceaux d'une mission qu'à la fin de celle-ci. Les missions 1 et 2 sont la lettre « méchante », la mission 3 révèle les ratures et la mission 4 le dos de la lettre, que la pluie fait apparaître. La mission 5 dit la vérité.
 
 | # | Fragment | Commentaire de Raymond |
 |---|---|---|
