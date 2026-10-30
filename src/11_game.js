@@ -160,6 +160,23 @@ function stepPlay(dt){
   }
   for(const c of L.rats){
     c.t+=dt;c.vy=Math.min(MAXFALL,c.vy+GRAV*dt);
+    if(c.kind==='boar'){
+      // le sanglier voit Raymond sur SA plateforme : il charge, et ses marcassins sortent de derrière lui
+      const dx=pcx-(c.x+c.w/2),dir=Math.sign(c.vx)||1;
+      const same=!P.dead&&!G.cut&&P.onGround&&Math.abs((P.y+P.h)-(c.y+c.h))<8&&samePlatform(c.x+c.w/2,pcx,Math.floor((c.y+c.h-2)/T));
+      if(same&&Math.abs(dx)<420&&Math.sign(dx)===dir){if(!(c.charge>0)&&!G.sim)SFX.grunt();c.charge=1.6;
+        if(!c.spawned){c.spawned=true;for(let k=0;k<2;k++)L.rats.push({kind:'piglet',chase:true,x:c.x+c.w/2-dir*(18+k*16),y:c.y+c.h-12,w:22,h:12,vx:0,vy:-200-k*80,onGround:false,t:k,sq:1,delay:.35+k*.3,base:230});if(!G.sim&&!G.boarSaid){G.boarSaid=true;say("Des marcassins ! Ils me prennent pour un gland. Un gland décoré.",3.4)}}}
+      c.charge=Math.max(0,(c.charge||0)-dt);
+      c.vx=dir*(c.base||95)*(c.charge>0?2:1);
+    }
+    if(c.chase){
+      // marcassin lancé : il fonce vers Raymond, sans voir les trous
+      c.delay=(c.delay||0)-dt;const d=Math.sign(pcx-(c.x+c.w/2))||1;c.vx=c.delay>0?0:d*230;
+      moveX(c,c.vx*dt);c.onGround=false;moveY(c,c.vy*dt);
+      const ch=tile(Math.floor((c.x+c.w/2)/T),Math.floor((c.y+c.h-2)/T));
+      if(c.y>ROWS*T||ch==='^'){c.dead=true;if(!G.sim&&ch==='^')puff(c.x+c.w/2,c.y,6,false)}
+      continue;
+    }
     if(c.kind==='rat'){
       // le rat voit le pigeon devant lui : il fonce
       const dx=pcx-(c.x+c.w/2),dy=Math.abs(pcy-(c.y+c.h/2)),dir=Math.sign(c.vx)||1;
@@ -178,8 +195,9 @@ function stepPlay(dt){
       if(!groundAt(cf,rf+1)||tile(cf,rf)==='^'||L.mark.has(cf+','+rf)){c.vx=-c.vx;c.lastDir=Math.sign(c.vx)}
     }
   }
+  if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);
+  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -198,14 +216,14 @@ function stepPlay(dt){
   P.coyote=P.onGround?.1:P.coyote-dt;P.jumpBuf-=dt;
   if(P.jumpBuf>0&&!MD.noInput){
     if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;SFX.jump()}
-    else if(P.flaps<MAXFLAPS&&!P.torn&&P.stam>=STAM_FLAP){P.vy=-FLAPV;P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
+    else if(P.flaps<MAXFLAPS&&!P.torn&&!MD.noFly&&P.stam>=STAM_FLAP){P.vy=-FLAPV;P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
     else if(P.flaps<MAXFLAPS&&!G.sim){P.jumpBuf=0;P.strain=.5;tone(160,.08,'triangle',.05)}
   }
   if(P.jumping&&!held&&P.vy<0){P.vy*=.5;P.jumping=false}
   P.vy+=GRAV*dt;
-  P.gliding=held&&P.vy>0&&!P.onGround&&!P.torn&&P.stam>0;
+  P.gliding=held&&P.vy>0&&!P.onGround&&!P.torn&&!MD.noFly&&P.stam>0;
   if(P.gliding){P.vy=Math.min(P.vy,GLIDE);P.stam-=STAM_GLIDE*dt;if(P.stam<=0){P.stam=0;wingTorn()}}
-  if(P.onGround&&!P.onMoverRegenBlock){P.stam=Math.min(STAM_MAX,P.stam+STAM_REGEN*dt);if(P.torn&&P.stam>=STAM_RESUME)P.torn=false}
+  if(P.onGround&&!(P.mudCoat>0)){P.stam=Math.min(STAM_MAX,P.stam+STAM_REGEN*dt);if(P.torn&&P.stam>=STAM_RESUME)P.torn=false}
   if(P.strain>0)P.strain-=dt;
   // courants d'air ascendants
   P.lift=0;

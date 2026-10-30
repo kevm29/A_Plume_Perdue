@@ -7,6 +7,24 @@ function drawSecretProp(g,a,t){
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();
   const inner=()=>{g.fillStyle='#16110c'};
+  if(st==='helmet'){
+    // piquet de tranchée, casque Adrian rouillé posé dessus ; ouvert : le casque est tombé au pied du piquet
+    g.restore();g.save();g.translate(x,y);
+    g.fillStyle='#4a3a28';g.fillRect(-3,-86,6,86);g.fillStyle='#3a2c1e';g.fillRect(-3,-86,2,86);
+    g.strokeStyle='#5a5a52';g.lineWidth=1;for(let k=0;k<3;k++){g.beginPath();g.moveTo(-3,-40+k*12);g.lineTo(-14,-34+k*12);g.lineTo(-3,-30+k*12);g.stroke()}
+    const fell=a.used,ft=Math.min(1,(a.t||0)*2.5);
+    let hx=0,hy=-88,rot=0;if(fell){hx=22*ft;hy=-88+(88-6)*ft*ft;rot=2.6*ft}
+    g.save();g.translate(hx,hy);g.rotate(rot);g.scale(1.35,1.35);
+    const hg=g.createLinearGradient(-18,-16,18,4);hg.addColorStop(0,'#7a7a6a');hg.addColorStop(.5,'#5e6258');hg.addColorStop(1,'#3e423a');g.fillStyle=hg;
+    g.beginPath();g.moveTo(-17,2);g.quadraticCurveTo(-16,-16,0,-17);g.quadraticCurveTo(16,-16,17,2);g.closePath();g.fill();
+    g.fillStyle='#4a4e46';g.beginPath();g.ellipse(0,2,21,3.5,0,0,7);g.fill();
+    g.fillStyle='#6a6e62';g.beginPath();g.moveTo(-3,-17);g.quadraticCurveTo(0,-24,3,-17);g.closePath();g.fill();g.fillRect(-1,-23,2,8);
+    g.fillStyle='#8a6a2a';g.beginPath();g.arc(0,-9,3,0,7);g.fill();
+    g.fillStyle='rgba(150,80,40,.55)';g.beginPath();g.ellipse(-8,-6,4,2.5,.3,0,7);g.ellipse(9,-2,3,2,0,0,7);g.fill();
+    g.fillStyle='#1a1a16';g.beginPath();g.arc(6,-11,1.6,0,7);g.fill();
+    g.restore();
+    g.restore();return;
+  }
   if(st==='drawer'||st==='case'){
     // petit meuble de musée à tiroir (ou vitrine à papillons fermée à clef)
     g.fillStyle='#5a3a22';rr(g,-20,-40,40,40,4);g.fill();g.fillStyle='#6e4a2c';rr(g,-20,-40,40,6,3);g.fill();

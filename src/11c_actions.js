@@ -23,6 +23,7 @@ function actPost(L){
   // portillons : colonnes de R
   for(let c=0;c<L.w;c++){let r=0;while(r<ROWS){if(L.g[r][c]==='R'){let r1=r;while(r1+1<ROWS&&L.g[r1+1][c]==='R')r1++;L.gates.push({c,r0:r,r1,open:0,opening:false});r=r1+1}else r++}}
   for(const a of L.acts)if(a.kind==='lever'){let best=null,bd=1e9;for(const g of L.gates){const d=Math.abs(g.c*T-a.x);if(d<bd){bd=d;best=g}}a.gate=best}
+  if(L.def.helmetAt){const[c,r]=L.def.helmetAt;L.acts.push({kind:'secret',style:'helmet',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Le casque tombe. Et dedans, de la paille. Quelqu'un avait gardé un nid pour l'hiver."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -40,7 +41,8 @@ function applyGot(i){
 function nearAct(){
   const pcx=P.x+P.w/2,pb=P.y+P.h;
   if(hiddenNow())for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
-  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
+  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;
+    if(a.style==='helmet'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<36&&Math.abs(P.y+P.h/2-(a.y-92))<52)return{type:'secret',o:a};continue}if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }
 function tryAct(){
@@ -98,6 +100,8 @@ function actStep(dt){
 }
 /* au retour au cartel : les gardiens se démêlent, les chats retournent s'asseoir */
 function actRespawn(){
+  L.rats=L.rats.filter(c=>!c.chase);for(const c of L.rats){c.spawned=false;c.charge=0}
+  for(const m of L.mines){m.state='idle';m.t=0;m.boom=false}
   for(const g of L.guards){g.tangle=0;g.sweep=0;g.angry=false}
   for(const c of L.covers){c.gone=false;c.on=null}
   for(const w of L.watchers)watchReset(w);
@@ -190,3 +194,23 @@ function marbleHeard(m){
 function drawMarbles(){if(!L.marbles)return;for(const m of L.marbles){const x=m.x+m.w/2,y=m.y+m.h/2;ctx.save();
   ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x+2,m.y+m.h+1,4,1.5,0,0,7);ctx.fill();
   const gr=ctx.createRadialGradient(x-1.5,y-1.5,.5,x,y,4.5);gr.addColorStop(0,'#ffffff');gr.addColorStop(.35,m.col);gr.addColorStop(1,'#1a1a2a');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(x,y,4.2,0,7);ctx.fill();ctx.restore()}}
+
+/* même plateforme : sol continu (ou boue) entre deux abscisses, sur la rangée r */
+function samePlatform(x1,x2,r){let a=Math.floor(Math.min(x1,x2)/T),b=Math.floor(Math.max(x1,x2)/T);for(let c=a;c<=b;c++){if(!groundAt(c,r+1)||isSolid(c,r))return false}return true}
+/* ---------- mines : un clic sous la patte, puis l'explosion ---------- */
+function mineStep(dt){
+  for(const m of L.mines){
+    if(m.state==='idle'){if(!P.dead&&P.onGround&&Math.abs(P.x+P.w/2-m.x)<18&&Math.abs(P.y+P.h-m.y)<6){m.state='armed';m.t=0;if(!G.sim){tone(1400,.03,'square',.08);setTimeout(()=>tone(900,.03,'square',.06),60);if(!G.mineSaid){G.mineSaid=true;say("Clic. Un clic, ce n'est jamais bon signe. S'éloigner. Vite.",2.6)}}}}
+    else if(m.state==='armed'){m.t+=dt;if(m.t>1.0){m.state='gone';m.boom=true;if(!G.sim){G.shake=14;noise(.9,260,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<26;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x:m.x,y:m.y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.6})}parts.push({type:'ring',x:m.x,y:m.y-10,life:0,max:.4})}
+      for(const c of L.rats)if(c.chase&&Math.hypot(c.x+c.w/2-m.x,c.y-m.y)<80)c.dead=true}}
+  }
+}
+function drawMines(t){
+  for(const m of L.mines){if(m.x<cam.x-60||m.x>cam.x+W+60)continue;const x=m.x,y=m.y;ctx.save();
+    if(m.state==='gone'){ctx.fillStyle='rgba(20,14,8,.8)';ctx.beginPath();ctx.ellipse(x,y-1,20,5,0,0,7);ctx.fill();ctx.fillStyle='rgba(60,50,40,.6)';for(let k=-2;k<=2;k++){ctx.beginPath();ctx.arc(x+k*9,y-4-Math.abs(k),3,0,7);ctx.fill()}}
+    else{ctx.fillStyle='#3a3a2e';ctx.beginPath();ctx.ellipse(x,y-2,13,6,0,Math.PI,0);ctx.fill();ctx.fillStyle='#55553e';ctx.beginPath();ctx.ellipse(x,y-5,9,3,0,0,7);ctx.fill();
+      ctx.fillStyle='#6a6a50';ctx.fillRect(x-1.5,y-12,3,7);ctx.fillStyle='#2a2a20';ctx.fillRect(x-4,y-13,8,2);
+      ctx.fillStyle='rgba(140,90,40,.5)';ctx.beginPath();ctx.arc(x+5,y-4,2,0,7);ctx.fill();
+      if(m.state==='armed'&&Math.sin(t*30)>0){ctx.fillStyle='#ff4030';ctx.beginPath();ctx.arc(x,y-14,3,0,7);ctx.fill();const gl=ctx.createRadialGradient(x,y-14,1,x,y-14,14);gl.addColorStop(0,'rgba(255,80,50,.5)');gl.addColorStop(1,'rgba(255,80,50,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(x,y-14,14,0,7);ctx.fill()}}
+    ctx.restore()}
+}

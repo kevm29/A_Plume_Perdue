@@ -12,10 +12,13 @@ function parseLevel(i){
     for(let r=0;r<ROWS;r++){const l=r<pad?'':lines[r-pad];rows[r]+=l.padEnd(w,'.')}
   }
   // sol plus épais sous le niveau : la caméra peut se centrer sur Raymond même près du sol
-  if(def.deep){for(let k=0;k<def.deep;k++)rows.push(rows[rows.length-1]);ROWS+=def.deep}
+  if(def.deep){for(let k=0;k<def.deep;k++)rows.push(def.deepFill?def.deepFill.repeat(rows[0].length):rows[rows.length-1]);ROWS+=def.deep}
   const wT=rows[0].length;
   const g=rows.map(r=>r.split(''));
   for(let r=0;r<ROWS;r++){g[r][0]='W';g[r][wT-1]='W'}
+  // trous creusés dans le sol (cachettes) et paille cachée
+  for(const[c,r]of def.holes||[])g[r][c]='.';
+  for(const[c,r]of def.stashCells||[])g[r][c]='s';
   const L={def,i,w:wT,wpx:wT*T,g,th,corn:[],medal:null,cps:[],exit:null,rats:[],moths:[],movers:[],hints:[],quips:[],decor:[],lights:[],mark:new Set(),
     chaser:null,triggerX:Infinity,spawn:null,dome:null,avoid:[],updrafts:[],bolts:[],bells:[]};
   mechInit(L);

@@ -319,6 +319,8 @@ const DEATH_Q={
   pickets:["Une grille en fer forgé. Jolie. Pointue, surtout."],
   nails:["Des clous. Le charpentier n'a pas fini son travail."],
   rat:["Mordu par un rat. Il cherchait du grain, il a trouvé de la paille.","Un rat. Même ici, la vermine a ses entrées."],
+  mine:["Elle a fait clic, puis boum. Dans cet ordre, au moins.","Une mine de 1916. Elle a attendu cent dix ans pour moi. C'est presque touchant."],
+  piglet:["Rattrapé par un marcassin. Je ne le dirai à personne.","Les marcassins courent plus vite que la gloire."],
   boar:["Un sanglier. Il ne m'a même pas vu. C'est presque pire.","Les sangliers ont pris le front. Personne ne les a arrêtés."],
   pigeon:["Bousculé par un pigeon de la ville. Aucune solidarité entre collègues.","Il m'a donné un coup de bec. Moi, un décoré !"],
   hedgehog:["Un hérisson. Je l'ai pris pour un tas de barbelés. Erreur de débutant."],
@@ -916,9 +918,11 @@ C...........
 
 /* ------------------------------ MISSION 2 · VERDUN ------------------------------ */
 LEVELS.push({w:1,name:"Le sentier",theme:'front',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
+ deep:2,deepFill:'#',holes:[[38,14],[39,14],[39,15]],stashCells:[[38,15]],helmetAt:[178,12],
+ stashQuips:["Un trou d'obus sous les barbelés. Et de la paille au fond. Un nid de sentinelle, sûrement."],
  start:"Je reconnais le terrain. Enfin… il y a moins de boue. Et plus de fleurs.",
- hints:[["ARTICLE 9 — LA BOUE","La boue avale ce qui s'arrête. Avancer, toujours, même au ralenti."],
-        ["ARTICLE 10 — LE TROU D'OBUS","Le sol miné tremble avant de céder. Ne pas s'y attarder."]],
+ hints:[["ARTICLE 9 — LA BOUE","Elle colle aux plumes : on n'y saute presque plus et on n'y bat plus des ailes, même un peu après. Et elle avale ce qui s'arrête. Avancer, toujours."],
+        ["ARTICLE 10 — LA MINE","Un clic sous la patte : s'éloigner, vite. Elle explose. Raymond, pas forcément."]],
  flyers:[{dy:30,amp:200,sp:1.7},{dy:-70,amp:125}],
  quips:["Des coquelicots partout. Avant, ici, il n'y avait que de la boue. Quelqu'un a fait du jardinage.","Un sanglier et son petit. Ils ont pris le front. Personne ne les a arrêtés.","Un panneau rouillé : « VERDUN 6 km ». Verdun… C'est d'ici que je suis parti. Je crois. Je ne sais plus très bien."],
  signs:["ZONE ROUGE|Ne pas quitter le sentier"],
@@ -937,7 +941,7 @@ LEVELS.push({w:1,name:"Le sentier",theme:'front',exit:'post',exitLabel:"BRAS-SUR
 ##^^^^^^^^^^^^^^##`,`
 .......o....
 ......XX....
-Cq....XX.rk.
+Cq....XX..k.
 ############
 ############`,`
 ........o.......
@@ -948,9 +952,9 @@ Cq....XX.rk.
 #####^^^########`,`
 ....................
 ......o.....o.......
-.h..................
-####%%%%%%%%%%%#####
-####...........#####`,`
+.h.....,....,....,..
+####################
+####################`,`
 ......................
 ...o......o.......o...
 ..........===.........
@@ -968,9 +972,9 @@ Cq....XX.rk.
 ################`,`
 ......................
 ..o.....o.......o.....
-......................
-###~~~~~%%%%%~~~~#####
-######.......#########`,`
+..........,...........
+###~~~~~#####~~~~#####
+######################`,`
 ....................
 .....m.........n....
 ....................
@@ -1929,7 +1933,7 @@ LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',seed:139,
 ######################`]});
 
 /* une cachette secrète par niveau (le 1-1 a la sienne : la porte du voleur) */
-const SECRETS={3:[116,9],4:[128,7],5:[114,11],6:[115,9],7:[124,6],8:[126,5],9:[139,7],10:[125,7],11:[6,6],12:[106,10],13:[86,10],14:[110,9],15:[103,7],16:[100,8],17:[72,6],18:[171,7],19:[79,7]};
+const SECRETS={3:[116,9],5:[114,11],6:[115,9],7:[124,6],8:[126,5],9:[139,7],10:[125,7],11:[6,6],12:[106,10],13:[86,10],14:[110,9],15:[103,7],16:[100,8],17:[72,6],18:[171,7],19:[79,7]};
 LEVELS.forEach((l,i)=>{if(SECRETS[i])l.secretAt=SECRETS[i]});
 /* une seule médaille par mission : au 1-1 (la première vie), puis au deuxième niveau de chaque mission */
 LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=4&&i%4===1)});
@@ -1952,10 +1956,13 @@ function parseLevel(i){
     for(let r=0;r<ROWS;r++){const l=r<pad?'':lines[r-pad];rows[r]+=l.padEnd(w,'.')}
   }
   // sol plus épais sous le niveau : la caméra peut se centrer sur Raymond même près du sol
-  if(def.deep){for(let k=0;k<def.deep;k++)rows.push(rows[rows.length-1]);ROWS+=def.deep}
+  if(def.deep){for(let k=0;k<def.deep;k++)rows.push(def.deepFill?def.deepFill.repeat(rows[0].length):rows[rows.length-1]);ROWS+=def.deep}
   const wT=rows[0].length;
   const g=rows.map(r=>r.split(''));
   for(let r=0;r<ROWS;r++){g[r][0]='W';g[r][wT-1]='W'}
+  // trous creusés dans le sol (cachettes) et paille cachée
+  for(const[c,r]of def.holes||[])g[r][c]='.';
+  for(const[c,r]of def.stashCells||[])g[r][c]='s';
   const L={def,i,w:wT,wpx:wT*T,g,th,corn:[],medal:null,cps:[],exit:null,rats:[],moths:[],movers:[],hints:[],quips:[],decor:[],lights:[],mark:new Set(),
     chaser:null,triggerX:Infinity,spawn:null,dome:null,avoid:[],updrafts:[],bolts:[],bells:[]};
   mechInit(L);
@@ -3054,13 +3061,7 @@ function drawExit(g,e,style,t,label){
     const px=cx+104;g.fillStyle='#8a4a2a';poly(g,[px-11,gy-24,px+11,gy-24,px+8,gy,px-8,gy]);g.fill();g.fillStyle='#b06a40';g.fillRect(px-12,gy-27,24,5);
     g.strokeStyle='#2e4a28';g.lineWidth=1.4;for(let k=-2;k<=2;k++){g.beginPath();g.moveTo(px+k*2,gy-26);g.lineTo(px+k*5,gy-40);g.stroke()}
     for(let k=-2;k<=2;k++){g.fillStyle=['#d9a441','#efe6d0','#c8302a'][(k+2)%3];g.beginPath();g.arc(px+k*5,gy-42-Math.abs(k),3.6,0,7);g.fill()}
-  }else{
-    g.fillStyle='#5a4632';g.fillRect(x+T/2-3,y-20,6,2*T+20);
-    g.fillStyle='#e9dfc7';const w=Math.max(70,(label||'').length*8+20);poly(g,[x+T/2-6,y-30,x+T/2-6+w,y-30,x+T/2+w+8,y-16,x+T/2-6+w,y-2,x+T/2-6,y-2]);g.fill();
-    g.strokeStyle='#2a2420';g.lineWidth=1;g.stroke();
-    g.fillStyle='#2a2420';g.font='11px '+F_DISP;g.textAlign='left';g.fillText(label||'',x+T/2+2,y-12);
-    g.fillStyle='rgba(255,210,130,.85)';g.beginPath();g.arc(x+T/2,y-36,4,0,7);g.fill();
-  }
+  }else drawSignpost(g,x+T/2,y+2*T,label||'',t);
   g.restore();
 }
 function drawMover(g,m){
@@ -3311,6 +3312,39 @@ function drawDecor(g,d,t){
   }
 }
 
+/* poteau indicateur de sortie : bois patiné à l'ancienne, ou panneau routier sur l'A4 */
+function drawSignpost(g,cx,gy,label,t){
+  const th=L&&L.th||{},road=th.horizon==='road'||th.horizon==='bridge';g.save();
+  g.font='bold 13px '+F_DISP;const tw=g.measureText(label).width;
+  if(road){
+    const w=Math.max(110,tw+34),h=40,x0=cx-w/2,y0=gy-150;
+    g.fillStyle='#6a6e74';g.fillRect(x0+12,y0+h-4,5,gy-y0-h+4);g.fillRect(x0+w-17,y0+h-4,5,gy-y0-h+4);
+    const town=/^[A-ZÂÉÈ' -]+$/.test(label)&&!/→|A4/.test(label);
+    g.fillStyle=town?'#f4f2ea':'#1d4f9a';rr(g,x0,y0,w,h,5);g.fill();
+    g.strokeStyle=town?'#c8302a':'#f4f2ea';g.lineWidth=town?4:2;rr(g,x0+4,y0+4,w-8,h-8,3);g.stroke();
+    g.fillStyle=town?'#1a1a1a':'#f4f2ea';g.textAlign='center';g.fillText(label,cx,y0+h/2+5);
+    g.fillStyle='rgba(255,255,255,.12)';g.fillRect(x0+4,y0+4,w-8,6);
+  }else{
+    // poteau, chapeau, deux planches fléchées, clous, et une lanterne
+    const top=gy-150;
+    g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(cx+4,gy,18,4,0,0,7);g.fill();
+    const pg=g.createLinearGradient(cx-5,0,cx+5,0);pg.addColorStop(0,'#4a3622');pg.addColorStop(1,'#6e5236');g.fillStyle=pg;g.fillRect(cx-5,top,10,gy-top);
+    g.fillStyle='#3a2a1a';poly(g,[cx-10,top+2,cx,top-10,cx+10,top+2]);g.fill();
+    const board=(y,w,dir,txt,small)=>{const x0=dir>0?cx-6:cx+6-w,h=small?18:26;
+      const bg=g.createLinearGradient(0,y,0,y+h);bg.addColorStop(0,'#d8c49a');bg.addColorStop(1,'#b8a074');g.fillStyle=bg;
+      if(dir>0)poly(g,[x0,y,x0+w-12,y,x0+w,y+h/2,x0+w-12,y+h,x0,y+h]);else poly(g,[x0+12,y,x0+w,y,x0+w,y+h,x0+12,y+h,x0,y+h/2]);g.fill();
+      g.strokeStyle='rgba(90,60,30,.35)';g.lineWidth=.8;for(let k=1;k<4;k++){g.beginPath();g.moveTo(x0+4,y+k*h/4);g.lineTo(x0+w-14,y+k*h/4+(k%2?1:-1));g.stroke()}
+      g.strokeStyle='rgba(60,40,20,.6)';g.lineWidth=1;g.stroke();
+      g.fillStyle='#3a3a3a';g.beginPath();g.arc(dir>0?x0+5:x0+w-5,y+h/2,1.6,0,7);g.fill();
+      g.fillStyle='#2a1c10';g.font=(small?'italic 10px ':'bold 12px ')+F_DISP;g.textAlign='center';g.fillText(txt,x0+w/2+(dir>0?-4:4),y+h/2+(small?3.5:4.5))};
+    board(top+14,Math.max(90,tw+38),1,label);
+    const sub=L&&L.def&&L.def.exitSub;if(sub){g.font='italic 10px '+F_DISP;board(top+46,Math.max(62,g.measureText(sub).width+30),-1,sub,true)}
+    g.strokeStyle='#2a2a2a';g.lineWidth=1.2;g.beginPath();g.moveTo(cx+5,top+80);g.lineTo(cx+16,top+80);g.lineTo(cx+16,top+86);g.stroke();
+    const fl=.85+Math.sin(t*9)*.08;g.fillStyle='#2a2a2a';rr(g,cx+10,top+86,12,16,2);g.fill();g.fillStyle='rgba(255,200,110,'+fl+')';g.fillRect(cx+12,top+89,8,10);
+  }
+  g.restore();
+}
+
 /* =========================================================
    DESSINS DES NOUVELLES MÉCANIQUES
    ========================================================= */
@@ -3557,6 +3591,24 @@ function drawSecretProp(g,a,t){
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();
   const inner=()=>{g.fillStyle='#16110c'};
+  if(st==='helmet'){
+    // piquet de tranchée, casque Adrian rouillé posé dessus ; ouvert : le casque est tombé au pied du piquet
+    g.restore();g.save();g.translate(x,y);
+    g.fillStyle='#4a3a28';g.fillRect(-3,-86,6,86);g.fillStyle='#3a2c1e';g.fillRect(-3,-86,2,86);
+    g.strokeStyle='#5a5a52';g.lineWidth=1;for(let k=0;k<3;k++){g.beginPath();g.moveTo(-3,-40+k*12);g.lineTo(-14,-34+k*12);g.lineTo(-3,-30+k*12);g.stroke()}
+    const fell=a.used,ft=Math.min(1,(a.t||0)*2.5);
+    let hx=0,hy=-88,rot=0;if(fell){hx=22*ft;hy=-88+(88-6)*ft*ft;rot=2.6*ft}
+    g.save();g.translate(hx,hy);g.rotate(rot);g.scale(1.35,1.35);
+    const hg=g.createLinearGradient(-18,-16,18,4);hg.addColorStop(0,'#7a7a6a');hg.addColorStop(.5,'#5e6258');hg.addColorStop(1,'#3e423a');g.fillStyle=hg;
+    g.beginPath();g.moveTo(-17,2);g.quadraticCurveTo(-16,-16,0,-17);g.quadraticCurveTo(16,-16,17,2);g.closePath();g.fill();
+    g.fillStyle='#4a4e46';g.beginPath();g.ellipse(0,2,21,3.5,0,0,7);g.fill();
+    g.fillStyle='#6a6e62';g.beginPath();g.moveTo(-3,-17);g.quadraticCurveTo(0,-24,3,-17);g.closePath();g.fill();g.fillRect(-1,-23,2,8);
+    g.fillStyle='#8a6a2a';g.beginPath();g.arc(0,-9,3,0,7);g.fill();
+    g.fillStyle='rgba(150,80,40,.55)';g.beginPath();g.ellipse(-8,-6,4,2.5,.3,0,7);g.ellipse(9,-2,3,2,0,0,7);g.fill();
+    g.fillStyle='#1a1a16';g.beginPath();g.arc(6,-11,1.6,0,7);g.fill();
+    g.restore();
+    g.restore();return;
+  }
   if(st==='drawer'||st==='case'){
     // petit meuble de musée à tiroir (ou vitrine à papillons fermée à clef)
     g.fillStyle='#5a3a22';rr(g,-20,-40,40,40,4);g.fill();g.fillStyle='#6e4a2c';rr(g,-20,-40,40,6,3);g.fill();
@@ -3929,6 +3981,23 @@ function stepPlay(dt){
   }
   for(const c of L.rats){
     c.t+=dt;c.vy=Math.min(MAXFALL,c.vy+GRAV*dt);
+    if(c.kind==='boar'){
+      // le sanglier voit Raymond sur SA plateforme : il charge, et ses marcassins sortent de derrière lui
+      const dx=pcx-(c.x+c.w/2),dir=Math.sign(c.vx)||1;
+      const same=!P.dead&&!G.cut&&P.onGround&&Math.abs((P.y+P.h)-(c.y+c.h))<8&&samePlatform(c.x+c.w/2,pcx,Math.floor((c.y+c.h-2)/T));
+      if(same&&Math.abs(dx)<420&&Math.sign(dx)===dir){if(!(c.charge>0)&&!G.sim)SFX.grunt();c.charge=1.6;
+        if(!c.spawned){c.spawned=true;for(let k=0;k<2;k++)L.rats.push({kind:'piglet',chase:true,x:c.x+c.w/2-dir*(18+k*16),y:c.y+c.h-12,w:22,h:12,vx:0,vy:-200-k*80,onGround:false,t:k,sq:1,delay:.35+k*.3,base:230});if(!G.sim&&!G.boarSaid){G.boarSaid=true;say("Des marcassins ! Ils me prennent pour un gland. Un gland décoré.",3.4)}}}
+      c.charge=Math.max(0,(c.charge||0)-dt);
+      c.vx=dir*(c.base||95)*(c.charge>0?2:1);
+    }
+    if(c.chase){
+      // marcassin lancé : il fonce vers Raymond, sans voir les trous
+      c.delay=(c.delay||0)-dt;const d=Math.sign(pcx-(c.x+c.w/2))||1;c.vx=c.delay>0?0:d*230;
+      moveX(c,c.vx*dt);c.onGround=false;moveY(c,c.vy*dt);
+      const ch=tile(Math.floor((c.x+c.w/2)/T),Math.floor((c.y+c.h-2)/T));
+      if(c.y>ROWS*T||ch==='^'){c.dead=true;if(!G.sim&&ch==='^')puff(c.x+c.w/2,c.y,6,false)}
+      continue;
+    }
     if(c.kind==='rat'){
       // le rat voit le pigeon devant lui : il fonce
       const dx=pcx-(c.x+c.w/2),dy=Math.abs(pcy-(c.y+c.h/2)),dir=Math.sign(c.vx)||1;
@@ -3947,8 +4016,9 @@ function stepPlay(dt){
       if(!groundAt(cf,rf+1)||tile(cf,rf)==='^'||L.mark.has(cf+','+rf)){c.vx=-c.vx;c.lastDir=Math.sign(c.vx)}
     }
   }
+  if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);
+  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -3967,14 +4037,14 @@ function stepPlay(dt){
   P.coyote=P.onGround?.1:P.coyote-dt;P.jumpBuf-=dt;
   if(P.jumpBuf>0&&!MD.noInput){
     if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;SFX.jump()}
-    else if(P.flaps<MAXFLAPS&&!P.torn&&P.stam>=STAM_FLAP){P.vy=-FLAPV;P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
+    else if(P.flaps<MAXFLAPS&&!P.torn&&!MD.noFly&&P.stam>=STAM_FLAP){P.vy=-FLAPV;P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
     else if(P.flaps<MAXFLAPS&&!G.sim){P.jumpBuf=0;P.strain=.5;tone(160,.08,'triangle',.05)}
   }
   if(P.jumping&&!held&&P.vy<0){P.vy*=.5;P.jumping=false}
   P.vy+=GRAV*dt;
-  P.gliding=held&&P.vy>0&&!P.onGround&&!P.torn&&P.stam>0;
+  P.gliding=held&&P.vy>0&&!P.onGround&&!P.torn&&!MD.noFly&&P.stam>0;
   if(P.gliding){P.vy=Math.min(P.vy,GLIDE);P.stam-=STAM_GLIDE*dt;if(P.stam<=0){P.stam=0;wingTorn()}}
-  if(P.onGround&&!P.onMoverRegenBlock){P.stam=Math.min(STAM_MAX,P.stam+STAM_REGEN*dt);if(P.torn&&P.stam>=STAM_RESUME)P.torn=false}
+  if(P.onGround&&!(P.mudCoat>0)){P.stam=Math.min(STAM_MAX,P.stam+STAM_REGEN*dt);if(P.torn&&P.stam>=STAM_RESUME)P.torn=false}
   if(P.strain>0)P.strain-=dt;
   // courants d'air ascendants
   P.lift=0;
@@ -4145,7 +4215,7 @@ function updateCamera(dt){
    Options de niveau : dark {base,period}, fog, gust {period,dur,push,dir}, auto {speed}
    ========================================================= */
 function mechInit(L){
-  Object.assign(L,{guards:[],covers:[],watchers:[],crumbles:[],shutters:[],gargoyles:[],fires:[],poppies:[],bellsM:[],auto:null,darkNow:null,gust:{state:'calm',t:0}});
+  Object.assign(L,{mines:[],guards:[],covers:[],watchers:[],crumbles:[],shutters:[],gargoyles:[],fires:[],poppies:[],bellsM:[],auto:null,darkNow:null,gust:{state:'calm',t:0}});
 }
 function mechParse(L,ch,c,r,x,y,cx,cy,movers){
   const def=L.def;
@@ -4167,6 +4237,7 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
     case'e':(L.acts=L.acts||[]).push({kind:'secret',x:cx,y:y+T,open:0,t:0,used:false});return true;
     case'z':(L.acts=L.acts||[]).push({kind:'lever',x:cx,y:y+T,open:0,t:0,used:false});return true;
     case'R':return false;
+    case',':L.mines.push({x:cx,y:y+T,state:'idle',t:0});return true;
     case'f':return false;   // carton creux : dessiné comme un bloc, on peut y entrer
     case't':return false;   // planche invisible
     case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=(L.g[r][c-1]==='f'||L.g[r][c+1]==='f'||(L.g[r-1]&&L.g[r-1][c]==='f')||(L.g[r+1]&&L.g[r+1][c]==='f'))?'f':'.';return false}
@@ -4253,7 +4324,9 @@ function guardSees(g,pcx,pcy){
 function onMud(){if(!P.onGround)return false;const r=Math.floor((P.y+P.h+2)/T);const c0=Math.floor((P.x+3)/T),c1=Math.floor((P.x+P.w-3)/T);for(let c=c0;c<=c1;c++)if(tile(c,r)==='~')return true;return false}
 function mechMods(){
   const m={run:RUN,jump:JUMPV,noInput:false};
-  if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.8}
+  // la boue colle aux plumes : à peine un sautillement, plus de battement ni de vol plané, un moment encore après en être sorti
+  if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.36;P.mudCoat=1.4}
+  if(P.mudCoat>0)m.noFly=true;
   if(P.stun>0)m.noInput=true;
   return m;
 }
@@ -4273,6 +4346,7 @@ function mechAfterMove(dt,vyBefore){
     if(bounce){P.vy=-bounce;P.onGround=false;P.onMover=null;P.flaps=0;P.sx=.8;P.sy=1.25;if(!G.sim)tone(240,.18,'triangle',.12,520)}
   }
   // enlisement dans la boue
+  if(P.mudCoat>0&&!onMud())P.mudCoat-=dt;
   if(onMud()&&Math.abs(P.vx)<40){P.mud=(P.mud||0)+dt;if(P.mud>1.5)return'mud'}else P.mud=Math.max(0,(P.mud||0)-dt*2);
   // rafales
   if(L.def.gust&&L.gust.state==='blow'){const dir=L.def.gust.dir||-1;if(!sheltered(dir)){moveX(P,dir*L.def.gust.push*L.gust.k*(P.onGround?1:1.25)*dt)}}
@@ -4287,6 +4361,7 @@ function mechHit(hb){
   for(const w of L.watchers)if(w.mode==='chase'&&w.k&&!hiddenNow()&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
+  for(const m of L.mines)if(m.boom){m.boom=false;if(Math.hypot(pcx-m.x,pcy-(m.y-10))<78)return'mine'}
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
   for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=.3;P.vx=(pcx>m.wx?1:-1)*130;P.vy=Math.min(P.vy,-90);P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
   return null;
@@ -4368,6 +4443,7 @@ function actPost(L){
   // portillons : colonnes de R
   for(let c=0;c<L.w;c++){let r=0;while(r<ROWS){if(L.g[r][c]==='R'){let r1=r;while(r1+1<ROWS&&L.g[r1+1][c]==='R')r1++;L.gates.push({c,r0:r,r1,open:0,opening:false});r=r1+1}else r++}}
   for(const a of L.acts)if(a.kind==='lever'){let best=null,bd=1e9;for(const g of L.gates){const d=Math.abs(g.c*T-a.x);if(d<bd){bd=d;best=g}}a.gate=best}
+  if(L.def.helmetAt){const[c,r]=L.def.helmetAt;L.acts.push({kind:'secret',style:'helmet',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Le casque tombe. Et dedans, de la paille. Quelqu'un avait gardé un nid pour l'hiver."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -4385,7 +4461,8 @@ function applyGot(i){
 function nearAct(){
   const pcx=P.x+P.w/2,pb=P.y+P.h;
   if(hiddenNow())for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
-  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
+  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;
+    if(a.style==='helmet'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<36&&Math.abs(P.y+P.h/2-(a.y-92))<52)return{type:'secret',o:a};continue}if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }
 function tryAct(){
@@ -4443,6 +4520,8 @@ function actStep(dt){
 }
 /* au retour au cartel : les gardiens se démêlent, les chats retournent s'asseoir */
 function actRespawn(){
+  L.rats=L.rats.filter(c=>!c.chase);for(const c of L.rats){c.spawned=false;c.charge=0}
+  for(const m of L.mines){m.state='idle';m.t=0;m.boom=false}
   for(const g of L.guards){g.tangle=0;g.sweep=0;g.angry=false}
   for(const c of L.covers){c.gone=false;c.on=null}
   for(const w of L.watchers)watchReset(w);
@@ -4536,6 +4615,26 @@ function drawMarbles(){if(!L.marbles)return;for(const m of L.marbles){const x=m.
   ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x+2,m.y+m.h+1,4,1.5,0,0,7);ctx.fill();
   const gr=ctx.createRadialGradient(x-1.5,y-1.5,.5,x,y,4.5);gr.addColorStop(0,'#ffffff');gr.addColorStop(.35,m.col);gr.addColorStop(1,'#1a1a2a');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(x,y,4.2,0,7);ctx.fill();ctx.restore()}}
 
+/* même plateforme : sol continu (ou boue) entre deux abscisses, sur la rangée r */
+function samePlatform(x1,x2,r){let a=Math.floor(Math.min(x1,x2)/T),b=Math.floor(Math.max(x1,x2)/T);for(let c=a;c<=b;c++){if(!groundAt(c,r+1)||isSolid(c,r))return false}return true}
+/* ---------- mines : un clic sous la patte, puis l'explosion ---------- */
+function mineStep(dt){
+  for(const m of L.mines){
+    if(m.state==='idle'){if(!P.dead&&P.onGround&&Math.abs(P.x+P.w/2-m.x)<18&&Math.abs(P.y+P.h-m.y)<6){m.state='armed';m.t=0;if(!G.sim){tone(1400,.03,'square',.08);setTimeout(()=>tone(900,.03,'square',.06),60);if(!G.mineSaid){G.mineSaid=true;say("Clic. Un clic, ce n'est jamais bon signe. S'éloigner. Vite.",2.6)}}}}
+    else if(m.state==='armed'){m.t+=dt;if(m.t>1.0){m.state='gone';m.boom=true;if(!G.sim){G.shake=14;noise(.9,260,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<26;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x:m.x,y:m.y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.6})}parts.push({type:'ring',x:m.x,y:m.y-10,life:0,max:.4})}
+      for(const c of L.rats)if(c.chase&&Math.hypot(c.x+c.w/2-m.x,c.y-m.y)<80)c.dead=true}}
+  }
+}
+function drawMines(t){
+  for(const m of L.mines){if(m.x<cam.x-60||m.x>cam.x+W+60)continue;const x=m.x,y=m.y;ctx.save();
+    if(m.state==='gone'){ctx.fillStyle='rgba(20,14,8,.8)';ctx.beginPath();ctx.ellipse(x,y-1,20,5,0,0,7);ctx.fill();ctx.fillStyle='rgba(60,50,40,.6)';for(let k=-2;k<=2;k++){ctx.beginPath();ctx.arc(x+k*9,y-4-Math.abs(k),3,0,7);ctx.fill()}}
+    else{ctx.fillStyle='#3a3a2e';ctx.beginPath();ctx.ellipse(x,y-2,13,6,0,Math.PI,0);ctx.fill();ctx.fillStyle='#55553e';ctx.beginPath();ctx.ellipse(x,y-5,9,3,0,0,7);ctx.fill();
+      ctx.fillStyle='#6a6a50';ctx.fillRect(x-1.5,y-12,3,7);ctx.fillStyle='#2a2a20';ctx.fillRect(x-4,y-13,8,2);
+      ctx.fillStyle='rgba(140,90,40,.5)';ctx.beginPath();ctx.arc(x+5,y-4,2,0,7);ctx.fill();
+      if(m.state==='armed'&&Math.sin(t*30)>0){ctx.fillStyle='#ff4030';ctx.beginPath();ctx.arc(x,y-14,3,0,7);ctx.fill();const gl=ctx.createRadialGradient(x,y-14,1,x,y-14,14);gl.addColorStop(0,'rgba(255,80,50,.5)');gl.addColorStop(1,'rgba(255,80,50,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(x,y-14,14,0,7);ctx.fill()}}
+    ctx.restore()}
+}
+
 /* =========================================================
    SUCCÈS — ceux retenus pour l'instant (les autres viendront plus tard)
    Catégories (pour le médaillon) : P progression · C collecte · D accrocs · E ennemis · S adresse · X curiosités
@@ -4572,7 +4671,7 @@ const ACH=[
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de cachettes (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=23;
+const SECRET_TOTAL=24;
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -4670,7 +4769,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.tiles){const sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/RS-sx);if(sw>0)ctx.drawImage(lv.tiles,sx*RS,0,sw*RS,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/RS)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
   for(const u of lv.updrafts||[]){if(u.x<cx-100||u.x>cx+W+100)continue;ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1.5;for(let k=0;k<7;k++){const ph=((t*.9+k/7)%1),yy=u.bottom-ph*u.bottom,xx=u.x+10+((k*17)%(u.w-20))+Math.sin(t*3+k)*6;ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-20,xx,yy-44);ctx.stroke()}ctx.globalAlpha=1}
-  if(!opts.noEntities){drawMechBack(t);drawEntities(t);drawMarbles();drawMechFront(t);drawActPrompt(t)}
+  if(!opts.noEntities){drawMechBack(t);drawEntities(t);drawMarbles();drawMines(t);drawMechFront(t);drawActPrompt(t)}
   ctx.restore();
 }
 function drawEntities(t){

@@ -394,13 +394,7 @@ function drawExit(g,e,style,t,label){
     const px=cx+104;g.fillStyle='#8a4a2a';poly(g,[px-11,gy-24,px+11,gy-24,px+8,gy,px-8,gy]);g.fill();g.fillStyle='#b06a40';g.fillRect(px-12,gy-27,24,5);
     g.strokeStyle='#2e4a28';g.lineWidth=1.4;for(let k=-2;k<=2;k++){g.beginPath();g.moveTo(px+k*2,gy-26);g.lineTo(px+k*5,gy-40);g.stroke()}
     for(let k=-2;k<=2;k++){g.fillStyle=['#d9a441','#efe6d0','#c8302a'][(k+2)%3];g.beginPath();g.arc(px+k*5,gy-42-Math.abs(k),3.6,0,7);g.fill()}
-  }else{
-    g.fillStyle='#5a4632';g.fillRect(x+T/2-3,y-20,6,2*T+20);
-    g.fillStyle='#e9dfc7';const w=Math.max(70,(label||'').length*8+20);poly(g,[x+T/2-6,y-30,x+T/2-6+w,y-30,x+T/2+w+8,y-16,x+T/2-6+w,y-2,x+T/2-6,y-2]);g.fill();
-    g.strokeStyle='#2a2420';g.lineWidth=1;g.stroke();
-    g.fillStyle='#2a2420';g.font='11px '+F_DISP;g.textAlign='left';g.fillText(label||'',x+T/2+2,y-12);
-    g.fillStyle='rgba(255,210,130,.85)';g.beginPath();g.arc(x+T/2,y-36,4,0,7);g.fill();
-  }
+  }else drawSignpost(g,x+T/2,y+2*T,label||'',t);
   g.restore();
 }
 function drawMover(g,m){
@@ -649,4 +643,37 @@ function drawDecor(g,d,t){
     g.strokeStyle='rgba(40,30,30,.7)';g.lineWidth=1.2;g.beginPath();for(let k=0;k<=20;k++){const xx=d.x+k*d.w/20;g.lineTo(xx,d.y+Math.sin(k/20*Math.PI)*40)}g.stroke();
     for(let k=1;k<20;k+=2){const xx=d.x+k*d.w/20,yy=d.y+Math.sin(k/20*Math.PI)*40;g.fillStyle=['#c8302a','#e0b030','#3a6aa8','#e9dfc7'][k%4];g.beginPath();g.ellipse(xx,yy+8,6,8,0,0,7);g.fill();g.fillStyle='rgba(255,220,150,.3)';g.beginPath();g.arc(xx,yy+8,12,0,7);g.fill()}
   }
+}
+
+/* poteau indicateur de sortie : bois patiné à l'ancienne, ou panneau routier sur l'A4 */
+function drawSignpost(g,cx,gy,label,t){
+  const th=L&&L.th||{},road=th.horizon==='road'||th.horizon==='bridge';g.save();
+  g.font='bold 13px '+F_DISP;const tw=g.measureText(label).width;
+  if(road){
+    const w=Math.max(110,tw+34),h=40,x0=cx-w/2,y0=gy-150;
+    g.fillStyle='#6a6e74';g.fillRect(x0+12,y0+h-4,5,gy-y0-h+4);g.fillRect(x0+w-17,y0+h-4,5,gy-y0-h+4);
+    const town=/^[A-ZÂÉÈ' -]+$/.test(label)&&!/→|A4/.test(label);
+    g.fillStyle=town?'#f4f2ea':'#1d4f9a';rr(g,x0,y0,w,h,5);g.fill();
+    g.strokeStyle=town?'#c8302a':'#f4f2ea';g.lineWidth=town?4:2;rr(g,x0+4,y0+4,w-8,h-8,3);g.stroke();
+    g.fillStyle=town?'#1a1a1a':'#f4f2ea';g.textAlign='center';g.fillText(label,cx,y0+h/2+5);
+    g.fillStyle='rgba(255,255,255,.12)';g.fillRect(x0+4,y0+4,w-8,6);
+  }else{
+    // poteau, chapeau, deux planches fléchées, clous, et une lanterne
+    const top=gy-150;
+    g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(cx+4,gy,18,4,0,0,7);g.fill();
+    const pg=g.createLinearGradient(cx-5,0,cx+5,0);pg.addColorStop(0,'#4a3622');pg.addColorStop(1,'#6e5236');g.fillStyle=pg;g.fillRect(cx-5,top,10,gy-top);
+    g.fillStyle='#3a2a1a';poly(g,[cx-10,top+2,cx,top-10,cx+10,top+2]);g.fill();
+    const board=(y,w,dir,txt,small)=>{const x0=dir>0?cx-6:cx+6-w,h=small?18:26;
+      const bg=g.createLinearGradient(0,y,0,y+h);bg.addColorStop(0,'#d8c49a');bg.addColorStop(1,'#b8a074');g.fillStyle=bg;
+      if(dir>0)poly(g,[x0,y,x0+w-12,y,x0+w,y+h/2,x0+w-12,y+h,x0,y+h]);else poly(g,[x0+12,y,x0+w,y,x0+w,y+h,x0+12,y+h,x0,y+h/2]);g.fill();
+      g.strokeStyle='rgba(90,60,30,.35)';g.lineWidth=.8;for(let k=1;k<4;k++){g.beginPath();g.moveTo(x0+4,y+k*h/4);g.lineTo(x0+w-14,y+k*h/4+(k%2?1:-1));g.stroke()}
+      g.strokeStyle='rgba(60,40,20,.6)';g.lineWidth=1;g.stroke();
+      g.fillStyle='#3a3a3a';g.beginPath();g.arc(dir>0?x0+5:x0+w-5,y+h/2,1.6,0,7);g.fill();
+      g.fillStyle='#2a1c10';g.font=(small?'italic 10px ':'bold 12px ')+F_DISP;g.textAlign='center';g.fillText(txt,x0+w/2+(dir>0?-4:4),y+h/2+(small?3.5:4.5))};
+    board(top+14,Math.max(90,tw+38),1,label);
+    const sub=L&&L.def&&L.def.exitSub;if(sub){g.font='italic 10px '+F_DISP;board(top+46,Math.max(62,g.measureText(sub).width+30),-1,sub,true)}
+    g.strokeStyle='#2a2a2a';g.lineWidth=1.2;g.beginPath();g.moveTo(cx+5,top+80);g.lineTo(cx+16,top+80);g.lineTo(cx+16,top+86);g.stroke();
+    const fl=.85+Math.sin(t*9)*.08;g.fillStyle='#2a2a2a';rr(g,cx+10,top+86,12,16,2);g.fill();g.fillStyle='rgba(255,200,110,'+fl+')';g.fillRect(cx+12,top+89,8,10);
+  }
+  g.restore();
 }

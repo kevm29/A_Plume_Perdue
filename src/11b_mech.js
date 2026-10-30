@@ -13,7 +13,7 @@
    Options de niveau : dark {base,period}, fog, gust {period,dur,push,dir}, auto {speed}
    ========================================================= */
 function mechInit(L){
-  Object.assign(L,{guards:[],covers:[],watchers:[],crumbles:[],shutters:[],gargoyles:[],fires:[],poppies:[],bellsM:[],auto:null,darkNow:null,gust:{state:'calm',t:0}});
+  Object.assign(L,{mines:[],guards:[],covers:[],watchers:[],crumbles:[],shutters:[],gargoyles:[],fires:[],poppies:[],bellsM:[],auto:null,darkNow:null,gust:{state:'calm',t:0}});
 }
 function mechParse(L,ch,c,r,x,y,cx,cy,movers){
   const def=L.def;
@@ -35,6 +35,7 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
     case'e':(L.acts=L.acts||[]).push({kind:'secret',x:cx,y:y+T,open:0,t:0,used:false});return true;
     case'z':(L.acts=L.acts||[]).push({kind:'lever',x:cx,y:y+T,open:0,t:0,used:false});return true;
     case'R':return false;
+    case',':L.mines.push({x:cx,y:y+T,state:'idle',t:0});return true;
     case'f':return false;   // carton creux : dessiné comme un bloc, on peut y entrer
     case't':return false;   // planche invisible
     case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=(L.g[r][c-1]==='f'||L.g[r][c+1]==='f'||(L.g[r-1]&&L.g[r-1][c]==='f')||(L.g[r+1]&&L.g[r+1][c]==='f'))?'f':'.';return false}
@@ -121,7 +122,9 @@ function guardSees(g,pcx,pcy){
 function onMud(){if(!P.onGround)return false;const r=Math.floor((P.y+P.h+2)/T);const c0=Math.floor((P.x+3)/T),c1=Math.floor((P.x+P.w-3)/T);for(let c=c0;c<=c1;c++)if(tile(c,r)==='~')return true;return false}
 function mechMods(){
   const m={run:RUN,jump:JUMPV,noInput:false};
-  if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.8}
+  // la boue colle aux plumes : à peine un sautillement, plus de battement ni de vol plané, un moment encore après en être sorti
+  if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.36;P.mudCoat=1.4}
+  if(P.mudCoat>0)m.noFly=true;
   if(P.stun>0)m.noInput=true;
   return m;
 }
@@ -141,6 +144,7 @@ function mechAfterMove(dt,vyBefore){
     if(bounce){P.vy=-bounce;P.onGround=false;P.onMover=null;P.flaps=0;P.sx=.8;P.sy=1.25;if(!G.sim)tone(240,.18,'triangle',.12,520)}
   }
   // enlisement dans la boue
+  if(P.mudCoat>0&&!onMud())P.mudCoat-=dt;
   if(onMud()&&Math.abs(P.vx)<40){P.mud=(P.mud||0)+dt;if(P.mud>1.5)return'mud'}else P.mud=Math.max(0,(P.mud||0)-dt*2);
   // rafales
   if(L.def.gust&&L.gust.state==='blow'){const dir=L.def.gust.dir||-1;if(!sheltered(dir)){moveX(P,dir*L.def.gust.push*L.gust.k*(P.onGround?1:1.25)*dt)}}
@@ -155,6 +159,7 @@ function mechHit(hb){
   for(const w of L.watchers)if(w.mode==='chase'&&w.k&&!hiddenNow()&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
+  for(const m of L.mines)if(m.boom){m.boom=false;if(Math.hypot(pcx-m.x,pcy-(m.y-10))<78)return'mine'}
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
   for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=.3;P.vx=(pcx>m.wx?1:-1)*130;P.vy=Math.min(P.vy,-90);P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
   return null;
