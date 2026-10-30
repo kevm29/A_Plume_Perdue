@@ -129,7 +129,7 @@ function drawMechMover(g,m,t){
     g.fillStyle='#8a6a3a';rr(g,-31,L0-12,62,10,3);g.fill();g.fillStyle='rgba(255,230,190,.3)';g.fillRect(-31,L0-12,62,2);
     g.fillStyle='#3a2a10';g.beginPath();g.arc(0,L0+60,6,0,7);g.fill();
     g.restore();
-    if(m.wave!=null&&m.wave<.59){const r=30+m.wave*170;g.strokeStyle='rgba(233,200,120,'+(1-m.wave/.6)+')';g.lineWidth=3;g.beginPath();g.arc(m.wx,m.wy,r,0,7);g.stroke()}
+    if(m.wave!=null&&m.wave<.38){const r=30+m.wave*170;g.strokeStyle='rgba(233,200,120,'+(1-m.wave/.38)+')';g.lineWidth=3;g.beginPath();g.arc(m.wx,m.wy,r,0,7);g.stroke()}
     return true}
   return false;
 }

@@ -429,7 +429,7 @@ const THEMES={
   cathedral:{outdoor:true,far:'sky',horizon:'city',sky:['#0c1024','#1e2a48','#3a4a6a'],celestial:'moon',stars:true,fog:'#1a2236',dark:.4,weather:'night',
     floor:'#5a5a62',floorTop:'#8a8a92',type:'zinc',x:'brick',d:'drape',shelf:'gutter',spike:'spikes',walker:'pigeon',flyer:'gull',awning:'#3a6aa8',
     props:['chimneyPot','antenna']},
-  aire:{outdoor:true,far:'sky',horizon:'road',sky:['#10141a','#222a34','#38424e'],celestial:'none',fog:'#26303a',dark:.46,weather:'rain',
+  aire:{outdoor:true,far:'sky',horizon:'road',sky:['#2a2e44','#7a6070','#e0a070'],celestial:'sun',fog:'#5a5058',dark:.26,weather:'wind',windColor:'#b8862e',
     floor:'#3a3c40',floorTop:'#57595e',type:'asphalt',x:'barrier',d:'drape',shelf:'table',spike:'glass',walker:'hedgehog',flyer:'bag',
     props:['roadSign','binRoad','cone','lampRoad','roadSign']},
   road:{outdoor:true,far:'sky',horizon:'road',sky:['#0e1218','#1e262e','#323c46'],celestial:'none',fog:'#222a34',dark:.48,weather:'rain',
@@ -438,7 +438,7 @@ const THEMES={
   storm:{outdoor:true,far:'sky',horizon:'road',sky:['#0a0c12','#1a1e28','#2a3040'],celestial:'none',fog:'#1e2430',dark:.52,weather:'storm',
     floor:'#34363a',floorTop:'#505357',type:'asphalt',x:'barrier',d:'drape',shelf:'girder',spike:'glass',walker:'hedgehog',flyer:'bag',
     props:['pylon','cone','roadSign','pylon']},
-  bridge:{outdoor:true,far:'sky',horizon:'bridge',sky:['#141a24','#28323e','#4a5260'],celestial:'none',fog:'#2a3440',dark:.42,weather:'rain',
+  bridge:{outdoor:true,far:'sky',horizon:'bridge',sky:['#3a4a6a','#a0a8b8','#f0c8a8'],celestial:'sun',fog:'#8a90a0',dark:.18,weather:'mist',
     floor:'#4a4e54',floorTop:'#6c7076',type:'deck',x:'barrier',d:'drape',shelf:'girder',spike:'glass',walker:'hedgehog',flyer:'bag',
     props:['cone','barrierStripe','cone']},
   fete:{outdoor:true,far:'sky',horizon:'village',sky:['#2a1e3c','#7a4a5a','#e0905e'],celestial:'sun',fog:'#4a3440',dark:.26,weather:'dusk',
@@ -1328,7 +1328,7 @@ LEVELS.push({w:2,name:"La cathédrale",theme:'cathedral',exit:'post',exitLabel:"
 '....======..............................',
 '........................................',
 '.........XO...o.........................',
-'.........XX..JJJ........................',
+'.........XX..JJJJ.......................',
 '........................................',
 '......................o.q......n........',
 '....................XXXXXX..............',
@@ -1432,8 +1432,8 @@ C|q..k....|.
 .............*..............
 ............................
 ............................
-...........o.......o........
 .......m.........m..........
+...........o.......o........
 .|N.......................|.
 XX..........................
 XX^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1444,8 +1444,8 @@ XX^^^^^^^^^^^^^^^^^^^^^^^^^^
 C|...k....|.
 ############
 ############`,`
+......m.........m.......
 .........o..............
-......n.........n.......
 .|N...................|.
 XX......................
 XX^^^^^^^^^^^^^^^^^^^^^^
@@ -1457,9 +1457,9 @@ C|..q.....|.
 ############
 ############`,`
 ..........................
+.......m..........m.......
 .....o.........o..........
-.......m..........n.......
-.|N.......................
+.|N......................|
 XX........................
 XX^^^^^^^^^^^^^^^^^^^^^^^^
 ##########################
@@ -1501,8 +1501,8 @@ LEVELS.push({w:3,name:"L'orage",theme:'storm',exit:'post',exitLabel:"OUEST →",
 ########################
 ########################`,`
 ..........*...........
-.....o....=.....o.....
-....===....!...===....
+.....o....==....o.....
+....===........===....
 ......................
 ###..................#
 ###^^^^^^^^^^^^^^^^^^#`,`
@@ -1532,7 +1532,7 @@ LEVELS.push({w:3,name:"L'orage",theme:'storm',exit:'post',exitLabel:"OUEST →",
 
 LEVELS.push({w:3,name:"Le pont",theme:'bridge',exit:'post',exitLabel:"VILLEMAREUIL",seed:113,
  gust:{period:5.5,dur:2.4,push:260,dir:-1},
- start:"Un pont au-dessus de la Marne. Le pigeonnier n'est plus très loin. Je le sens.",
+ start:"L'orage est passé. Le jour se lève sur la Marne. Le pigeonnier n'est plus très loin. Je le sens.",
  quips:["La Marne. En 1914, on l'a défendue en taxi, paraît-il. Je n'ai jamais cru à cette histoire de taxis.","Le vent de la rivière. Il sent la vase et le pays.","De l'autre côté, c'est chez nous."],
  signs:[],
  hints:[],
@@ -1762,7 +1762,7 @@ LEVELS.push({w:4,name:"La fête foraine",theme:'fete',exit:'banner',seed:137,gar
 ........................
 ..........o.......o.....
 ........................
-.....$.....$.....$......
+.....$....$....$...$....
 ........................
 .h......................
 ###...................##
@@ -1788,14 +1788,14 @@ LEVELS.push({w:4,name:"La fête foraine",theme:'fete',exit:'banner',seed:137,gar
 ################`,`
 ........................
 .......o.......o........
-....$.....$.....$...$...
+....$....$....$....$....
 ........................
 ........................
 ###....................#
 ###^^^^^^^^^^^^^^^^^^^^#`,`
 ......................
 ......................
-.....a.....a.....a....
+.....a....a....a....a.
 ......................
 ......................
 ###..................#
@@ -1809,7 +1809,7 @@ LEVELS.push({w:4,name:"La fête foraine",theme:'fete',exit:'banner',seed:137,gar
 ..............===.......
 ........................
 .....a..................
-............$...........
+..........$....$........
 ..C.....................
 #####...............####
 #####^^^^^^^^^^^^^^^####`,`
@@ -3371,7 +3371,7 @@ function drawMechMover(g,m,t){
     g.fillStyle='#8a6a3a';rr(g,-31,L0-12,62,10,3);g.fill();g.fillStyle='rgba(255,230,190,.3)';g.fillRect(-31,L0-12,62,2);
     g.fillStyle='#3a2a10';g.beginPath();g.arc(0,L0+60,6,0,7);g.fill();
     g.restore();
-    if(m.wave!=null&&m.wave<.59){const r=30+m.wave*170;g.strokeStyle='rgba(233,200,120,'+(1-m.wave/.6)+')';g.lineWidth=3;g.beginPath();g.arc(m.wx,m.wy,r,0,7);g.stroke()}
+    if(m.wave!=null&&m.wave<.38){const r=30+m.wave*170;g.strokeStyle='rgba(233,200,120,'+(1-m.wave/.38)+')';g.lineWidth=3;g.beginPath();g.arc(m.wx,m.wy,r,0,7);g.stroke()}
     return true}
   return false;
 }
@@ -3845,7 +3845,7 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
 }
 /* plateformes mobiles à trajectoire propre (manège, ballons, cloches) */
 function mechMoverInit(L,m){
-  if(m.kind==='horse'){m.bx=m.c*T-10;m.by=m.r*T;m.amp=34;m.per=2.8;m.ph=(m.c*.8)%6;m.w=T+20;m.h=12}
+  if(m.kind==='horse'){m.bx=m.c*T-10;m.by=m.r*T;m.amp=26;m.per=3;m.ph=(m.c*.8)%6;m.w=T+20;m.h=12}
   else if(m.kind==='balloon'){m.bx=m.c*T-6;m.by=m.r*T;m.amp=7;m.per=2.2;m.ph=(m.c*.5)%6;m.w=T+12;m.h=10;m.bouncy=1}
   else if(m.kind==='bell'){m.px=m.c*T+T/2;m.py=m.r*T;m.len=86;m.amp=.58;m.per=3;m.ph=(m.c*.9)%6;m.w=60;m.h=10;m.rung=0}
   else return false;
@@ -3933,9 +3933,9 @@ function mechAfterMove(dt,vyBefore){
   // rebond sur les auvents et les ballons
   if(P.onGround){
     const r=Math.floor((P.y+P.h+2)/T),c0=Math.floor((P.x+4)/T),c1=Math.floor((P.x+P.w-4)/T);
-    let bounce=false;for(let c=c0;c<=c1;c++)if(tile(c,r)==='A')bounce=true;
-    if(P.onMover&&P.onMover.bouncy)bounce=true;
-    if(bounce){P.vy=-1020;P.onGround=false;P.onMover=null;P.flaps=0;P.sx=.8;P.sy=1.25;if(!G.sim)tone(240,.18,'triangle',.12,520)}
+    let bounce=0;for(let c=c0;c<=c1;c++)if(tile(c,r)==='A')bounce=1020;
+    if(P.onMover&&P.onMover.bouncy)bounce=940;
+    if(bounce){P.vy=-bounce;P.onGround=false;P.onMover=null;P.flaps=0;P.sx=.8;P.sy=1.25;if(!G.sim)tone(240,.18,'triangle',.12,520)}
   }
   // enlisement dans la boue
   if(onMud()&&Math.abs(P.vx)<40){P.mud=(P.mud||0)+dt;if(P.mud>1.5)return'mud'}else P.mud=Math.max(0,(P.mud||0)-dt*2);
@@ -3953,7 +3953,7 @@ function mechHit(hb){
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
-  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<130&&Math.abs(d-r)<14&&!(P.stun>0)){P.stun=.45;P.vx=(pcx>m.wx?1:-1)*200;P.vy=-160;P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
+  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=.3;P.vx=(pcx>m.wx?1:-1)*130;P.vy=Math.min(P.vy,-90);P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
   return null;
 }
 /* ---------- poursuivants au sol (gardien au filet, balayeuse) ---------- */
@@ -3962,7 +3962,7 @@ function stepGroundChaser(K,dt,pcx,pcy){
   if(K.state!=='chase')return;
   const sweep=K.type==='sweeper';
   const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
-  const sp=sweep?clamp(165+(Math.abs(dist)-220)*.2,165,250):clamp(190+(Math.abs(dist)-160)*.22,190,270);
+  const sp=sweep?clamp(160+(Math.abs(dist)-220)*.2,160,240):clamp(175+(Math.abs(dist)-160)*.2,175,245);
   K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*(sweep?2:5)));K.f=dir;
   if(sweep){K.x+=K.vx*dt;K.y=K.home.y;if(!G.sim&&rnd()<.3)parts.push({type:'dust',x:K.x+(K.f>0?K.w:0),y:K.y+K.h-4,vx:-K.f*40,vy:-20,life:0,max:.5});return}
   K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
@@ -3977,13 +3977,15 @@ function stepGroundChaser(K,dt,pcx,pcy){
 }
 /* la buse traverse un braséro : elle prend feu */
 function buseBurn(K,dt){
-  if(K.state==='burn'){K.bt+=dt;K.vy=Math.min(500,(K.vy||0)+900*dt);K.x+=K.vx*dt*.4;K.y+=K.vy*dt;
+  if(K.state==='burn'){K.bt+=dt;K.vy=Math.min(500,(K.vy||0)+900*dt);K.x+=K.vx*dt*.4;K.y+=K.vy*dt;if(K.floor&&K.y+K.h>K.floor){K.y=K.floor-K.h;K.vy=0;K.vx*=.9}
     if(!G.sim&&rnd()<.6)parts.push({type:'dust',x:K.x+K.w/2+(rnd()-.5)*20,y:K.y,vx:(rnd()-.5)*40,vy:-60-rnd()*60,life:0,max:.9});
     if(K.bt>1.8){K.state='dead';G.chase=false;setSong(songKey(G.li));
       if(!G.sim)sayQueue([["RAYMOND","Elle a pris feu comme une botte de foin. Comme… de la paille ?",4.2],["RAYMOND","Les buses, ça ne brûle pas comme ça. Si ?",3.6]])}
     return true}
   if(K.state==='dead')return true;
-  if(K.state==='dive'||K.state==='hover'||K.state==='warn')for(const f of L.fires)if(Math.abs(K.x+K.w/2-f.x)<44&&K.y+K.h>f.y-90){K.state='burn';K.bt=0;K.vy=-120;if(!G.sim){noise(1.2,900,.5,'bandpass');SFX.screech()}return true}
+  // quand Raymond dépasse le braséro, la buse fond sur lui... et plonge dans le feu
+  if(!K.fireDive&&(K.state==='hover'||K.state==='warn'))for(const f of L.fires){const pcx=P.x+P.w/2;if(pcx>f.x+30&&pcx<f.x+420&&K.x+K.w/2<pcx){K.fireDive=true;K.state='dive';K.pt=0;const dx=f.x-(K.x+K.w/2),dy=(f.y-34)-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*560;K.vy=dy/d*560;K.f=K.vx>=0?1:-1;if(!G.sim)SFX.screech();break}}
+  if(K.state==='dive'||K.state==='hover'||K.state==='warn')for(const f of L.fires)if(Math.abs(K.x+K.w/2-f.x)<44&&K.y+K.h>f.y-90){K.state='burn';K.bt=0;K.vy=-120;K.floor=f.y;if(!G.sim){noise(1.2,900,.5,'bandpass');SFX.screech()}return true}
   return false;
 }
 /* ---------- répliques à plusieurs voix ---------- */
@@ -4055,6 +4057,9 @@ function drawEntities(t){
     else if(K.type==='drone')drawDrone(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.state!=='sleep');
     else if(K.type==='guardnet')drawGuard(ctx,K.x+K.w/2,K.y+K.h,K.t,{f:K.f||1,walk:K.state==='chase'?1.4:0,net:true});
     else if(K.type==='sweeper')drawSweeper(ctx,K,K.t);
+    else if(K.state==='dead'&&K.floor){const ax=K.x+K.w/2,ay=K.floor;ctx.save();ctx.fillStyle='#1d1814';ctx.beginPath();ctx.ellipse(ax,ay-3,22,6,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3a2f27';ctx.beginPath();ctx.ellipse(ax-4,ay-6,12,5,-.2,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(255,120,40,'+(.35+.25*Math.sin(G.t*6))+')';ctx.beginPath();ctx.arc(ax+5,ay-5,2.5,0,Math.PI*2);ctx.arc(ax-9,ay-4,1.8,0,Math.PI*2);ctx.fill();
+      for(let i=0;i<3;i++){const ph=(G.t*.5+i/3)%1;ctx.fillStyle='rgba(120,110,100,'+(.35*(1-ph))+')';ctx.beginPath();ctx.arc(ax+Math.sin(ph*6+i)*6,ay-10-ph*60,4+ph*10,0,Math.PI*2);ctx.fill()}ctx.restore()}
     else if(K.state!=='dead'){drawBuse(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.f||1,K.state==='dive'||K.state==='burn');if(K.state==='burn')drawFire(ctx,K.x+K.w/2,K.y+K.h+16,K.t*1.5)}
   }
   ctx.restore();
@@ -4110,7 +4115,7 @@ function renderWeather(th,cx,t){
     ctx.save();for(let k=0;k<4;k++){const x=((k*380-t*(12+k*5)-cx*.15)%(W+600)+W+600)%(W+600)-300,y=w==='mist'?470:380+k*40;const gr=ctx.createRadialGradient(x,y,10,x,y,280);gr.addColorStop(0,rgba(th.fog==='#232a3a'?'#9aa4c0':'#c8ccc4',.12));gr.addColorStop(1,'rgba(200,200,200,0)');ctx.fillStyle=gr;ctx.fillRect(x-280,y-280,560,560)}ctx.restore();
   }else if(w==='wind'){
     ctx.save();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;for(let k=0;k<14;k++){const x=((k*137-t*420)%(W+200)+W+200)%(W+200)-100,y=60+((k*71)%380)+Math.sin(t*2+k)*10;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+30,y-4,x+60,y);ctx.stroke()}
-    for(let k=0;k<8;k++){const x=((k*211-t*300)%(W+100)+W+100)%(W+100)-50,y=100+((k*97)%360)+Math.sin(t*3+k)*20;ctx.fillStyle='#c8302a';ctx.beginPath();ctx.ellipse(x,y,3,1.6,t*4+k,0,7);ctx.fill()}ctx.restore();
+    for(let k=0;k<8;k++){const x=((k*211-t*300)%(W+100)+W+100)%(W+100)-50,y=100+((k*97)%360)+Math.sin(t*3+k)*20;ctx.fillStyle=th.windColor||'#c8302a';ctx.beginPath();ctx.ellipse(x,y,3,1.6,t*4+k,0,7);ctx.fill()}ctx.restore();
   }else if(w==='dusk'){
     ctx.save();for(let k=0;k<18;k++){const x=((k*97+Math.sin(t*.5+k)*40-cx*.3)%W+W)%W,y=200+((k*53)%280)+Math.sin(t*.8+k*2)*16;ctx.fillStyle='rgba(255,220,140,'+(.3+.3*Math.sin(t*3+k))+')';ctx.beginPath();ctx.arc(x,y,1.6,0,7);ctx.fill()}ctx.restore();
   }

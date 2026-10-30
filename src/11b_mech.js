@@ -37,7 +37,7 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
 }
 /* plateformes mobiles à trajectoire propre (manège, ballons, cloches) */
 function mechMoverInit(L,m){
-  if(m.kind==='horse'){m.bx=m.c*T-10;m.by=m.r*T;m.amp=34;m.per=2.8;m.ph=(m.c*.8)%6;m.w=T+20;m.h=12}
+  if(m.kind==='horse'){m.bx=m.c*T-10;m.by=m.r*T;m.amp=26;m.per=3;m.ph=(m.c*.8)%6;m.w=T+20;m.h=12}
   else if(m.kind==='balloon'){m.bx=m.c*T-6;m.by=m.r*T;m.amp=7;m.per=2.2;m.ph=(m.c*.5)%6;m.w=T+12;m.h=10;m.bouncy=1}
   else if(m.kind==='bell'){m.px=m.c*T+T/2;m.py=m.r*T;m.len=86;m.amp=.58;m.per=3;m.ph=(m.c*.9)%6;m.w=60;m.h=10;m.rung=0}
   else return false;
@@ -125,9 +125,9 @@ function mechAfterMove(dt,vyBefore){
   // rebond sur les auvents et les ballons
   if(P.onGround){
     const r=Math.floor((P.y+P.h+2)/T),c0=Math.floor((P.x+4)/T),c1=Math.floor((P.x+P.w-4)/T);
-    let bounce=false;for(let c=c0;c<=c1;c++)if(tile(c,r)==='A')bounce=true;
-    if(P.onMover&&P.onMover.bouncy)bounce=true;
-    if(bounce){P.vy=-1020;P.onGround=false;P.onMover=null;P.flaps=0;P.sx=.8;P.sy=1.25;if(!G.sim)tone(240,.18,'triangle',.12,520)}
+    let bounce=0;for(let c=c0;c<=c1;c++)if(tile(c,r)==='A')bounce=1020;
+    if(P.onMover&&P.onMover.bouncy)bounce=940;
+    if(bounce){P.vy=-bounce;P.onGround=false;P.onMover=null;P.flaps=0;P.sx=.8;P.sy=1.25;if(!G.sim)tone(240,.18,'triangle',.12,520)}
   }
   // enlisement dans la boue
   if(onMud()&&Math.abs(P.vx)<40){P.mud=(P.mud||0)+dt;if(P.mud>1.5)return'mud'}else P.mud=Math.max(0,(P.mud||0)-dt*2);
@@ -145,7 +145,7 @@ function mechHit(hb){
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
-  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<130&&Math.abs(d-r)<14&&!(P.stun>0)){P.stun=.45;P.vx=(pcx>m.wx?1:-1)*200;P.vy=-160;P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
+  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=.3;P.vx=(pcx>m.wx?1:-1)*130;P.vy=Math.min(P.vy,-90);P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
   return null;
 }
 /* ---------- poursuivants au sol (gardien au filet, balayeuse) ---------- */
@@ -154,7 +154,7 @@ function stepGroundChaser(K,dt,pcx,pcy){
   if(K.state!=='chase')return;
   const sweep=K.type==='sweeper';
   const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
-  const sp=sweep?clamp(165+(Math.abs(dist)-220)*.2,165,250):clamp(190+(Math.abs(dist)-160)*.22,190,270);
+  const sp=sweep?clamp(160+(Math.abs(dist)-220)*.2,160,240):clamp(175+(Math.abs(dist)-160)*.2,175,245);
   K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*(sweep?2:5)));K.f=dir;
   if(sweep){K.x+=K.vx*dt;K.y=K.home.y;if(!G.sim&&rnd()<.3)parts.push({type:'dust',x:K.x+(K.f>0?K.w:0),y:K.y+K.h-4,vx:-K.f*40,vy:-20,life:0,max:.5});return}
   K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
@@ -169,13 +169,15 @@ function stepGroundChaser(K,dt,pcx,pcy){
 }
 /* la buse traverse un braséro : elle prend feu */
 function buseBurn(K,dt){
-  if(K.state==='burn'){K.bt+=dt;K.vy=Math.min(500,(K.vy||0)+900*dt);K.x+=K.vx*dt*.4;K.y+=K.vy*dt;
+  if(K.state==='burn'){K.bt+=dt;K.vy=Math.min(500,(K.vy||0)+900*dt);K.x+=K.vx*dt*.4;K.y+=K.vy*dt;if(K.floor&&K.y+K.h>K.floor){K.y=K.floor-K.h;K.vy=0;K.vx*=.9}
     if(!G.sim&&rnd()<.6)parts.push({type:'dust',x:K.x+K.w/2+(rnd()-.5)*20,y:K.y,vx:(rnd()-.5)*40,vy:-60-rnd()*60,life:0,max:.9});
     if(K.bt>1.8){K.state='dead';G.chase=false;setSong(songKey(G.li));
       if(!G.sim)sayQueue([["RAYMOND","Elle a pris feu comme une botte de foin. Comme… de la paille ?",4.2],["RAYMOND","Les buses, ça ne brûle pas comme ça. Si ?",3.6]])}
     return true}
   if(K.state==='dead')return true;
-  if(K.state==='dive'||K.state==='hover'||K.state==='warn')for(const f of L.fires)if(Math.abs(K.x+K.w/2-f.x)<44&&K.y+K.h>f.y-90){K.state='burn';K.bt=0;K.vy=-120;if(!G.sim){noise(1.2,900,.5,'bandpass');SFX.screech()}return true}
+  // quand Raymond dépasse le braséro, la buse fond sur lui... et plonge dans le feu
+  if(!K.fireDive&&(K.state==='hover'||K.state==='warn'))for(const f of L.fires){const pcx=P.x+P.w/2;if(pcx>f.x+30&&pcx<f.x+420&&K.x+K.w/2<pcx){K.fireDive=true;K.state='dive';K.pt=0;const dx=f.x-(K.x+K.w/2),dy=(f.y-34)-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*560;K.vy=dy/d*560;K.f=K.vx>=0?1:-1;if(!G.sim)SFX.screech();break}}
+  if(K.state==='dive'||K.state==='hover'||K.state==='warn')for(const f of L.fires)if(Math.abs(K.x+K.w/2-f.x)<44&&K.y+K.h>f.y-90){K.state='burn';K.bt=0;K.vy=-120;K.floor=f.y;if(!G.sim){noise(1.2,900,.5,'bandpass');SFX.screech()}return true}
   return false;
 }
 /* ---------- répliques à plusieurs voix ---------- */
