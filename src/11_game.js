@@ -205,7 +205,7 @@ function stepPlay(dt){
   }
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);
+  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -306,16 +306,7 @@ function stepChaser(K,dt,pcx,pcy){
   }
   if(K.state==='sleep'){K.y=K.home.y+Math.sin(K.t*2)*4;return}
   if(K.type==='buse'&&buseBurn(K,dt))return;
-  if(K.type==='drone'){
-    // il se poste au-dessus de Raymond, prévient (voyant rouge), puis pique sur lui
-    K.pt=(K.pt||0)+dt;
-    if(K.mode==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.75||K.y>ROWS*T-70){K.mode=null;K.pt=0}return}
-    if(K.mode==='warn'){K.x+=Math.sin(K.t*50)*.6;K.y-=12*dt;if(K.pt>.55){K.mode='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*560;K.vy=dy/d*560;K.f=K.vx>=0?1:-1;if(!G.sim)tone(700,.4,'sawtooth',.05,1400)}return}
-    const tx=pcx-K.w/2+P.facing*40,ty=P.y-90,dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1;
-    const sp=clamp(210+(d-150)*.5,210,330);K.x+=dx/d*Math.min(sp*dt,d);K.y+=dy/d*Math.min(sp*dt,d)+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
-    if(K.pt>2.4&&d<140&&!P.dead){K.mode='warn';K.pt=0;if(!G.sim)tone(1200,.12,'square',.04)}
-    return;
-  }
+  if(K.type==='drone'){droneStep(K,dt,pcx,pcy);return}
   // buse : plane derrière, prévient, puis pique
   K.pt+=dt;
   if(K.state==='hover'){

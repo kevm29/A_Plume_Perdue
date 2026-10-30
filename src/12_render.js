@@ -21,7 +21,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.tiles){const sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/RS-sx);if(sw>0)blitLayer(ctx,lv.tiles,sx*RS,0,sw*RS,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/RS)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
   for(const u of lv.updrafts||[]){if(u.x<cx-100||u.x>cx+W+100)continue;ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1.5;for(let k=0;k<7;k++){const ph=((t*.9+k/7)%1),yy=u.bottom-ph*u.bottom,xx=u.x+10+((k*17)%(u.w-20))+Math.sin(t*3+k)*6;ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-20,xx,yy-44);ctx.stroke()}ctx.globalAlpha=1}
-  if(!opts.noEntities){drawMechBack(t);drawEntities(t);drawMarbles();drawMines(t);drawMechFront(t);drawActPrompt(t)}
+  if(!opts.noEntities){drawMechBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawActPrompt(t)}
   ctx.restore();
 }
 function drawEntities(t){
@@ -53,7 +53,7 @@ function drawEntities(t){
       for(let i=0;i<3;i++){const ph=(G.t*.5+i/3)%1;ctx.fillStyle='rgba(120,110,100,'+(.35*(1-ph))+')';ctx.beginPath();ctx.arc(ax+Math.sin(ph*6+i)*6,ay-10-ph*60,4+ph*10,0,Math.PI*2);ctx.fill()}ctx.restore()}
     else if(K.state!=='dead'){drawBuse(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.f||1,K.state==='dive'||K.state==='burn');if(K.state==='burn')drawFire(ctx,K.x+K.w/2,K.y+K.h+16,K.t*1.5)}
   }
-  if(K&&K.type==='drone'&&K.mode==='warn'&&Math.sin(K.t*40)>0){ctx.save();const gx=K.x+K.w/2,gy=K.y+K.h/2+6;const gl=ctx.createRadialGradient(gx,gy,1,gx,gy,22);gl.addColorStop(0,'rgba(255,60,40,.8)');gl.addColorStop(1,'rgba(255,60,40,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(gx,gy,22,0,7);ctx.fill();ctx.restore()}
+  if(K&&K.type==='drone'&&K.sp==='aim'&&Math.sin(K.t*40)>0){ctx.save();const gx=K.x+K.w/2,gy=K.y+K.h/2+6;const gl=ctx.createRadialGradient(gx,gy,1,gx,gy,22);gl.addColorStop(0,'rgba(255,60,40,.8)');gl.addColorStop(1,'rgba(255,60,40,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(gx,gy,22,0,7);ctx.fill();ctx.restore()}
   ctx.restore();
   for(const m of L.moths)if(vis(m.x))drawFlyer(ctx,m.kind,m.x,m.y,m.t,m.dir||1);
   for(const p of parts){const a=1-p.life/p.max;

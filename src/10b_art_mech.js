@@ -198,8 +198,11 @@ function drawMechFront(t){
   if(P.stun>0&&!P.dead){for(let k=0;k<3;k++){const a=t*6+k*2.1;ctx.fillStyle='#ffe080';ctx.beginPath();ctx.arc(P.x+P.w/2+Math.cos(a)*14,P.y-6+Math.sin(a)*4,2.4,0,7);ctx.fill()}}
   // brouillard : il cache le terrain au loin ; les coquelicots restent visibles
   if(L.def.fog){const fx=P.x+P.w/2;ctx.save();
-    const gr=ctx.createLinearGradient(fx+120,0,fx+430,0);gr.addColorStop(0,'rgba(196,192,186,0)');gr.addColorStop(1,'rgba(196,192,186,.96)');ctx.fillStyle=gr;ctx.fillRect(fx+120,cam.y-50,1400,H+100);
-    const gl=ctx.createLinearGradient(fx-200,0,fx-520,0);gl.addColorStop(0,'rgba(196,192,186,0)');gl.addColorStop(1,'rgba(196,192,186,.85)');ctx.fillStyle=gl;ctx.fillRect(fx-1600,cam.y-50,1400,H+100);
+    // brouillard par vagues : par moments on n'y voit plus qu'à deux cases
+    const fk=L.def.fogWaves?.5+.5*Math.sin(G.lt*Math.PI*2/10):1,na=40+80*fk,nb=na+110+200*fk;
+    if(L.def.fogWaves&&fk<.6){ctx.fillStyle='rgba(196,192,186,'+((.6-fk)*.7)+')';ctx.fillRect(cam.x,cam.y,W,H)}
+    const gr=ctx.createLinearGradient(fx+na,0,fx+nb,0);gr.addColorStop(0,'rgba(196,192,186,0)');gr.addColorStop(1,'rgba(196,192,186,.97)');ctx.fillStyle=gr;ctx.fillRect(fx+na,cam.y-50,1400,H+100);
+    const gl=ctx.createLinearGradient(fx-(na+80),0,fx-(nb+90),0);gl.addColorStop(0,'rgba(196,192,186,0)');gl.addColorStop(1,'rgba(196,192,186,.85)');ctx.fillStyle=gl;ctx.fillRect(fx-(nb+90)-1400+310,cam.y-50,1400,H+100);
     ctx.restore();
     for(const p of L.poppies){if(!vis(p.x))continue;
       if(tile(Math.floor(p.x/T),Math.floor(p.y/T))==='='){const lx=p.x,ly=p.y;ctx.save();ctx.fillStyle='#2a2a2a';ctx.fillRect(lx-5,ly-4,10,3);ctx.fillStyle='rgba(255,200,110,'+(.8+Math.sin(t*7+lx)*.1)+')';rr(ctx,lx-4,ly-14,8,10,2);ctx.fill();ctx.strokeStyle='#2a2a2a';ctx.lineWidth=1.2;ctx.strokeRect(lx-4,ly-14,8,10);ctx.beginPath();ctx.moveTo(lx-4,ly-14);ctx.lineTo(lx,ly-19);ctx.lineTo(lx+4,ly-14);ctx.stroke();const gl=ctx.createRadialGradient(lx,ly-9,1,lx,ly-9,30);gl.addColorStop(0,'rgba(255,200,110,.35)');gl.addColorStop(1,'rgba(255,200,110,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(lx,ly-9,30,0,7);ctx.fill();ctx.restore();continue}

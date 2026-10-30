@@ -159,6 +159,8 @@ function mechHit(hb){
   for(const w of L.watchers)if(w.mode==='chase'&&w.k&&!hiddenNow()&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
+  if(G.grenadeHit){G.grenadeHit=false;return'grenade'}
+  if(L.chaser&&L.chaser.hitP){L.chaser.hitP=false;return'drone'}
   for(const m of L.mines)if(m.boom){m.boom=false;if(Math.hypot(pcx-m.x,pcy-(m.y-10))<78)return'mine'}
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
   for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=.3;P.vx=(pcx>m.wx?1:-1)*130;P.vy=Math.min(P.vy,-90);P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}

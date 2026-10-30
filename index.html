@@ -331,6 +331,7 @@ const DEATH_Q={
   pickets:["Une grille en fer forgé. Jolie. Pointue, surtout."],
   nails:["Des clous. Le charpentier n'a pas fini son travail."],
   rat:["Mordu par un rat. Il cherchait du grain, il a trouvé de la paille.","Un rat. Même ici, la vermine a ses entrées."],
+  grenade:["Une grenade. Lâchée par un pigeon de métal. La guerre a bien changé.","Boum. Le règlement disait de se jeter à plat ventre. Je l'ai fait. Trop tard."],
   mine:["Elle a fait clic, puis boum. Dans cet ordre, au moins.","Une mine de 1916. Elle a attendu cent dix ans pour moi. C'est presque touchant."],
   piglet:["Rattrapé par un marcassin. Je ne le dirai à personne.","Les marcassins courent plus vite que la gloire."],
   boar:["Un sanglier. Il ne m'a même pas vu. C'est presque pire.","Les sangliers ont pris le front. Personne ne les a arrêtés."],
@@ -1068,10 +1069,11 @@ LEVELS.push({w:1,name:"Les éoliennes",theme:'turbines',exit:'post',exitLabel:"C
 ############`]});
 
 LEVELS.push({w:1,name:"Le drone",theme:'front',exit:'bunker',exitLabel:"ABRI",seed:71,
- fog:true,
+ fog:true,fogWaves:true,
  start:"Le brouillard. Comme le matin du fort. On n'y voit pas à trois battements d'ailes.",
  chaseQuip:"Un pigeon mécanique qui bourdonne. Ennemi, forcément. Il m'a repéré !",
- hints:[["ARTICLE 13 — LE BROUILLARD","Dans le brouillard, les coquelicots ne poussent que sur la terre ferme, et les sapeurs ont laissé des lanternes sur les planches. Les suivre."]],
+ hints:[["ARTICLE 13 — LE BROUILLARD","Dans le brouillard, les coquelicots ne poussent que sur la terre ferme, et les sapeurs ont laissé des lanternes sur les planches. Les suivre."],
+        ["ARTICLE 13 bis — L'ŒIL DU DRONE","Son projecteur cherche. S'il vous garde dans sa lumière, il tire. Se mettre à couvert, ou sortir du faisceau."]],
  quips:["Il n'y a pas d'oiseaux. Les oiseaux savent quand il faut se taire.","Il n'a pas de plumes, pas de bec, et il me suit. Je n'ai jamais été aussi insulté."],
  signs:[],
  segs:[SEG_START_FLAT,`
@@ -1091,7 +1093,7 @@ LEVELS.push({w:1,name:"Le drone",theme:'front',exit:'bunker',exitLabel:"ABRI",se
 .Q..............
 ................
 ................
-.C......T...+...
+.C.h....T...+...
 ################
 ################`,`
 ......................
@@ -1120,6 +1122,13 @@ LEVELS.push({w:1,name:"Le drone",theme:'front',exit:'bunker',exitLabel:"ABRI",se
 .+,.....+...,..+..,...
 ####~~~~####~~~~######
 ######################`,`
+..........................
+..........................
+..........................
+..######################..
++.......................+.
+####~~~~~~~~~~~~~~~~~~####
+##########################`,`
 ............
 .....o.o....
 .C..+.......
@@ -3590,8 +3599,11 @@ function drawMechFront(t){
   if(P.stun>0&&!P.dead){for(let k=0;k<3;k++){const a=t*6+k*2.1;ctx.fillStyle='#ffe080';ctx.beginPath();ctx.arc(P.x+P.w/2+Math.cos(a)*14,P.y-6+Math.sin(a)*4,2.4,0,7);ctx.fill()}}
   // brouillard : il cache le terrain au loin ; les coquelicots restent visibles
   if(L.def.fog){const fx=P.x+P.w/2;ctx.save();
-    const gr=ctx.createLinearGradient(fx+120,0,fx+430,0);gr.addColorStop(0,'rgba(196,192,186,0)');gr.addColorStop(1,'rgba(196,192,186,.96)');ctx.fillStyle=gr;ctx.fillRect(fx+120,cam.y-50,1400,H+100);
-    const gl=ctx.createLinearGradient(fx-200,0,fx-520,0);gl.addColorStop(0,'rgba(196,192,186,0)');gl.addColorStop(1,'rgba(196,192,186,.85)');ctx.fillStyle=gl;ctx.fillRect(fx-1600,cam.y-50,1400,H+100);
+    // brouillard par vagues : par moments on n'y voit plus qu'à deux cases
+    const fk=L.def.fogWaves?.5+.5*Math.sin(G.lt*Math.PI*2/10):1,na=40+80*fk,nb=na+110+200*fk;
+    if(L.def.fogWaves&&fk<.6){ctx.fillStyle='rgba(196,192,186,'+((.6-fk)*.7)+')';ctx.fillRect(cam.x,cam.y,W,H)}
+    const gr=ctx.createLinearGradient(fx+na,0,fx+nb,0);gr.addColorStop(0,'rgba(196,192,186,0)');gr.addColorStop(1,'rgba(196,192,186,.97)');ctx.fillStyle=gr;ctx.fillRect(fx+na,cam.y-50,1400,H+100);
+    const gl=ctx.createLinearGradient(fx-(na+80),0,fx-(nb+90),0);gl.addColorStop(0,'rgba(196,192,186,0)');gl.addColorStop(1,'rgba(196,192,186,.85)');ctx.fillStyle=gl;ctx.fillRect(fx-(nb+90)-1400+310,cam.y-50,1400,H+100);
     ctx.restore();
     for(const p of L.poppies){if(!vis(p.x))continue;
       if(tile(Math.floor(p.x/T),Math.floor(p.y/T))==='='){const lx=p.x,ly=p.y;ctx.save();ctx.fillStyle='#2a2a2a';ctx.fillRect(lx-5,ly-4,10,3);ctx.fillStyle='rgba(255,200,110,'+(.8+Math.sin(t*7+lx)*.1)+')';rr(ctx,lx-4,ly-14,8,10,2);ctx.fill();ctx.strokeStyle='#2a2a2a';ctx.lineWidth=1.2;ctx.strokeRect(lx-4,ly-14,8,10);ctx.beginPath();ctx.moveTo(lx-4,ly-14);ctx.lineTo(lx,ly-19);ctx.lineTo(lx+4,ly-14);ctx.stroke();const gl=ctx.createRadialGradient(lx,ly-9,1,lx,ly-9,30);gl.addColorStop(0,'rgba(255,200,110,.35)');gl.addColorStop(1,'rgba(255,200,110,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(lx,ly-9,30,0,7);ctx.fill();ctx.restore();continue}
@@ -4080,7 +4092,7 @@ function stepPlay(dt){
   }
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);
+  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -4181,16 +4193,7 @@ function stepChaser(K,dt,pcx,pcy){
   }
   if(K.state==='sleep'){K.y=K.home.y+Math.sin(K.t*2)*4;return}
   if(K.type==='buse'&&buseBurn(K,dt))return;
-  if(K.type==='drone'){
-    // il se poste au-dessus de Raymond, prévient (voyant rouge), puis pique sur lui
-    K.pt=(K.pt||0)+dt;
-    if(K.mode==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.75||K.y>ROWS*T-70){K.mode=null;K.pt=0}return}
-    if(K.mode==='warn'){K.x+=Math.sin(K.t*50)*.6;K.y-=12*dt;if(K.pt>.55){K.mode='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*560;K.vy=dy/d*560;K.f=K.vx>=0?1:-1;if(!G.sim)tone(700,.4,'sawtooth',.05,1400)}return}
-    const tx=pcx-K.w/2+P.facing*40,ty=P.y-90,dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1;
-    const sp=clamp(210+(d-150)*.5,210,330);K.x+=dx/d*Math.min(sp*dt,d);K.y+=dy/d*Math.min(sp*dt,d)+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
-    if(K.pt>2.4&&d<140&&!P.dead){K.mode='warn';K.pt=0;if(!G.sim)tone(1200,.12,'square',.04)}
-    return;
-  }
+  if(K.type==='drone'){droneStep(K,dt,pcx,pcy);return}
   // buse : plane derrière, prévient, puis pique
   K.pt+=dt;
   if(K.state==='hover'){
@@ -4429,6 +4432,8 @@ function mechHit(hb){
   for(const w of L.watchers)if(w.mode==='chase'&&w.k&&!hiddenNow()&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
+  if(G.grenadeHit){G.grenadeHit=false;return'grenade'}
+  if(L.chaser&&L.chaser.hitP){L.chaser.hitP=false;return'drone'}
   for(const m of L.mines)if(m.boom){m.boom=false;if(Math.hypot(pcx-m.x,pcy-(m.y-10))<78)return'mine'}
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
   for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=.3;P.vx=(pcx>m.wx?1:-1)*130;P.vy=Math.min(P.vy,-90);P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
@@ -4589,6 +4594,7 @@ function actStep(dt){
 }
 /* au retour au cartel : les gardiens se démêlent, les chats retournent s'asseoir */
 function actRespawn(){
+  L.grenades=[];G.grenadeHit=false;if(L.chaser&&L.chaser.type==='drone'){L.chaser.sp='scan';L.chaser.lock=0;L.chaser.gt=0;L.chaser.hitP=false}
   L.rats=L.rats.filter(c=>!c.chase);for(const c of L.rats){c.spawned=false;c.charge=0}
   for(const m of L.mines){m.state='idle';m.t=0;m.boom=false}
   for(const g of L.guards){g.tangle=0;g.sweep=0;g.angry=false}
@@ -4704,6 +4710,52 @@ function drawMines(t){
       ctx.fillStyle='rgba(140,90,40,.5)';ctx.beginPath();ctx.arc(x+5,y-4,2,0,7);ctx.fill();
       if(m.state==='armed'&&Math.sin(t*30)>0){ctx.fillStyle='#ff4030';ctx.beginPath();ctx.arc(x,y-14,3,0,7);ctx.fill();const gl=ctx.createRadialGradient(x,y-14,1,x,y-14,14);gl.addColorStop(0,'rgba(255,80,50,.5)');gl.addColorStop(1,'rgba(255,80,50,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(x,y-14,14,0,7);ctx.fill()}}
     ctx.restore()}
+}
+
+/* ---------- le drone du 2-3 : projecteur, rafale, grenades, toit qu'il ne traverse pas, sprint final ---------- */
+function roofAbove(c,yTop){for(let r=Math.floor(yTop/T)-1;r>=0;r--)if(isSolid(c,r))return r;return null}
+function droneLOS(x1,y1,x2,y2){for(let k=1;k<12;k++){const x=x1+(x2-x1)*k/12,y=y1+(y2-y1)*k/12;if(isSolid(Math.floor(x/T),Math.floor(y/T)))return false}return true}
+function droneStep(K,dt,pcx,pcy){
+  K.gt=(K.gt||0)+dt;
+  const fin=L.exit&&pcx>L.exit.x-640&&!P.dead;
+  // cible : au-dessus de Raymond, mais jamais à travers un toit
+  let tx=pcx-K.w/2+P.facing*(fin?0:30),ty=P.y-(fin?14:110);
+  const roof=roofAbove(Math.floor(pcx/T),P.y);if(roof!=null&&!fin)ty=Math.min(ty,roof*T-70);
+  const dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1,sp=fin?345:clamp(210+(d-150)*.5,210,320);
+  const ox=K.x,oy=K.y;K.x+=dx/d*Math.min(sp*dt,d);K.y+=dy/d*Math.min(sp*dt,d)+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
+  if(isSolid(Math.floor((K.x+K.w/2)/T),Math.floor((K.y+K.h)/T))){K.x=ox;K.y=Math.min(oy,K.y)-60*dt}
+  if(fin&&!K.finSaid&&!G.sim){K.finSaid=true;say("Il accélère ! L'abri. Vite, l'abri !",2.6);tone(900,.3,'sawtooth',.05,1500)}
+  // projecteur : balaie le sol ; si Raymond reste dans le faisceau, le drone vise puis tire une rafale
+  const ex=K.x+K.w/2,ey=K.y+K.h;
+  K.sp=K.sp||'scan';K.st=(K.st||0)+dt;
+  if(K.sp==='aim')K.sa=Math.atan2(pcy-ey,pcx-ex);else K.sa=Math.PI/2+Math.sin(K.t*1.4)*.55;
+  let a=Math.atan2(pcy-ey,pcx-ex)-K.sa;a=Math.atan2(Math.sin(a),Math.cos(a));
+  const inCone=!P.dead&&!fin&&Math.abs(a)<.3&&Math.hypot(pcx-ex,pcy-ey)<340&&!hiddenNow()&&droneLOS(ex,ey,pcx,pcy);
+  if(K.sp==='scan'){K.lock=inCone?(K.lock||0)+dt:Math.max(0,(K.lock||0)-dt*2);if(K.lock>.45){K.sp='aim';K.st=0;K.lock=0;if(!G.sim){tone(1500,.08,'square',.06);setTimeout(()=>tone(1500,.08,'square',.06),140)}}}
+  else if(K.sp==='aim'){if(K.st>.75){K.sp='cool';K.st=0;K.fire=.25;if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>noise(.05,2400,.3,'highpass'),k*45)}if(inCone)K.hitP=true}}
+  else if(K.sp==='cool'&&K.st>1.4){K.sp='scan';K.st=0}
+  if(K.fire>0)K.fire-=dt;
+  // grenades
+  if(!fin&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
+}
+function grenadeStep(dt){
+  if(!L.grenades)return;
+  for(let i=L.grenades.length-1;i>=0;i--){const n=L.grenades[i];n.t+=dt;n.vy=Math.min(MAXFALL,n.vy+GRAV*dt);const vy0=n.vy;n.onGround=false;moveX(n,n.vx*dt);moveY(n,n.vy*dt);
+    if(n.onGround&&vy0>150){n.vy=-vy0*.45;n.vx*=.7;if(!G.sim)tone(500,.04,'square',.04)}else if(n.onGround){n.vx*=Math.pow(.02,dt)}
+    if(n.t>1.5){L.grenades.splice(i,1);const gx=n.x+4,gy=n.y+4;if(Math.hypot(P.x+P.w/2-gx,P.y+P.h/2-gy)<72)G.grenadeHit=true;
+      if(!G.sim){G.shake=10;noise(.6,300,.7,'lowpass');for(let k=0;k<18;k++){const a=rnd()*Math.PI*2,s2=100+rnd()*260;parts.push({type:'dust',x:gx,y:gy,vx:Math.cos(a)*s2,vy:Math.sin(a)*s2-60,life:0,max:.7+rnd()*.5})}parts.push({type:'ring',x:gx,y:gy,life:0,max:.35})}}
+    else if(n.y>ROWS*T+40)L.grenades.splice(i,1)}
+}
+function drawDroneExtras(t){
+  const K=L.chaser;
+  if(L.grenades)for(const n of L.grenades){const x=n.x+4,y=n.y+4;ctx.save();ctx.fillStyle='#3a4a2a';ctx.beginPath();ctx.ellipse(x,y,5,6,0,0,7);ctx.fill();ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=.8;for(let k=-1;k<=1;k++){ctx.beginPath();ctx.moveTo(x-5,y+k*2.5);ctx.lineTo(x+5,y+k*2.5);ctx.stroke()}
+    ctx.fillStyle='#8a8a7a';ctx.fillRect(x-2,y-9,4,3);if(Math.sin(t*(10+n.t*20))>0){ctx.fillStyle='#ff5030';ctx.beginPath();ctx.arc(x,y-10,1.8,0,7);ctx.fill()}ctx.restore()}
+  if(!K||K.type!=='drone'||K.state==='sleep')return;
+  const ex=K.x+K.w/2,ey=K.y+K.h,red=K.sp==='aim';let len=340;for(let q=12;q<340;q+=8){if(isSolid(Math.floor((ex+Math.cos(K.sa)*q)/T),Math.floor((ey+Math.sin(K.sa)*q)/T))){len=q+10;break}}
+  ctx.save();const gr=ctx.createRadialGradient(ex,ey,4,ex,ey,len);gr.addColorStop(0,red?'rgba(255,90,70,.45)':'rgba(240,245,255,.32)');gr.addColorStop(1,'rgba(240,245,255,0)');
+  ctx.fillStyle=gr;ctx.beginPath();ctx.moveTo(ex,ey);ctx.arc(ex,ey,len,K.sa-.3,K.sa+.3);ctx.closePath();ctx.fill();
+  if(K.fire>0){ctx.strokeStyle='rgba(255,220,120,'+(K.fire*3)+')';ctx.lineWidth=2;for(let k=0;k<4;k++){const aa=K.sa+(rnd()-.5)*.2;ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex+Math.cos(aa)*len,ey+Math.sin(aa)*len);ctx.stroke()}}
+  ctx.restore();
 }
 
 /* =========================================================
@@ -4925,7 +4977,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.tiles){const sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/RS-sx);if(sw>0)blitLayer(ctx,lv.tiles,sx*RS,0,sw*RS,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/RS)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
   for(const u of lv.updrafts||[]){if(u.x<cx-100||u.x>cx+W+100)continue;ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1.5;for(let k=0;k<7;k++){const ph=((t*.9+k/7)%1),yy=u.bottom-ph*u.bottom,xx=u.x+10+((k*17)%(u.w-20))+Math.sin(t*3+k)*6;ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-20,xx,yy-44);ctx.stroke()}ctx.globalAlpha=1}
-  if(!opts.noEntities){drawMechBack(t);drawEntities(t);drawMarbles();drawMines(t);drawMechFront(t);drawActPrompt(t)}
+  if(!opts.noEntities){drawMechBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawActPrompt(t)}
   ctx.restore();
 }
 function drawEntities(t){
@@ -4957,7 +5009,7 @@ function drawEntities(t){
       for(let i=0;i<3;i++){const ph=(G.t*.5+i/3)%1;ctx.fillStyle='rgba(120,110,100,'+(.35*(1-ph))+')';ctx.beginPath();ctx.arc(ax+Math.sin(ph*6+i)*6,ay-10-ph*60,4+ph*10,0,Math.PI*2);ctx.fill()}ctx.restore()}
     else if(K.state!=='dead'){drawBuse(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.f||1,K.state==='dive'||K.state==='burn');if(K.state==='burn')drawFire(ctx,K.x+K.w/2,K.y+K.h+16,K.t*1.5)}
   }
-  if(K&&K.type==='drone'&&K.mode==='warn'&&Math.sin(K.t*40)>0){ctx.save();const gx=K.x+K.w/2,gy=K.y+K.h/2+6;const gl=ctx.createRadialGradient(gx,gy,1,gx,gy,22);gl.addColorStop(0,'rgba(255,60,40,.8)');gl.addColorStop(1,'rgba(255,60,40,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(gx,gy,22,0,7);ctx.fill();ctx.restore()}
+  if(K&&K.type==='drone'&&K.sp==='aim'&&Math.sin(K.t*40)>0){ctx.save();const gx=K.x+K.w/2,gy=K.y+K.h/2+6;const gl=ctx.createRadialGradient(gx,gy,1,gx,gy,22);gl.addColorStop(0,'rgba(255,60,40,.8)');gl.addColorStop(1,'rgba(255,60,40,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(gx,gy,22,0,7);ctx.fill();ctx.restore()}
   ctx.restore();
   for(const m of L.moths)if(vis(m.x))drawFlyer(ctx,m.kind,m.x,m.y,m.t,m.dir||1);
   for(const p of parts){const a=1-p.life/p.max;

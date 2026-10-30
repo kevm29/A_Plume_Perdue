@@ -101,6 +101,7 @@ function actStep(dt){
 }
 /* au retour au cartel : les gardiens se démêlent, les chats retournent s'asseoir */
 function actRespawn(){
+  L.grenades=[];G.grenadeHit=false;if(L.chaser&&L.chaser.type==='drone'){L.chaser.sp='scan';L.chaser.lock=0;L.chaser.gt=0;L.chaser.hitP=false}
   L.rats=L.rats.filter(c=>!c.chase);for(const c of L.rats){c.spawned=false;c.charge=0}
   for(const m of L.mines){m.state='idle';m.t=0;m.boom=false}
   for(const g of L.guards){g.tangle=0;g.sweep=0;g.angry=false}
@@ -216,4 +217,50 @@ function drawMines(t){
       ctx.fillStyle='rgba(140,90,40,.5)';ctx.beginPath();ctx.arc(x+5,y-4,2,0,7);ctx.fill();
       if(m.state==='armed'&&Math.sin(t*30)>0){ctx.fillStyle='#ff4030';ctx.beginPath();ctx.arc(x,y-14,3,0,7);ctx.fill();const gl=ctx.createRadialGradient(x,y-14,1,x,y-14,14);gl.addColorStop(0,'rgba(255,80,50,.5)');gl.addColorStop(1,'rgba(255,80,50,0)');ctx.fillStyle=gl;ctx.beginPath();ctx.arc(x,y-14,14,0,7);ctx.fill()}}
     ctx.restore()}
+}
+
+/* ---------- le drone du 2-3 : projecteur, rafale, grenades, toit qu'il ne traverse pas, sprint final ---------- */
+function roofAbove(c,yTop){for(let r=Math.floor(yTop/T)-1;r>=0;r--)if(isSolid(c,r))return r;return null}
+function droneLOS(x1,y1,x2,y2){for(let k=1;k<12;k++){const x=x1+(x2-x1)*k/12,y=y1+(y2-y1)*k/12;if(isSolid(Math.floor(x/T),Math.floor(y/T)))return false}return true}
+function droneStep(K,dt,pcx,pcy){
+  K.gt=(K.gt||0)+dt;
+  const fin=L.exit&&pcx>L.exit.x-640&&!P.dead;
+  // cible : au-dessus de Raymond, mais jamais à travers un toit
+  let tx=pcx-K.w/2+P.facing*(fin?0:30),ty=P.y-(fin?14:110);
+  const roof=roofAbove(Math.floor(pcx/T),P.y);if(roof!=null&&!fin)ty=Math.min(ty,roof*T-70);
+  const dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1,sp=fin?345:clamp(210+(d-150)*.5,210,320);
+  const ox=K.x,oy=K.y;K.x+=dx/d*Math.min(sp*dt,d);K.y+=dy/d*Math.min(sp*dt,d)+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
+  if(isSolid(Math.floor((K.x+K.w/2)/T),Math.floor((K.y+K.h)/T))){K.x=ox;K.y=Math.min(oy,K.y)-60*dt}
+  if(fin&&!K.finSaid&&!G.sim){K.finSaid=true;say("Il accélère ! L'abri. Vite, l'abri !",2.6);tone(900,.3,'sawtooth',.05,1500)}
+  // projecteur : balaie le sol ; si Raymond reste dans le faisceau, le drone vise puis tire une rafale
+  const ex=K.x+K.w/2,ey=K.y+K.h;
+  K.sp=K.sp||'scan';K.st=(K.st||0)+dt;
+  if(K.sp==='aim')K.sa=Math.atan2(pcy-ey,pcx-ex);else K.sa=Math.PI/2+Math.sin(K.t*1.4)*.55;
+  let a=Math.atan2(pcy-ey,pcx-ex)-K.sa;a=Math.atan2(Math.sin(a),Math.cos(a));
+  const inCone=!P.dead&&!fin&&Math.abs(a)<.3&&Math.hypot(pcx-ex,pcy-ey)<340&&!hiddenNow()&&droneLOS(ex,ey,pcx,pcy);
+  if(K.sp==='scan'){K.lock=inCone?(K.lock||0)+dt:Math.max(0,(K.lock||0)-dt*2);if(K.lock>.45){K.sp='aim';K.st=0;K.lock=0;if(!G.sim){tone(1500,.08,'square',.06);setTimeout(()=>tone(1500,.08,'square',.06),140)}}}
+  else if(K.sp==='aim'){if(K.st>.75){K.sp='cool';K.st=0;K.fire=.25;if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>noise(.05,2400,.3,'highpass'),k*45)}if(inCone)K.hitP=true}}
+  else if(K.sp==='cool'&&K.st>1.4){K.sp='scan';K.st=0}
+  if(K.fire>0)K.fire-=dt;
+  // grenades
+  if(!fin&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
+}
+function grenadeStep(dt){
+  if(!L.grenades)return;
+  for(let i=L.grenades.length-1;i>=0;i--){const n=L.grenades[i];n.t+=dt;n.vy=Math.min(MAXFALL,n.vy+GRAV*dt);const vy0=n.vy;n.onGround=false;moveX(n,n.vx*dt);moveY(n,n.vy*dt);
+    if(n.onGround&&vy0>150){n.vy=-vy0*.45;n.vx*=.7;if(!G.sim)tone(500,.04,'square',.04)}else if(n.onGround){n.vx*=Math.pow(.02,dt)}
+    if(n.t>1.5){L.grenades.splice(i,1);const gx=n.x+4,gy=n.y+4;if(Math.hypot(P.x+P.w/2-gx,P.y+P.h/2-gy)<72)G.grenadeHit=true;
+      if(!G.sim){G.shake=10;noise(.6,300,.7,'lowpass');for(let k=0;k<18;k++){const a=rnd()*Math.PI*2,s2=100+rnd()*260;parts.push({type:'dust',x:gx,y:gy,vx:Math.cos(a)*s2,vy:Math.sin(a)*s2-60,life:0,max:.7+rnd()*.5})}parts.push({type:'ring',x:gx,y:gy,life:0,max:.35})}}
+    else if(n.y>ROWS*T+40)L.grenades.splice(i,1)}
+}
+function drawDroneExtras(t){
+  const K=L.chaser;
+  if(L.grenades)for(const n of L.grenades){const x=n.x+4,y=n.y+4;ctx.save();ctx.fillStyle='#3a4a2a';ctx.beginPath();ctx.ellipse(x,y,5,6,0,0,7);ctx.fill();ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=.8;for(let k=-1;k<=1;k++){ctx.beginPath();ctx.moveTo(x-5,y+k*2.5);ctx.lineTo(x+5,y+k*2.5);ctx.stroke()}
+    ctx.fillStyle='#8a8a7a';ctx.fillRect(x-2,y-9,4,3);if(Math.sin(t*(10+n.t*20))>0){ctx.fillStyle='#ff5030';ctx.beginPath();ctx.arc(x,y-10,1.8,0,7);ctx.fill()}ctx.restore()}
+  if(!K||K.type!=='drone'||K.state==='sleep')return;
+  const ex=K.x+K.w/2,ey=K.y+K.h,red=K.sp==='aim';let len=340;for(let q=12;q<340;q+=8){if(isSolid(Math.floor((ex+Math.cos(K.sa)*q)/T),Math.floor((ey+Math.sin(K.sa)*q)/T))){len=q+10;break}}
+  ctx.save();const gr=ctx.createRadialGradient(ex,ey,4,ex,ey,len);gr.addColorStop(0,red?'rgba(255,90,70,.45)':'rgba(240,245,255,.32)');gr.addColorStop(1,'rgba(240,245,255,0)');
+  ctx.fillStyle=gr;ctx.beginPath();ctx.moveTo(ex,ey);ctx.arc(ex,ey,len,K.sa-.3,K.sa+.3);ctx.closePath();ctx.fill();
+  if(K.fire>0){ctx.strokeStyle='rgba(255,220,120,'+(K.fire*3)+')';ctx.lineWidth=2;for(let k=0;k<4;k++){const aa=K.sa+(rnd()-.5)*.2;ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex+Math.cos(aa)*len,ey+Math.sin(aa)*len);ctx.stroke()}}
+  ctx.restore();
 }

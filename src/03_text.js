@@ -10,6 +10,7 @@ const DEATH_Q={
   pickets:["Une grille en fer forgé. Jolie. Pointue, surtout."],
   nails:["Des clous. Le charpentier n'a pas fini son travail."],
   rat:["Mordu par un rat. Il cherchait du grain, il a trouvé de la paille.","Un rat. Même ici, la vermine a ses entrées."],
+  grenade:["Une grenade. Lâchée par un pigeon de métal. La guerre a bien changé.","Boum. Le règlement disait de se jeter à plat ventre. Je l'ai fait. Trop tard."],
   mine:["Elle a fait clic, puis boum. Dans cet ordre, au moins.","Une mine de 1916. Elle a attendu cent dix ans pour moi. C'est presque touchant."],
   piglet:["Rattrapé par un marcassin. Je ne le dirai à personne.","Les marcassins courent plus vite que la gloire."],
   boar:["Un sanglier. Il ne m'a même pas vu. C'est presque pire.","Les sangliers ont pris le front. Personne ne les a arrêtés."],
