@@ -14,6 +14,9 @@ addEventListener('keyup',e=>{const a=KMAP[e.code];if(a)for(const k of a)keys.del
 addEventListener('blur',()=>keys.clear());
 function toLogical(ev){const r=cv.getBoundingClientRect();return{x:(ev.clientX-r.left-offX)/scale,y:(ev.clientY-r.top-offY)/scale}}
 cv.addEventListener('pointerdown',e=>{ensureAudio();cv.focus();G.click=toLogical(e)});
+cv.addEventListener('pointermove',e=>{G.mouse=toLogical(e)});
+cv.addEventListener('pointerleave',()=>{G.mouse=null});
+cv.addEventListener('wheel',e=>{if(G.state==='ach'){e.preventDefault();G.wheel=(G.wheel||0)+e.deltaY*(e.deltaMode===1?30:1)}},{passive:false});
 function bindTouch(id,act){
   const el=document.getElementById(id);
   const on=e=>{e.preventDefault();ensureAudio();if(!keys.has(act))pressed.add(act);keys.add(act);el.classList.add('down');if(act==='jump')pressed.add('ok')};
@@ -119,5 +122,5 @@ async function boot(){
   try{await Promise.race([Promise.all([document.fonts.load('30px "IM Fell English SC"'),document.fonts.load('italic 20px "IM Fell English"'),document.fonts.load('20px "IM Fell English"'),document.fonts.load('30px "La Belle Aurore"')]),new Promise(r=>setTimeout(r,2500))])}catch(e){}
   ensureTitleLv();G.state='title';G.fade=1;setSong('title');
 }
-window.__apl={G,P,S,startLevel,stepPlay,render,renderWorld,renderLighting,renderWeather,renderGrain,renderHUD,update,get L(){return L},keys,pressed,cam,compileSong,LEVELS};
+window.__drawMedal=(g,x,y,id,on,s)=>drawAchMedal(g,x,y,id,on,s);window.__apl={G,P,S,startLevel,stepPlay,render,renderWorld,renderLighting,renderWeather,renderGrain,renderHUD,update,get L(){return L},keys,pressed,cam,compileSong,LEVELS};
 boot();requestAnimationFrame(frame);

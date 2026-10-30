@@ -77,11 +77,9 @@ function renderTitle(t){
   ctx.save();ctx.textAlign='center';
   ctx.fillStyle='rgba(0,0,0,.45)';ctx.font='78px '+F_DISP;ctx.fillText('À Plume Perdue',W*.66+3,150+4);
   ctx.fillStyle='#efe5cc';ctx.fillText('À Plume Perdue',W*.66,150);
-  ctx.font='italic 20px '+F_BODY;ctx.fillStyle='#d9a441';ctx.fillText("Une lettre, un pigeon empaillé, un siècle de retard.",W*.66,186);
   ctx.restore();
   drawMenu(W*.66,268,46);
   ctx.save();ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.textAlign='center';
-  ctx.fillText('← → se déplacer · Espace sauter, rappuyer pour battre des ailes, maintenir pour planer',W*.66,H-46);
   ctx.fillText('E attraper · Échap pause · R revenir au cartel · M couper le son',W*.66,H-24);
   ctx.restore();
 }
