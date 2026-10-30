@@ -11,13 +11,32 @@ function freshRun(){if(S.run.lives==null||S.run.lives<0)S.run.lives=START_LIVES}
 function menuItems(){
   if(G.state==='title'){
     const it=[{label:'Nouvelle partie',act:()=>{newRun();startIntro()}}];
-    if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.unlocked,19);freshRun();startLevel(li)}});
+    if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.resume!=null?S.resume:S.unlocked,19);freshRun();startLevel(li)}});
     it.push({label:'Choisir un niveau',act:openSelect});
     it.push({label:S.muted?'Son : coupé':'Son : activé',act:toggleMute});
     return it;
   }
-  if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:'Menu principal',act:()=>goTitle()},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
+  if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:"Retour à l'accueil",act:askHome},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
   return[];
+}
+function selectOpen(i){if(S.infinite)return true;if(i===20)return true;if(i===21)return !!S.finished;return i<=S.unlocked}
+/* retour à l'accueil en pleine mission : l'avancement et les scores de la mission sont perdus */
+function abandonMission(){const w=LEVELS[G.li].w;for(let k=w*4;k<w*4+4;k++){delete S.run.stats[k];if(S.run.got)delete S.run.got[k]}S.resume=w*4;save();G.chase=false;goTitle()}
+function askHome(){G.confirm={prev:G.state,text:"Retourner à l'accueil ?",sub:"L'avancement et les points de cette mission seront perdus. Raymond reprendra au début de la mission."};G.state='confirm';G.confirmSel=0}
+function handleConfirm(){
+  const C=G.confirm,yes=()=>{G.confirm=null;abandonMission()},no=()=>{G.state=C.prev;G.confirm=null};
+  if(pressed.has('esc')||pressed.has('back')){no();return}
+  if(pressed.has('left')||pressed.has('right')||pressed.has('up')||pressed.has('down'))G.confirmSel=1-G.confirmSel;
+  if(G.click&&G.confirmBoxes)for(const b of G.confirmBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){b.i?yes():no();return}
+  if(pressed.has('ok'))G.confirmSel?yes():no();
+}
+function renderConfirm(){
+  const C=G.confirm;if(!C)return;ctx.fillStyle='rgba(10,8,14,.78)';ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.translate(W/2,H/2);ctx.fillStyle='#ece3cc';rr(ctx,-250,-100,500,200,8);ctx.fill();ctx.strokeStyle='rgba(42,36,32,.5)';rr(ctx,-243,-93,486,186,5);ctx.stroke();
+  ctx.fillStyle='#2a2420';ctx.textAlign='center';ctx.font='26px '+F_DISP;ctx.fillText(C.text,0,-48);
+  ctx.font='italic 16px '+F_BODY;wrap(ctx,C.sub,420).forEach((l,k)=>ctx.fillText(l,0,-16+k*21));
+  G.confirmBoxes=[];[['Rester',0],["Retour à l'accueil",1]].forEach(([lb,i])=>{const bx=i?20:-200,by=46;const sel=G.confirmSel===i;ctx.fillStyle=sel?'#2a2420':'rgba(42,36,32,.12)';rr(ctx,bx,by,180,36,6);ctx.fill();ctx.fillStyle=sel?'#ece3cc':'#2a2420';ctx.font='17px '+F_DISP;ctx.fillText(lb,bx+90,by+24);G.confirmBoxes.push({x:W/2+bx,y:H/2+by,w:180,h:36,i})});
+  ctx.restore();
 }
 function goTitle(){G.state='title';G.menuSel=0;G.fade=1;setSong('title');loopsOff()}
 function openSelect(){G.state='select';G.sel=Math.min(S.unlocked,19);G.fade=1;setSong('title');loopsOff()}
@@ -27,7 +46,10 @@ function handleMenu(){
   if(pressed.has('up'))G.menuSel=(G.menuSel-1+it.length)%it.length;
   if(pressed.has('down'))G.menuSel=(G.menuSel+1)%it.length;
   if(G.click){
-    if(G.state==='title'){const ex=W*.3+11*3.2,ey=460-29.5*3.2;if(Math.hypot(G.click.x-ex,G.click.y-ey)<16){S.infinite=!S.infinite;save();SFX.secret();G.wink=.7;return}}
+    // l'œil de Raymond : quatre clics rapprochés, et il roucoule (vies illimitées, tous les niveaux ouverts)
+    if(G.state==='title'){const ex=W*.3+11*3.2,ey=460-29.5*3.2;if(Math.hypot(G.click.x-ex,G.click.y-ey)<16){
+      if(G.t-(G.eyeT||-9)>1.4)G.eyeN=0;G.eyeT=G.t;G.eyeN=(G.eyeN||0)+1;G.wink=.18;SFX.tick();
+      if(G.eyeN>=4){G.eyeN=0;S.infinite=!S.infinite;save();SFX.coo();G.wink=.9}return}}
     for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.menuSel=b.i;it[b.i].act();return}
   }
   if(pressed.has('ok'))it[G.menuSel].act();
@@ -59,7 +81,7 @@ function renderTitle(t){
   drawMenu(W*.66,268,46);
   ctx.save();ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.textAlign='center';
   ctx.fillText('← → se déplacer · Espace sauter, rappuyer pour battre des ailes, maintenir pour planer',W*.66,H-46);
-  ctx.fillText('Échap pause · R revenir au cartel · M couper le son',W*.66,H-24);
+  ctx.fillText('E attraper · Échap pause · R revenir au cartel · M couper le son',W*.66,H-24);
   ctx.restore();
 }
 function renderSelect(t){
@@ -68,13 +90,13 @@ function renderSelect(t){
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Itinéraire de Raymond',W/2,46);
   ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → Verdun → Reims → A4 → Villemareuil',W/2,67);
   G.boxes=[];
-  const tile=(i,x,yy,w,h,top,bottom)=>{const sel=i===G.sel,done=typeof i==='number'&&i<=S.unlocked;
-    ctx.fillStyle=sel?'#efe5cc':done?'#d8cdb2':'#a89f8a';rr(ctx,x,yy,w,h,6);ctx.fill();
+  const tile=(i,x,yy,w,h,top,bottom)=>{const sel=i===G.sel,open=selectOpen(i);
+    ctx.save();if(!open)ctx.globalAlpha=.35;ctx.fillStyle=sel?'#efe5cc':'#d8cdb2';rr(ctx,x,yy,w,h,6);ctx.fill();
     if(sel){ctx.strokeStyle='#d9a441';ctx.lineWidth=3;rr(ctx,x-3,yy-3,w+6,h+6,8);ctx.stroke()}
     ctx.fillStyle='#2a2420';ctx.textAlign='left';
     if(bottom){ctx.font='12px '+F_DISP;ctx.fillText(top,x+10,yy+16);ctx.font='italic 15px '+F_BODY;ctx.fillText(bottom,x+10,yy+35)}
     else{ctx.font='italic 15px '+F_BODY;ctx.textAlign='center';ctx.fillText(top,x+w/2,yy+h/2+5)}
-    G.boxes.push({x,y:yy,w,h,i})};
+    ctx.restore();G.boxes.push({x,y:yy,w,h,i})};
   WORLDS.forEach((wd,wi)=>{
     const y=86+wi*76;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`MISSION ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
     wd.levels.forEach((ln,lj)=>{
@@ -85,7 +107,7 @@ function renderSelect(t){
   });
   tile(20,70,474,406,30,"Revoir l'introduction");
   tile(21,484,474,406,30,'Revoir la fin');
-  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Tous les niveaux sont accessibles · Entrée pour partir · Échap pour revenir'+(S.infinite?' · paille illimitée':''),W/2,H-12);
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText((S.infinite?'Tous les niveaux sont ouverts · vies illimitées':'Les niveaux s\'ouvrent à mesure que Raymond avance')+' · Entrée pour partir · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){
@@ -96,6 +118,7 @@ function handleSelect(){
   if(pressed.has('up'))G.sel=s>=20?(s===20?16:19):Math.max(0,s-4);
   if(pressed.has('down'))G.sel=s>=16&&s<20?(s%4<2?20:21):s<16?s+4:s;
   const go=li=>{
+    if(!selectOpen(li)){tone(200,.1,'square',.04);return}
     if(li===20){startIntro();return}
     if(li===21){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
     G.cutSeen=li>0;newRun();startLevel(li)};
@@ -409,7 +432,6 @@ function renderLevelDone(t){
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});
-  ctx.font='italic 16px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.textAlign='left';ctx.fillText('La lettre attendra la fin de la mission.',W/2-270,H-64);
   if(LE.after>.6){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-16)}
   ctx.restore();
 }

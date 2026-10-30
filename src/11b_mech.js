@@ -18,7 +18,7 @@ function mechInit(L){
 function mechParse(L,ch,c,r,x,y,cx,cy,movers){
   const def=L.def;
   switch(ch){
-    case'&':L.covers.push({x:x-8,y:y-T,w:T+16,h:2*T});return true;
+    case'&':L.covers.push({x:x-8,y:y-T,w:T+16,h:2*T,kind:(c*7+r)%5});return true;
     case'G':{const g={x:cx-12,y:y+T-60,w:24,h:60,r,c,dir:1,speed:84,pause:0,look:0,t:c*.3,a0:null,a1:null,sees:false};L.guards.push(g);return true}
     case'Y':L.watchers.push({x:cx,y:y+T,t:0,state:'closed',open:0,mode:'sit',seen:false});L.avoid.push(cx);return true;
     case'H':L.triggerX=Math.min(L.triggerX,cx);L.chaser={type:'guardnet',home:{x:cx-14,y:y+T-60},x:cx-14,y:y+T-60,w:28,h:60,vx:0,vy:0,state:'sleep',onGround:true,t:0,f:1,meowT:2};return true;
@@ -35,6 +35,10 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
     case'e':(L.acts=L.acts||[]).push({kind:'secret',x:cx,y:y+T,open:0,t:0,used:false});return true;
     case'z':(L.acts=L.acts||[]).push({kind:'lever',x:cx,y:y+T,open:0,t:0,used:false});return true;
     case'R':return false;
+    case'f':return false;   // carton creux : dessiné comme un bloc, on peut y entrer
+    case't':return false;   // planche invisible
+    case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=(L.g[r][c-1]==='f'||L.g[r][c+1]==='f')?'f':'.';return false}
+    case'x':{let fr=r+1;while(fr<ROWS&&L.g[fr][c]!=='#')fr++;L.decor.push({t:'wardrobe',x:c*T,y:r*T,w:2*T,floor:fr*T});L.g[r][c]='=';if(L.g[r][c+1]==='.')L.g[r][c+1]='=';return false}
   }
   return false;
 }
@@ -87,9 +91,13 @@ function mechStep(dt,pcx,pcy){
   // gardiens : ronde, pauses, faisceau
   for(const g of L.guards){
     g.t+=dt;
-    if(g.tangle>0){g.tangle-=dt;g.sees=false;continue}
+    if(g.tangle>0){g.tangle-=dt;g.sees=false;
+      if(g.tangle<=0){g.sweep=2.6;g.sweepAng=g.dir>0?0:Math.PI;g.angry=true;const c=L.covers.find(c=>c.on===g);if(c){c.on=null;c.sheetX=g.x+g.w/2+22*g.dir}if(!G.sim){bubble(g.x+g.w/2,g.y-16,'Où il est, ce pigeon ?!','#a8322d');noise(.25,900,.2,'bandpass')}}
+      continue}
+    // il arrache le drap et balaie tout autour de lui avec sa lampe, furieux
+    if(g.sweep>0){g.sweep-=dt;g.sweepAng+=dt*3.4;g.look=0;g.sees=!G.cut&&!P.dead&&guardSees(g,pcx,pcy);continue}
     if(g.pause>0){g.pause-=dt;g.look=Math.sin(g.t*3)*.18;if(g.pause<=0)g.dir=-g.dir}
-    else{g.look=0;g.x+=g.dir*g.speed*dt;
+    else{g.look=0;g.x+=g.dir*g.speed*(g.angry?1.6:1)*dt;
       if(g.dir>0&&g.x+g.w>=g.a1){g.x=g.a1-g.w;g.pause=1.1}
       else if(g.dir<0&&g.x<=g.a0){g.x=g.a0;g.pause=1.1}}
     g.sees=!G.cut&&!P.dead&&guardSees(g,pcx,pcy);
@@ -99,8 +107,8 @@ function mechStep(dt,pcx,pcy){
   // gargouilles : goutte d'avertissement, puis jet
   for(const o of L.gargoyles){const cyc=(G.lt+o.ph)%3.2;o.state=cyc<1.6?'idle':cyc<2.2?'warn':'jet';o.len=o.state==='jet'?Math.min(170,(cyc-2.2)*900):0}
 }
-function guardBeam(g){const ex=g.x+g.w/2+g.dir*10,ey=g.y+20;const base=g.dir>0?0:Math.PI;return{ex,ey,ang:base+g.look+.12*(g.dir>0?1:-1),len:250,half:.32}}
-function hiddenNow(){const cx=P.x+P.w/2,cy=P.y+P.h/2;for(const c of L.covers)if(cx>c.x+4&&cx<c.x+c.w-4&&cy>c.y&&cy<c.y+c.h)return true;return false}
+function guardBeam(g){const ex=g.x+g.w/2+g.dir*10,ey=g.y+20;if(g.sweep>0)return{ex,ey,ang:g.sweepAng,len:250,half:.32};const base=g.dir>0?0:Math.PI;return{ex,ey,ang:base+g.look+.12*(g.dir>0?1:-1),len:250,half:.32}}
+function hiddenNow(){if(inFake())return true;return !!coverHere()}
 function guardSees(g,pcx,pcy){
   const b=guardBeam(g),dx=pcx-b.ex,dy=pcy-b.ey,d=Math.hypot(dx,dy);
   if(d>b.len)return false;
@@ -144,7 +152,7 @@ function mechAfterMove(dt,vyBefore){
 function mechHit(hb){
   const pcx=hb.x+hb.w/2,pcy=hb.y+hb.h/2;
   for(const g of L.guards)if(g.sees){if(!G.sim){bubble(g.x+g.w/2,g.y-14,'Hé ! Toi !','#2a3a5a')}return'guard'}
-  for(const w of L.watchers)if(w.mode==='chase'&&w.k&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
+  for(const w of L.watchers)if(w.mode==='chase'&&w.k&&!hiddenNow()&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';

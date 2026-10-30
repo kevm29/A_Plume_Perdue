@@ -10,6 +10,9 @@ const motes=[];
 for(let i=0;i<70;i++)motes.push({x:rnd()*W,y:rnd()*H,z:.3+rnd()*.9,s:.6+rnd()*1.6,ph:rnd()*9});
 const GRAV=2200,MAXFALL=900,GLIDE=190,RUN=290,ACC=2400,AIRACC=1700,FRIC=2600,JUMPV=730,FLAPV=560,MAXFLAPS=2;
 const BOLT_PERIOD=3.0;
+/* robustesse des ailes : un battement coûte 30, planer 15 par seconde ; au sol elle revient à 15 par seconde
+   (deux secondes par battement). Vidée, l'aile est « décousue » : plus de battement ni de vol plané avant 60. */
+const STAM_MAX=100,STAM_FLAP=30,STAM_GLIDE=15,STAM_REGEN=15,STAM_RESUME=60;
 
 function say(text,dur,who){G.quip={text,t:0,dur:dur||3.8,who:who||'RAYMOND'}}
 function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:1.2+text.length*.035,col:col||'#a8322d',rot:(rnd()-.5)*.25})}
@@ -23,7 +26,7 @@ function computeRS(){RS=Math.min(2,Math.max(1,Math.round(scale*dpr*2)/2))}
 function songKey(i){const d=LEVELS[i];return's'+(d.w+1)+'-'+(i%4+1)}
 function startLevel(i){
   computeRS();
-  G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTiles(L);
+  G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
   setSong(songKey(i));loopsOff();
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
@@ -41,7 +44,7 @@ function startLevel(i){
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
 }
 function resetPlayer(){
-  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;
+  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;
 }
 function puff(x,y,n,straw){
   for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,s=60+rnd()*260;parts.push({type:straw?'straw':'feather',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,life:0,max:.9+rnd()*1.1,rot:rnd()*6,vr:(rnd()-.5)*14,len:4+rnd()*7})}
@@ -58,9 +61,10 @@ function die(kind,tiles){
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
   puff(cx,cy,30,true);puff(cx,cy,10,false);parts.push({type:'ring',x:cx,y:cy,life:0,max:.45});
   if(kind==='cat'){meow(.9,true);}
-  if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTiles(L)}
+  if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
+function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});if(!G.tornSaid){G.tornSaid=true;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}}
 function winLevel(){if(G.sim){G.simWin=true;return}G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
 
 /* ---------- scène d'ouverture : nuit d'orage, voleur, armoire, carton ---------- */
@@ -185,12 +189,15 @@ function stepPlay(dt){
   P.coyote=P.onGround?.1:P.coyote-dt;P.jumpBuf-=dt;
   if(P.jumpBuf>0&&!MD.noInput){
     if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;SFX.jump()}
-    else if(P.flaps<MAXFLAPS){P.vy=-FLAPV;P.flaps++;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false)}
+    else if(P.flaps<MAXFLAPS&&!P.torn&&P.stam>=STAM_FLAP){P.vy=-FLAPV;P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
+    else if(P.flaps<MAXFLAPS&&!G.sim){P.jumpBuf=0;P.strain=.5;tone(160,.08,'triangle',.05)}
   }
   if(P.jumping&&!held&&P.vy<0){P.vy*=.5;P.jumping=false}
   P.vy+=GRAV*dt;
-  P.gliding=held&&P.vy>0&&!P.onGround;
-  if(P.gliding)P.vy=Math.min(P.vy,GLIDE);
+  P.gliding=held&&P.vy>0&&!P.onGround&&!P.torn&&P.stam>0;
+  if(P.gliding){P.vy=Math.min(P.vy,GLIDE);P.stam-=STAM_GLIDE*dt;if(P.stam<=0){P.stam=0;wingTorn()}}
+  if(P.onGround&&!P.onMoverRegenBlock){P.stam=Math.min(STAM_MAX,P.stam+STAM_REGEN*dt);if(P.torn&&P.stam>=STAM_RESUME)P.torn=false}
+  if(P.strain>0)P.strain-=dt;
   // courants d'air ascendants
   P.lift=0;
   if(!P.onGround)for(const u of L.updrafts)if(P.x+P.w>u.x+4&&P.x<u.x+u.w-4&&P.y+P.h<=u.bottom+6&&P.y>-200){P.vy-=(held?3600:2700)*dt;if(P.vy<-330)P.vy=-330;P.lift=1;P.flaps=Math.min(P.flaps,1)}
@@ -200,6 +207,7 @@ function stepPlay(dt){
   const wasG=P.onGround,vyBefore=P.vy,prevB=P.y+P.h;
   P.onGround=false;P.onMover=null;
   moveY(P,P.vy*dt);
+  if(P.y<0){P.y=0;if(P.vy<0)P.vy=0}
   if(P.vy>=0&&!P.onGround){
     for(const m of L.movers){const b=P.y+P.h;if(P.x+P.w>m.x+2&&P.x<m.x+(m.kind==='truck'?m.w-40:m.w)-2&&prevB<=m.y+Math.max(0,-m.dy)+1.5&&b>=m.y){P.y=m.y-P.h;P.vy=0;P.onGround=true;P.onMover=m;break}}
   }
@@ -333,6 +341,6 @@ function updateParticles(dt){
 function updateCamera(dt){
   let tx=clamp(P.x+P.w/2-W/2+P.facing*70,0,L.wpx-W);
   if(L.auto&&L.auto.on){tx=Math.max(L.auto.x,Math.min(tx,L.auto.x+120));cam.x=Math.max(cam.x,L.auto.x)}
-  const ty=clamp(P.y-H*.5,0,ROWS*T-H);
+  const ty=clamp(P.y-H*(L.def.camY||.5),0,ROWS*T-H);
   const k=1-Math.exp(-dt*5);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k;
 }

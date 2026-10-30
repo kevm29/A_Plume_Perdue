@@ -18,10 +18,11 @@ Pour le jouer en ligne, active GitHub Pages (Settings → Pages → branche `mai
 |---|---|---|
 | Se déplacer | ← → ou Q / D (A / D en QWERTY) | ◀ ▶ |
 | Sauter | Espace, Z ou ↑ | SAUT |
-| Battre des ailes (2 fois max) | Rappuyer en l'air | SAUT en l'air |
+| Battre des ailes (2 fois max, selon la robustesse) | Rappuyer en l'air | SAUT en l'air |
 | Planer | Maintenir le saut en tombant | Maintenir SAUT |
 | Attraper, tirer, ouvrir (le bec) | E ou F | E |
 | Pause | Échap ou P | ❚❚ |
+| Retour à l'accueil (perd l'avancement de la mission) | icône maison en haut à gauche, ou menu Pause | icône maison |
 | Revenir au dernier cartel | R | menu Pause |
 | Couper le son | M | menu Pause |
 
@@ -30,15 +31,16 @@ La progression est sauvegardée dans le navigateur.
 ## Mécaniques
 
 - **L'état de Raymond (5 crans).** Chaque chute l'abîme d'un cran et le renvoie au dernier cartel : paille qui dépasse, pansement, bandeau, puis un bouton à la place de l'œil. Chaque touffe de paille ramassée le répare d'un cran. Une chute de plus au cinquième cran, et il perd la tête.
+- **La robustesse des ailes.** Une petite jauge au-dessus de Raymond. Un battement coûte 30, planer 15 par seconde ; posé, elle remonte de 15 par seconde (deux secondes par battement). Vidée, l'aile se « découd » : plus de battement ni de vol plané tant qu'elle n'est pas remontée à 60. Le saut simple reste toujours possible.
 - **Les vies.** Raymond commence sans aucune vie en réserve. Il n'y a qu'**une médaille par mission** (au 1-1, puis au deuxième niveau de chaque mission) : chacune donne une vie. Une chute le renvoie au dernier cartel, ou au début du niveau. Quand il perd la tête, une vie le ramène au début de la mission (ses 4 niveaux), recousu à neuf. Sans vie, tout recommence depuis l'introduction.
 - **Rien ne se prend deux fois.** Après une mort avec une vie, la paille, la médaille et la cachette déjà trouvées dans une partie ne réapparaissent pas : le score garde ce qui a été pris, et il ne reste à prendre que le reste.
 - **Après chaque niveau**, un court bilan. **La lettre ne se lit qu'à la fin de chaque mission** (ses quatre morceaux d'un coup), suivie du bilan de points de la mission. **Chaque niveau vaut 1000 points** : 600 pour toute la paille (700 dans les niveaux sans médaille), 100 la médaille, 100 la cachette, 200 sans accroc (50 de moins par accroc).
 - **Les épingles** gardent la paille de Raymond quand il s'y pique (à découvrir).
 - **Les cartels** (panneaux « ART. » dehors) servent de points de sauvegarde.
-- **À collecter** : des touffes de paille, une médaille par mission (la Croix du mérite colombophile) et **une cachette secrète par niveau** : un meuble, une boîte aux lettres, une caisse ou un vase qui s'ouvre avec E et cache une touffe de paille. Au 1-1, c'est la porte par où le voleur est sorti. Au 1-2, la vitrine est fermée à clef : il faut d'abord chiper celle du gardien.
-- **L'action E** s'apprend au 1-1 (une poignée ouvre un portillon). Caché sous un drap, quand un gardien passe tout près, E lui chipe sa clef et l'emmêle dans le drap quelques secondes.
-- **Choisir un niveau** (écran d'accueil ou menu Pause) : les 20 niveaux sont accessibles directement, ainsi que l'introduction et la fin.
-- **Mode vies illimitées (caché)** : sur l'écran d'accueil, cliquer sur l'œil fermé de Raymond, sous la cloche. Il fait un clin d'œil, et le compteur affiche ∞ : Raymond ne perd plus jamais la tête. Recliquer pour revenir au mode normal.
+- **À collecter** : des touffes de paille, une médaille par mission (la Croix du mérite colombophile) et **une cachette secrète par niveau** : un meuble, une boîte aux lettres, une caisse ou un vase qui s'ouvre avec E et cache une touffe de paille. Au 1-1, c'est la porte par où le voleur est sorti. Au 1-2, il faut entrer dans le grand carton blanc par le milieu de son flanc droit ; au 1-3, une planche invisible sur la tête du mammouth mène à une planche qu'on ne voit que de là-haut.
+- **L'action E** s'apprend au 1-1 (une poignée ouvre un portillon). Caché sous un drap, quand un gardien passe tout près, E lui jette le drap sur la tête (rien ne l'annonce dans le jeu) : il se débat une seconde, l'arrache, balaie toute la pièce de sa lampe, puis reprend sa ronde plus vite, furieux. Le drap reste par terre et découvre un meuble farfelu (buste qui louche, statue « Pudeur », ours en caleçon, comtoise à moustache, mannequin en corset) : la cachette est perdue jusqu'au prochain retour au cartel. Le chat aux yeux brillants s'y emmêle de la même façon s'il vous poursuit jusque sous un drap.
+- **Choisir un niveau** (écran d'accueil ou menu Pause) : les niveaux déjà atteints, l'introduction, et la fin une fois le jeu terminé (tout est ouvert en mode caché).
+- **Mode caché** : sur l'écran d'accueil, cliquer quatre fois de suite sur l'œil fermé de Raymond, sous la cloche. Il roucoule : vies illimitées (∞) et tous les niveaux ouverts dans « Choisir un niveau ». Quatre clics de plus pour revenir au mode normal.
 
 ### Une mécanique par mission
 

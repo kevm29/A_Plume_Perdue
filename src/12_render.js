@@ -71,6 +71,13 @@ function drawEntities(t){
     const lift=P.spin?-30*Math.pow(Math.sin(P.spin/2),2):0;
     drawRaymond(ctx,P.x+P.w/2,P.y+P.h+lift,{f:P.facing,t:G.t,walk,air:!P.onGround&&!C,flap:P.flapT,glide:P.gliding||P.lift,wear:wear(),sx:P.sx,sy:P.sy,size:1.15,rot:P.spin,eyeClosed:closed});
     ctx.restore();
+    // robustesse des ailes : petite jauge au-dessus de Raymond, seulement quand elle n'est pas pleine
+    if(!C&&P.stam<STAM_MAX-.5){const bx=P.x+P.w/2-18,by=P.y-16,k=P.stam/STAM_MAX,al=Math.min(1,(STAM_MAX-P.stam)/10);
+      ctx.save();ctx.globalAlpha=al;ctx.fillStyle='rgba(14,12,18,.65)';rr(ctx,bx-2,by-2,40,8,4);ctx.fill();
+      ctx.fillStyle=P.torn?'rgba(200,48,42,'+(.6+.4*Math.sin(G.t*10))+')':(P.stam<STAM_FLAP?'#c8783a':'#d9a441');if(k>0){rr(ctx,bx,by,36*k,4,2);ctx.fill()}
+      ctx.strokeStyle='rgba(233,223,199,.35)';ctx.lineWidth=.8;for(const t of[.3,.6]){ctx.beginPath();ctx.moveTo(bx+36*t,by-1);ctx.lineTo(bx+36*t,by+5);ctx.stroke()}
+      if(P.torn){ctx.strokeStyle='#e9dfc7';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.beginPath();ctx.moveTo(bx,by+2);ctx.lineTo(bx+36,by+2);ctx.stroke();ctx.setLineDash([])}
+      ctx.restore()}
   }
   for(const b of G.bubbles){const a=Math.min(1,b.t*6,(b.max-b.t)*4);ctx.save();ctx.globalAlpha=a;ctx.translate(b.x,b.y-b.t*18);ctx.rotate(b.rot);ctx.font='14px '+F_DISP;const w=ctx.measureText(b.text).width+16;
     ctx.fillStyle='rgba(0,0,0,.25)';rr(ctx,-w/2+2,-10,w,22,4);ctx.fill();ctx.fillStyle='#ece3cc';rr(ctx,-w/2,-12,w,22,4);ctx.fill();
@@ -140,6 +147,9 @@ function renderHUD(){
   ctx.fillStyle='#2a2420';ctx.beginPath();ctx.arc(w-12,17,3.5,0,7);ctx.fill();
   ctx.textAlign='left';ctx.fillText(lbl,18,23);
   ctx.restore();
+  // bouton maison : retour à l'accueil
+  {const hx=18+w+30,hy=33;G.homeBox={x:hx-17,y:hy-17,w:34,h:34};ctx.save();ctx.fillStyle='rgba(14,12,18,.6)';ctx.beginPath();ctx.arc(hx,hy,16,0,7);ctx.fill();ctx.strokeStyle='rgba(233,223,199,.25)';ctx.stroke();
+   ctx.fillStyle='#e9dfc7';ctx.beginPath();ctx.moveTo(hx-8,hy);ctx.lineTo(hx,hy-8);ctx.lineTo(hx+8,hy);ctx.closePath();ctx.fill();ctx.fillRect(hx-6,hy,12,8);ctx.fillStyle='rgba(14,12,18,.9)';ctx.fillRect(hx-2,hy+3,4,5);ctx.restore()}
   // compteurs : vies, état de Raymond, paille ramassée, médaille
   ctx.save();
   const bx=W-74,by=14;let x=bx;

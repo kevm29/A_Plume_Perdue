@@ -588,6 +588,7 @@ function drawCarton(g,c){
 }
 /* décors */
 function drawDecor(g,d,t){
+  if(d.t==='wardrobe'){drawWardrobe(g,d);return}
   if(d.t==='lamp'){
     g.strokeStyle='#2a221c';g.lineWidth=1.5;g.beginPath();g.moveTo(d.x,-30);g.lineTo(d.x,d.y-10);g.stroke();
     g.fillStyle='#6a5a3a';poly(g,[d.x-18,d.y+6,d.x-6,d.y-10,d.x+6,d.y-10,d.x+18,d.y+6]);g.fill();

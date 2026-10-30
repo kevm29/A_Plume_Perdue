@@ -11,6 +11,8 @@ function parseLevel(i){
     const pad=ROWS-lines.length;
     for(let r=0;r<ROWS;r++){const l=r<pad?'':lines[r-pad];rows[r]+=l.padEnd(w,'.')}
   }
+  // sol plus épais sous le niveau : la caméra peut se centrer sur Raymond même près du sol
+  if(def.deep){for(let k=0;k<def.deep;k++)rows.push(rows[rows.length-1]);ROWS+=def.deep}
   const wT=rows[0].length;
   const g=rows.map(r=>r.split(''));
   for(let r=0;r<ROWS;r++){g[r][0]='W';g[r][wT-1]='W'}
@@ -86,7 +88,7 @@ let L=null;
 const SOLID='#XWD%R',SOLID_ART='#XWD';
 function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0||r>=ROWS)return'.';return L.g[r][c]}
 function isSolid(c,r){return SOLID.includes(tile(c,r))}
-function owTop(ch,c){return(ch==='='||ch==='B'||ch==='A')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
+function owTop(ch,c){return(ch==='='||ch==='B'||ch==='A'||ch==='t')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
 function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch,c)>=0}
 function moveX(e,dx){
   if(!dx)return false;e.x+=dx;

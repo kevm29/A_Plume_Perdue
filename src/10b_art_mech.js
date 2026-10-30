@@ -35,7 +35,8 @@ function drawGuard(g,x,y,t,o){
   }
   // tête
   g.save();g.translate(1,-68);g.rotate((o.look||0)*f);
-  g.fillStyle='#e0c0a0';g.beginPath();g.ellipse(0,0,9,10,0,0,7);g.fill();
+  g.fillStyle=o.angry?'#e08a78':'#e0c0a0';g.beginPath();g.ellipse(0,0,9,10,0,0,7);g.fill();
+  if(o.angry){g.strokeStyle='#1a1a1a';g.lineWidth=1.4;g.beginPath();g.moveTo(1,-6);g.lineTo(8,-3);g.stroke()}
   g.fillStyle='#cfa68a';g.beginPath();g.ellipse(8,1,3,3.6,0,0,7);g.fill();
   g.fillStyle='#f0ece4';g.beginPath();g.moveTo(1,4);g.quadraticCurveTo(7,2,11,6);g.quadraticCurveTo(7,8,1,6);g.fill();
   g.fillStyle='#1a1a1a';g.beginPath();g.arc(5,-2,1.3,0,7);g.fill();
@@ -148,9 +149,11 @@ function drawMechBack(t){
   // braséros
   for(const f of L.fires){if(!vis(f.x))continue;drawFire(ctx,f.x,f.y,t)}
   // gardiens
-  for(const gd of L.guards){if(!vis(gd.x))continue;if(gd.tangle>0)drawGuardTangled(ctx,gd,t);else drawGuard(ctx,gd.x+gd.w/2,gd.y+gd.h,t,{f:gd.dir,walk:gd.pause>0?0:1,look:gd.look})}
+  for(const c of L.covers){if(!vis(c.x))continue;if(c.gone)drawCoverFurniture(ctx,c,t);if(c.gone&&!c.on&&c.sheetX!=null)drawFallenSheet(ctx,c.sheetX,c.y+c.h)}
+  for(const gd of L.guards){if(!vis(gd.x))continue;if(gd.tangle>0)drawGuardTangled(ctx,gd,t);else{drawGuard(ctx,gd.x+gd.w/2,gd.y+gd.h,t,{f:gd.dir,walk:gd.pause>0||gd.sweep>0?0:1,look:gd.look,angry:gd.angry});if(gd.angry)drawAngry(ctx,gd,t)}}
   // chats qui guettent (ou qui courent)
-  for(const w of L.watchers){if(w.mode!=='sit'&&w.k){if(vis(w.k.x))drawWatchCatRun(ctx,w,t)}else if(vis(w.x))drawWatchCat(ctx,w,t)}
+  for(const w of L.watchers){if(w.mode==='tangle'&&w.k){drawCatTangled(ctx,w,t)}else if(w.mode!=='sit'&&w.k){if(vis(w.k.x))drawWatchCatRun(ctx,w,t)}else if(vis(w.x))drawWatchCat(ctx,w,t)}
+  drawFakeAndStash(t);
   // portillons, poignées, cachettes
   for(const gt of L.gates)if(vis(gt.c*T))drawGate(ctx,gt,t);
   for(const a of L.acts){if(!vis(a.x)||a.style==='backdoor')continue;if(a.kind==='lever')drawLever(ctx,a,t);else drawSecretProp(ctx,a,t)}
@@ -182,7 +185,7 @@ function drawMechFront(t){
   for(const gd of L.guards)if(vis(gd.x)&&!(gd.tangle>0))drawBeam(ctx,guardBeam(gd),gd.sees);
   if(L.chaser&&L.chaser.type==='guardnet'&&L.chaser.state!=='sleep'){const K=L.chaser;drawBeam(ctx,{ex:K.x+K.w/2+K.f*14,ey:K.y+20,ang:K.f>0?0:Math.PI,len:200,half:.3},false)}
   // cachettes : draps sur les meubles
-  for(const c of L.covers){if(!vis(c.x))continue;const hid=!P.dead&&hiddenNow()&&P.x+P.w/2>c.x&&P.x+P.w/2<c.x+c.w;
+  for(const c of L.covers){if(!vis(c.x)||c.gone)continue;const hid=!P.dead&&hiddenNow()&&P.x+P.w/2>c.x&&P.x+P.w/2<c.x+c.w;
     ctx.save();ctx.globalAlpha=hid?.82:1;
     const gr=ctx.createLinearGradient(c.x,c.y,c.x+c.w,c.y+c.h);gr.addColorStop(0,'#d8d2c2');gr.addColorStop(1,'#a8a090');ctx.fillStyle=gr;
     ctx.beginPath();ctx.moveTo(c.x+4,c.y+c.h);ctx.quadraticCurveTo(c.x-2,c.y+c.h*.4,c.x+10,c.y+8);ctx.quadraticCurveTo(c.x+c.w/2,c.y-6,c.x+c.w-10,c.y+8);ctx.quadraticCurveTo(c.x+c.w+2,c.y+c.h*.4,c.x+c.w-4,c.y+c.h);
