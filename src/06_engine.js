@@ -3,6 +3,7 @@
    ========================================================= */
 function parseLevel(i){
   const def=LEVELS[i],th=THEMES[def.theme];
+  ROWS=def.rows||15;
   const rows=Array.from({length:ROWS},()=>'');
   for(const seg of def.segs){
     const lines=seg.split('\n').map(s=>s.trim()).filter(s=>s.length);
@@ -15,6 +16,7 @@ function parseLevel(i){
   for(let r=0;r<ROWS;r++){g[r][0]='W';g[r][wT-1]='W'}
   const L={def,i,w:wT,wpx:wT*T,g,th,corn:[],medal:null,cps:[],exit:null,rats:[],moths:[],movers:[],hints:[],quips:[],decor:[],lights:[],mark:new Set(),
     chaser:null,triggerX:Infinity,spawn:null,dome:null,avoid:[],updrafts:[],bolts:[],bells:[]};
+  mechInit(L);
   let hi=0,qi=0,si=0,mi=0;
   const movers=[];
   for(let c=0;c<wT;c++)for(let r=0;r<ROWS;r++){
@@ -51,7 +53,7 @@ function parseLevel(i){
       case'j':{const b={t:'bell',x:cx,y:cy,ring:0,ph:0};L.decor.push(b);L.bells.push(b);L.lights.push({x:cx,y:cy+40,r:160,i:.5});break}
       case'i':L.decor.push({t:'statue',x:cx,y:y+T});break;
       case'|':L.mark.add(c+','+r);break;
-      default:clear=false;
+      default:clear=mechParse(L,ch,c,r,x,y,cx,cy,movers);
     }
     if(clear)g[r][c]='.';
   }
@@ -61,7 +63,9 @@ function parseLevel(i){
       let a=m.c-3,b=m.c+3;
       for(let c=m.c-1;c>=0;c--)if(L.mark.has(c+','+m.r)){a=c+1;break}
       for(let c=m.c+1;c<wT;c++)if(L.mark.has(c+','+m.r)){b=c-m.w;break}
-      L.movers.push({axis:'h',kind:m.kind,x:m.c*T,y:m.r*T,w:pw,h:14,a0:a*T,a1:b*T,t:0,dx:0,dy:0,speed:m.kind==='truck'?115:72});
+      L.movers.push({axis:'h',kind:m.kind,x:m.c*T,y:m.r*T,w:pw,h:14,a0:a*T,a1:b*T,t:0,dx:0,dy:0,speed:m.kind==='truck'?115:m.kind==='tram'?95:72});
+    }else if(m.axis==='s'||m.axis==='p'){
+      const mm={axis:m.axis,kind:m.kind,c:m.c,r:m.r,x:m.c*T,y:m.r*T,w:T,h:12,t:0,dx:0,dy:0};mechMoverInit(L,mm);L.movers.push(mm);
     }else{
       let a=m.r-3,b=m.r;
       for(let r=m.r-1;r>=0;r--)if(L.mark.has(m.c+','+r)){a=r+1;break}
@@ -69,7 +73,8 @@ function parseLevel(i){
       L.movers.push({axis:'v',kind:m.kind,x:m.c*T,y:m.r*T,w:pw,h:14,a0:b*T,a1:a*T,t:0,dx:0,dy:0,speed:60});
     }
   }
-  for(const m of L.movers){const span=Math.abs(m.a1-m.a0);const u=(m.axis==='h'?m.x-m.a0:m.a0-m.y)/Math.max(1,span);m.t=clamp(u,0,1)*span/m.speed}
+  mechPostParse(L);
+  for(const m of L.movers){if(m.axis==='s'||m.axis==='p')continue;const span=Math.abs(m.a1-m.a0);const u=(m.axis==='h'?m.x-m.a0:m.a0-m.y)/Math.max(1,span);m.t=clamp(u,0,1)*span/m.speed}
   if(def.garlands)for(let x=200;x<L.wpx-200;x+=520){L.decor.push({t:'garland',x,y:130,w:400});for(let k=1;k<8;k+=2)L.lights.push({x:x+k*50,y:150+Math.sin(k/8*Math.PI)*40,r:110,i:.55,warm:1})}
   if(def.flyers)def.flyers.forEach((o,i)=>{const m=L.moths[i];if(!m||!o)return;if(o.dy){m.cy+=o.dy;m.y=m.cy}if(o.amp)m.amp=o.amp;if(o.sp)m.sp=o.sp});
   for(const c of L.rats)c.base=Math.abs(c.vx);
@@ -78,11 +83,11 @@ function parseLevel(i){
 
 /* ---------- grille et collisions ---------- */
 let L=null;
-const SOLID='#XWD';
+const SOLID='#XWD%',SOLID_ART='#XWD';
 function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0||r>=ROWS)return'.';return L.g[r][c]}
 function isSolid(c,r){return SOLID.includes(tile(c,r))}
-function owTop(ch){return(ch==='='||ch==='B')?0:ch==='p'?14:-1}
-function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch)>=0}
+function owTop(ch,c){return(ch==='='||ch==='B'||ch==='A')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
+function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch,c)>=0}
 function moveX(e,dx){
   if(!dx)return false;e.x+=dx;
   const r0=Math.floor(e.y/T),r1=Math.floor((e.y+e.h-.01)/T);
@@ -98,7 +103,7 @@ function moveY(e,dy){
     for(let c=c0;c<=c1;c++){
       const ch=tile(c,r);
       if(SOLID.includes(ch)){e.y=r*T-e.h;e.vy=0;e.onGround=true;return true}
-      const o=owTop(ch);
+      const o=owTop(ch,c);
       if(o>=0){const top=r*T+o;if(prevB<=top+.5&&b>=top){e.y=top-e.h;e.vy=0;e.onGround=true;return true}}
     }
   }else if(dy<0){

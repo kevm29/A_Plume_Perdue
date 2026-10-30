@@ -33,7 +33,7 @@ function update(dt){
   G.t+=dt;
   if(G.fade>0)G.fade=Math.max(0,G.fade-dt*2.2);
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt*30);
-  if(G.quip){G.quip.t+=dt;if(G.quip.t>G.quip.dur)G.quip=null}
+  if(G.quip){G.quip.t+=dt;if(G.quip.t>G.quip.dur){G.quip=null;if(G.quipQ&&G.quipQ.length){const f=G.quipQ.shift();say(f[1],f[2]||4,f[0])}}}
   if(G.state!=='play')loopsOff();
   switch(G.state){
     case'title':handleMenu();break;
@@ -90,6 +90,7 @@ function render(){
       if(L.dome)extra.push({x:L.dome.x,y:L.dome.floor-90,r:170,i:.7,warm:1});
       if(G.cut&&G.cut.thief.state!=='out'&&G.cut.thief.state!=='gone')extra.push({x:G.cut.thief.x-40,y:L.dome.floor-60,r:200,i:.85,warm:1});
       for(const b of L.bolts)if(b.state==='strike')extra.push({x:b.x,y:13*T-60,r:260,i:1});
+      for(const l of mechLights())extra.push(l);
       renderLighting(L,cx,cy,t,extra);
       renderWeather(L.th,cx,t);
       drawForeground(cx,L.def.seed,L.th);

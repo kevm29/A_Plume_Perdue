@@ -340,6 +340,7 @@ function drawEasel(g,x,y,label,outdoor){
 }
 function drawExit(g,e,style,t,label){
   const x=e.x+6,y=e.y;
+  if(style==='house'){drawHouse(g,e,t);return}
   g.save();
   if(style==='window'){
     g.fillStyle='#1b2630';g.beginPath();g.moveTo(x-12,y+86);g.lineTo(x-12,y-40);g.arc(x+20,y-40,32,Math.PI,0);g.lineTo(x+52,y+86);g.closePath();g.fill();
@@ -393,6 +394,7 @@ function drawExit(g,e,style,t,label){
   g.restore();
 }
 function drawMover(g,m){
+  if(drawMechMover(g,m,G.t))return;
   g.save();
   if(m.kind==='truck'){
     const x=m.x,y=m.y,w=m.w,base=y+118;

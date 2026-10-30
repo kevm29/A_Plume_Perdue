@@ -2,7 +2,8 @@
 /* =========================================================
    À PLUME PERDUE — noyau : constantes, utilitaires, sauvegarde
    ========================================================= */
-const W=960,H=540,T=40,ROWS=15,DX=10,DY=-8,PAD=24;
+const W=960,H=540,T=40,DX=10,DY=-8,PAD=24;
+let ROWS=15; // hauteur du niveau en cases (15 par défaut, plus pour les niveaux d'escalade)
 const PF_FAR=0.3,PF_MID=0.6;
 const F_DISP='"IM Fell English SC", "Iowan Old Style", Georgia, serif';
 const F_BODY='"IM Fell English", "Iowan Old Style", Georgia, serif';

@@ -11,7 +11,7 @@ for(let i=0;i<70;i++)motes.push({x:rnd()*W,y:rnd()*H,z:.3+rnd()*.9,s:.6+rnd()*1.
 const GRAV=2200,MAXFALL=900,GLIDE=190,RUN=290,ACC=2400,AIRACC=1700,FRIC=2600,JUMPV=730,FLAPV=560,MAXFLAPS=2;
 const BOLT_PERIOD=3.0;
 
-function say(text,dur){G.quip={text,t:0,dur:dur||3.8}}
+function say(text,dur,who){G.quip={text,t:0,dur:dur||3.8,who:who||'RAYMOND'}}
 function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:1.2+text.length*.035,col:col||'#a8322d',rot:(rnd()-.5)*.25})}
 function wear(){return S.run.wear||0}
 function loadLayers(i){
@@ -123,14 +123,15 @@ const TOMB_LINES=["Vasseur… Marguerite ? Ici ? Sous une pierre ? Elle a dix-ne
   "Je ne comprends rien. Mais j'ai une lettre pour elle, et le règlement ne prévoit pas les tombes."];
 function stepTomb(dt){
   const S2=G.tombSeq;S2.t+=dt;P.vx=0;P.vy=Math.min(MAXFALL,P.vy+GRAV*dt);P.onGround=false;moveY(P,P.vy*dt);
-  const k=Math.floor(S2.t/4.2);
-  if(k!==S2.i&&k<TOMB_LINES.length){S2.i=k;say(TOMB_LINES[k],4.1)}
-  if(S2.t>4.2*TOMB_LINES.length+.3){G.tombSeq=null;G.quip=null;winLevel()}
+  const lines=L.def.exitLines||TOMB_LINES,k=Math.floor(S2.t/4.2);
+  if(k!==S2.i&&k<lines.length){S2.i=k;const ln=lines[k];if(Array.isArray(ln))say(ln[1],4.1,ln[0]);else say(ln,4.1)}
+  if(S2.t>4.2*lines.length+.3){G.tombSeq=null;G.quip=null;winLevel()}
 }
 function stepPlay(dt){
   if(G.tombSeq){stepTomb(dt);return}
   G.lt+=dt;
   for(const m of L.movers){
+    if(m.axis==='s'||m.axis==='p'){mechMoverStep(m,dt);continue}
     const px=m.x,py=m.y;m.t+=dt;const span=Math.abs(m.a1-m.a0)||1;
     let u=(m.t*m.speed/span)%2;u=u>1?2-u:u;u=u*u*(3-2*u);
     if(m.axis==='h')m.x=m.a0+(m.a1-m.a0)*u;else m.y=m.a0+(m.a1-m.a0)*u;
@@ -165,6 +166,7 @@ function stepPlay(dt){
     }
   }
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
+  mechStep(dt,pcx,pcy);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -172,13 +174,14 @@ function stepPlay(dt){
   if(P.wake>0){P.wake-=dt;P.vy+=GRAV*dt;P.onGround=false;moveY(P,P.vy*dt);return}
   if(P.onMover){const m=P.onMover;moveX(P,m.dx);P.y=m.y-P.h}
   const left=keys.has('left'),right=keys.has('right'),held=keys.has('jump');
-  const dir=(right?1:0)-(left?1:0);
+  const MD=mechMods();
+  const dir=MD.noInput?0:(right?1:0)-(left?1:0);
   if(dir)P.facing=dir;
-  if(dir){P.vx+=dir*(P.onGround?ACC:AIRACC)*dt;P.vx=clamp(P.vx,-RUN,RUN)}
+  if(dir){P.vx+=dir*(P.onGround?ACC:AIRACC)*dt;P.vx=clamp(P.vx,-MD.run,MD.run)}
   else{const f=(P.onGround?FRIC:FRIC*.35)*dt;P.vx=Math.abs(P.vx)<=f?0:P.vx-Math.sign(P.vx)*f}
   P.coyote=P.onGround?.1:P.coyote-dt;P.jumpBuf-=dt;
-  if(P.jumpBuf>0){
-    if(P.coyote>0){P.vy=-JUMPV;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;SFX.jump()}
+  if(P.jumpBuf>0&&!MD.noInput){
+    if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;SFX.jump()}
     else if(P.flaps<MAXFLAPS){P.vy=-FLAPV;P.flaps++;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false)}
   }
   if(P.jumping&&!held&&P.vy<0){P.vy*=.5;P.jumping=false}
@@ -198,6 +201,7 @@ function stepPlay(dt){
     for(const m of L.movers){const b=P.y+P.h;if(P.x+P.w>m.x+2&&P.x<m.x+(m.kind==='truck'?m.w-40:m.w)-2&&prevB<=m.y+Math.max(0,-m.dy)+1.5&&b>=m.y){P.y=m.y-P.h;P.vy=0;P.onGround=true;P.onMover=m;break}}
   }
   if(P.onGround){P.flaps=0;P.jumping=false;if(!wasG&&vyBefore>280){P.sx=1.2;P.sy=.8;SFX.land();for(let i=0;i<5;i++)parts.push({type:'dust',x:P.x+P.w/2+(rnd()-.5)*20,y:P.y+P.h,vx:(rnd()-.5)*80,vy:-rnd()*40,life:0,max:.5})}}
+  {const mk=mechAfterMove(dt,vyBefore);if(mk)return die(mk)}
   P.sx=lerp(P.sx,1,Math.min(1,dt*12));P.sy=lerp(P.sy,1,Math.min(1,dt*12));
   const hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6};
   const c0=Math.floor(hb.x/T),c1=Math.floor((hb.x+hb.w)/T),r0=Math.floor(hb.y/T),r1=Math.floor((hb.y+hb.h)/T);
@@ -209,7 +213,8 @@ function stepPlay(dt){
   for(const c of L.rats)if(overlap(hb,{x:c.x+3,y:c.y+3,w:c.w-6,h:c.h-3}))return die(c.kind);
   for(const m of L.moths)if(overlap(hb,{x:m.x-10,y:m.y-8,w:20,h:16}))return die(m.kind);
   for(const b of L.bolts)if(b.state==='strike'&&Math.abs(b.x-pcx)<24)return die('bolt');
-  if(K&&K.state!=='sleep'&&K.state!=='wake'&&overlap(hb,{x:K.x+6,y:K.y+5,w:K.w-12,h:K.h-6}))return die(K.type);
+  {const mh=mechHit(hb);if(mh)return die(mh)}
+  if(K&&K.state!=='sleep'&&K.state!=='wake'&&K.state!=='burn'&&K.state!=='dead'&&overlap(hb,{x:K.x+6,y:K.y+5,w:K.w-12,h:K.h-6}))return die(K.type);
   if(P.y>ROWS*T+40)return die(L.th.horizon==='bridge'?'drown':'fall');
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
@@ -219,15 +224,20 @@ function stepPlay(dt){
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;G.hintI=hn;
   if(K&&K.state==='sleep'&&pc.x>L.triggerX+T)wakeChaser(K);
-  if(L.exit&&overlap(hb,L.exit)){if(L.def.exit==='tomb'&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
+  if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
+  if(L.exit&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');
   if(K.type==='cat'){K.state='wake';K.wakeT=.9;K.meowT=2.4;if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),250)}say("Bijou est réveillé. Règlement, article 3 : en cas de chat, courir.",3.4)}
-  else{K.state=K.type==='buse'?'hover':'chase';K.pt=0;K.meowT=1.5;if(K.type==='buse'&&!G.sim)SFX.screech();say(L.def.chaseQuip||'',3.6)}
+  else if(K.type==='guardnet'){K.state='wake';K.wakeT=1;if(!G.sim)SFX.whistle();bubble(K.x+K.w/2,K.y-16,'Je te tiens, toi !','#2a3a5a');say(L.def.chaseQuip||'',3.6)}
+  else if(K.type==='sweeper'){K.state='wake';K.wakeT=.8;if(!G.sim)SFX.honk();say(L.def.chaseQuip||'',3.6)}
+  else if(K.type==='buse'){K.state='hover';K.pt=-2.2;if(!G.sim)SFX.screech();sayQueue(L.def.chaseLines||[['RAYMOND',L.def.chaseQuip||'',3.6]])}
+  else{K.state='chase';K.pt=0;K.meowT=1.5;say(L.def.chaseQuip||'',3.6)}
 }
 function stepChaser(K,dt,pcx,pcy){
   K.t+=dt;
+  if(K.type==='guardnet'||K.type==='sweeper'){stepGroundChaser(K,dt,pcx,pcy);return}
   if(K.type==='cat'){
     if(K.state==='wake'){K.wakeT-=dt;if(K.wakeT<=0)K.state='chase'}
     if(K.state!=='chase')return;
@@ -246,6 +256,7 @@ function stepChaser(K,dt,pcx,pcy){
     return;
   }
   if(K.state==='sleep'){K.y=K.home.y+Math.sin(K.t*2)*4;return}
+  if(K.type==='buse'&&buseBurn(K,dt))return;
   if(K.type==='drone'){
     const tx=pcx-K.w/2-P.facing*10,ty=P.y-20,dx=tx-K.x,dy=ty-K.y,d=Math.hypot(dx,dy)||1;
     const sp=clamp(180+(d-200)*.3,180,270);K.x+=dx/d*sp*dt;K.y+=dy/d*sp*dt+Math.sin(K.t*6)*.4;K.f=dx>=0?1:-1;
@@ -264,9 +275,13 @@ function respawn(){
   resetPlayer();P.wake=.35;
   const K=L.chaser;
   if(K){
-    if(K.type==='cat'||P.cp.x<L.triggerX){K.state='sleep';K.x=K.home.x;K.y=K.home.y;K.vx=K.vy=0;G.chase=false;setSong(songKey(G.li))}
+    if(K.state==='dead'){}
+    else if(K.type==='cat'||P.cp.x<L.triggerX){K.state='sleep';K.x=K.home.x;K.y=K.home.y;K.vx=K.vy=0;G.chase=false;setSong(songKey(G.li))}
+    else if(K.type==='guardnet'||K.type==='sweeper'){K.x=P.x-(K.type==='sweeper'?520:420);K.y=P.y+P.h-K.h;K.vx=K.vy=0;K.state='chase'}
     else{K.x=P.x-460;K.y=P.y-220;K.state=K.type==='buse'?'hover':'chase';K.pt=0}
   }
+  if(L.auto&&L.auto.on){L.auto.x=Math.max(0,P.x-300);cam.x=L.auto.x}
+  P.stun=0;P.mud=0;
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
@@ -312,7 +327,8 @@ function updateParticles(dt){
   G.flash=Math.max(0,G.flash-dt*2.4);
 }
 function updateCamera(dt){
-  const tx=clamp(P.x+P.w/2-W/2+P.facing*70,0,L.wpx-W);
+  let tx=clamp(P.x+P.w/2-W/2+P.facing*70,0,L.wpx-W);
+  if(L.auto&&L.auto.on){tx=Math.max(L.auto.x,Math.min(tx,L.auto.x+120));cam.x=Math.max(cam.x,L.auto.x)}
   const ty=clamp(P.y-H*.5,0,ROWS*T-H);
   const k=1-Math.exp(-dt*5);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k;
 }
