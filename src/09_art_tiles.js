@@ -150,6 +150,7 @@ function drawBlock(g,ch,x,y,cc,r,th,mc){
     case'barrier':{
       g.fillStyle=mc[0];g.fillRect(x,y,T,T);g.fillStyle='rgba(0,0,0,.15)';g.fillRect(x,y+T*.55,T,2);
       if(!above){g.fillStyle='#c8302a';for(let k=0;k<2;k++)g.fillRect(x+k*20+((cc%2)?10:0),y+6,10,6)}break}
+    case'log':drawLogBlock(g,x,y,cc,r,mc);break;
     case'crate':{
       g.strokeStyle='#4a321a';g.lineWidth=3;g.strokeRect(x+2,y+2,T-4,T-4);g.beginPath();g.moveTo(x+3,y+3);g.lineTo(x+T-3,y+T-3);g.stroke();break}
     case'tomb':{
@@ -178,6 +179,7 @@ function drawBlock(g,ch,x,y,cc,r,th,mc){
 function drawSpikes(g,ch,x,y,cc,r,th){
   const up=ch==='^',k=th.spike;const by=up?y+T-8:y;
   if(k==='bramble'){drawBramble(g,x,y,cc,r,up);return}
+  if(k==='obus'){drawObus(g,x,y,cc,r);return}
   if(k==='pins'){
     g.fillStyle='#8a6a48';g.fillRect(x,by,T,8);
     const heads=['#b8302a','#efe6d3','#1d1a22','#b8302a','#d9a441'];

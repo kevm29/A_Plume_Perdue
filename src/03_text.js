@@ -40,6 +40,8 @@ const DEATH_Q={
   storm:["L'orage m'a rattrapé. Il ne fallait pas traîner."],
   sweeper:["Aspiré par la balayeuse. Classé avec les mégots.","Ramassé par la voirie. Comme un vieux journal."],
   blade:["Coupé net par un moulin. Le meunier ne s'est même pas excusé.","Fauché par une aile de moulin. Ma paille vole en trois morceaux.","Haché menu, comme du tabac de troupe."],
+  obus:["Un vieil obus qui dépassait à peine. Il attendait quelqu'un depuis longtemps. Il n'a pas raté son tour.","Le nez d'un obus. Il a suffi d'une patte. Le génie aurait dû passer avant moi.","Boum. Un vieux de la vieille, qui n'avait pas dit son dernier mot."],
+  trou:["Tombé dans un trou d'obus. L'eau y croupit depuis des années, et moi avec.","Un trou d'obus plein d'eau. Le ciel s'y reflétait si bien que je n'ai pas vu le fond."],
   drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
 };
 const TUFT_Q=["De la paille. Bizarre, je me sens tout de suite plus épais.","Tiens, de la paille. Je ne sais pas pourquoi, ça me fait du bien.","Encore de la paille. Je ne comprends pas, mais je ne me plains pas."];
@@ -95,7 +97,7 @@ const GAMEOVER=[
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Les coquelicots",levels:["Le sentier","Les éoliennes","Le drone","La tranchée oubliée"]},
+  {name:"Les coquelicots",levels:["Le sentier","Les éoliennes","La zone rouge","La tranchée oubliée"]},
   {name:"Reims",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}

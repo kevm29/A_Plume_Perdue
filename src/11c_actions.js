@@ -247,7 +247,7 @@ function droneStep(K,dt,pcx,pcy){
   else if(K.sp==='cool'&&K.st>1.4){K.sp='scan';K.st=0}
   if(K.fire>0)K.fire-=dt;
   // grenades
-  if(!fin&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
+  if(!fin&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260&&!hiddenNow()){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
 }
 function grenadeStep(dt){
   if(!L.grenades)return;

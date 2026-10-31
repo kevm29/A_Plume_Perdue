@@ -29,7 +29,7 @@ function meusePost(Lv){
   const D=Lv.def.meuse;if(!D)return;
   const gTop=c=>{for(let r=0;r<Lv.g.length;r++)if(Lv.g[r][c]==='#')return r;return Lv.g.length};
   const rG=gTop(D.river[0]-1),yG=rG*T,rD=rG+1,yD=rD*T,yW=yD+24,rP=gTop(D.vortex+3),yP=rP*T;
-  const M={xL:D.river[0]*T,xR:(D.river[1]+1)*T,yG,yD,yW,rD,yP,lanes:[],bales:[],shelters:[],stat:[],turbines:[],hay:[],trees:[],ducks:[],said:{}};
+  const M={sheaves:D.sheaves||[],xL:D.river[0]*T,xR:(D.river[1]+1)*T,yG,yD,yW,rD,yP,lanes:[],bales:[],shelters:[],stat:[],turbines:[],hay:[],trees:[],ducks:[],said:{}};
   Lv.meuse=M;
   /* les péniches : chaque couloir suit le précédent de 7 secondes (on passe de l'une à l'autre à mesure qu'elles arrivent) */
   D.lanes.forEach((d,i)=>{
@@ -111,6 +111,17 @@ function meuseStep(dt){
   // le tracteur
   if(M.tractor&&!M.said.tractor&&!P.dead&&P.onGround&&Math.abs(pcx-(M.tractor.x+70))<230&&Math.abs(pfy-M.tractor.y)<30&&!G.sim){M.said.tractor=1;say("Un tracteur. Une charrette sans cheval, qui sent le pétrole. Le génie agricole ne recule devant rien.",3.8)}
 }
+/* moyettes de blé fauché : des gerbes dressées les unes contre les autres */
+function drawSheaf(g,x,b,seed){
+  const R=mulberry(seed*31),n=4+Math.floor(R()*3);g.save();g.translate(x,b-1);
+  g.fillStyle='rgba(0,0,0,.2)';g.beginPath();g.ellipse(6,0,30,5,0,0,7);g.fill();
+  for(let k=0;k<n;k++){const a=(k-(n-1)/2)*.2+(R()-.5)*.06,h=54+R()*10;g.save();g.rotate(a);
+    g.strokeStyle=k%2?'#b8913a':'#caa24a';g.lineWidth=2;for(let j=-4;j<=4;j++){g.beginPath();g.moveTo(j*1.6,0);g.quadraticCurveTo(j*1.2,-h*.5,j*2.4,-h);g.stroke()}
+    g.fillStyle='#8a5a2a';g.fillRect(-6,-h*.55,12,3);
+    g.fillStyle=k%2?'#d8b456':'#e6c46a';for(let j=-3;j<=3;j++){g.save();g.translate(j*3,-h-4);g.rotate(j*.18);g.beginPath();g.ellipse(0,0,2.2,6,0,0,7);g.fill();g.restore()}
+    g.restore()}
+  g.restore();
+}
 /* le marinier sort, râle, regarde le ciel… et rentre sans fermer la porte */
 function marinierZ(ln,bow){const cz=bow+BARGE.cab.z0;return{cz,z:Math.max(0,cz-1.4),xd:(ln.c+BARGE.cab.c0)*T+23,xo:ln.x0+30}}
 function marinierStep(ln){
@@ -165,7 +176,7 @@ function meuseAfterMove(dt){
   // les pales tournent aussi pour ceux qui sautent trop haut sur le plateau
   for(const tb of M.turbines)if(bladeHit(tb,pcx,pcy))return'blade';
   // la meule qui se délite : le tourbillon emporte Raymond
-  if(Math.abs(pcx-V.x0)<44&&P.y+P.h>V.base-170&&P.y+P.h<=V.base+2){
+  if(Math.abs(pcx-V.x0)<44&&P.y+P.h>V.base-440&&P.y+P.h<=V.base+2){
     P.ride={th:0,t:0,k:0,sx:P.x,sy:P.y};
     if(!G.sim){SFX.flap();noise(1.2,500,.3,'bandpass');puff(pcx,P.y+P.h,12,true);if(!M.said.ride){M.said.ride=1;say("Le vent m'arrache ! Je n'ai rien demandé !",2.6)}}
     return null}
@@ -189,7 +200,8 @@ function drawMeuseBack(t){
   for(const tb of M.turbines)drawTowerInPlane(g,tb,t);
   drawVortexGround(g,t);
   drawHay(g,t,false);
-  for(const b of M.bales)if(b.x>cam.x-80&&b.x<cam.x+W+80)drawRoundBale(g,b.x,M.yG,b.shake,t,{hole:true});
+  for(const b of M.bales)if(b.x>cam.x-80&&b.x<cam.x+W+80)drawRoundBale(g,b.x,M.yG,b.shake,t,{});
+  for(const c of M.sheaves)if(c*T>cam.x-80&&c*T<cam.x+W+80)drawSheaf(g,c*T,M.yG,c);
   if(M.tractor&&M.tractor.x>cam.x-300&&M.tractor.x<cam.x+W+200){drawRoundBale(g,M.tractor.bx,M.tractor.y,0,t,{});drawTractor(g,M.tractor,t)}
 }
 function drawMeuseFront(t){

@@ -64,6 +64,7 @@ function die(kind,tiles){
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
   puff(cx,cy,30,true);puff(cx,cy,10,false);parts.push({type:'ring',x:cx,y:cy,life:0,max:.45});
   if(kind==='cat'){meow(.9,true);}
+  if(kind==='obus'){G.shake=18;noise(.9,240,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<24;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x:cx,y:P.y+P.h-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.5})}}
   if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
@@ -200,12 +201,14 @@ function stepPlay(dt){
     c.onGround=false;moveY(c,c.vy*dt);
     if(c.onGround){
       const dir=Math.sign(c.vx)||1,fx=dir>0?c.x+c.w+2:c.x-2,cf=Math.floor(fx/T),rf=Math.floor((c.y+c.h-2)/T);
-      if(!groundAt(cf,rf+1)||tile(cf,rf)==='^'||L.mark.has(cf+','+rf)){c.vx=-c.vx;c.lastDir=Math.sign(c.vx)}
+      // un sanglier qui charge ne regarde pas où il met les pattes (option boarsFall)
+      const blind=L.def.boarsFall&&c.kind==='boar'&&c.charge>0&&!groundAt(cf,rf+1);
+      if(!blind&&(!groundAt(cf,rf+1)||tile(cf,rf)==='^'||L.mark.has(cf+','+rf))){c.vx=-c.vx;c.lastDir=Math.sign(c.vx)}
     }
   }
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);meuseStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
+  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
