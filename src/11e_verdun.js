@@ -20,13 +20,35 @@ function verdunParse(Lv,ch,c,r,x,y,cx,cy){
     case'6':Lv.decor.push({t:'monument',x:cx,y:y+T});for(let k=-6;k<=6;k++)Lv.avoid.push(cx+k*50);return true;
     case'7':Lv.decor.push({t:'commune',x:cx,y:y+T,name:Lv.def.communeName||'VERDUN'});Lv.avoid.push(cx-60,cx,cx+60);return true;
     case'8':Lv.decor.push({t:'chasse',x:cx,y:y+T});Lv.avoid.push(cx);return true;
+    case'5':(Lv.moles=Lv.moles||[]).push({x:cx,y:y+T,ph:(c*.83)%MOLE_P,up:0});Lv.avoid.push(cx-40,cx,cx+40);return true;
   }
   return true;
 }
 function verdunPost(Lv){
   for(const [c,r] of Lv.def.marks||[])Lv.mark.add(c+','+r);
   for(const [c,r] of Lv.def.frontLeaves||[])Lv.decorFront.push({t:'leaves',x:c*T+T/2,y:r*T+T/2+6});
-  Lv.fallen=[];
+  Lv.fallen=[];Lv.passers=[];Lv.moles=Lv.moles||[];
+  if(Lv.hunters[0])Lv.hunters[0].demo=true;
+}
+/* ---------- taupes : elles sortent de leur taupinière en cadence ---------- */
+const MOLE_P=2.8;
+function molePhase(m){const k=((G.lt+m.ph)%MOLE_P);return k<1.5?0:k<2?1:2}   // 0 sous terre, 1 la terre tremble, 2 dehors
+function moleStep(dt){
+  for(const m of L.moles||[]){const st=molePhase(m);m.up=Math.max(0,Math.min(1,m.up+(st===2?dt*9:-dt*6)));
+    if(st===2&&!m.was&&!G.sim){noise(.12,500,.12,'lowpass');if(!G.moleSaid&&Math.abs(m.x-(P.x+P.w/2))<300){G.moleSaid=true;say("Une taupe. Elle sort de terre, croque, et rentre. Une vraie tactique de sapeur.",3)}}
+    m.was=st===2;
+    if(st===2&&m.up>.5&&!P.dead&&Math.abs(P.x+P.w/2-m.x)<24&&P.y+P.h>m.y-22)G.moleHit=true}
+}
+function drawMoles(t){
+  for(const m of L.moles||[]){if(m.x<cam.x-80||m.x>cam.x+W+80)continue;const st=molePhase(m),sh=st===1?Math.sin(t*60)*1.5:0,x=m.x,b=m.y;
+    if(m.up>0){const u=m.up*22;ctx.save();ctx.beginPath();ctx.rect(x-30,b-60,60,52);ctx.clip();
+      ctx.fillStyle='#3a3238';ctx.beginPath();ctx.ellipse(x,b-8-u+12,13,15,0,0,7);ctx.fill();
+      ctx.fillStyle='#e8a0a8';ctx.beginPath();ctx.ellipse(x+3,b-20-u+12,4,3,0,0,7);ctx.fill();
+      ctx.fillStyle='#f0d8c8';for(const s2 of[-1,1]){ctx.beginPath();ctx.ellipse(x+s2*13,b-8-u+14,5,3.4,s2*.4,0,7);ctx.fill()}
+      ctx.fillStyle='#e8e0d8';ctx.fillRect(x+1,b-17-u+12,1.6,3);ctx.fillRect(x+4,b-17-u+12,1.6,3);ctx.restore()}
+    ctx.fillStyle='#5c4630';ctx.beginPath();ctx.ellipse(x+sh,b,22,12,0,Math.PI,0);ctx.fill();
+    ctx.fillStyle='#6e5638';ctx.beginPath();ctx.ellipse(x-5+sh,b-7,9,4,0,0,7);ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.2)';for(let k=0;k<5;k++)ctx.fillRect(x-14+k*7+sh,b-4-(k%2)*3,2,2)}
 }
 /* ---------- les chasseurs ---------- */
 const HUNT_RANGE=380,HUNT_AIM=.45,HUNT_COOL=1.3;
@@ -35,6 +57,10 @@ function inHuntCone(h,x,y){const gx=h.x,gy=h.y-80,dx=x-gx,dy=y-gy;return dy<-8&&
 function hunterStep(dt){
   if(!L.hunters||!L.hunters.length)return;
   const pcx=P.x+P.w/2,pcy=P.y+P.h/2;
+  // au premier buisson, un corbeau passe : le chasseur le tire. C'est tout ce qu'on saura.
+  {const h0=L.hunters.find(h=>h.demo);if(h0&&!h0.demoDone&&!G.sim&&pcx>h0.x-430){h0.demoDone=true;L.passers.push({kind:'crow',x:h0.x+560,y:h0.y-200,vx:-190,t:0})}}
+  for(const m of L.passers){if(m.gone)continue;m.t+=dt;m.x+=m.vx*dt;m.y+=Math.sin(m.t*5)*14*dt;m.dir=-1}
+  L.passers=L.passers.filter(m=>!m.gone&&m.x>cam.x-200);
   for(const h of L.hunters){
     h.t+=dt;h.flash=Math.max(0,h.flash-dt*5);
     const pIn=!G.cut&&hunterFlying()&&inHuntCone(h,pcx,pcy);
@@ -43,7 +69,7 @@ function hunterStep(dt){
     if(h.state==='hid'){
       h.peek=Math.max(0,h.peek-dt*3);
       if(pIn){h.state='aim';h.aimT=0;h.tgt='P';if(!G.sim){tone(1300,.04,'square',.04);tone(900,.05,'square',.03,null,.07)}}
-      else{for(const m of L.moths)if(m.kind==='crow'&&!m.gone&&inHuntCone(h,m.x,m.y)){h.state='aim';h.aimT=0;h.tgt=m;break}}
+      else{for(const m of L.moths.concat(L.passers))if(m.kind==='crow'&&!m.gone&&inHuntCone(h,m.x,m.y)){h.state='aim';h.aimT=0;h.tgt=m;break}}
     }else if(h.state==='aim'){
       h.peek=Math.min(1,h.peek+dt*6);h.aimT+=dt;
       const tx=h.tgt==='P'?pcx:h.tgt.x,ty=h.tgt==='P'?pcy:h.tgt.y;const want=Math.atan2(ty-(h.y-80),tx-h.x);h.ang+=(want-h.ang)*Math.min(1,dt*12);
@@ -54,7 +80,7 @@ function hunterStep(dt){
         if(!G.sim){noise(.16,2200,.7,'lowpass');noise(.6,380,.45,'lowpass',.02);G.shake=Math.max(G.shake||0,4)}
         if(h.tgt==='P'){if(pIn)G.hunterHit=true}
         else{const m=h.tgt;m.gone=true;L.fallen.push({x:m.x,y:m.y,vy:-60,vx:(m.x-h.x)*.4,rot:0,t:0});if(!G.sim){for(let k=0;k<8;k++)parts.push({type:'dust',x:m.x,y:m.y,vx:(rnd()-.5)*160,vy:(rnd()-.5)*160,life:0,max:.6})}
-          if(!G.sim&&!G.huntSaid){G.huntSaid=true;say("Abattu en plein vol. Lui, il volait. Moi, je marcherai.",3)}}
+}
       }
     }else{
       h.cool-=dt;h.peek=Math.max(0,h.peek-dt*1.2);if(h.cool<=0)h.state='hid';
@@ -64,7 +90,7 @@ function hunterStep(dt){
   for(const f of L.fallen){f.t+=dt;f.vy+=GRAV*.6*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.rot+=dt*5}
   L.fallen=L.fallen.filter(f=>f.t<2.5&&f.y<ROWS*T+60);
 }
-function verdunRespawn(){for(const h of L.hunters||[]){h.state='hid';h.peek=0;h.cool=0;h.flash=0}G.hunterHit=false}
+function verdunRespawn(){G.moleHit=false;for(const h of L.hunters||[]){h.state='hid';h.peek=0;h.cool=0;h.flash=0}G.hunterHit=false}
 /* buissons (devant le décor, derrière Raymond) */
 function drawBush(g,x,b,s,seed,rust){
   const sh=rust?Math.sin(G.lt*40)*2:0;
@@ -76,17 +102,18 @@ function drawBush(g,x,b,s,seed,rust){
   for(let k=0;k<6;k++){g.fillStyle=k%2?'#c9a83a':'#b88a2a';g.beginPath();g.arc(x-30*s+((k*23+seed*7)%60)*s,b-40*s+((k*13+seed)%34)*s,3.2,0,7);g.fill()}
   g.fillStyle='rgba(255,250,210,.16)';g.beginPath();g.arc(x-12*s,b-44*s,14*s,0,7);g.fill();
 }
-function inHiddenDugout(c){const dg=L.def.dugout;if(!dg||(L.dugA||0)>.5)return false;const x=c.x+c.w/2,y=c.y+c.h/2;return x>dg[0]*T&&x<(dg[1]+1)*T&&y>13*T&&y<15*T}
+function gRow(Lv){return (Lv.def.rows||15)-2}
+function inHiddenDugout(c){const G0=gRow(L),dg=L.def.dugout;if(!dg||(L.dugA||0)>.5)return false;const x=c.x+c.w/2,y=c.y+c.h/2;return x>dg[0]*T&&x<(dg[1]+1)*T&&y>G0*T&&y<(G0+2)*T}
 function drawDugout(t){
-  const dg=L.def.dugout;if(!dg)return;const x0=dg[0]*T,x1=(dg[1]+1)*T,y0=13*T,y1=15*T,pcx=P.x+P.w/2,pcy=P.y+P.h/2;
+  const G0=gRow(L),dg=L.def.dugout;if(!dg)return;const x0=dg[0]*T,x1=(dg[1]+1)*T,y0=G0*T,y1=(G0+2)*T,pcx=P.x+P.w/2,pcy=P.y+P.h/2;
   const inside=pcx>x0&&pcx<x1-T*.6&&pcy>y0&&pcy<y1;L.dugA=clamp((L.dugA||0)+(inside?3:-3)*(1/60),0,1);if(L.dugA<=0)return;
   ctx.save();ctx.globalAlpha=L.dugA;
   ctx.fillStyle='#2a1e14';ctx.fillRect(x0,y0,x1-x0,y1-y0);
   ctx.fillStyle='#5a4228';ctx.fillRect(x0,y0,x1-x0,7);for(let x=x0+4;x<x1-10;x+=76)ctx.fillRect(x,y0,7,y1-y0);
   ctx.fillStyle='#4a3420';ctx.fillRect(x0,y1-5,x1-x0,5);
   // la sortie : un boyau étroit qui remonte à travers la terre jusqu'au parapet
-  {const sx=x0,sw=2*T,gr=ctx.createLinearGradient(0,12*T,0,y0+10);gr.addColorStop(0,'rgba(190,200,170,.85)');gr.addColorStop(1,'#2a1e14');ctx.fillStyle=gr;ctx.fillRect(sx+6,12*T+4,sw-12,T+4);
-   ctx.strokeStyle='#4a3420';ctx.lineWidth=2;for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(sx+8+k*20,12*T+6);ctx.quadraticCurveTo(sx+14+k*20,12*T+20,sx+10+k*20,12*T+30);ctx.stroke()}}
+  {const sx=x0,sw=2*T,gr=ctx.createLinearGradient(0,(G0-1)*T,0,y0+10);gr.addColorStop(0,'rgba(190,200,170,.85)');gr.addColorStop(1,'#2a1e14');ctx.fillStyle=gr;ctx.fillRect(sx+6,(G0-1)*T+4,sw-12,T+4);
+   ctx.strokeStyle='#4a3420';ctx.lineWidth=2;for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(sx+8+k*20,(G0-1)*T+6);ctx.quadraticCurveTo(sx+14+k*20,(G0-1)*T+20,sx+10+k*20,(G0-1)*T+30);ctx.stroke()}}
   // couchette, caisse, bougie
   ctx.fillStyle='#6a4a2c';ctx.fillRect(x0+60,y1-26,96,6);ctx.fillRect(x0+62,y1-26,5,26);ctx.fillRect(x0+148,y1-26,5,26);
   ctx.fillStyle='#5a6448';ctx.fillRect(x0+66,y1-34,82,8);
@@ -97,7 +124,7 @@ function drawDugout(t){
   ctx.restore();
 }
 function drawVerdunBack(t){
-  drawDugout(t);
+  drawDugout(t);drawMoles(t);
   for(const h of L.hunters||[]){if(h.x<cam.x-160||h.x>cam.x+W+160)continue;
     // le chasseur, accroupi derrière les feuilles ; il se relève pour viser
     const up=h.peek*58,hx=h.x+6,hy=h.y-62-up;
@@ -122,8 +149,9 @@ function drawVerdunFront(t){
       ctx.strokeStyle='rgba(255,230,170,.5)';ctx.lineWidth=1;for(let k=0;k<5;k++){const a=h.ang+(k-2)*.04;ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx+Math.cos(a)*HUNT_RANGE,gy+Math.sin(a)*HUNT_RANGE);ctx.stroke()}
       ctx.fillStyle='rgba(230,230,225,.5)';ctx.beginPath();ctx.arc(gx+Math.cos(h.ang)*10,gy+Math.sin(h.ang)*10-6*(1-h.flash),10*(1.4-h.flash),0,7);ctx.fill();ctx.restore()}
   }
+  for(const m of L.passers||[]){const fl=Math.sin(t*14)*6;ctx.save();ctx.translate(m.x,m.y);ctx.fillStyle='#1c1c22';ctx.beginPath();ctx.ellipse(0,0,12,6,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-2,0);ctx.lineTo(6,-8-fl);ctx.lineTo(12,-2);ctx.fill();ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(-16,-3);ctx.lineTo(-10,3);ctx.fill();ctx.fillStyle='#d8b04a';ctx.beginPath();ctx.moveTo(-12,-1);ctx.lineTo(-19,0);ctx.lineTo(-12,2);ctx.fill();ctx.restore()}
   for(const f of L.fallen||[]){ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.rot);ctx.fillStyle='#1c1c22';ctx.beginPath();ctx.ellipse(0,0,11,6,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-4,0);ctx.lineTo(-16,-8);ctx.lineTo(-6,4);ctx.fill();ctx.restore()}
-  for(const d of L.decorFront||[]){if(d.x<cam.x-200||d.x>cam.x+W+200)continue;if(d.t==='leaves')drawLeafMass(ctx,d.x,d.y,1,7)}
+  for(const d of L.decorFront||[]){if(d.x<cam.x-200||d.x>cam.x+W+200)continue;if(d.t==='leaves'){const dd=Math.hypot(P.x+P.w/2-d.x,P.y+P.h/2-d.y);d.a=Math.max(.0,Math.min(1,(d.a==null?1:d.a)+((dd<190?-1:1)*0.04)));if(d.a<=0)continue;ctx.save();ctx.globalAlpha=d.a;drawLeafMass(ctx,d.x,d.y,1.15,7);ctx.restore()}}
 }
 function drawLeafMass(g,x,y,s,seed){
   const cols=['#3f6a26','#4f7a2e','#5f8f36','#6a9a3c','#c9a83a','#4a7a2c','#d8b04a','#5a8a32'];
@@ -255,10 +283,11 @@ function drawBramble(g,x,y,cc,r,up){
 }
 /* tranchée : clayonnage des parois, caillebotis au fond, sacs de terre et piquets sur le parapet, échelle */
 function verdunTiles(g,Lv){
+  const G0=gRow(Lv);
   // trous d'obus : bords arrondis et herbeux (dans le terrain miné)
   for(const z of Lv.zones||[]){if(z.z!=='mines')continue;
-    for(let c=z.c0;c<=z.c1;c++){if(!(Lv.g[13][c]==='.'&&Lv.g[14][c]==='#'&&Lv.g[13][c-1]==='#'))continue;let e=c;while(Lv.g[13][e+1]==='.')e++;
-      const x0=c*T,x1=(e+1)*T,y0=13*T,y1=14*T,top=Lv.th.floorTop;
+    for(let c=z.c0;c<=z.c1;c++){if(!(Lv.g[G0][c]==='.'&&Lv.g[G0+1][c]==='#'&&Lv.g[G0][c-1]==='#'))continue;let e=c;while(Lv.g[G0][e+1]==='.')e++;
+      const x0=c*T,x1=(e+1)*T,y0=G0*T,y1=(G0+1)*T,top=Lv.th.floorTop;
       g.fillStyle=Lv.th.floor;g.beginPath();g.moveTo(x0-2,y0);g.quadraticCurveTo(x0+18,y0+4,x0+26,y1);g.lineTo(x0,y1);g.closePath();g.fill();
       g.beginPath();g.moveTo(x1+2,y0);g.quadraticCurveTo(x1-18,y0+4,x1-26,y1);g.lineTo(x1,y1);g.closePath();g.fill();
       g.strokeStyle=top;g.lineWidth=6;g.beginPath();g.moveTo(x0-4,y0+2);g.quadraticCurveTo(x0+18,y0+5,x0+26,y1);g.quadraticCurveTo((x0+x1)/2,y1+6,x1-26,y1);g.quadraticCurveTo(x1-18,y0+5,x1+4,y0+2);g.stroke();
@@ -267,25 +296,25 @@ function verdunTiles(g,Lv){
   for(const z of Lv.zones||[]){if(z.z!=='trench')continue;
     let lo=null,hi=null;
     for(let c=z.c0;c<=z.c1;c++)for(let r=0;r<Lv.g.length-1;r++){const ch=Lv.g[r][c];if(ch!=='#'&&!(ch==='f'&&(Lv.g[r][c+1]==='.'||Lv.g[r][c-1]==='.')))continue;
-      const ol=Lv.g[r][c-1]==='.'&&r>=13,orr=Lv.g[r][c+1]==='.'&&r>=13;
+      const ol=Lv.g[r][c-1]==='.'&&r>=G0,orr=Lv.g[r][c+1]==='.'&&r>=G0;
       if(ol||orr){const x=c*T,y=r*T,ex=orr?x+T-14:x;g.fillStyle='#6a5034';g.fillRect(ex,y,14,T);g.strokeStyle='#4a3622';g.lineWidth=1.4;
         for(let k=0;k<6;k++){g.beginPath();g.moveTo(ex,y+k*7+3);g.quadraticCurveTo(ex+7,y+k*7+(k%2?7:-1),ex+14,y+k*7+3);g.stroke()}
         g.fillStyle='#4a3622';g.fillRect(ex+(orr?0:10),y,4,T)}
-      if(r>=14&&Lv.g[r-1][c]==='.'&&Lv.g[r-1][c-1]!==undefined){const x=c*T,y=r*T;g.fillStyle='#7a6046';for(let k=0;k<5;k++)g.fillRect(x+k*8+1,y-3,6,5);g.fillStyle='#5a4430';g.fillRect(x,y+1,T,2)}
-      if(r===13&&(Lv.g[13][c+1]==='.'||Lv.g[13][c-1]==='.')&&Lv.g[12][c]==='.'){if(lo==null)lo=c;hi=c}
+      if(r>=G0+1&&Lv.g[r-1][c]==='.'&&Lv.g[r-1][c-1]!==undefined){const x=c*T,y=r*T;g.fillStyle='#7a6046';for(let k=0;k<5;k++)g.fillRect(x+k*8+1,y-3,6,5);g.fillStyle='#5a4430';g.fillRect(x,y+1,T,2)}
+      if(r===G0&&(Lv.g[G0][c+1]==='.'||Lv.g[G0][c-1]==='.')&&Lv.g[G0-1][c]==='.'){if(lo==null)lo=c;hi=c}
     }
     // sacs de terre, en arrière-plan, le long des bords
-    for(const c of [lo,hi]){if(c==null)continue;const x=c*T,y=13*T;for(let k=0;k<3;k++){g.fillStyle=k%2?'#8a7a5a':'#9a8a66';rr(g,x+2+k*12+DX*.6,y-9+DY*.6,14,8,3);g.fill()}}
+    for(const c of [lo,hi]){if(c==null)continue;const x=c*T,y=G0*T;for(let k=0;k<3;k++){g.fillStyle=k%2?'#8a7a5a':'#9a8a66';rr(g,x+2+k*12+DX*.6,y-9+DY*.6,14,8,3);g.fill()}}
     // échelle contre la paroi de sortie
-    if(hi!=null){const x=hi*T-16,y0=13*T,y1=15*T;g.fillStyle='#7a5a3a';g.fillRect(x,y0-10,3,y1-y0+10);g.fillRect(x+12,y0-10,3,y1-y0+10);for(let yy=y0;yy<y1;yy+=12)g.fillRect(x,yy,15,2.5)}
+    if(hi!=null){const x=hi*T-16,y0=G0*T,y1=(G0+2)*T;g.fillStyle='#7a5a3a';g.fillRect(x,y0-10,3,y1-y0+10);g.fillRect(x+12,y0-10,3,y1-y0+10);for(let yy=y0;yy<y1;yy+=12)g.fillRect(x,yy,15,2.5)}
     // paroi du fond en planches : on ne voit pas derrière la tranchée
-    for(let c=z.c0;c<=z.c1;c++)for(let r=13;r<=14;r++){if(Lv.g[r][c]!=='.')continue;let fr=r+1;while(fr<Lv.g.length&&Lv.g[fr][c]==='.')fr++;if(fr>=Lv.g.length)continue;
+    for(let c=z.c0;c<=z.c1;c++)for(let r=G0;r<=G0+1;r++){if(Lv.g[r][c]!=='.')continue;let fr=r+1;while(fr<Lv.g.length&&Lv.g[fr][c]==='.')fr++;if(fr>=Lv.g.length)continue;
       const x=c*T,y=r*T;g.fillStyle='#4e3a26';g.fillRect(x,y,T,T);g.fillStyle='#5e4630';for(let k=0;k<4;k++)g.fillRect(x,y+k*10+1,T,8);
       g.fillStyle='rgba(0,0,0,.28)';for(let k=0;k<4;k++)g.fillRect(x,y+k*10+9,T,1.5);g.fillStyle='rgba(0,0,0,.15)';g.fillRect(x+((c*13)%28)+4,y+3,1.5,T-6);
       if(c%3===0){g.fillStyle='#3e2c1c';g.fillRect(x+16,y,8,T)}
-      if(r===13&&Lv.g[12][c]==='.'){g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x,y,T,4)}}
+      if(r===G0&&Lv.g[G0-1][c]==='.'){g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x,y,T,4)}}
     // piquets « queue de cochon » et barbelé rouillé, plantés dans le sol derrière le parapet
-    const surf=c=>{for(let r=9;r<=13;r++)if('#f'.includes(Lv.g[r][c]))return r;return null};
+    const surf=c=>{for(let r=G0-4;r<=G0;r++)if('#f'.includes(Lv.g[r][c]))return r;return null};
     const posts=[];for(let c=z.c0;c<=z.c1;c+=3){const r=surf(c);if(r!=null)posts.push([c,r])}
     g.strokeStyle='rgba(90,60,40,.75)';g.lineWidth=1;
     posts.forEach(([c,r],k)=>{const x=c*T+20+DX,y=r*T+DY;g.fillStyle='#5a4432';g.fillRect(x,y-30,3,30);

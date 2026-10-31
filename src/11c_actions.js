@@ -25,6 +25,7 @@ function actPost(L){
   for(const a of L.acts)if(a.kind==='lever'){let best=null,bd=1e9;for(const g of L.gates){const d=Math.abs(g.c*T-a.x);if(d<bd){bd=d;best=g}}a.gate=best}
   {let k=0;const sq=L.def.stashQuips||[];for(const a of L.acts)if(a.kind==='stash'){a.q=sq[k]?[sq[k]]:null;k++}}
   if(L.def.helmetAt){const[c,r]=L.def.helmetAt;L.acts.push({kind:'secret',style:'helmet',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Le casque tombe. Et dedans, de la paille. Quelqu'un avait gardé un nid pour l'hiver."]})}
+  if(L.def.nestAt){const[c,r]=L.def.nestAt;L.acts.push({kind:'secret',style:'nest',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Tiens, un nid. Quelle jolie paille… Ses propriétaires seront ravis de la partager avec un héros de la nation."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -203,7 +204,7 @@ function samePlatform(x1,x2,r){let a=Math.floor(Math.min(x1,x2)/T),b=Math.floor(
 /* ---------- mines : un clic sous la patte, puis l'explosion ---------- */
 function mineStep(dt){
   for(const m of L.mines){
-    if(m.state==='idle'){if(!P.dead&&P.onGround&&Math.abs(P.x+P.w/2-m.x)<18&&Math.abs(P.y+P.h-m.y)<6){m.state='armed';m.t=0;if(!G.sim){tone(1400,.03,'square',.08);setTimeout(()=>tone(900,.03,'square',.06),60);if(!G.mineSaid){G.mineSaid=true;say("Clic. Un clic, ce n'est jamais bon signe. S'éloigner. Vite.",2.6)}}}}
+    if(m.state==='idle'){if(!P.dead&&P.onGround&&Math.abs(P.x+P.w/2-m.x)<18&&Math.abs(P.y+P.h-m.y)<6){m.state='armed';m.t=0;if(!G.sim){tone(1400,.03,'square',.08);setTimeout(()=>tone(900,.03,'square',.06),60);if(!G.mineSaid){G.mineSaid=true;say("Clic. Oh non.",2)}}}}
     else if(m.state==='armed'){m.t+=dt;if(m.t>(L.def.mineDelay||1.0)){m.state='gone';m.boom=true;if(!G.sim){G.shake=14;noise(.9,260,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<26;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x:m.x,y:m.y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.6})}parts.push({type:'ring',x:m.x,y:m.y-10,life:0,max:.4})}
       for(const c of L.rats)if(c.chase&&Math.hypot(c.x+c.w/2-m.x,c.y-m.y)<80)c.dead=true}}
   }

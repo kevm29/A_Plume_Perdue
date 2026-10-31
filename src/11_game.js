@@ -205,7 +205,7 @@ function stepPlay(dt){
   }
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);
+  mechStep(dt,pcx,pcy);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}

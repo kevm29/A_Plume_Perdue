@@ -9,11 +9,12 @@ const DEATH_Q={
   glass:["Du verre partout. Ils ne balaient plus, à l'arrière ?"],
   pickets:["Une grille en fer forgé. Jolie. Pointue, surtout."],
   nails:["Des clous. Le charpentier n'a pas fini son travail."],
-  rat:["Mordu par un rat. Il cherchait du grain, il a trouvé de la paille.","Un rat. Même ici, la vermine a ses entrées."],
+  rat:["Mordu par un rat. Il cherchait du grain, il s'est contenté de moi.","Un rat. Même ici, la vermine a ses entrées."],
   grenade:["Une grenade. Lâchée par un pigeon de métal. La guerre a bien changé.","Boum. Le règlement disait de se jeter à plat ventre. Je l'ai fait. Trop tard."],
   hunter:["Du plomb dans l'aile. Au sens propre.","Tiré comme un faisan. Moi, un pigeon militaire !","Je ne suis pas du gibier. Je suis du courrier."],
-  bramble:["Des ronces. Elles ont repoussé avant les arbres.","Pris dans les ronces. Elles, au moins, n'ont pas changé depuis 1916."],
-  mine:["Elle a fait clic, puis boum. Dans cet ordre, au moins.","Une mine de 1916. Elle a attendu cent dix ans pour moi. C'est presque touchant."],
+  bramble:["Des ronces. Ça pique.","Pris dans les ronces. Pas très glorieux."],
+  mole:["Mordu par une taupe. Elle n'a même pas regardé : elle ne voit rien.","Une taupe. Le génie souterrain a toujours eu l'avantage de la surprise."],
+  mine:["Elle a fait clic, puis boum. Dans cet ordre, au moins.","Une mine. On ne marche pas sur une mine. Je le savais, pourtant."],
   piglet:["Rattrapé par un marcassin. Je ne le dirai à personne.","Les marcassins courent plus vite que la gloire."],
   boar:["Un sanglier. Il ne m'a même pas vu. C'est presque pire.","Les sangliers ont pris le front. Personne ne les a arrêtés."],
   pigeon:["Bousculé par un pigeon de la ville. Aucune solidarité entre collègues.","Il m'a donné un coup de bec. Moi, un décoré !"],
@@ -93,7 +94,7 @@ const GAMEOVER=[
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Les coquelicots",levels:["Les coquelicots","Les éoliennes","Le drone","La tranchée oubliée"]},
+  {name:"Les coquelicots",levels:["Le sentier","Les éoliennes","Le drone","La tranchée oubliée"]},
   {name:"Reims",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
