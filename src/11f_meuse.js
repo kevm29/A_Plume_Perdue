@@ -280,7 +280,9 @@ function drawDuck(g,d,t){
 }
 function drawBankTree(g,tr){
   const b=mp(tr.x,L.meuse.yG,tr.z),s=ms(tr.z);if(b[0]<cam.x-220||b[0]>cam.x+W+220)return;
-  autumnTree(g,b[0],b[1]+2,tr.h*s,mulberry(tr.seed),Math.min(.85,mFog(tr.z)*1.1));
+  // dessiné une fois dans une petite image, puis réutilisé à chaque image
+  const h=tr.h*s;if(!tr.spr||tr.sprRS!==RS){const w=Math.ceil(h*1.1),hh=Math.ceil(h*1.15),c=mk(w*RS,hh*RS),cg=c.getContext('2d');cg.scale(RS,RS);autumnTree(cg,w/2,hh-2,h,mulberry(tr.seed),Math.min(.85,mFog(tr.z)*1.1));tr.spr=c;tr.sw=w;tr.sh=hh;tr.sprRS=RS}
+  g.drawImage(tr.spr,b[0]-tr.sw/2,b[1]+4-tr.sh,tr.sw,tr.sh);
 }
 /* --- les péniches --- */
 function drawBarges(g,t){

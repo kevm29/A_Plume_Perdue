@@ -19,6 +19,7 @@ function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:1.2+text.length*.
 function wear(){return S.run.wear||0}
 function loadLayers(i){
   const key=i+':'+RS;
+  for(const k in layerCache)if(k!==key&&!k.startsWith('0:'))delete layerCache[k];
   if(!layerCache[key]){const tmp=parseLevel(i);const prev=L;L=tmp;layerCache[key]={far:buildFar(tmp),mid:buildMid(tmp),windows:tmp.windows,turbines:tmp.turbines};L=prev}
   return layerCache[key];
 }

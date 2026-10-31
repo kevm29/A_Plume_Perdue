@@ -152,7 +152,14 @@ function drawVerdunFront(t){
   for(const f of L.fallen||[]){ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.rot);ctx.fillStyle='#1c1c22';ctx.beginPath();ctx.ellipse(0,0,11,6,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-4,0);ctx.lineTo(-16,-8);ctx.lineTo(-6,4);ctx.fill();ctx.restore()}
   for(const d of L.decorFront||[]){if(d.x<cam.x-200||d.x>cam.x+W+200)continue;if(d.t==='leaves'){const pcx=P.x+P.w/2,open=d.nest?(!P.dead&&Math.abs(P.y+P.h-d.top)<4&&Math.abs(pcx-d.x)<150):Math.hypot(pcx-d.x,P.y+P.h/2-d.y)<190;d.a=Math.max(0,Math.min(1,(d.a==null?1:d.a)+(open?-.05:.05)));if(d.a<=0)continue;ctx.save();ctx.globalAlpha=d.a;drawLeafMass(ctx,d.x,d.y,d.s,7);ctx.restore()}}
 }
+const leafCache=new Map();
 function drawLeafMass(g,x,y,s,seed){
+  if(g!==ctx)return drawLeafMassRaw(g,x,y,s,seed);
+  const rx=Math.round(x),k=seed+'|'+rx+'|'+s.toFixed(2)+'|'+RS;let c=leafCache.get(k);
+  if(!c){if(leafCache.size>500)leafCache.clear();const pad=Math.ceil(66*s+10);c=mk(pad*2*RS,pad*2*RS);const cg=c.getContext('2d');cg.scale(RS,RS);cg.translate(pad-rx,pad-Math.round(y));drawLeafMassRaw(cg,rx,Math.round(y),s,seed);c.pad=pad;leafCache.set(k,c)}
+  g.drawImage(c,rx-c.pad+(y-Math.round(y))*0,Math.round(y)-c.pad+(y-Math.round(y)),c.pad*2,c.pad*2);
+}
+function drawLeafMassRaw(g,x,y,s,seed){
   const R=mulberry(seed*97+Math.round(x)),greens=['#3f6a26','#4f7a2e','#5f8f36','#6a9a3c','#4a7a2c','#5a8a32'],golds=['#c9a83a','#d8b04a','#b8862a'];
   // masse sombre, puis touffes, puis feuilles une à une, lumière en haut à gauche
   g.fillStyle='#2f5420';for(let k=0;k<7;k++){const a=k*.9,d=(k%3)*12*s;g.beginPath();g.arc(x+Math.cos(a)*d,y+Math.sin(a)*d*.7+6*s,22*s,0,7);g.fill()}
