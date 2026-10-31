@@ -5,7 +5,7 @@ LEVELS.push({w:3,name:"L'aire de repos",theme:'aire',exit:'post',exitLabel:"A4 �
  hints:[["ARTICLE 18 — LE VENT DE FACE","Les traînées de vent annoncent la rafale. Se mettre à l'abri derrière une barrière ou un camion."],
         ["ARTICLE 19 — LE SAC VOLANT","Il ne se pose jamais. Il suit le vent, toujours le même chemin."]],
  quips:["Des tables pour pique-niquer au bord de la route. En pleine guerre. L'arrière ne doute de rien.","Un sac qui vole. Ce n'est pas du papier. Je ne sais pas ce que c'est, et je n'aime pas ça.","Un hérisson. Je l'ai pris pour une boule de barbelés."],
- signs:["AIRE DE REPOS|Autoroute A4"],
+ signs:["road:AIRE DE REPOS|A4"],
  segs:[SEG_START_FLAT,`
 ......................
 ...o......o......o....
@@ -60,7 +60,7 @@ LEVELS.push({w:3,name:"Les camions",theme:'road',exit:'post',exitLabel:"CHÂTEAU
  start:"Des camions grands comme des maisons. Le ravitaillement a beaucoup grossi.",
  hints:[["ARTICLE 20 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi la figure 9 : le diable."]],
  quips:["Ils roulent sans chevaux, et le chauffeur ne chante même pas. Triste époque.","Du verre partout sur la route. Un convoi s'est fait mitrailler, c'est sûr.","Encore du verre. Ils n'ont donc personne pour balayer, à l'arrière ?"],
- signs:["TRAVAUX|Route barrée"],
+ signs:["works:TRAVAUX|Route barrée"],
  segs:[`
 .....g....
 ..S...h...
@@ -124,7 +124,7 @@ LEVELS.push({w:3,name:"L'orage",theme:'storm',exit:'post',exitLabel:"OUEST →",
  chaseQuip:"Il arrive. Le noir, la pluie, le tonnerre. Ne pas se retourner. Voler.",
  hints:[["ARTICLE 21 — LA FOUDRE","Elle prévient : le sol s'illumine avant qu'elle frappe. Ne jamais rester sous un éclair qui prévient."]],
  quips:["Le tonnerre. On dirait le canon. Je… je me souviens de quelque chose.","Le pont n'est plus loin. Il faut tenir jusque-là."],
- signs:["A4|Vents violents"],
+ signs:["works:VENTS VIOLENTS|A4"],
  segs:[SEG_START_FLAT,`
 ....................
 ....o...............

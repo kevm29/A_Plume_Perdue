@@ -6,7 +6,7 @@ const MAT={
      bench:['#2f4a3a','#456a52','#1e3226'],barrier:['#9a968e','#b8b4ac','#78746c'],hay:['#c9a24a','#e0bc6a','#a8823a'],crate:['#6a4a2a','#8a6a44','#4a321a'],tomb:['#85857f','#a5a59f','#65655f']},
   D:{drape:['#d3cab5','#ebe4d2','#aaa18c'],hedge:['#3a5a2e','#4e7a3a','#2a4220'],stall:['#8a5a3a','#c8302a','#6a4028'],vault:['#7a7670','#9a968e','#5a5650']},
   '=':{shelf:['#7a5332','#9a6d44','#5a3c24'],duck:['#6a5236','#8a6e4a','#4a3a26'],gutter:['#5a6470','#7a8692','#3e4650'],girder:['#7a4a32','#9a6a4a','#5a3424'],
-     table:['#6a5a44','#8a7a5a','#4a3e2e'],plank:['#7a5a3a','#9a7a52','#5a4028'],beam:['#5a3e26','#7a5a3a','#3e2a18']}
+     table:['#6a5a44','#8a7a5a','#4a3e2e'],branch:['#5a4330','#7a5c40','#3e2e20'],plank:['#7a5a3a','#9a7a52','#5a4028'],beam:['#5a3e26','#7a5a3a','#3e2a18']}
 };
 function faceTop(g,x,y,col){g.fillStyle=col;poly(g,[x,y,x+T,y,x+T+DX,y+DY,x+DX,y+DY]);g.fill()}
 function faceSide(g,x,y,h,col){g.fillStyle=col;poly(g,[x+T,y,x+T+DX,y+DY,x+T+DX,y+h+DY,x+T,y+h]);g.fill()}
@@ -31,7 +31,9 @@ function buildTiles(L){
   }
   const list=th.props;let x=80+R()*120,pi=Math.floor(R()*list.length);
   while(x<L.wpx-120){
-    const p=PROPS[list[pi%list.length]],w=p.w;
+    const zp=L.def.zoneProps,zn=zp?zoneOfL(L,Math.floor(x/T)):null,zl=zp&&zn&&zp[zn];
+    if(zl&&!zl.length){x+=40;continue}
+    const p=PROPS[(zl||list)[pi%(zl||list).length]],w=p.w;
     const c0=Math.floor(x/T),c1=Math.floor((x+w)/T);let ok=true;
     const gr=cc=>{for(let r=1;r<ROWS;r++){const ch=L.g[r][cc];if(ch==='#')return r;if(ch!=='.')return -1}return -1};const g0=gr(c0);
     for(let cc=c0;cc<=c1;cc++)if(g0<0||gr(cc)!==g0)ok=false;
@@ -43,12 +45,14 @@ function buildTiles(L){
   for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch))sg.fillRect(cc*T+10,r*T+12,T,T);else if(ch==='='||ch==='B')sg.fillRect(cc*T+10,r*T+12,T,12)}
   g.save();g.globalAlpha=th.outdoor?.38:.5;g.filter='blur(7px)';g.drawImage(sh,0,-PAD);g.restore();
   for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){
-    const ch=L.g[r][cc],x=cc*T,y=r*T,mc=matCols(ch,th);if(!mc)continue;
+    const ch=L.g[r][cc],x=cc*T,y=r*T,thc=thAtCol(L,cc),mc=matCols(ch,thc);if(!mc)continue;
+    if(ch==='='&&th.shelf==='branch')continue;
     if(ch==='='||ch==='B'){faceTop(g,x,y,mc[1]);if(tile(cc+1,r)!==ch)faceSide(g,x,y,12,mc[2]);continue}
     if(!isSolid(cc,r-1))faceTop(g,x,y,mc[1]);
     if(!isSolid(cc+1,r))faceSide(g,x,y,T,mc[2]);
   }
-  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++)drawTileFront(g,L.g[r][cc],cc*T,r*T,cc,r,th);
+  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++)drawTileFront(g,L.g[r][cc],cc*T,r*T,cc,r,thAtCol(L,cc));
+  verdunTiles(g,L);
   // arête nette sous chaque face avant : rendu plus « carré »
   g.fillStyle='rgba(0,0,0,.35)';
   for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!isSolid(cc,r+1)&&r<ROWS-1)g.fillRect(cc*T,r*T+T-1.5,T,1.5)}
@@ -159,6 +163,7 @@ function drawBlock(g,ch,x,y,cc,r,th,mc){
 }
 function drawSpikes(g,ch,x,y,cc,r,th){
   const up=ch==='^',k=th.spike;const by=up?y+T-8:y;
+  if(k==='bramble'){drawBramble(g,x,y,cc,r,up);return}
   if(k==='pins'){
     g.fillStyle='#8a6a48';g.fillRect(x,by,T,8);
     const heads=['#b8302a','#efe6d3','#1d1a22','#b8302a','#d9a441'];
@@ -190,6 +195,7 @@ function drawTileFront(g,ch,x,y,cc,r,th){
   else if(ch==='W'){g.fillStyle=mc[0];g.fillRect(x,y,T,T);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x+8,y,2,T);g.fillRect(x+28,y,2,T)}
   else if(ch==='X'||ch==='D')drawBlock(g,ch,x,y,cc,r,th,mc);
   else if(ch==='='){
+    if(th.shelf==='branch'){drawBranchTile(g,x,y,cc,r,mc);return}
     g.fillStyle=mc[0];g.fillRect(x,y,T,12);g.fillStyle='rgba(255,230,190,.25)';g.fillRect(x,y,T,1.5);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x,y+10,T,2);
     const s=th.shelf;
     if(s==='duck'){g.fillStyle='rgba(0,0,0,.3)';for(let k=5;k<T;k+=8)g.fillRect(x+k,y,2,12)}

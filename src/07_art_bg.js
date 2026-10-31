@@ -181,11 +181,12 @@ function buildOutdoorFar(L,g,wpx,hpx,R){
   g.fillStyle=gr;g.fillRect(0,0,wpx,hpx);
   if(th.stars){for(let k=0;k<wpx/6;k++){const a=.3+R()*.6;g.fillStyle='rgba(235,235,255,'+a+')';g.fillRect(R()*wpx,R()*300,R()<.1?2:1,R()<.1?2:1)}}
   if(th.celestial==='moon'){const mx=wpx*.32,my=110;const mg=g.createRadialGradient(mx,my,10,mx,my,140);mg.addColorStop(0,'rgba(220,230,255,.35)');mg.addColorStop(1,'rgba(220,230,255,0)');g.fillStyle=mg;g.fillRect(mx-140,my-140,280,280);g.fillStyle='#e8ecf2';g.beginPath();g.arc(mx,my,30,0,7);g.fill();g.fillStyle='rgba(150,160,180,.35)';g.beginPath();g.arc(mx-8,my-6,7,0,7);g.arc(mx+9,my+8,5,0,7);g.arc(mx+4,my-12,3,0,7);g.fill()}
-  if(th.celestial==='sun'){const mx=wpx*.4,my=hz==='turbines'?150:330;const mg=g.createRadialGradient(mx,my,10,mx,my,260);mg.addColorStop(0,'rgba(255,230,180,.6)');mg.addColorStop(1,'rgba(255,220,170,0)');g.fillStyle=mg;g.fillRect(mx-260,my-260,520,520);g.fillStyle='rgba(255,236,200,.9)';g.beginPath();g.arc(mx,my,34,0,7);g.fill()}
+  if(th.celestial==='sun'){const mx=wpx*.4,my=th.sunY||(hz==='turbines'?150:330);const mg=g.createRadialGradient(mx,my,10,mx,my,260);mg.addColorStop(0,'rgba(255,230,180,.6)');mg.addColorStop(1,'rgba(255,220,170,0)');g.fillStyle=mg;g.fillRect(mx-260,my-260,520,520);g.fillStyle='rgba(255,236,200,.9)';g.beginPath();g.arc(mx,my,34,0,7);g.fill()}
   for(let k=0;k<wpx/260;k++){const x=R()*wpx,y=60+R()*160,w=120+R()*200;g.fillStyle=th.weather==='rain'||th.weather==='storm'?'rgba(10,12,16,.35)':'rgba(255,255,255,.08)';g.beginPath();g.ellipse(x,y,w,14+R()*12,0,0,7);g.ellipse(x+w*.3,y-10,w*.5,12,0,0,7);g.fill()}
   const far=mix(sk[1],'#000000',.35),near=mix(sk[1],'#000000',.6);
   L.turbines=[];
-  if(hz==='front'||hz==='turbines'){
+  if(hz==='fields'){fieldsFar(L,g,wpx,R)}
+  else if(hz==='front'||hz==='turbines'){
     hills(g,wpx,400,26,mix(sk[2],far,.6),R,.006);
     if(hz==='turbines'){for(let x=120;x<wpx;x+=230+R()*160){const h=180+R()*80;g.fillStyle=mix(sk[1],'#ffffff',.25);poly(g,[x-5,430,x-2,430-h,x+2,430-h,x+5,430]);g.fill();g.beginPath();g.arc(x,430-h,5,0,7);g.fill();L.turbines.push({x,y:430-h,r:h*.42,sp:.7+R()*.5,ph:R()*6})}}
     hills(g,wpx,450,20,far,R,.009);
@@ -241,6 +242,7 @@ function buildMid(L){
   const base=th.outdoor?mix(th.sky[1],'#000000',.68):shade(th.fog,.14),rim=th.outdoor?'rgba(200,210,230,.14)':'rgba(170,195,215,.2)';
   let x=40+R()*120;
   const hz=th.horizon;
+  if(hz==='fields'){fieldsMid(L,g,wpx,R);x=wpx}
   while(x<wpx){
     const k=R();
     g.fillStyle=base;g.strokeStyle=rim;g.lineWidth=2;
@@ -272,7 +274,7 @@ function buildMid(L){
       else{const w=90+R()*70,h=90+R()*50;g.fillRect(x,525-h,w,h);poly(g,[x-8,525-h,x+w/2,525-h-w*.45,x+w+8,525-h]);g.fill();const on=R()<.6;g.fillStyle=on?'rgba(255,200,120,.6)':'rgba(0,0,0,.25)';g.fillRect(x+w*.2,525-h*.7,16,20);g.fillRect(x+w*.65,525-h*.7,16,20);x+=w+40+R()*80}
     }
   }
-  g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,th.outdoor?.3:.35);g.fillRect(0,-hpx,wpx,hpx*2);
+  g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,hz==='fields'?.14:th.outdoor?.3:.35);g.fillRect(0,-hpx,wpx,hpx*2);
   bakeFog(g,th,wpx,'source-atop');
   return c;
 }

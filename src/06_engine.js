@@ -5,11 +5,14 @@ function parseLevel(i){
   const def=LEVELS[i],th=THEMES[def.theme];
   ROWS=def.rows||15;
   const rows=Array.from({length:ROWS},()=>'');
-  for(const seg of def.segs){
+  const zones=[];
+  for(const sg of def.segs){
+    const seg=typeof sg==='string'?sg:sg.s;const c0=rows[0].length;
     const lines=seg.split('\n').map(s=>s.trim()).filter(s=>s.length);
     const w=Math.max(...lines.map(l=>l.length));
     const pad=ROWS-lines.length;
     for(let r=0;r<ROWS;r++){const l=r<pad?'':lines[r-pad];rows[r]+=l.padEnd(w,'.')}
+    if(sg.z)zones.push({z:sg.z,c0,c1:c0+w-1});
   }
   // sol plus épais sous le niveau : la caméra peut se centrer sur Raymond même près du sol
   if(def.deep){for(let k=0;k<def.deep;k++)rows.push(def.deepFill?def.deepFill.repeat(rows[0].length):rows[rows.length-1]);ROWS+=def.deep}
@@ -21,7 +24,7 @@ function parseLevel(i){
   for(const[c,r]of def.stashCells||[])g[r][c]='s';
   for(const[c,r]of def.fakes||[])g[r][c]='f';
   const L={def,i,w:wT,wpx:wT*T,g,th,corn:[],medal:null,cps:[],exit:null,rats:[],moths:[],movers:[],hints:[],quips:[],decor:[],lights:[],mark:new Set(),
-    chaser:null,triggerX:Infinity,spawn:null,dome:null,avoid:[],updrafts:[],bolts:[],bells:[]};
+    chaser:null,triggerX:Infinity,spawn:null,dome:null,avoid:[],updrafts:[],bolts:[],bells:[],zones,decorFront:[],hunters:[]};
   mechInit(L);
   let hi=0,qi=0,si=0,mi=0;
   const movers=[];
@@ -84,6 +87,7 @@ function parseLevel(i){
   if(def.garlands)for(let x=200;x<L.wpx-200;x+=520){L.decor.push({t:'garland',x,y:130,w:400});for(let k=1;k<8;k+=2)L.lights.push({x:x+k*50,y:150+Math.sin(k/8*Math.PI)*40,r:110,i:.55,warm:1})}
   if(def.flyers)def.flyers.forEach((o,i)=>{const m=L.moths[i];if(!m||!o)return;if(o.dy){m.cy+=o.dy;m.y=m.cy}if(o.amp)m.amp=o.amp;if(o.sp)m.sp=o.sp});
   for(const c of L.rats)c.base=Math.abs(c.vx);
+  verdunPost(L);
   return L;
 }
 

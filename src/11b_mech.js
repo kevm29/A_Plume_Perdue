@@ -38,6 +38,7 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
     case',':L.mines.push({x:cx,y:y+T,state:'idle',t:0});return true;
     case'f':return false;   // carton creux : dessiné comme un bloc, on peut y entrer
     case't':return false;   // planche invisible
+    case'1':case'2':case'3':case'4':case'6':case'7':case'8':return verdunParse(L,ch,c,r,x,y,cx,cy);
     case's':{(L.acts=L.acts||[]).push({kind:'stash',x:cx,y:cy,open:0,t:0,used:false,q:L.def.stashQuips});const n=L.def.segsFake;L.g[r][c]=((L.def.fakeStash||[]).some(([a,b])=>a===c&&b===r)||L.g[r][c-1]==='f'||L.g[r][c+1]==='f'||(L.g[r-1]&&L.g[r-1][c]==='f')||(L.g[r+1]&&L.g[r+1][c]==='f'))?'f':'.';return false}
     case'x':{let fr=r+1;while(fr<ROWS&&L.g[fr][c]!=='#')fr++;{const ac={kind:'secret',style:'wardrobe',x:c*T+T,y:fr*T,open:0,t:0,used:false};(L.acts=L.acts||[]).push(ac);L.decor.push({t:'wardrobe',x:c*T,y:r*T,w:2*T,floor:fr*T,act:ac})}L.g[r][c]='=';if(L.g[r][c+1]==='.')L.g[r][c+1]='=';return false}
   }
@@ -160,6 +161,7 @@ function mechHit(hb){
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
   if(G.grenadeHit){G.grenadeHit=false;return'grenade'}
+  if(G.hunterHit){G.hunterHit=false;return'hunter'}
   if(L.chaser&&L.chaser.hitP){L.chaser.hitP=false;return'drone'}
   for(const m of L.mines)if(m.boom){m.boom=false;if(Math.hypot(pcx-m.x,pcy-(m.y-10))<78)return'mine'}
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';

@@ -590,6 +590,7 @@ function drawCarton(g,c){
 }
 /* décors */
 function drawDecor(g,d,t){
+  if(drawVerdunDecor(g,d,t))return;
   if(d.t==='wardrobe'){drawWardrobe(g,d);return}
   if(d.t==='lamp'){
     g.strokeStyle='#2a221c';g.lineWidth=1.5;g.beginPath();g.moveTo(d.x,-30);g.lineTo(d.x,d.y-10);g.stroke();

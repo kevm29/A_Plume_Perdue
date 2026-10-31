@@ -21,7 +21,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.tiles){const sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/RS-sx);if(sw>0)blitLayer(ctx,lv.tiles,sx*RS,0,sw*RS,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/RS)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
   for(const u of lv.updrafts||[]){if(u.x<cx-100||u.x>cx+W+100)continue;ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1.5;for(let k=0;k<7;k++){const ph=((t*.9+k/7)%1),yy=u.bottom-ph*u.bottom,xx=u.x+10+((k*17)%(u.w-20))+Math.sin(t*3+k)*6;ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-20,xx,yy-44);ctx.stroke()}ctx.globalAlpha=1}
-  if(!opts.noEntities){drawMechBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawActPrompt(t)}
+  if(!opts.noEntities){drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawActPrompt(t)}
   ctx.restore();
 }
 function drawEntities(t){
@@ -115,6 +115,7 @@ function renderWeather(th,cx,t){
   }else if(w==='wind'){
     ctx.save();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;for(let k=0;k<14;k++){const x=((k*137-t*420)%(W+200)+W+200)%(W+200)-100,y=60+((k*71)%380)+Math.sin(t*2+k)*10;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+30,y-4,x+60,y);ctx.stroke()}
     for(let k=0;k<8;k++){const x=((k*211-t*300)%(W+100)+W+100)%(W+100)-50,y=100+((k*97)%360)+Math.sin(t*3+k)*20;ctx.fillStyle=th.windColor||'#c8302a';ctx.beginPath();ctx.ellipse(x,y,3,1.6,t*4+k,0,7);ctx.fill()}ctx.restore();
+  }else if(w==='leaves'){drawLeavesWeather(t,cx)
   }else if(w==='dusk'){
     ctx.save();for(let k=0;k<18;k++){const x=((k*97+Math.sin(t*.5+k)*40-cx*.3)%W+W)%W,y=200+((k*53)%280)+Math.sin(t*.8+k*2)*16;ctx.fillStyle='rgba(255,220,140,'+(.3+.3*Math.sin(t*3+k))+')';ctx.beginPath();ctx.arc(x,y,1.6,0,7);ctx.fill()}ctx.restore();
   }

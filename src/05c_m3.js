@@ -4,7 +4,7 @@ LEVELS.push({w:2,name:"La rue de Vesle",theme:'square',exit:'post',exitLabel:"GA
  hints:[["ARTICLE 14 — L'AUVENT","Toile tendue, pigeon lancé. Atterrir dessus fait rebondir très haut."],
         ["ARTICLE 15 — LE TRAMWAY","Il roule sans chevaux et s'arrête à chaque bout de la rue. Son toit est un excellent perchoir."]],
  quips:["Des pigeons de la ville. Ils me regardent de haut. Moi, j'ai une médaille. Enfin, j'en avais une.","Des pics sur tous les trottoirs. Pour empêcher les pigeons de se poser. Des PIGEONS.","Des antennes sur tous les toits. Les télégraphistes ont pris le pouvoir, apparemment."],
- signs:["RUE DE VESLE|Commerces ouverts"],
+ signs:["street:RUE DE VESLE"],
  segs:[SEG_START_FLAT,`
 ......................
 ......o...............
@@ -76,7 +76,7 @@ C...........
 LEVELS.push({w:2,name:"La gare",theme:'station',exit:'post',exitLabel:"QUAI 1",seed:83,
  start:"Une gare. Des trains sans fumée. L'arrière s'est beaucoup modernisé, en deux ans.",
  quips:["Les gens parlent tout seuls dans de petites boîtes. Des espions, tous.","« Paris en quarante-cinq minutes. » Propagande.","Un kiosque à journaux. Aucun ne parle de Verdun. Censure, sûrement."],
- signs:["GARE DE REIMS|Accès aux quais"],
+ signs:["info:GARE DE REIMS|Accès aux quais"],
  hints:[],
  segs:[SEG_START_FLAT,`
 ........................
@@ -138,7 +138,7 @@ LEVELS.push({w:2,name:"La place d'Erlon",theme:'square',exit:'post',exitLabel:"C
  chaseQuip:"Une machine verte qui avale tout ce qui traîne par terre. Ne pas traîner par terre !",
  hints:[],
  quips:["Elle aspire les mégots, les feuilles et les pigeons. Le progrès.","La statue regarde vers l'ouest. Moi aussi. On a au moins ça en commun."],
- signs:["PLACE DROUET-D'ERLON|Pelouse interdite"],
+ signs:["street:PLACE DROUET-D'ERLON"],
  segs:[SEG_START_FLAT,`
 ..................
 ...o.....o........
@@ -197,7 +197,7 @@ LEVELS.push({w:2,name:"La cathédrale",theme:'cathedral',exit:'post',exitLabel:"
  hints:[["ARTICLE 16 — LE VOLET","Ouvert, on s'y pose. Il tremble juste avant de se refermer."],
         ["ARTICLE 17 — LA GARGOUILLE","Elle crache à intervalles réguliers. Une goutte prévient toujours avant le jet."]],
  quips:["Les gargouilles. Elles crachent sur tout le monde. Même sur les décorés.","D'ici, on voit jusqu'à la Marne. Le pigeonnier est par là. Je le sens."],
- signs:["CATHÉDRALE NOTRE-DAME|Visite des tours"],
+ signs:["brown:CATHÉDRALE NOTRE-DAME|Visite des tours"],
  segs:[full([
 '........................................',
 '........................................',

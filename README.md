@@ -55,7 +55,7 @@ Chaque mission a ses propres mécaniques et sa propre faune. Le niveau 3 est tou
 | Mission | Mécaniques | Boss (niveau 3) |
 |---|---|---|
 | 1 · Vittoncourt | Gardien de nuit et sa lampe (se cacher sous les draps), étage plongé dans le noir où seuls les éclairs montrent le chemin, chat aux yeux brillants (ne plus bouger quand ils s'allument, sinon il bondit et poursuit), gardien sous le mammouth (passer par-dessus) | Le gardien au filet à papillons, endormi sur sa chaise jusqu'à ce qu'on passe devant lui |
-| 2 · Les coquelicots | Boue qui enlise si on s'arrête, brouillard où seuls les coquelicots marquent le sol ferme, trous d'obus qui s'effondrent, rafales des éoliennes | Le drone, dans le brouillard |
+| 2 · Les coquelicots | Chasseurs cachés dans les buissons qui tirent sur tout ce qui vole (traverser à pied), sangliers et marcassins, branches d'arbres, terrain miné où l'on se pose sur les panneaux DANGER, boue qui enlise si on s'arrête, brouillard où seuls les coquelicots marquent le sol ferme, trous d'obus qui s'effondrent, rafales des éoliennes | Le drone, dans le brouillard |
 | 3 · Reims | Auvents qui font rebondir, tramway dont le toit sert de perchoir, puis escalade de la cathédrale : volets qui s'ouvrent et se ferment, gargouilles qui crachent | La balayeuse municipale |
 | 4 · L'A4 | Rafales de face (s'abriter derrière barrières et camions), toits des camions, foudre annoncée au sol | L'orage : l'écran avance tout seul |
 | 5 · Villemareuil | Cloches qui se balancent (leur onde étourdit), chevaux de bois et ballons de la fête foraine | La buse empaillée, qui finit par prendre feu |
@@ -65,7 +65,7 @@ Chaque mission a ses propres mécaniques et sa propre faune. Le niveau 3 est tou
 | Mission | Niveaux |
 |---|---|
 | 1 · Vittoncourt, le musée | La vitrine · La galerie des insectes · L'étage du mammouth · La loge du gardien |
-| 2 · Les coquelicots | Les coquelicots · Les éoliennes · Le drone · La tranchée oubliée |
+| 2 · Les coquelicots | Le sentier (champs, bois, terrain miné, tranchée, monument aux enfants de Verdun) · Les éoliennes · Le drone · La tranchée oubliée |
 | 3 · Reims | La rue de Vesle · La gare · La place d'Erlon · La cathédrale |
 | 4 · L'A4 sous l'orage | L'aire de repos · Les camions · L'orage · Le pont |
 | 5 · Villemareuil | La route du village · Le clocher · La fête foraine · Le cimetière |

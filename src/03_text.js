@@ -11,6 +11,8 @@ const DEATH_Q={
   nails:["Des clous. Le charpentier n'a pas fini son travail."],
   rat:["Mordu par un rat. Il cherchait du grain, il a trouvé de la paille.","Un rat. Même ici, la vermine a ses entrées."],
   grenade:["Une grenade. Lâchée par un pigeon de métal. La guerre a bien changé.","Boum. Le règlement disait de se jeter à plat ventre. Je l'ai fait. Trop tard."],
+  hunter:["Du plomb dans l'aile. Au sens propre.","Tiré comme un faisan. Moi, un pigeon militaire !","Je ne suis pas du gibier. Je suis du courrier."],
+  bramble:["Des ronces. Elles ont repoussé avant les arbres.","Pris dans les ronces. Elles, au moins, n'ont pas changé depuis 1916."],
   mine:["Elle a fait clic, puis boum. Dans cet ordre, au moins.","Une mine de 1916. Elle a attendu cent dix ans pour moi. C'est presque touchant."],
   piglet:["Rattrapé par un marcassin. Je ne le dirai à personne.","Les marcassins courent plus vite que la gloire."],
   boar:["Un sanglier. Il ne m'a même pas vu. C'est presque pire.","Les sangliers ont pris le front. Personne ne les a arrêtés."],

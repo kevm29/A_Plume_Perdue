@@ -4,7 +4,7 @@ LEVELS.push({w:4,name:"La route du village",theme:'village',exit:'house',seed:12
  hints:[["ARTICLE 22 — L'OIE","Anser anser domesticus. Garde le village mieux qu'une sentinelle. Sauter par-dessus."]],
  quips:["Des lampions, des flonflons. La guerre est finie ? Personne ne m'a prévenu.","Une tarte aux prunes sur une fenêtre. Je pense à Marguerite. Enfin, à sa tarte.","Le clocher. D'en haut, je verrai si le pigeonnier est toujours là."],
  exitLines:[["RAYMOND","La maison Vasseur. Les volets sont neufs. Il y a une voiture devant.",4.2],["RAYMOND","Mais… où est le pigeonnier ? Un garage. On a mis un garage à la place du pigeonnier !",4.2],["RAYMOND","Bon. Le clocher. De là-haut, je trouverai bien où ils ont mis mes collègues.",4]],
- signs:["VILLEMAREUIL|Village fleuri"],
+ signs:["commune:VILLEMAREUIL"],
  segs:[SEG_START_FLAT,`
 ......................
 .....o.......o........
@@ -68,7 +68,7 @@ LEVELS.push({w:4,name:"Le clocher",theme:'belfry',exit:'door',exitLabel:"",seed:
  start:"Le clocher de Villemareuil. Les cloches se balancent toutes seules. Comme le jour de la mobilisation.",
  hints:[["ARTICLE 23 — LA CLOCHE","Elle se balance toujours au même rythme. À chaque coup, l'onde secoue tout ce qui est trop près."]],
  quips:["Les cloches. Chaque coup me fait trembler la paille.","D'ici, je vois toute la place. Ils préparent une fête. Pour la victoire, sûrement.","Des chauves-souris. Elles dorment le jour et volent la nuit. Comme les espions."],
- signs:["CLOCHER|Défense de sonner"],
+ signs:["info:CLOCHER|Défense de sonner"],
  segs:[`
 ....l.....
 ..........
@@ -161,7 +161,7 @@ LEVELS.push({w:4,name:"La fête foraine",theme:'fete',exit:'banner',seed:137,gar
  quips:["Les gens dansent mal. Lucien aurait été à l'aise.","Un stand de churros, et son braséro. Ça sent le sucre et le charbon."],
  exitLines:[["RAYMOND","Une banderole : « 110e anniversaire de la bataille de Verdun. 1916 – 2026. »",4.4],["RAYMOND","Cent dixième anniversaire ? Mais Verdun, c'est… c'était la semaine dernière.",4.2]],
  afterCards:DATE_CARDS,afterSong:'s5-4',
- signs:["FÊTE DU VILLAGE|Bal ce soir"],
+ signs:["wood:FÊTE DU VILLAGE|Bal ce soir"],
  segs:[SEG_START_FLAT,`
 ........................
 ..........o.......o.....
@@ -227,7 +227,7 @@ LEVELS.push({w:4,name:"La fête foraine",theme:'fete',exit:'banner',seed:137,gar
 LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',seed:139,
  start:"Le cimetière. Je sais l'année, maintenant. Je sais ce que je vais trouver. Il faut quand même que je la voie.",
  quips:["Des noms gravés. Vasseur, Garnier, Marchal. Tout le village est là.","Lucien n'est pas ici. Il est resté là-bas, au fort. Comme moi, d'une certaine façon.","Elle est là, quelque part. Je le sens."],
- signs:["CIMETIÈRE COMMUNAL|Fermeture à la tombée de la nuit"],
+ signs:["street:CIMETIÈRE COMMUNAL|Fermeture à la tombée de la nuit"],
  hints:[],
  segs:[SEG_START_FLAT,`
 ......................

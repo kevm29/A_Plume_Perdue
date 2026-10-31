@@ -101,6 +101,7 @@ function actStep(dt){
 }
 /* au retour au cartel : les gardiens se démêlent, les chats retournent s'asseoir */
 function actRespawn(){
+  verdunRespawn();
   L.grenades=[];G.grenadeHit=false;if(L.chaser&&L.chaser.type==='drone'){L.chaser.sp='scan';L.chaser.lock=0;L.chaser.gt=0;L.chaser.hitP=false}
   L.rats=L.rats.filter(c=>!c.chase);for(const c of L.rats){c.spawned=false;c.charge=0}
   for(const m of L.mines){m.state='idle';m.t=0;m.boom=false}
@@ -203,7 +204,7 @@ function samePlatform(x1,x2,r){let a=Math.floor(Math.min(x1,x2)/T),b=Math.floor(
 function mineStep(dt){
   for(const m of L.mines){
     if(m.state==='idle'){if(!P.dead&&P.onGround&&Math.abs(P.x+P.w/2-m.x)<18&&Math.abs(P.y+P.h-m.y)<6){m.state='armed';m.t=0;if(!G.sim){tone(1400,.03,'square',.08);setTimeout(()=>tone(900,.03,'square',.06),60);if(!G.mineSaid){G.mineSaid=true;say("Clic. Un clic, ce n'est jamais bon signe. S'éloigner. Vite.",2.6)}}}}
-    else if(m.state==='armed'){m.t+=dt;if(m.t>1.0){m.state='gone';m.boom=true;if(!G.sim){G.shake=14;noise(.9,260,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<26;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x:m.x,y:m.y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.6})}parts.push({type:'ring',x:m.x,y:m.y-10,life:0,max:.4})}
+    else if(m.state==='armed'){m.t+=dt;if(m.t>(L.def.mineDelay||1.0)){m.state='gone';m.boom=true;if(!G.sim){G.shake=14;noise(.9,260,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<26;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x:m.x,y:m.y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.6})}parts.push({type:'ring',x:m.x,y:m.y-10,life:0,max:.4})}
       for(const c of L.rats)if(c.chase&&Math.hypot(c.x+c.w/2-m.x,c.y-m.y)<80)c.dead=true}}
   }
 }
