@@ -24,6 +24,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(!opts.noEntities){drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawActPrompt(t)}
   ctx.restore();
 }
+let rayC=null,rayG=null;
 function drawEntities(t){
   const vis=x=>x>cam.x-120&&x<cam.x+W+120,th=L.th;
   for(const h of L.hints)if(vis(h.x)){const m=/(FIG\.|ARTICLE) (\d+)/.exec(L.def.hints[h.i][0]);drawEasel(ctx,h.x,h.y,m?m[2]:'§',th.outdoor)}
@@ -68,9 +69,16 @@ function drawEntities(t){
     const C=G.cut;
     const walk=P.onGround&&!C?Math.min(1,Math.abs(P.vx)/RUN):0;
     const closed=(!!C&&(C.ray==='statue'||C.ray==='fly'||C.ray==='lie')&&!(C.blink>0))||P.idle>60;
-    ctx.save();ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=0;
+    // Raymond est d'abord dessiné à part, puis posé d'un bloc : une seule ombre portée (sinon chaque pièce projette la sienne et il paraît dédoublé)
     const lift=P.spin?-30*Math.pow(Math.sin(P.spin/2),2):0;
-    drawRaymond(ctx,P.x+P.w/2,P.y+P.h+lift,{f:P.facing,t:G.t,walk,air:!P.onGround&&!C,flap:P.flapT,glide:P.gliding||P.lift,wear:wear(),sx:P.sx,sy:P.sy,size:1.15,rot:P.spin,eyeClosed:closed});
+    const sc=ctx.getTransform().a||1,SZ=200;if(!rayC||rayC.width!==Math.ceil(SZ*sc)){rayC=mk(Math.ceil(SZ*sc),Math.ceil(SZ*sc));rayG=rayC.getContext('2d')}
+    rayG.setTransform(1,0,0,1,0,0);rayG.clearRect(0,0,rayC.width,rayC.height);rayG.setTransform(sc,0,0,sc,0,0);
+    drawRaymond(rayG,SZ/2,SZ*.72,{f:P.facing,t:G.t,walk,air:!P.onGround&&!C,flap:P.flapT,glide:P.gliding||P.lift,wear:wear(),sx:P.sx,sy:P.sy,size:1.15,rot:P.spin,eyeClosed:closed});
+    // dehors, pas d'ombre projetée sur le ciel : une ombre au sol, sous les pattes
+    const outd=L.th.outdoor;
+    if(outd&&P.onGround){ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(P.x+P.w/2,P.y+P.h+1,16,3.5,0,0,7);ctx.fill()}
+    ctx.save();if(!outd){ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=0}
+    ctx.drawImage(rayC,P.x+P.w/2-SZ/2,P.y+P.h+lift-SZ*.72,SZ,SZ);
     ctx.restore();
     // robustesse des ailes : petite jauge au-dessus de Raymond, seulement quand elle n'est pas pleine
     if(!C&&P.stam<STAM_MAX-.5){const bx=P.x+P.w/2-18,by=P.y-16,k=P.stam/STAM_MAX,al=Math.min(1,(STAM_MAX-P.stam)/10);
