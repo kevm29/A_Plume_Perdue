@@ -4,7 +4,7 @@
    ========================================================= */
 function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
-  if(st==='bed')return;   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
+  if(st==='bed'||st==='barge'||st==='tractor')return;   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   if(st!=='nest'){g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();}
   const inner=()=>{g.fillStyle='#16110c'};

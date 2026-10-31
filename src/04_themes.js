@@ -59,3 +59,5 @@ const THEMES={
     floor:'#3e3a2c',floorTop:'#4f5a34',type:'earth',x:'tomb',d:'vault',shelf:'plank',spike:'pickets',walker:'none',flyer:'bat',
     props:['cypress','grave','crossIron','vase','grave','cypress']}
 };
+/* 2-2 : les champs de la Meuse un jour de grand vent (même lumière que le 2-1) */
+THEMES.meuse=Object.assign({},THEMES.verdun,{weather:'gale',sky:['#4a84c4','#9cc6e8','#eaf0e6'],fog:'#c6d3d6',sunY:110,windColor:'#c9a83a'});

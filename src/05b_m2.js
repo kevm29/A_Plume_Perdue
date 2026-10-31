@@ -79,65 +79,73 @@ qC#ff#########.......o............
 ########################################
 ########################################`}]});
 
-LEVELS.push({w:1,name:"Les éoliennes",theme:'turbines',exit:'post',exitLabel:"CHARNY-SUR-MEUSE",seed:67,
- gust:{period:6.5,dur:2.4,push:230,dir:-1},
- start:"Des moulins géants. Sans meunier, sans farine. Une arme secrète, forcément.",
- hints:[["ARTICLE 11 — LA RAFALE","Quand les traînées de vent se multiplient, la rafale arrive. S'abriter derrière un mur, ou foncer contre le vent."],
-        ["ARTICLE 12 — LE COURANT D'AIR","Au-dessus d'un courant ascendant, on monte tout seul. Le règlement appelle ça « prendre de la hauteur »."]],
- quips:["Elles tournent sans vent. Ou alors c'est elles qui fabriquent le vent. L'ennemi est capable de tout.","Un courant d'air chaud. Le règlement interdit de se laisser porter. Le règlement n'a jamais volé.","Le vent de face. Comme à l'aller, en 1916. Enfin… comme toujours."],
- signs:["info:PARC ÉOLIEN|Accès réservé à l'exploitant"],
- segs:[SEG_START_FLAT,`
-......................
-...o.....o.....o......
-.h....XX....XX....XX..
-######################
-######################`,`
-....................
-.......o....o.......
-....................
-..h.................
-###.U...U....U...###
-###..............###`,`
-.......o......
-..............
-.C.....q......
-######%%%%####
-######....####`,`
-......................
-..o.......o.......o...
-.......X.......X......
-####%%###%%%%%###%%###
-####..###.....###..###`,`
-.........*........
-..................
-..................
-..................
-........===.......
-..................
-.....o......o.....
-###..U......U..###
-###............###`,`
-....................
-.....m..............
-....................
-|..k....X.....k...X|
-####################
-####################`,`
-............
-.....o.o....
-.C......q...
-############
-############`,`
-........................
-...o......o.......o.....
-.........X.........X....
-####%%%%###%%%%%%%###%##
-####....###.......###.##`,`
-..o.o.......
-............
-......E.....
-############
-############`]});
+/* 2-2 · Les éoliennes : champ éolien sous les rafales, passage de la Meuse sur trois péniches,
+   meules à rats, tourbillon de foin entre les pales (mécaniques : 11f_meuse.js) */
+LEVELS.push((()=>{
+  const RW=300,RR=28,G0=24,GP=16;
+  const g=Array.from({length:RR},()=>Array(RW).fill('.'));
+  const fill=(c0,c1,top)=>{for(let c=c0;c<=c1;c++)for(let r=top;r<RR;r++)g[r][c]='#'};
+  const put=(c,r,ch)=>{g[r][c]=ch};
+  const run=(c0,c1,r,ch)=>{for(let c=c0;c<=c1;c++)g[r][c]=ch};
+  const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
+  fill(0,125,G0);fill(169,243,G0);fill(244,RW-1,GP);
+  /* --- le champ éolien de Bras --- */
+  put(2,23,'S');put(5,22,'g');put(11,23,'h');put(14,23,'q');
+  corn([17,22],[19,22]);
+  run(22,23,22,'X');run(22,23,23,'X');corn([22,20],[23,20]);
+  put(28,23,'5');put(31,23,'8');put(36,23,'1');corn([36,21]);
+  run(42,44,23,'D');corn([43,21]);
+  put(47,23,'|');put(52,23,'k');put(60,23,'|');corn([49,22],[55,22]);
+  run(62,63,22,'X');run(62,63,23,'X');corn([62,20],[63,20]);
+  run(66,70,24,'^');put(68,19,'n');corn([68,21]);
+  put(74,23,'X');corn([74,21]);put(77,23,'C');
+  put(82,23,'5');put(86,19,'m');corn([80,22],[84,22],[88,22]);put(92,23,'q');
+  /* --- la rive droite : saules et ronces --- */
+  run(98,114,23,'^');for(const c of[99,106,113])put(c,23,'3');
+  run(99,101,22,'=');run(96,99,18,'=');run(99,101,15,'=');
+  run(104,106,20,'=');run(106,108,18,'=');run(103,106,15,'=');
+  run(111,113,21,'=');run(113,116,17,'=');
+  corn([100,21],[97,17],[105,19],[107,17],[104,14],[112,20],[115,16]);
+  put(117,23,'q');put(119,23,'4');put(121,23,'h');put(123,23,'C');
+  /* --- la Meuse : trois couloirs de péniches (colonnes 133, 145, 157) --- */
+  corn([129,21],[141,21],[153,21],[165,21],[136,22],[148,22],[160,22]);
+  /* --- la rive gauche : grand saule (médaille) --- */
+  put(171,23,'C');put(173,23,'q');
+  run(177,190,23,'^');for(const c of[178,184,190])put(c,23,'3');
+  run(178,180,22,'=');run(175,178,19,'=');
+  run(182,184,20,'=');run(184,186,17,'=');run(182,184,14,'=');run(184,185,11,'=');
+  run(188,190,21,'=');run(190,192,18,'=');
+  put(185,10,'*');put(181,12,'m');
+  corn([179,21],[176,18],[183,19],[185,16],[183,13],[189,20],[191,17]);
+  put(193,23,'5');put(195,23,'4');
+  /* --- les meules au pied de la côte --- */
+  corn([197,22],[199,22]);put(206,19,'n');
+  put(209,23,'8');put(213,23,'1');corn([213,21],[216,22]);
+  put(221,23,'|');put(225,23,'k');put(232,23,'|');corn([223,22],[202,21],[218,21],[228,21]);
+  put(235,23,'C');put(237,23,'h');put(238,23,'q');
+  /* --- le plateau : tracteur, éoliennes, sortie --- */
+  put(270,15,'5');corn([256,14],[262,14],[276,14],[284,14]);
+  put(292,15,'E');
+  const zones=[['field',0,95],['bank',96,125],['river',126,168],['bank2',169,195],['field2',196,243],['cote',244,RW-1]];
+  return {w:1,name:"Les éoliennes",theme:'meuse',exit:'post',exitLabel:"CHARNY-SUR-MEUSE",seed:67,rows:RR,
+    gust:{period:6.5,dur:2.4,push:230,dir:-1},noHuntDemo:true,farTurbines:true,camYAt:x=>x>9600?.76:.5,communeName:'BRAS-SUR-MEUSE',
+    zoneProps:{field:['fence','molehill'],bank:[],river:[],bank2:[],field2:['fence','molehill','fence'],cote:[]},
+    zoneTh:{cote:{type:'chalk',floor:'#b8ad94',floorTop:'#a39578'}},
+    meuse:{river:[126,168],lanes:[{c:133,name:'MARGOT',port:'GIVET',cargo:'hay'},{c:145,name:'LA COLOMBE',port:'SEDAN',cargo:'logs',secret:true},{c:157,name:'SAINT-MIHIEL',port:'COMMERCY',cargo:'beets'}],
+      bales:[203,219,229],vortex:241,tractor:247,
+      bgTurbines:[{x:420,z:9},{x:1150,z:5.5},{x:1900,z:13},{x:2550,z:7},{x:3350,z:16},{x:3900,z:10},{x:8150,z:12},{x:8900,z:7},{x:10350,z:14},{x:11300,z:9}]},
+    start:"Le vent se lève et les moulins tournent. Au-delà des champs, la Meuse : il faudra la traverser.",
+    hints:[["ARTICLE 11 — LA RAFALE","Quand les traînées de vent se multiplient, la rafale arrive et repousse tout vers l'arrière. S'abriter derrière une meule ou une haie, et attendre qu'elle passe."],
+           ["ARTICLE 11 bis — LA PÉNICHE","Elles descendent la Meuse droit vers nous. Sauter quand l'une passe, et jamais pendant une rafale. Sa cargaison coupe le vent. Quand la timonerie arrive, la péniche s'en va : changer de bord."],
+           ["ARTICLE 12 — LE TOURBILLON","Le vent arrache le foin et l'emporte en spirale, avec tout ce qui passe. Là-haut, ← → pour régler l'allure entre les ailes des moulins."]],
+    quips:["Des moulins géants. Sans meunier, sans farine. Une arme secrète, forcément.",
+           "Ça sent la vase et le gasoil. La Meuse n'est pas loin.",
+           "Des péniches ! Ils sont fous de passer par ici en cette période. La Meuse, c'est la ligne de front !",
+           "La rive d'en face, à pattes sèches. Le règlement ne dit rien des péniches : donc c'est autorisé.",
+           "Le foin s'envole tout seul… Ce n'est plus du vent, c'est un tourbillon !"],
+    signs:["commune:BRAS-SUR-MEUSE"],
+    segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
+})());
 
 LEVELS.push({w:1,name:"Le drone",theme:'front',exit:'bunker',exitLabel:"ABRI",seed:71,
  fog:true,fogWaves:true,

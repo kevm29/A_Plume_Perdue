@@ -44,7 +44,7 @@ function applyGot(i){
 function nearAct(){
   const pcx=P.x+P.w/2,pb=P.y+P.h;
   if(hiddenNow())for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
-  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;
+  for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.when&&!a.when())continue;
     if(a.style==='helmet'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<36&&Math.abs(P.y+P.h/2-(a.y-92))<52)return{type:'secret',o:a};continue}if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }
@@ -70,7 +70,7 @@ function tryAct(){
   if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
   if(a.kind==='secret'){
     if(a.used){a.t=0;a.anim=1;if(!G.sim)say(pick(["Vide. J'ai déjà tout pris.","Plus rien là-dedans. Je repasserai à la prochaine guerre."]),2.6);return}
-    if(a.locked&&!G.key){if(!G.sim){tone(220,.12,'square',.05);say("Fermé à clef. Le gardien a les clefs. Le gardien a toujours les clefs.",3.4)}return}
+    if(a.locked&&!G.key){if(!G.sim){tone(220,.12,'square',.05);say(a.lockQ||"Fermé à clef. Le gardien a les clefs. Le gardien a toujours les clefs.",3.4)}return}
     a.anim=1;a.t=0;grantSecret(a,a.y-24);
   }
 }
@@ -103,7 +103,7 @@ function actStep(dt){
 }
 /* au retour au cartel : les gardiens se démêlent, les chats retournent s'asseoir */
 function actRespawn(){
-  verdunRespawn();
+  verdunRespawn();meuseRespawn();
   L.grenades=[];G.grenadeHit=false;if(L.chaser&&L.chaser.type==='drone'){L.chaser.sp='scan';L.chaser.lock=0;L.chaser.gt=0;L.chaser.hitP=false}
   L.rats=L.rats.filter(c=>!c.chase);for(const c of L.rats){c.spawned=false;c.charge=0}
   for(const m of L.mines){m.state='idle';m.t=0;m.boom=false}
@@ -177,7 +177,7 @@ const MARBLE_Q=["Oups. Le règlement n'en parle pas, donc ce n'est pas arrivé."
 function elevated(){if(!P.onGround)return false;if(P.onMover)return true;const r=Math.floor((P.y+P.h+2)/T),c0=Math.floor((P.x+4)/T),c1=Math.floor((P.x+P.w-4)/T);for(let c=c0;c<=c1;c++){const ch=tile(c,r);if(ch&&ch!=='.'&&ch!=='#'&&ch!=='~')return true}return false}
 function dropMarble(){
   if(!elevated()||G.cut||G.tombSeq)return;if(!L.marbles)L.marbles=[];if(L.marbles.length>2)return;
-  L.marbles.push({x:P.x+P.w/2-P.facing*6,y:P.y+P.h-6,w:8,h:8,vx:-P.facing*30,vy:40,t:0,b:0,heard:false,col:pick(['#4a8ac8','#c84a4a','#4ac87a','#d8b04a'])});
+  L.marbles.push({x:P.x+P.w/2-P.facing*6,y:P.y+P.h-10,w:8,h:8,vx:-P.facing*30,vy:40,t:0,b:0,heard:false,col:pick(['#4a8ac8','#c84a4a','#4ac87a','#d8b04a'])});
   P.sx=1.12;P.sy=.9;
   if(!G.sim){noise(.08,1200,.08,'bandpass');G.marbleN=(G.marbleN||0)+1;if(G.marbleN===1||rnd()<.5)setTimeout(()=>say(pick(MARBLE_Q),3.6),350)}
 }
@@ -194,6 +194,7 @@ function marbleHeard(m){
   const R2=320;
   for(const c of L.rats)if(Math.hypot(c.x+c.w/2-m.x,c.y-m.y)<R2){const d=Math.sign(m.x-(c.x+c.w/2))||1;c.vx=Math.abs(c.vx||c.base||95)*d;c.lastDir=d;c.lure=m.x}
   for(const g of L.guards)if(!(g.tangle>0)&&!(g.sweep>0)&&Math.hypot(g.x+g.w/2-m.x,g.y+g.h-m.y)<R2+80){g.dir=Math.sign(m.x-(g.x+g.w/2))||g.dir;g.pause=1.2;g.noFlip=true;if(!G.sim)bubble(g.x+g.w/2,g.y-14,'Hein ?','#2a3a5a')}
+  if(L.meuse)meuseMarble(m);
   for(const w of L.watchers)if((w.mode==='sit'||!w.mode)&&Math.hypot(w.x-m.x,w.y-m.y)<R2+120){w.seen=true;w.mode='chase';w.ct=0;w.k={x:w.x-22,y:w.y-26,w:44,h:26,vx:0,vy:-380,onGround:false,f:P.x>w.x?1:-1};if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),200)}}
 }
 function drawMarbles(){if(!L.marbles)return;for(const m of L.marbles){const x=m.x+m.w/2,y=m.y+m.h/2;ctx.save();

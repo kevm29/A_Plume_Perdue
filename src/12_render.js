@@ -15,13 +15,14 @@ function renderWorld(lv,cx,cy,t,opts){
   for(const tb of lv.turbines||[]){const x=tb.x-cx*PF_FAR,y=tb.y-cy*PF_FAR;if(x<-200||x>W+200)continue;ctx.save();ctx.translate(x,y);ctx.rotate(t*tb.sp+tb.ph);ctx.fillStyle=mix(lv.th.sky[1],'#ffffff',.3);for(let k=0;k<3;k++){ctx.rotate(Math.PI*2/3);ctx.beginPath();ctx.moveTo(-3,0);ctx.quadraticCurveTo(-5,-tb.r*.5,0,-tb.r);ctx.quadraticCurveTo(4,-tb.r*.5,3,0);ctx.fill()}ctx.restore()}
   drawLayer(lv.mid,Math.max(0,cx*PF_MID),cy*PF_MID);
   ctx.save();ctx.translate(-cx,-cy);
+  if(lv.meuse&&!opts.noEntities)drawMeuseBack(t);
   for(const d of lv.decor)if(d.x>cx-460&&d.x<cx+W+460)drawDecor(ctx,d,t);
   if(lv.backDoor)drawBackDoor(ctx,lv.backDoor.x,lv.dome.floor,lv.backDoor.open);
   if(lv.armoire)drawArmoire(ctx,lv.armoire.x,lv.dome.floor,lv.armoire.shake,lv.armoire.door);
   if(lv.tiles){const sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/RS-sx);if(sw>0)blitLayer(ctx,lv.tiles,sx*RS,0,sw*RS,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/RS)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
   for(const u of lv.updrafts||[]){if(u.x<cx-100||u.x>cx+W+100)continue;ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1.5;for(let k=0;k<7;k++){const ph=((t*.9+k/7)%1),yy=u.bottom-ph*u.bottom,xx=u.x+10+((k*17)%(u.w-20))+Math.sin(t*3+k)*6;ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-20,xx,yy-44);ctx.stroke()}ctx.globalAlpha=1}
-  if(!opts.noEntities){drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawActPrompt(t)}
+  if(!opts.noEntities){drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawMeuseFront(t);drawActPrompt(t)}
   ctx.restore();
 }
 let rayC=null,rayG=null;
@@ -61,6 +62,7 @@ function drawEntities(t){
     if(p.type==='straw'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.strokeStyle=rgba('#e0b04e',a);ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(-p.len/2,0);ctx.lineTo(p.len/2,0);ctx.stroke();ctx.restore()}
     else if(p.type==='feather'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*.3);ctx.fillStyle=rgba('#9aa2b3',a);ctx.beginPath();ctx.ellipse(0,0,5,2,0,0,7);ctx.fill();ctx.restore()}
     else if(p.type==='dust'){ctx.fillStyle=rgba('#cbbfa6',a*.6);ctx.beginPath();ctx.arc(p.x,p.y,3+p.life*10,0,7);ctx.fill()}
+    else if(p.type==='drop'){ctx.fillStyle='rgba(225,240,248,'+a*.85+')';ctx.beginPath();ctx.arc(p.x,p.y,1.6+p.sz,0,7);ctx.fill()}
     else if(p.type==='glass'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle='rgba(215,232,242,'+(.6*Math.min(1,(p.max-p.life)/2))+')';poly(ctx,[-p.sz,0,0,-p.sz*.7,p.sz*.8,p.sz*.4]);ctx.fill();ctx.restore()}
     else if(p.type==='spark'){ctx.strokeStyle=rgba('#ffe7a0',a);ctx.lineWidth=2;const r=6+p.life*50;for(let k=0;k<6;k++){const an=k*Math.PI/3;ctx.beginPath();ctx.moveTo(p.x+Math.cos(an)*r*.5,p.y+Math.sin(an)*r*.5);ctx.lineTo(p.x+Math.cos(an)*r,p.y+Math.sin(an)*r);ctx.stroke()}}
     else if(p.type==='tuftpop'){ctx.save();ctx.globalAlpha=Math.min(1,(p.max-p.life)*3);drawTuft(ctx,p.x,p.y-Math.min(1,p.life*3)*26,G.t);ctx.restore()}
@@ -123,6 +125,7 @@ function renderWeather(th,cx,t){
   }else if(w==='wind'){
     ctx.save();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;for(let k=0;k<14;k++){const x=((k*137-t*420)%(W+200)+W+200)%(W+200)-100,y=60+((k*71)%380)+Math.sin(t*2+k)*10;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+30,y-4,x+60,y);ctx.stroke()}
     for(let k=0;k<8;k++){const x=((k*211-t*300)%(W+100)+W+100)%(W+100)-50,y=100+((k*97)%360)+Math.sin(t*3+k)*20;ctx.fillStyle=th.windColor||'#c8302a';ctx.beginPath();ctx.ellipse(x,y,3,1.6,t*4+k,0,7);ctx.fill()}ctx.restore();
+  }else if(w==='gale'){drawGaleWeather(t,cx)
   }else if(w==='leaves'){drawLeavesWeather(t,cx)
   }else if(w==='dusk'){
     ctx.save();for(let k=0;k<18;k++){const x=((k*97+Math.sin(t*.5+k)*40-cx*.3)%W+W)%W,y=200+((k*53)%280)+Math.sin(t*.8+k*2)*16;ctx.fillStyle='rgba(255,220,140,'+(.3+.3*Math.sin(t*3+k))+')';ctx.beginPath();ctx.arc(x,y,1.6,0,7);ctx.fill()}ctx.restore();

@@ -97,11 +97,17 @@ function drawFloor(g,x,y,cc,r,th,mc,topOpen){
     else if(h01(cc,r)<.3){g.strokeStyle='rgba(0,0,0,.3)';g.lineWidth=1;g.beginPath();g.moveTo(x+6,y+12);g.lineTo(x+16,y+22);g.lineTo(x+12,y+34);g.stroke()}
   }else if(t==='cobble'){
     for(let k=0;k<3;k++)for(let j=0;j<3;j++){g.fillStyle=shade(th.floor,(h01(cc*3+j,r*3+k)-.5)*.18);rr(g,x+j*13+((k%2)?6:0)-3,y+k*13+1,12,11,4);g.fill()}
+  }else if(t==='chalk'){
+    g.fillStyle='rgba(255,250,236,.16)';g.fillRect(x,y+4+(r*7%3)*4,T,7);g.fillStyle='rgba(70,58,36,.18)';g.fillRect(x,y+19+((cc+r)%3)*3,T,1.6);g.fillRect(x,y+34,T,1.2);
+    if(h01(cc,r)<.12){g.strokeStyle='rgba(60,50,30,.3)';g.lineWidth=1;g.beginPath();g.moveTo(x+8+h01(r,cc)*20,y+2);g.lineTo(x+14+h01(r,cc)*20,y+16);g.lineTo(x+10+h01(r,cc)*20,y+30);g.stroke()}
+    if(h01(cc*3,r)<.06){g.strokeStyle='rgba(90,80,60,.4)';g.lineWidth=1;g.beginPath();g.arc(x+20,y+24,4,0,5);g.stroke()}
+    if(h01(cc,r*5)<.09&&r<20){for(let k=0;k<6;k++){g.fillStyle=k%2?'#4a7a2e':'#3f6a26';g.beginPath();g.ellipse(x+6+h01(k,cc)*28,y+4+h01(cc,k+r)*30,4,2.4,k,0,7);g.fill()}}
   }else if(t==='plank'){
     g.fillStyle='rgba(0,0,0,.25)';for(let k=0;k<4;k++)g.fillRect(x+k*10,y,1,T);g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.arc(x+5,y+6,1.2,0,7);g.arc(x+25,y+6,1.2,0,7);g.fill();
   }
   if(topOpen){
-    if(t==='earth'){g.fillStyle=th.floorTop;g.fillRect(x,y,T,6);g.strokeStyle=th.floorTop;g.lineWidth=1.4;for(let k=0;k<8;k++){const gx=x+k*5+2;g.beginPath();g.moveTo(gx,y+4);g.lineTo(gx+(k%2?2:-1),y-4-(k%3)*2);g.stroke()}
+    if(t==='chalk'){g.fillStyle=th.floorTop;g.fillRect(x,y,T,6);g.fillStyle='rgba(90,80,60,.4)';for(let k=0;k<6;k++)g.fillRect(x+h01(cc*6+k,r)*36,y+1+h01(k,cc)*4,2,1.5);g.strokeStyle='#6c9a38';g.lineWidth=1.4;for(let k=0;k<4;k++){const gx=x+k*11+3;g.beginPath();g.moveTo(gx,y+3);g.lineTo(gx+(k%2?2:-1),y-4-(k%3)*2);g.stroke()}}
+    else if(t==='earth'){g.fillStyle=th.floorTop;g.fillRect(x,y,T,6);g.strokeStyle=th.floorTop;g.lineWidth=1.4;for(let k=0;k<8;k++){const gx=x+k*5+2;g.beginPath();g.moveTo(gx,y+4);g.lineTo(gx+(k%2?2:-1),y-4-(k%3)*2);g.stroke()}
       if(th.props.includes('poppies')&&h01(cc,r)<.35){g.fillStyle='#c8302a';g.beginPath();g.arc(x+h01(r,cc)*34+3,y-5,3,0,7);g.fill()}}
     else if(t!=='zinc'&&t!=='asphalt'&&t!=='deck'){g.fillStyle=mc[1];g.fillRect(x,y,T,4);g.fillStyle='rgba(255,240,210,.32)';g.fillRect(x,y,T,1);g.fillStyle='rgba(0,0,0,.28)';g.fillRect(x,y+4,T,1.5)}
   }

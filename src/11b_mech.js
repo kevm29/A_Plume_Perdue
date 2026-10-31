@@ -126,13 +126,14 @@ function mechMods(){
   // la boue colle aux plumes : à peine un sautillement, plus de battement ni de vol plané, un moment encore après en être sorti
   if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.36;P.mudCoat=1.4}
   if(P.mudCoat>0)m.noFly=true;
-  if(P.stun>0)m.noInput=true;
+  if(P.stun>0||P.ride)m.noInput=true;
   return m;
 }
 function sheltered(dir){
   // abri contre le vent : un mur plein du côté d'où il souffle, à moins de trois cases
   const r0=Math.floor((P.y+4)/T),r1=Math.floor((P.y+P.h-4)/T),c=Math.floor((P.x+P.w/2)/T);
   for(let k=1;k<=3;k++)for(let r=r0;r<=r1;r++)if(isSolid(c-dir*k,r))return true;
+  if(L.meuse&&meuseShelter(dir))return true;
   for(const mv of L.movers)if(mv.kind==='truck'||mv.kind==='tram'){const sx=dir<0?mv.x:mv.x+mv.w;if(P.y+P.h>mv.y&&Math.abs((P.x+P.w/2)-sx)<120&&((dir<0&&P.x+P.w<=mv.x+4)||(dir>0&&P.x>=mv.x+mv.w-4)))return true}
   return false;
 }
@@ -151,6 +152,7 @@ function mechAfterMove(dt,vyBefore){
   if(L.def.gust&&L.gust.state==='blow'){const dir=L.def.gust.dir||-1;if(!sheltered(dir)){moveX(P,dir*L.def.gust.push*L.gust.k*(P.onGround?1:1.25)*dt)}}
   // étourdi par l'onde d'une cloche
   if(P.stun>0)P.stun-=dt;
+  if(L.meuse){const k=meuseAfterMove(dt);if(k)return k}
   return null;
 }
 /* ---------- collisions mortelles ---------- */

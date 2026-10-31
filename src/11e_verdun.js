@@ -28,7 +28,7 @@ function verdunPost(Lv){
   for(const [c,r] of Lv.def.marks||[])Lv.mark.add(c+','+r);
   for(const [c,r,m] of Lv.def.frontLeaves||[])Lv.decorFront.push({t:'leaves',x:c*T+T/2,y:r*T+T/2+6,top:r*T,nest:m==='nest',s:m==='nest'?1.35:1.15});
   Lv.fallen=[];Lv.passers=[];Lv.moles=Lv.moles||[];
-  if(Lv.hunters[0])Lv.hunters[0].demo=true;
+  if(Lv.hunters[0]&&!Lv.def.noHuntDemo)Lv.hunters[0].demo=true;
 }
 /* ---------- taupes : elles sortent de leur taupinière en cadence ---------- */
 const MOLE_P=2.8;
@@ -343,6 +343,8 @@ function fieldsFar(L,g,wpx,R){
   const r1=ridge(392,24,.004,R()*9),r2=ridge(430,16,.006,R()*9),r3=ridge(468,10,.009,R()*9);
   band(r1,'#a3bcbc');
   for(let x=0;x<wpx;x+=14+R()*30)if(R()<.5)autumnTree(g,x,r1(x)+4,22+R()*16,R,.55);
+  // éoliennes alignées sur la crête (2-2)
+  if(L.def.farTurbines)for(let x=90;x<wpx;x+=150+R()*170){const h=70+R()*40,b0=r1(x)+6;g.fillStyle=mix('#f0f2f0','#a3bcbc',.35);poly(g,[x-2.5,b0,x-1,b0-h,x+1,b0-h,x+2.5,b0]);g.fill();g.beginPath();g.arc(x,b0-h,2.4,0,7);g.fill();L.turbines.push({x,y:b0-h,r:h*.42,sp:.6+R()*.5,ph:R()*6})}
   band(r2,'#a4b874');
   // parcelles : chaume, labour, blé d'hiver
   const pc=['#b9b46a','#8f7454','#93ad5e','#a9b870','#7f6a4c'];
@@ -360,6 +362,8 @@ function fieldsMid(L,g,wpx,R){
   let x=20;
   while(x<wpx){const z=zoneAtMid(x);
     if(z==='wood'){autumnTree(g,x,526,200+R()*110,R,.12);x+=34+R()*40;continue}
+    if(z==='river'){x+=50;continue}
+    if(z==='bank'||z==='bank2'){if(R()<.6)autumnTree(g,x,526,190+R()*110,R,.16);else{g.fillStyle=mix('#3f6a26','#a8c0c4',.2);g.beginPath();g.ellipse(x,526-170,22,150,0,0,7);g.fill()}x+=60+R()*60;continue}
     if(z==='mines'){if(R()<.5){g.fillStyle='#e8e4dc';g.fillRect(x,380,4,146);for(let k=0;k<5;k++){g.fillStyle=R()<.6?'#c9a83a':'#8aa04a';g.beginPath();g.arc(x+(R()-.5)*30,380+R()*50,12,0,7);g.fill()}x+=90+R()*80}
       else{g.fillStyle='#6a5442';g.fillRect(x,486,3,40);g.strokeStyle='rgba(90,70,50,.6)';g.lineWidth=1;g.beginPath();g.moveTo(x,494);g.quadraticCurveTo(x+40,502,x+80,494);g.stroke();x+=60+R()*60}continue}
     if(z==='trench'){autumnTree(g,x,526,230+R()*110,R,.18);x+=30+R()*34;continue}

@@ -39,6 +39,7 @@ const DEATH_Q={
   fire:["Trop près du feu. La paille, ça n'aime pas ça."],
   storm:["L'orage m'a rattrapé. Il ne fallait pas traîner."],
   sweeper:["Aspiré par la balayeuse. Classé avec les mégots.","Ramassé par la voirie. Comme un vieux journal."],
+  blade:["Coupé net par un moulin. Le meunier ne s'est même pas excusé.","Fauché par une aile de moulin. Ma paille vole en trois morceaux.","Haché menu, comme du tabac de troupe."],
   drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
 };
 const TUFT_Q=["De la paille. Bizarre, je me sens tout de suite plus épais.","Tiens, de la paille. Je ne sais pas pourquoi, ça me fait du bien.","Encore de la paille. Je ne comprends pas, mais je ne me plains pas."];
