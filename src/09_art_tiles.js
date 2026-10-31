@@ -42,11 +42,12 @@ function buildTiles(L){
   }
   g.save();g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,th.outdoor?.22:.28);g.fillRect(0,-PAD,wpx,hpx);g.restore();
   const sh=mk(wpx,hpx),sg=sh.getContext('2d');sg.translate(0,PAD);sg.fillStyle='#000';
-  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch))sg.fillRect(cc*T+10,r*T+12,T,T);else if(ch==='='||ch==='B')sg.fillRect(cc*T+10,r*T+12,T,12)}
+  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!(ch==='X'&&th.x==='log'))sg.fillRect(cc*T+10,r*T+12,T,T);else if(ch==='='||ch==='B')sg.fillRect(cc*T+10,r*T+12,T,12)}
   g.save();g.globalAlpha=th.outdoor?.38:.5;g.filter='blur(7px)';g.drawImage(sh,0,-PAD);g.restore();
   for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){
     const ch=L.g[r][cc],x=cc*T,y=r*T,thc=thAtCol(L,cc),mc=matCols(ch,thc);if(!mc)continue;
     if(ch==='='&&th.shelf==='branch')continue;
+    if(ch==='X'&&th.x==='log')continue;
     if(ch==='='||ch==='B'){faceTop(g,x,y,mc[1]);if(tile(cc+1,r)!==ch)faceSide(g,x,y,12,mc[2]);continue}
     if(!isSolid(cc,r-1))faceTop(g,x,y,mc[1]);
     if(!isSolid(cc+1,r))faceSide(g,x,y,T,mc[2]);
@@ -55,11 +56,11 @@ function buildTiles(L){
   verdunTiles(g,L);
   // arête nette sous chaque face avant : rendu plus « carré »
   g.fillStyle='rgba(0,0,0,.35)';
-  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!isSolid(cc,r+1)&&r<ROWS-1)g.fillRect(cc*T,r*T+T-1.5,T,1.5)}
+  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!(ch==='X'&&th.x==='log')&&!isSolid(cc,r+1)&&r<ROWS-1)g.fillRect(cc*T,r*T+T-1.5,T,1.5)}
   // coins arrondis des blocs et des bords exposés
   g.save();g.globalCompositeOperation='destination-out';
   const cut=(cx,cy,sx,sy,R0)=>{g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+sx*R0,cy);g.quadraticCurveTo(cx,cy,cx,cy+sy*R0);g.closePath();g.fill()};
-  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(!SOLID_ART.includes(ch)||ch==='W')continue;
+  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(!SOLID_ART.includes(ch)||ch==='W'||(ch==='X'&&th.x==='log'))continue;
     const x=cc*T,y=r*T,up=!isSolid(cc,r-1),lf=!isSolid(cc-1,r),dn=!isSolid(cc,r+1)&&r<ROWS-1,rt=!isSolid(cc+1,r);
     if(up&&lf)cut(x,y,1,1,8);if(dn&&lf)cut(x,y+T,1,-1,7);if(dn&&rt)cut(x+T,y+T,-1,-1,7)}
   g.restore();
@@ -205,6 +206,7 @@ function drawSpikes(g,ch,x,y,cc,r,th){
   }
 }
 function drawTileFront(g,ch,x,y,cc,r,th){
+  if(ch==='X'&&th.x==='log')return;   // troncs et rondins : dessinés à part (11g_zonerouge.js)
   const mc=matCols(ch,th);
   const topOpen=!isSolid(cc,r-1);
   if(ch==='#')drawFloor(g,x,y,cc,r,th,mc,topOpen);

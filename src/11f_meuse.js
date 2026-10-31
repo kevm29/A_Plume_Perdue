@@ -45,7 +45,7 @@ function meusePost(Lv){
     }
   });
   /* meules rondes (des rats en sortent) : leur dessus porte Raymond, et elles coupent le vent */
-  for(const c of D.bales||[]){const x=c*T;M.bales.push({x,armed:true,shake:0});M.stat.push({x0:x-40,x1:x+40,y:yG-80});Lv.g[rG-2][c-1]='t';Lv.g[rG-2][c]='t';Lv.avoid.push(x-60,x,x+60)}
+  for(const bd of D.bales||[]){const c=bd.c,x=c*T;M.bales.push({x,armed:!!bd.rats,rats:!!bd.rats,shake:0});M.stat.push({x0:x-40,x1:x+40,y:yG-80});Lv.g[rG-2][c-1]='t';Lv.g[rG-2][c]='t';Lv.avoid.push(x-60,x,x+60)}
   /* le tourbillon : une demi-ellipse aplatie, de la meule au pied de la côte jusqu'au plateau */
   const vx0=D.vortex*T+T/2,a=900,b=600;
   M.vt={x0:vx0,y0:yG-40,y1:yP-40,a,b,p:.7,base:yG};
@@ -101,8 +101,8 @@ function meuseStep(dt){
   // meules à rats : on s'approche trop, ils sortent
   for(const b of M.bales){b.shake=Math.max(0,b.shake-dt*2.5);
     if(b.armed&&!P.dead&&!G.cut&&Math.abs(pcx-b.x)<150&&Math.abs(pfy-M.yG)<100){b.armed=false;b.shake=1;const d=Math.sign(pcx-b.x)||1;
-      L.rats.push({kind:'rat',fromBale:true,x:b.x-15+d*22,y:M.yG-18,w:30,h:16,vx:d*95,vy:-320,onGround:false,t:0,sq:.2,base:95,alert:1.1,cool:4});
-      L.rats.push({kind:'rat',fromBale:true,x:b.x-15-d*18,y:M.yG-18,w:30,h:16,vx:-d*95,vy:-460,onGround:false,t:.5,sq:1.2,base:95});
+      // deux rats qui foncent tout droit vers Raymond, l'un derrière l'autre, et ne reviennent pas
+      for(let k=0;k<2;k++)L.rats.push({kind:'rat',fromBale:true,runner:true,dir:d,x:b.x-15+d*(20-k*34),y:M.yG-18,w:30,h:16,vx:d*230,vy:-260-k*140,onGround:false,t:k*.4,sq:.2,base:230});
       if(!G.sim){SFX.squeak();setTimeout(()=>SFX.squeak(),160);puff(b.x,M.yG-50,12,true);if(!M.said.bale){M.said.bale=1;say("Des rats dans la meule ! Même à l'arrière, ils réquisitionnent le foin.",3.4)}}}}
   // une bille qui tombe dans la Meuse
   if(L.marbles)for(let i=L.marbles.length-1;i>=0;i--){const m=L.marbles[i],mx=m.x+m.w/2;if(mx>M.xL&&mx<M.xR&&m.y>M.yW){if(!G.sim){for(let k=0;k<6;k++)parts.push({type:'drop',x:mx,y:M.yW,vx:(rnd()-.5)*80,vy:-80-rnd()*120,life:0,max:.5,sz:0});tone(900,.06,'sine',.05,500)}L.marbles.splice(i,1)}else if(m.onGround&&!m.mz&&mx>M.xL&&mx<M.xR&&Math.abs(m.y+m.h-M.yD)<4)meuseMarble(m)}
@@ -154,6 +154,8 @@ function meuseAfterMove(dt){
   const M=L.meuse,V=M.vt;
   if(P.ride){
     const R=P.ride;R.t+=dt;
+    for(const c of L.rats)if(c.chase){c.chase=false;c.runner=true;c.dir=Math.sign(c.vx)||1;c.base=200}
+    for(const c of L.rats)c.charge=0;
     const fl=R.th>=M.thF0&&R.th<=M.thF1;let v;
     if(fl){const d=(keys.has('right')?1:0)-(keys.has('left')?1:0);v=d>0?235:d<0?-95:80;if(d)P.facing=d;
       if(!M.said.float&&!G.sim){M.said.float=1;say("Je vole sans battre des ailes ! Entre des moulins qui coupent tout. ← → pour choisir le moment.",3.6)}}
@@ -184,7 +186,7 @@ function meuseAfterMove(dt){
   if(pcx>M.xL&&pcx<M.xR&&P.y+P.h>M.yW+8){splash(pcx,M.yW);if(S.infinite){resetPlayer();return null}return'drown'}
   return null;
 }
-function meuseRespawn(){const M=L.meuse;if(!M)return;for(const b of M.bales){b.armed=true;b.shake=0}L.rats=L.rats.filter(c=>!c.fromBale)}
+function meuseRespawn(){const M=L.meuse;if(!M)return;for(const b of M.bales){b.armed=b.rats;b.shake=0}L.rats=L.rats.filter(c=>!c.fromBale)}
 
 /* =========================================================
    DESSINS

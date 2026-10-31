@@ -51,8 +51,10 @@ function resetPlayer(){
 function puff(x,y,n,straw){
   for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,s=60+rnd()*260;parts.push({type:straw?'straw':'feather',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,life:0,max:.9+rnd()*1.1,rot:rnd()*6,vr:(rnd()-.5)*14,len:4+rnd()*7})}
 }
+function obusBoom(x,y){if(G.sim)return;if(G.lt-(G.boomT||-9)<.4)return;G.boomT=G.lt;G.shake=18;noise(.9,240,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<24;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x,y:y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.5})}parts.push({type:'ring',x,y:y-10,life:0,max:.4});G.flash=Math.max(G.flash,.35)}
 function die(kind,tiles){
   if(P.dead)return;
+  if(kind==='obus'){obusBoom(P.x+P.w/2,P.y+P.h);tiles=null}
   if(G.sim){P.dead=true;return}
   // mode caché : rien ne tue Raymond ; une chute hors du niveau le ramène simplement au cartel
   if(S.infinite){if(P.y>ROWS*T)resetPlayer();return}
@@ -65,7 +67,6 @@ function die(kind,tiles){
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
   puff(cx,cy,30,true);puff(cx,cy,10,false);parts.push({type:'ring',x:cx,y:cy,life:0,max:.45});
   if(kind==='cat'){meow(.9,true);}
-  if(kind==='obus'){G.shake=18;noise(.9,240,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<24;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x:cx,y:P.y+P.h-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.5})}}
   if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
@@ -179,6 +180,11 @@ function stepPlay(dt){
       c.charge=Math.max(0,(c.charge||0)-dt);
       const d2=Math.sign(c.vx)||1;c.vx=d2*(c.base||95)*(c.charge>0?2:1);
     }
+    if(c.runner){
+      c.vx=c.dir*(c.base||230);const blocked=moveX(c,c.vx*dt);c.onGround=false;moveY(c,c.vy*dt);
+      if(blocked||c.y>ROWS*T||c.x<cam.x-160||c.x>cam.x+W+160)c.dead=true;
+      continue;
+    }
     if(c.chase){
       // marcassin lancé : il fonce vers Raymond, sans voir les trous
       c.delay=(c.delay||0)-dt;const d=Math.sign(pcx-(c.x+c.w/2))||1;c.vx=c.delay>0?0:d*230;
@@ -203,10 +209,11 @@ function stepPlay(dt){
     if(c.onGround){
       const dir=Math.sign(c.vx)||1,fx=dir>0?c.x+c.w+2:c.x-2,cf=Math.floor(fx/T),rf=Math.floor((c.y+c.h-2)/T);
       // un sanglier qui charge ne regarde pas où il met les pattes (option boarsFall)
-      const blind=L.def.boarsFall&&c.kind==='boar'&&c.charge>0&&!groundAt(cf,rf+1);
+      const blind=c.kind==='boar'&&c.charge>0&&!groundAt(cf,rf+1);
       if(!blind&&(!groundAt(cf,rf+1)||tile(cf,rf)==='^'||L.mark.has(cf+','+rf))){c.vx=-c.vx;c.lastDir=Math.sign(c.vx)}
     }
   }
+  for(const c of L.rats){if(c.dead||c.runner)continue;const ch=tile(Math.floor((c.x+c.w/2)/T),Math.floor((c.y+c.h-2)/T));if(c.y>ROWS*T+40||ch==='^'){c.dead=true;if(!G.sim&&ch==='^'){puff(c.x+c.w/2,c.y,8,false);if(L.th.spike==='obus')obusBoom(c.x+c.w/2,c.y+c.h)}}}
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
   mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
@@ -265,7 +272,7 @@ function stepPlay(dt){
   for(const m of L.moths)if(overlap(hb,{x:m.x-10,y:m.y-8,w:20,h:16}))return die(m.kind);
   for(const b of L.bolts)if(b.state==='strike'&&Math.abs(b.x-pcx)<24)return die('bolt');
   {const mh=mechHit(hb);if(mh)return die(mh)}
-  if(K&&K.state!=='sleep'&&K.state!=='wake'&&K.state!=='burn'&&K.state!=='dead'&&overlap(hb,{x:K.x+6,y:K.y+5,w:K.w-12,h:K.h-6}))return die(K.type);
+  if(K&&K.state!=='sleep'&&K.state!=='wake'&&K.state!=='burn'&&K.state!=='dead'&&K.state!=='lure'&&overlap(hb,{x:K.x+6,y:K.y+5,w:K.w-12,h:K.h-6}))return die(K.type);
   if(P.y>ROWS*T+40)return die(L.th.horizon==='bridge'?'drown':'fall');
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});

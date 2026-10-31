@@ -88,6 +88,8 @@ LEVELS.push((()=>{
   const put=(c,r,ch)=>{g[r][c]=ch};
   const run=(c0,c1,r,ch)=>{for(let c=c0;c<=c1;c++)g[r][c]=ch};
   const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
+  // creux à ronces : on y fait tomber les sangliers qui chargent
+  const pit=(c0,c1)=>{for(let c=c0;c<=c1;c++){g[G0][c]='.';g[G0+1][c]='.';g[G0+2][c]='^'}};
   fill(0,125,G0);fill(169,RW-1,G0);
   /* --- le champ éolien de Bras --- */
   put(2,23,'S');put(5,22,'g');put(11,23,'h');put(14,23,'q');
@@ -95,7 +97,7 @@ LEVELS.push((()=>{
   run(22,23,22,'X');run(22,23,23,'X');corn([22,20],[23,20]);
   put(28,23,'5');put(31,23,'8');put(36,23,'1');corn([36,21]);
   run(42,44,23,'D');corn([43,21]);
-  put(47,23,'|');put(52,23,'k');put(60,23,'|');corn([49,22],[55,22]);
+  pit(45,46);put(52,23,'k');put(60,23,'|');corn([49,22],[55,22],[45,21]);
   run(62,63,22,'X');run(62,63,23,'X');corn([62,20],[63,20]);
   run(66,70,24,'^');put(68,19,'n');corn([68,21]);
   put(74,23,'X');corn([74,21]);put(77,23,'C');
@@ -119,9 +121,9 @@ LEVELS.push((()=>{
   corn([179,21],[176,18],[183,19],[185,16],[183,13],[189,20],[191,17]);
   put(193,23,'5');put(195,23,'4');
   /* --- les meules au pied de la côte --- */
-  corn([197,22],[199,22]);put(206,19,'n');
-  put(209,23,'8');put(213,23,'1');corn([213,21],[216,22]);
-  put(221,23,'|');put(225,23,'k');put(232,23,'|');corn([223,22],[202,21],[218,21],[228,21]);
+  corn([197,22],[199,22]);
+  put(209,23,'8');put(213,23,'1');corn([213,21],[216,21]);
+  pit(215,216);put(225,23,'k');put(232,23,'|');corn([223,22],[202,21],[218,21],[228,21]);
   put(235,23,'C');put(237,23,'h');put(238,23,'q');
   /* --- le chaume, sous les éoliennes : tracteur, moyettes de blé, rats --- */
   put(250,23,'4');put(271,23,'4');put(279,23,'5');corn([248,22],[256,21],[269,22],[276,22],[284,21]);
@@ -132,7 +134,7 @@ LEVELS.push((()=>{
     zoneProps:{field:['fence','molehill'],bank:[],river:[],bank2:[],field2:['fence','molehill','fence'],stubble:[]},
     zoneTh:{stubble:{floorTop:'#c4ab5e'}},
     meuse:{river:[126,168],lanes:[{c:133,name:'MARGOT',port:'GIVET',cargo:'hay'},{c:145,name:'LA COLOMBE',port:'SEDAN',cargo:'logs',secret:true},{c:157,name:'SAINT-MIHIEL',port:'COMMERCY',cargo:'beets'}],
-      bales:[203,219,229],vortex:241,tractor:262,sheaves:[247,253,258,268,274,282,287],
+      bales:[{c:203,rats:true},{c:219},{c:229,rats:true}],vortex:241,tractor:262,sheaves:[247,253,258,268,274,282,287],
       bgTurbines:[{x:420,z:9},{x:1150,z:5.5},{x:1900,z:13},{x:2550,z:7},{x:3350,z:16},{x:3900,z:10},{x:8150,z:12},{x:8900,z:7},{x:10350,z:14},{x:11300,z:9}]},
     start:"Le vent se lève et les moulins tournent. Au-delà des champs, la Meuse : il faudra la traverser.",
     hints:[["ARTICLE 11 — LA RAFALE","Quand les traînées de vent se multiplient, la rafale arrive et repousse tout vers l'arrière. S'abriter derrière une meule ou une haie, et attendre qu'elle passe."],
@@ -162,7 +164,7 @@ LEVELS.push((()=>{
   /* --- la lisière : premiers trous d'obus, premier sanglier --- */
   put(2,17,'S');put(5,16,'g');put(10,17,'h');put(14,17,'q');
   uxo(18,21);corn([19,14],[20,14]);
-  put(24,17,'q');put(25,17,'h');hole(27,29);corn([28,15]);
+  put(24,17,'q');hole(27,29);corn([28,15]);
   put(36,17,'k');corn([33,16],[39,16]);hole(42,44);corn([43,15]);
   put(46,12,'m');
   put(50,17,'3');run(50,52,15,'=');run(48,50,12,'=');corn([51,14],[49,11]);
@@ -172,7 +174,7 @@ LEVELS.push((()=>{
   put(70,17,'3');run(70,73,15,'=');run(67,70,12,'=');run(70,72,9,'=');corn([71,14],[68,11],[71,8]);
   uxo(76,80);put(83,17,'3');run(80,83,15,'=');run(83,85,12,'=');corn([78,13],[84,11]);
   put(89,17,'h');put(90,17,'T');put(98,2,'Q');
-  log(95,96,2);corn([95,14]);
+  log(93,97,2);corn([95,14]);
   hole(100,102);put(106,17,'3');run(103,106,14,'=');run(106,108,11,'=');put(109,17,'k');hole(114,116);corn([101,15],[104,13],[107,10],[115,15]);
   put(119,17,'C');put(121,17,'q');log(123,125,1);
   put(127,17,'3');run(124,127,14,'=');corn([124,13],[126,16]);
@@ -183,27 +185,27 @@ LEVELS.push((()=>{
   uxo(163,169);put(166,17,'3');run(162,166,16,'=');run(166,170,14,'=');run(165,167,11,'=');corn([164,15],[168,13],[166,10]);
   log(175,177,1);corn([176,15]);
   hole(182,184);put(192,17,'3');run(189,192,14,'=');run(192,194,11,'=');put(190,17,'k');hole(197,199);corn([183,15],[190,13],[193,10],[198,15]);
-  log(205,206,2);corn([205,14]);put(210,12,'n');
+  log(203,207,2);corn([205,14]);put(210,12,'n');
   put(211,17,'3');run(208,211,15,'=');corn([209,14]);
   hole(214,216);corn([215,15]);put(222,17,'C');put(225,17,'q');
-  /* --- la clairière et l'abri --- */
-  uxo(236,238);corn([237,14]);hole(243,245);corn([244,15]);
-  put(252,17,'E');
+  /* --- la clairière et l'abri allemand du Mort-Homme --- */
+  uxo(229,231);corn([230,14]);hole(236,238);corn([237,15]);put(243,17,'q');
+  put(256,17,'E');
   const zones=[['zr1',0,59],['wood',60,129],['trench',130,159],['wood',160,229],['zr2',230,RW-1]];
-  return {w:1,name:"La zone rouge",theme:'zonerouge',exit:'bunker',exitLabel:"ABRI",seed:71,rows:RR,deep:2,deepFill:'#',
+  return {w:1,name:"La zone rouge",theme:'zonerouge',exit:'blockhaus',seed:71,rows:RR,deep:2,deepFill:'#',
     zoneProps:{zr1:['stump','molehill'],wood:['stump','fern','fern'],trench:[],zr2:['stump','molehill']},
-    boarsFall:true,stumpAt:[86,17],signs:["brown:ZONE ROUGE|Forêt domaniale · accès interdit"],
+    stumpAt:[86,17],blockhaus:[244,257],signs:["brown:ZONE ROUGE|Forêt domaniale · accès interdit"],
     start:"Le soir tombe sur Verdun. Des pancartes partout : « Zone rouge ». Rouge, je connais : c'est la couleur du front.",
     chaseQuip:"Un pigeon mécanique, avec une lanterne sous le ventre. Il fait sa ronde au-dessus des bois… Il m'a vu !",
-    hints:[["ARTICLE 13 — LA ZONE ROUGE","Derrière les barbelés, le sol est plein d'obus qui n'ont jamais éclaté : on en voit dépasser le nez. Ne jamais s'y poser. Les sauter, ou passer par les branches."],
-           ["ARTICLE 14 — LE SANGLIER","Il charge droit devant lui sans regarder où il met les pattes. Un trou d'obus entre lui et vous, et l'affaire est réglée."],
+    hints:[["ARTICLE 13 — LA ZONE ROUGE","Derrière les barbelés, des obus de la bataille n'ont jamais éclaté. On en voit dépasser le nez. Ils n'attendent qu'une patte."],
            ["ARTICLE 13 bis — L'ŒIL DU DRONE","Son projecteur fouille le sol. S'il vous garde dans sa lumière, il tire. Sous le feuillage d'un arbre ou dans une sape couverte, il ne vous voit plus."]],
     quips:["« Zone rouge ». On a déjà décidé que cette terre ne servirait plus à rien ? La guerre n'est même pas finie.",
            "Des trous d'obus pleins d'eau. Le ciel s'y reflète. C'est le seul endroit où il fait beau.",
            "Une forêt plantée sur le champ de bataille. D'en haut, au moins, on ne voit plus les trous.",
            "Des arbres couchés en travers. La tempête, ou l'artillerie : ici, on ne fait plus la différence.",
            "Une tranchée. Les parois tiennent encore. Les gars, eux, sont partis en permission. Tous.",
-           "L'abri ! Là-bas, du béton au milieu des arbres. Le génie a bien travaillé."],
+           "Du béton, là-bas, sous les arbres. Un abri !",
+           "Un abri ennemi, en béton. Vide. Ils ont dû enfin reculer. Il était temps."],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
 
