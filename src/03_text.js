@@ -61,9 +61,11 @@ const WORLD_CARDS=[
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"MISSION 2 · LES COQUELICOTS",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Raymond quitte Verdun avec un trou de mémoire\nde la taille d'un fort."},
-   {title:"MISSION 3 · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
+   {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
+  [{t:"Il faut rentrer au pigeonnier Vasseur, à Villemareuil.\nMais le pays a changé de visage."},
+   {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : plus un seul repère."},
+   {t:"Au loin, au-dessus de tout, un clocher. Le plus haut de la région.\nIl l'a déjà croisé, en 1915."},
+   {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond met le cap sur le clocher. Il ne sait pas où c'est.\nC'est Reims."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
    {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCe soir, le vent se lève."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
@@ -87,6 +89,14 @@ const DATE_CARDS=[
   {t:"Cent dix ans. La guerre est finie depuis longtemps.\nLucien, le capitaine, les gars du 151e : tout le monde."},
   {t:"Au milieu des flonflons, Raymond s'effondre.\nPersonne ne remarque un pigeon par terre."}
 ];
+/* intertitres muets avant les morceaux de lettre d'une mission (la mission 1 a TUBE) */
+const LETTER_CARDS={
+  1:[{t:"Raymond n'a pas croisé Lucien.\nNi dans les champs, ni sous les bois, ni dans l'abri."},
+     {t:"Hormis cet abri, les Allemands semblent repoussés bien plus loin.\nLucien Vasseur doit y être, en première ligne."},
+     {t:"Raymond l'a déjà vu à l'œuvre. Un brave, Lucien.\nUn héros. Mais si goujat…"},
+     {t:"Article 4 : un pigeon militaire ne lit jamais le courrier.\nRaymond le connaît par cœur. Il ne comprend pas cet homme-là."},
+     {t:"Il déplie la suite."}]
+};
 /* intertitres muets avant la toute première lettre : pourquoi Raymond la lit */
 const TUBE=[
   {t:"Dans la chute, le petit tube fixé à sa patte s'est fendu.\nLe papier dépasse, froissé, taché d'humidité."},
@@ -97,8 +107,8 @@ const GAMEOVER=[
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Les coquelicots",levels:["Le sentier","Les éoliennes","La zone rouge","Le musée de l'abri"]},
-  {name:"Reims",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
+  {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
+  {name:"Le cap céleste",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
 ];

@@ -391,7 +391,7 @@ function renderLetter(t){
     if(LE.after>.8){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-12)}
     ctx.restore();
   }else{
-    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('Raymond vérifie que le courrier est lisible. Article 4 bis.',W-24,H-16);
+    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText(def.w===0?'Raymond vérifie que le courrier est lisible. Article 4 bis.':'Raymond lit la suite. L\'article 4 attendra.',W-24,H-16);
   }
 }
 /* fin de niveau : court bilan ; fin de mission : les quatre morceaux de lettre */
@@ -400,7 +400,7 @@ function endOfLevel(li){
   const after=()=>{
     if(li%4!==3){G.state='levelend';G.LE={mode:'short',li,after:0,st};G.fade=1;SFX.page();return}
     const first=li-3,go=()=>{G.state='levelend';G.LE={mode:'letter',li:first,last:li,chars:0,done:false,after:0};G.fade=1;SFX.page()};
-    if(def.w===0){G.state='intro';G.cards=TUBE;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=go}else go();
+    const pre=def.w===0?TUBE:LETTER_CARDS[def.w];if(pre){G.state='intro';G.cards=pre;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=go}else go();
   };
   if(li===18)unlock('a13');
   if(def.afterCards){G.state='intro';G.cards=def.afterCards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=after;if(def.afterSong)setSong(def.afterSong)}else after();

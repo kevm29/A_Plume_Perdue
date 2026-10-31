@@ -4,7 +4,7 @@
    ========================================================= */
 function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
-  if(st==='bed'||st==='barge'||st==='tractor'||st==='lamp')return;
+  if(st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom')return;
   if(st==='stump'){drawOldStump(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   if(st!=='nest'){g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();}
@@ -99,7 +99,7 @@ function drawGate(g,gt,t){
 function drawActPrompt(t){
   if(P.dead||G.cut||G.tombSeq)return;
   const n=nearAct();if(!n)return;
-  let x,y;if(n.type==='tangle'||n.type==='secret'||n.type==='carton'){return}else{x=n.o.x;y=n.o.y-74}
+  let x,y;if(n.type==='tangle'||n.type==='secret'||n.type==='carton'||n.type==='hide'){return}else{x=n.o.x;y=n.o.y-74}
   const b=Math.sin(t*5)*2;
   ctx.save();ctx.translate(x,y+b);
   ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();

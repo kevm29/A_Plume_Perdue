@@ -286,7 +286,7 @@ function stepPlay(dt){
   if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0}G.hintT=(G.hintT||0)+dt;G.hintI=hn>=0&&G.hintT<3?hn:-1;
   if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
-  if(L.exit&&!L.def.exitByAct&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
+  if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');
@@ -369,7 +369,7 @@ function animalSounds(dt){
       if(K.state==='sleep'){loopSet('purr',clamp(1-d/420,0,1)*.5*(.7+.3*Math.sin(G.t*2.2)));K.rrT-=dt;if(d<260&&K.rrT<=0){bubble(K.home.x+K.w/2+20,K.home.y-6,'rrrr…','#c7742e');K.rrT=1.8}}
       else loopSet('purr',0);
       if(K.state==='chase'&&!P.dead){K.meowT-=dt;if(K.meowT<=0){if(rnd()<.3)SFX.hiss();else meow(.8);K.meowT=2+rnd()*1.6}}
-    }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:0);
+    }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:K.state==='lure'?clamp(1-d/1100,0,1)*.24:0);
   }
   const rain=0; // son de pluie retiré à la demande : seule la pluie visuelle reste
   loopSet('rain',rain);loopSet('wind',L.def.gust&&L.gust&&L.gust.state==='blow'?.2:th.weather==='wind'||th.weather==='gale'?.06:th.weather==='storm'?.1:0);

@@ -29,9 +29,9 @@ function zrPost(Lv){
     (zoneOfL(Lv,c)==='trench'?Z.rondins:Z.logs).push({x0:c*T,x1:(e+1)*T,top:r*T,bot:(b+1)*T,seed:c*7+r})}}
   // l'abri allemand du Mort-Homme : un long blockhaus, une rangée de lanternes ; la dernière clignote (cachette)
   if(Lv.def.blockhaus){const[c0,c1]=Lv.def.blockhaus,x0=c0*T,x1=(c1+1)*T,b=G0*T;Z.bh={x0,x1,b,lamps:[]};
-    // la porte est à gauche ; les lanternes suivent ; la dernière, tout à droite et plus haute, clignote
+    // la porte est à gauche (on la franchit à pied ; en sautant on passe devant) ; les lanternes suivent, toutes sur la même ligne ; la dernière clignote
     const ex=Lv.exit?Lv.exit.x+6:x0+80;for(let x=ex+110;x<x1-60;x+=78){const l={x,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
-    {const l={x:x1-26,y:b-108,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
+    {const l={x:x1-26,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
     if(Lv.def.exitByAct&&Lv.exit)Lv.acts.push({kind:'door',x:ex+T/2,y:b,open:0,t:0,used:false});
     const lb=Z.bh.lamps[Z.bh.lamps.length-1],a={kind:'secret',style:'lamp',ly:lb.y+4,x:lb.x,y:b,open:0,t:0,used:false,q:["Un nid de paille dans la lanterne : voilà pourquoi elle clignotait. Et le locataire s'en va !"]};Z.lampAct=a;Lv.acts.push(a);
     for(let x=x0;x<=x1;x+=40)Lv.avoid.push(x)}
@@ -49,7 +49,9 @@ function zrStep(dt){
   if(Z.bh){const l0=Z.bh.lamps[Z.bh.lamps.length-1],used=Z.lampAct.used;l0.i=used?.75:(((G.lt*7)%5<2.2||(G.lt*13)%7<1)?.75:0);
     if(used&&Z.lampAct.anim&&!Z.decoy){Z.decoy={x:l0.x,y:Z.bh.b-96,t:0};if(!G.sim){SFX.caw();bubble(l0.x,Z.bh.b-120,'KRA !','#2a2420')}
       const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Les corbeaux, eux, ne disent jamais merci.",3.6),500)}}}
-  if(Z.decoy){const d=Z.decoy;d.t+=dt;d.x-=560*dt;d.y-=Math.min(80,40+d.t*30)*dt;if(d.x<cam.x-900)Z.decoy=null}
+  // le corbeau s'ébroue un instant au-dessus de la lanterne, puis file vers la gauche (le drone a le temps de faire sa pirouette)
+  if(Z.decoy){const d=Z.decoy;d.t+=dt;if(d.t<.8){d.x-=40*dt;d.y-=50*dt}else{d.x-=Math.min(430,120+(d.t-.8)*700)*dt;d.y-=Math.max(0,30-d.t*8)*dt+Math.sin(d.t*5)*.6}
+    if(d.x<cam.x-1600)Z.decoy=null}
   const K=L.chaser;
   if(K&&K.type==='drone'&&K.state==='chase'&&!Z.said.leaf&&!P.dead&&zrLeaf()&&!G.sim){Z.said.leaf=1;say("Sous les feuilles, il ne me voit plus. Les arbres ont toujours été du côté des pigeons.",3.4)}
 }
@@ -145,11 +147,16 @@ function drawZrMid(t){
       g.fillStyle='rgba(0,0,0,.25)';for(let k=0;k<4;k++)g.fillRect(ex+sd*(30+k*6),h.top-3+(k%2)*2,3,2)}}
 }
 
-/* le drone poursuit le corbeau leurre et disparaît avec lui */
+/* le drone fait une pirouette, puis prend le corbeau en chasse à quelques mètres derrière lui ; on l'entend s'éloigner */
 function zrDroneLure(K,dt){
-  const d=L.zr&&L.zr.decoy,tx=d?d.x:K.x-600,ty=d?d.y:K.y-100,dx=tx-K.x,dy=ty-K.y,dd=Math.hypot(dx,dy)||1;
-  K.x+=dx/dd*560*dt;K.y+=dy/dd*560*dt;K.f=dx>=0?1:-1;K.sp='scan';K.sa=Math.PI/2;
-  if(K.x<cam.x-300||!d){K.state='dead';G.chase=false;setSong(songKey(G.li));loopSet('drone',0)}
+  const d=L.zr&&L.zr.decoy;K.sp='scan';K.sa=Math.PI/2;K.fire=0;
+  if(K.lt==null){K.lt=0;K.cx=K.x;K.cy=K.y-34;K.rot=0;if(!G.sim){tone(700,.5,'sawtooth',.05,1600);tone(1600,.35,'square',.03,600,.45)}}
+  K.lt+=dt;const PIR=.95;
+  if(K.lt<PIR){const u=K.lt/PIR,a=u*Math.PI*2;K.x=K.cx-Math.sin(a)*34;K.y=K.cy+Math.cos(a)*34;K.rot=-a;K.f=-1;return}
+  K.rot=0;
+  const tx=d?d.x+70:K.x-600,ty=d?d.y+16:K.y-60,dx=tx-K.x,dy=ty-K.y,dd=Math.hypot(dx,dy)||1;
+  const sp=Math.min(dd*6,720);K.x+=dx/dd*sp*dt;K.y+=dy/dd*sp*dt+Math.sin(K.t*7)*.5;K.f=-1;K.rot=Math.max(-.35,Math.min(.35,dx/900));
+  if(K.x<cam.x-1500||!d){K.state='dead';G.chase=false;setSong(songKey(G.li));loopSet('drone',0)}
 }
 function drawZrFront(t){
   const Z=L.zr;if(!Z||!Z.decoy)return;const d=Z.decoy,fl=Math.sin(t*30)*7;ctx.save();ctx.translate(d.x,d.y);ctx.rotate(-.12);

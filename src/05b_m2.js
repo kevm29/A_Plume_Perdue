@@ -194,7 +194,7 @@ LEVELS.push((()=>{
   const zones=[['zr1',0,59],['wood',60,129],['trench',130,159],['wood',160,229],['zr2',230,RW-1]];
   return {w:1,name:"La zone rouge",theme:'zonerouge',exit:'blockhaus',seed:71,rows:RR,deep:2,deepFill:'#',
     zoneProps:{zr1:['stump','molehill'],wood:['stump','fern','fern'],trench:[],zr2:['stump','molehill']},
-    stumpAt:[86,17],blockhaus:[244,257],exitByAct:true,signs:["brown:ZONE ROUGE|Forêt domaniale · accès interdit"],
+    stumpAt:[86,17],blockhaus:[244,257],exitGround:true,signs:["brown:ZONE ROUGE|Forêt domaniale · accès interdit"],
     start:"Le soir tombe sur Verdun. Des pancartes partout : « Zone rouge ». Rouge, je connais : c'est la couleur du front.",
     chaseQuip:"Un pigeon mécanique, avec une lanterne sous le ventre. Il fait sa ronde au-dessus des bois… Il m'a vu !",
     hints:[["ARTICLE 13 — LA ZONE ROUGE","Derrière les barbelés, des obus de la bataille n'ont jamais éclaté. On en voit dépasser le nez. Ils n'attendent qu'une patte."],
@@ -209,9 +209,10 @@ LEVELS.push((()=>{
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
 
-/* 2-4 · Le musée de l'abri : l'abri allemand du Mort-Homme, aménagé en musée franco-allemand de la Grande Guerre.
+/* 2-4 · L'abri du Mort-Homme : l'abri allemand, aménagé (en 2026) en musée franco-allemand de la Grande Guerre —
+   mais Raymond ne le sait pas : rien ne dit « musée », il croit à de vrais soldats.
    Le soir : gardiens à lampe, draps, placards où se cacher, automates dans des scènes reconstituées, chat, rats,
-   mites, chauves-souris ; puis la salle des tranchées reconstituées ; on sort par une fenêtre (mécaniques : 11h_musee.js) */
+   mites, chauves-souris ; puis les tranchées ; on s'envole par une meurtrière du mur du fond (mécaniques : 11h_musee.js) */
 LEVELS.push((()=>{
   const RW=220,RR=15,G0=13;
   const g=Array.from({length:RR},()=>Array(RW).fill('.'));
@@ -222,13 +223,15 @@ LEVELS.push((()=>{
   const holes=[];const pit=(c0,c1)=>{for(let c=c0;c<=c1;c++){g[G0][c]='.';g[G0+1][c]='.';holes.push([c,15],[c,16])}};
   const trench=(c0,c1)=>{for(let c=c0;c<=c1;c++){g[G0][c]='.';g[G0+1][c]='.'}};
   /* --- l'abri-musée --- */
-  put(2,12,'S');put(5,11,'g');for(const c of[6,30,58,88])put(c,3,'l');put(9,12,'h');
-  corn([14,11],[20,11]);
+  put(2,12,'S');put(5,11,'g');for(const c of[6,30,58,88])put(c,3,'l');
+  corn([8,11],[23,10]);
   put(22,12,'|');put(25,12,'&');put(28,12,'X');put(31,12,'G');put(34,12,'&');put(40,12,'|');corn([28,10],[31,9],[37,9]);
   put(44,8,'m');
   run(46,49,10,'=');run(51,54,8,'=');run(56,58,10,'=');put(46,12,'|');put(51,12,'k');put(57,12,'|');corn([47,9],[52,7],[57,9]);
   put(66,12,'Y');corn([64,10],[69,11]);
-  pit(72,80);put(70,12,'|');put(71,12,'M');put(83,12,'|');put(76,6,'n');corn([76,9]);
+  pit(72,80);put(70,12,'|');put(71,12,'M');put(83,12,'|');corn([76,11]);
+  // au-dessus du chariot : une dalle basse et des barbelés tendus — on ne vole pas ici, on attend le chariot
+  for(let c=70;c<=82;c++){for(let r=0;r<=7;r++)put(c,r,'#');put(c,8,'^')}put(88,6,'n');
   put(86,12,'C');
   put(91,12,'X');put(91,11,'X');run(93,98,9,'=');
   put(99,12,'|');put(103,12,'G');put(106,12,'&');put(109,12,'|');put(104,6,'n');corn([102,9],[107,9]);
@@ -237,26 +240,28 @@ LEVELS.push((()=>{
   trench(115,140);put(116,14,'|');put(126,14,'&');put(129,14,'G');put(139,14,'|');corn([118,12],[130,12],[137,13]);
   put(142,12,'q');
   run(145,148,12,'^');pit(152,155);run(150,157,10,'=');run(160,163,12,'^');put(150,6,'n');put(165,8,'m');
-  put(158,12,'|');put(159,12,'k');put(164,12,'|');
+  put(164,12,'|');put(168,12,'k');put(171,12,'|');
   corn([146,9],[153,9],[161,9]);put(167,12,'C');
   trench(172,196);put(173,14,'|');put(184,14,'G');put(187,14,'&');put(195,14,'|');put(192,14,'k');corn([178,12],[186,12],[194,13]);
   put(200,12,'Y');
-  put(201,12,'|');put(204,12,'&');put(208,12,'G');put(212,12,'|');put(213,12,'q');corn([204,9],[210,10]);
-  put(216,12,'E');
+  put(201,12,'|');put(204,12,'&');put(208,12,'G');put(212,12,'|');put(211,12,'q');corn([204,9],[210,10]);
+  // le mur du fond, et sa meurtrière ouverte sur le soir : on y monte par les caisses, on s'envole dehors
+  put(214,12,'X');put(215,12,'X');put(215,11,'X');corn([215,9]);
+  for(let c=217;c<RW;c++)for(let r=0;r<G0;r++)if(r<7||r>8)put(c,r,'#');put(217,8,'E');
   const zones=[['musee',0,109],['trench',110,RW-1]];
-  return {w:1,name:"Le musée de l'abri",theme:'abri',exit:'window',seed:73,rows:RR,deep:2,deepFill:'#',holes,
+  return {w:1,name:"L'abri du Mort-Homme",theme:'abri',exit:'embrasure',seed:73,rows:RR,deep:2,deepFill:'#',holes,
     zoneTh:{trench:{type:'earth',floor:'#4a3a2a',floorTop:'#5a4a30',x:'sandbag'}},
     zoneProps:{musee:['stanchions','crate','helmet','chair','stanchions'],trench:['shells','ammo','helmetPost']},
     flyers:[{kind:'moth'},{kind:'bat',amp:90},{kind:'bat',amp:80},{kind:'bat',amp:100},{kind:'moth'}],
     musee:{cupboards:[12,37,101,123,136,180],
       automata:[{c:17,side:'fr',task:'bandage',grp:1},{c:19.5,side:'fr',task:'wounded',grp:1},{c:62,side:'de',task:'phone',grp:2},{c:96,side:'de',task:'map',fiente:true},
-        {c:119,side:'fr',task:'periscope',grp:3,trench:true},{c:133,side:'fr',task:'letter',grp:4,trench:true},{c:177,side:'de',task:'sentry',trench:true},{c:190,side:'de',task:'cook',trench:true}]},
+        {c:119,side:'fr',task:'periscope',grp:3,trench:true},{c:133,side:'fr',task:'letter',grp:4,trench:true,search:true},{c:177,side:'de',task:'sentry',trench:true},{c:190,side:'de',task:'cook',trench:true}]},
     start:"Ce satané oiseau mécanique m'a forcé à rentrer chez l'ennemi. Un abri allemand… avec des lampes partout, et des gardiens.",
-    hints:[["ARTICLE 15 — LE PLACARD","E devant un placard : on s'y glisse et la porte se referme. Le gardien passe sans rien voir. On en ressort en bougeant."]],
+    hints:[],
     quips:["Des tranchées… sous un toit. L'ennemi a même mis la guerre à l'abri.",
            "Le no man's land, en plus petit. Personne ne tire. Je n'aime pas ça du tout.",
-           "Une fenêtre ! L'air du soir. Je file avant que tout ce monde se réveille."],
-    signs:["MUSÉE DE L'ABRI DU MORT-HOMME|Museum Unterstand Toter Mann · 1916","TRANCHÉES RECONSTITUÉES|Nachgebaute Schützengräben"],
+           "Une meurtrière ouverte, là-haut ! L'air du soir. Je file avant que tout ce monde se réveille."],
+    signs:["ABRI DU MORT-HOMME|Unterstand Toter Mann · 1916","TRANCHÉES|Schützengräben"],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
 

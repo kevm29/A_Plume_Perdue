@@ -282,7 +282,12 @@ function makeLoop(name){
   else if(name==='crowd'){f.type='bandpass';f.frequency.value=700;f.Q.value=.6}
   s.connect(f);f.connect(g);g.connect(sGain);s.start();return{g};
 }
-function loopSet(name,vol){if(!AC)return;let l=LOOPS[name];if(!l){if(!vol)return;l=LOOPS[name]=makeLoop(name)}l.g.gain.setTargetAtTime(S.muted?0:vol,AC.currentTime,.15)}
+/* volume d'une boucle : appelé à chaque image, on n'écrit dans la chronologie audio que si le volume change vraiment
+   (sinon Chrome empile des milliers d'automations setTargetAtTime et le jeu rame) */
+function loopSet(name,vol){if(!AC)return;let l=LOOPS[name];if(!l){if(!vol)return;l=LOOPS[name]=makeLoop(name)}
+  const v=S.muted?0:vol,now=AC.currentTime;if(l.v!=null&&(v===l.v||Math.abs(v-l.v)<.012&&v!==0))return;
+  if(l.v!=null&&v!==0&&now-l.at<.06)return;
+  l.v=v;l.at=now;const gp=l.g.gain;if(gp.cancelAndHoldAtTime)gp.cancelAndHoldAtTime(now);else{gp.cancelScheduledValues(now);gp.setValueAtTime(gp.value,now)}gp.setTargetAtTime(v,now,.15)}
 function loopsOff(){for(const k in LOOPS)loopSet(k,0)}
 const SFX={
   jump(){tone(380,.13,'square',.07,700)},
@@ -382,9 +387,11 @@ const WORLD_CARDS=[
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"MISSION 2 · LES COQUELICOTS",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Raymond quitte Verdun avec un trou de mémoire\nde la taille d'un fort."},
-   {title:"MISSION 3 · REIMS",t:"Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région.\nC'est un détour. Il ne l'admettra jamais."}],
+   {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
+  [{t:"Il faut rentrer au pigeonnier Vasseur, à Villemareuil.\nMais le pays a changé de visage."},
+   {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : plus un seul repère."},
+   {t:"Au loin, au-dessus de tout, un clocher. Le plus haut de la région.\nIl l'a déjà croisé, en 1915."},
+   {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond met le cap sur le clocher. Il ne sait pas où c'est.\nC'est Reims."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
    {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCe soir, le vent se lève."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
@@ -408,6 +415,14 @@ const DATE_CARDS=[
   {t:"Cent dix ans. La guerre est finie depuis longtemps.\nLucien, le capitaine, les gars du 151e : tout le monde."},
   {t:"Au milieu des flonflons, Raymond s'effondre.\nPersonne ne remarque un pigeon par terre."}
 ];
+/* intertitres muets avant les morceaux de lettre d'une mission (la mission 1 a TUBE) */
+const LETTER_CARDS={
+  1:[{t:"Raymond n'a pas croisé Lucien.\nNi dans les champs, ni sous les bois, ni dans l'abri."},
+     {t:"Hormis cet abri, les Allemands semblent repoussés bien plus loin.\nLucien Vasseur doit y être, en première ligne."},
+     {t:"Raymond l'a déjà vu à l'œuvre. Un brave, Lucien.\nUn héros. Mais si goujat…"},
+     {t:"Article 4 : un pigeon militaire ne lit jamais le courrier.\nRaymond le connaît par cœur. Il ne comprend pas cet homme-là."},
+     {t:"Il déplie la suite."}]
+};
 /* intertitres muets avant la toute première lettre : pourquoi Raymond la lit */
 const TUBE=[
   {t:"Dans la chute, le petit tube fixé à sa patte s'est fendu.\nLe papier dépasse, froissé, taché d'humidité."},
@@ -418,8 +433,8 @@ const GAMEOVER=[
 ];
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Les coquelicots",levels:["Le sentier","Les éoliennes","La zone rouge","Le musée de l'abri"]},
-  {name:"Reims",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
+  {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
+  {name:"Le cap céleste",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
 ];
@@ -1142,7 +1157,7 @@ LEVELS.push((()=>{
   const zones=[['zr1',0,59],['wood',60,129],['trench',130,159],['wood',160,229],['zr2',230,RW-1]];
   return {w:1,name:"La zone rouge",theme:'zonerouge',exit:'blockhaus',seed:71,rows:RR,deep:2,deepFill:'#',
     zoneProps:{zr1:['stump','molehill'],wood:['stump','fern','fern'],trench:[],zr2:['stump','molehill']},
-    stumpAt:[86,17],blockhaus:[244,257],exitByAct:true,signs:["brown:ZONE ROUGE|Forêt domaniale · accès interdit"],
+    stumpAt:[86,17],blockhaus:[244,257],exitGround:true,signs:["brown:ZONE ROUGE|Forêt domaniale · accès interdit"],
     start:"Le soir tombe sur Verdun. Des pancartes partout : « Zone rouge ». Rouge, je connais : c'est la couleur du front.",
     chaseQuip:"Un pigeon mécanique, avec une lanterne sous le ventre. Il fait sa ronde au-dessus des bois… Il m'a vu !",
     hints:[["ARTICLE 13 — LA ZONE ROUGE","Derrière les barbelés, des obus de la bataille n'ont jamais éclaté. On en voit dépasser le nez. Ils n'attendent qu'une patte."],
@@ -1157,9 +1172,10 @@ LEVELS.push((()=>{
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
 
-/* 2-4 · Le musée de l'abri : l'abri allemand du Mort-Homme, aménagé en musée franco-allemand de la Grande Guerre.
+/* 2-4 · L'abri du Mort-Homme : l'abri allemand, aménagé (en 2026) en musée franco-allemand de la Grande Guerre —
+   mais Raymond ne le sait pas : rien ne dit « musée », il croit à de vrais soldats.
    Le soir : gardiens à lampe, draps, placards où se cacher, automates dans des scènes reconstituées, chat, rats,
-   mites, chauves-souris ; puis la salle des tranchées reconstituées ; on sort par une fenêtre (mécaniques : 11h_musee.js) */
+   mites, chauves-souris ; puis les tranchées ; on s'envole par une meurtrière du mur du fond (mécaniques : 11h_musee.js) */
 LEVELS.push((()=>{
   const RW=220,RR=15,G0=13;
   const g=Array.from({length:RR},()=>Array(RW).fill('.'));
@@ -1170,13 +1186,15 @@ LEVELS.push((()=>{
   const holes=[];const pit=(c0,c1)=>{for(let c=c0;c<=c1;c++){g[G0][c]='.';g[G0+1][c]='.';holes.push([c,15],[c,16])}};
   const trench=(c0,c1)=>{for(let c=c0;c<=c1;c++){g[G0][c]='.';g[G0+1][c]='.'}};
   /* --- l'abri-musée --- */
-  put(2,12,'S');put(5,11,'g');for(const c of[6,30,58,88])put(c,3,'l');put(9,12,'h');
-  corn([14,11],[20,11]);
+  put(2,12,'S');put(5,11,'g');for(const c of[6,30,58,88])put(c,3,'l');
+  corn([8,11],[23,10]);
   put(22,12,'|');put(25,12,'&');put(28,12,'X');put(31,12,'G');put(34,12,'&');put(40,12,'|');corn([28,10],[31,9],[37,9]);
   put(44,8,'m');
   run(46,49,10,'=');run(51,54,8,'=');run(56,58,10,'=');put(46,12,'|');put(51,12,'k');put(57,12,'|');corn([47,9],[52,7],[57,9]);
   put(66,12,'Y');corn([64,10],[69,11]);
-  pit(72,80);put(70,12,'|');put(71,12,'M');put(83,12,'|');put(76,6,'n');corn([76,9]);
+  pit(72,80);put(70,12,'|');put(71,12,'M');put(83,12,'|');corn([76,11]);
+  // au-dessus du chariot : une dalle basse et des barbelés tendus — on ne vole pas ici, on attend le chariot
+  for(let c=70;c<=82;c++){for(let r=0;r<=7;r++)put(c,r,'#');put(c,8,'^')}put(88,6,'n');
   put(86,12,'C');
   put(91,12,'X');put(91,11,'X');run(93,98,9,'=');
   put(99,12,'|');put(103,12,'G');put(106,12,'&');put(109,12,'|');put(104,6,'n');corn([102,9],[107,9]);
@@ -1185,26 +1203,28 @@ LEVELS.push((()=>{
   trench(115,140);put(116,14,'|');put(126,14,'&');put(129,14,'G');put(139,14,'|');corn([118,12],[130,12],[137,13]);
   put(142,12,'q');
   run(145,148,12,'^');pit(152,155);run(150,157,10,'=');run(160,163,12,'^');put(150,6,'n');put(165,8,'m');
-  put(158,12,'|');put(159,12,'k');put(164,12,'|');
+  put(164,12,'|');put(168,12,'k');put(171,12,'|');
   corn([146,9],[153,9],[161,9]);put(167,12,'C');
   trench(172,196);put(173,14,'|');put(184,14,'G');put(187,14,'&');put(195,14,'|');put(192,14,'k');corn([178,12],[186,12],[194,13]);
   put(200,12,'Y');
-  put(201,12,'|');put(204,12,'&');put(208,12,'G');put(212,12,'|');put(213,12,'q');corn([204,9],[210,10]);
-  put(216,12,'E');
+  put(201,12,'|');put(204,12,'&');put(208,12,'G');put(212,12,'|');put(211,12,'q');corn([204,9],[210,10]);
+  // le mur du fond, et sa meurtrière ouverte sur le soir : on y monte par les caisses, on s'envole dehors
+  put(214,12,'X');put(215,12,'X');put(215,11,'X');corn([215,9]);
+  for(let c=217;c<RW;c++)for(let r=0;r<G0;r++)if(r<7||r>8)put(c,r,'#');put(217,8,'E');
   const zones=[['musee',0,109],['trench',110,RW-1]];
-  return {w:1,name:"Le musée de l'abri",theme:'abri',exit:'window',seed:73,rows:RR,deep:2,deepFill:'#',holes,
+  return {w:1,name:"L'abri du Mort-Homme",theme:'abri',exit:'embrasure',seed:73,rows:RR,deep:2,deepFill:'#',holes,
     zoneTh:{trench:{type:'earth',floor:'#4a3a2a',floorTop:'#5a4a30',x:'sandbag'}},
     zoneProps:{musee:['stanchions','crate','helmet','chair','stanchions'],trench:['shells','ammo','helmetPost']},
     flyers:[{kind:'moth'},{kind:'bat',amp:90},{kind:'bat',amp:80},{kind:'bat',amp:100},{kind:'moth'}],
     musee:{cupboards:[12,37,101,123,136,180],
       automata:[{c:17,side:'fr',task:'bandage',grp:1},{c:19.5,side:'fr',task:'wounded',grp:1},{c:62,side:'de',task:'phone',grp:2},{c:96,side:'de',task:'map',fiente:true},
-        {c:119,side:'fr',task:'periscope',grp:3,trench:true},{c:133,side:'fr',task:'letter',grp:4,trench:true},{c:177,side:'de',task:'sentry',trench:true},{c:190,side:'de',task:'cook',trench:true}]},
+        {c:119,side:'fr',task:'periscope',grp:3,trench:true},{c:133,side:'fr',task:'letter',grp:4,trench:true,search:true},{c:177,side:'de',task:'sentry',trench:true},{c:190,side:'de',task:'cook',trench:true}]},
     start:"Ce satané oiseau mécanique m'a forcé à rentrer chez l'ennemi. Un abri allemand… avec des lampes partout, et des gardiens.",
-    hints:[["ARTICLE 15 — LE PLACARD","E devant un placard : on s'y glisse et la porte se referme. Le gardien passe sans rien voir. On en ressort en bougeant."]],
+    hints:[],
     quips:["Des tranchées… sous un toit. L'ennemi a même mis la guerre à l'abri.",
            "Le no man's land, en plus petit. Personne ne tire. Je n'aime pas ça du tout.",
-           "Une fenêtre ! L'air du soir. Je file avant que tout ce monde se réveille."],
-    signs:["MUSÉE DE L'ABRI DU MORT-HOMME|Museum Unterstand Toter Mann · 1916","TRANCHÉES RECONSTITUÉES|Nachgebaute Schützengräben"],
+           "Une meurtrière ouverte, là-haut ! L'air du soir. Je file avant que tout ce monde se réveille."],
+    signs:["ABRI DU MORT-HOMME|Unterstand Toter Mann · 1916","TRANCHÉES|Schützengräben"],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
 
@@ -3079,6 +3099,26 @@ function drawEasel(g,x,y,label,outdoor){
   g.fillStyle='#2a2420';g.font='10px '+F_DISP;g.textAlign='center';g.fillText('FIG.',0,-30);g.font='12px '+F_DISP;g.fillText(label,0,-21);g.restore();
   g.restore();
 }
+/* la meurtrière du mur du fond (2-4) : une ouverture dans le béton, le volet de fer rabattu, le ciel du soir dehors */
+function drawEmbrasure(g,e,t){
+  const x0=e.x+6,y0=e.y,w=3*T,h=2*T;g.save();
+  const sk=g.createLinearGradient(0,y0,0,y0+h);sk.addColorStop(0,'#2a3458');sk.addColorStop(.6,'#7a5a6e');sk.addColorStop(1,'#d8906a');g.fillStyle=sk;g.fillRect(x0,y0,w,h);
+  g.fillStyle='#f4ecd8';for(let k=0;k<7;k++){const sx=x0+14+((k*37)%(w-20)),sy=y0+6+((k*23)%34);g.globalAlpha=.4+.4*Math.sin(t*2+k*1.7);g.fillRect(sx,sy,1.6,1.6)}g.globalAlpha=1;
+  g.fillStyle='#fbf3dc';g.beginPath();g.arc(x0+w-34,y0+22,9,0,7);g.fill();g.fillStyle='rgba(42,52,88,.9)';g.beginPath();g.arc(x0+w-30,y0+19,8,0,7);g.fill();
+  // la crête du Mort-Homme, des arbres morts
+  g.fillStyle='#1e1a22';g.beginPath();g.moveTo(x0,y0+h);g.lineTo(x0,y0+h-16);g.quadraticCurveTo(x0+50,y0+h-30,x0+w,y0+h-12);g.lineTo(x0+w,y0+h);g.closePath();g.fill();
+  g.strokeStyle='#1e1a22';g.lineWidth=2;for(const[tx,th]of[[x0+30,30],[x0+78,22]]){g.beginPath();g.moveTo(tx,y0+h-20);g.lineTo(tx+1,y0+h-20-th);g.moveTo(tx+1,y0+h-14-th*.6);g.lineTo(tx+8,y0+h-22-th*.8);g.moveTo(tx,y0+h-18-th*.4);g.lineTo(tx-7,y0+h-24-th*.5);g.stroke()}
+  // l'embrasure biseautée dans l'épaisseur du béton
+  g.fillStyle='rgba(20,20,22,.55)';poly(g,[x0,y0,x0+14,y0+8,x0+14,y0+h-6,x0,y0+h]);g.fill();g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x0,y0,w,6);
+  g.fillStyle='rgba(255,230,200,.18)';g.fillRect(x0,y0+h-3,w,3);
+  // le volet de fer, ouvert vers l'intérieur, qui grince un peu
+  const sw=Math.sin(t*1.3)*.04;g.save();g.translate(x0,y0+2);g.transform(1,-.12+sw,0,1,0,0);g.fillStyle='#3a3c3a';g.fillRect(-34,0,34,h-6);g.fillStyle='#4a4c48';g.fillRect(-32,4,30,h-14);
+  g.fillStyle='#2a2a28';for(const yy of[10,h-20])g.fillRect(-36,yy,40,4);g.fillStyle='#6a6a62';for(const yy of[12,h-18])g.beginPath(),g.arc(-30,yy,1.6,0,7),g.fill();g.restore();
+  // le rayon du soir qui entre dans la salle
+  const gr=g.createLinearGradient(x0,y0,x0-160,y0+220);gr.addColorStop(0,'rgba(255,200,160,.16)');gr.addColorStop(1,'rgba(255,200,160,0)');g.fillStyle=gr;
+  g.beginPath();g.moveTo(x0,y0+4);g.lineTo(x0,y0+h);g.lineTo(x0-110,y0+h+170);g.lineTo(x0-220,y0+h+170);g.closePath();g.fill();
+  g.restore();
+}
 function drawExit(g,e,style,t,label){
   if(style==='blockhaus')return;   // dessiné avec le décor (11g_zonerouge.js)
   const x=e.x+6,y=e.y;
@@ -3093,6 +3133,7 @@ function drawExit(g,e,style,t,label){
     g.fillStyle='#a8322d';g.font='11px '+F_DISP;g.fillText('1916 – 2026',cx,gy-110+sw);
     for(let k=0;k<9;k++){g.fillStyle=['#c8302a','#e0b030','#3a6aa8'][k%3];g.beginPath();g.moveTo(cx-140+k*35,gy-150);g.lineTo(cx-128+k*35,gy-150);g.lineTo(cx-134+k*35,gy-138);g.fill()}
     g.restore();return}
+  if(style==='embrasure'){drawEmbrasure(g,e,t);return}
   g.save();
   if(style==='window'){
     g.fillStyle='#1b2630';g.beginPath();g.moveTo(x-12,y+86);g.lineTo(x-12,y-40);g.arc(x+20,y-40,32,Math.PI,0);g.lineTo(x+52,y+86);g.closePath();g.fill();
@@ -3670,7 +3711,7 @@ function drawHouse(g,e,t){
    ========================================================= */
 function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
-  if(st==='bed'||st==='barge'||st==='tractor'||st==='lamp')return;
+  if(st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom')return;
   if(st==='stump'){drawOldStump(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   if(st!=='nest'){g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();}
@@ -3765,7 +3806,7 @@ function drawGate(g,gt,t){
 function drawActPrompt(t){
   if(P.dead||G.cut||G.tombSeq)return;
   const n=nearAct();if(!n)return;
-  let x,y;if(n.type==='tangle'||n.type==='secret'||n.type==='carton'){return}else{x=n.o.x;y=n.o.y-74}
+  let x,y;if(n.type==='tangle'||n.type==='secret'||n.type==='carton'||n.type==='hide'){return}else{x=n.o.x;y=n.o.y-74}
   const b=Math.sin(t*5)*2;
   ctx.save();ctx.translate(x,y+b);
   ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();
@@ -4204,7 +4245,7 @@ function stepPlay(dt){
   if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0}G.hintT=(G.hintT||0)+dt;G.hintI=hn>=0&&G.hintT<3?hn:-1;
   if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
-  if(L.exit&&!L.def.exitByAct&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
+  if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');
@@ -4287,7 +4328,7 @@ function animalSounds(dt){
       if(K.state==='sleep'){loopSet('purr',clamp(1-d/420,0,1)*.5*(.7+.3*Math.sin(G.t*2.2)));K.rrT-=dt;if(d<260&&K.rrT<=0){bubble(K.home.x+K.w/2+20,K.home.y-6,'rrrr…','#c7742e');K.rrT=1.8}}
       else loopSet('purr',0);
       if(K.state==='chase'&&!P.dead){K.meowT-=dt;if(K.meowT<=0){if(rnd()<.3)SFX.hiss();else meow(.8);K.meowT=2+rnd()*1.6}}
-    }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:0);
+    }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:K.state==='lure'?clamp(1-d/1100,0,1)*.24:0);
   }
   const rain=0; // son de pluie retiré à la demande : seule la pluie visuelle reste
   loopSet('rain',rain);loopSet('wind',L.def.gust&&L.gust&&L.gust.state==='blow'?.2:th.weather==='wind'||th.weather==='gale'?.06:th.weather==='storm'?.1:0);
@@ -4812,6 +4853,7 @@ function drawDroneExtras(t){
   if(L.grenades)for(const n of L.grenades){const x=n.x+4,y=n.y+4;ctx.save();ctx.fillStyle='#3a4a2a';ctx.beginPath();ctx.ellipse(x,y,5,6,0,0,7);ctx.fill();ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=.8;for(let k=-1;k<=1;k++){ctx.beginPath();ctx.moveTo(x-5,y+k*2.5);ctx.lineTo(x+5,y+k*2.5);ctx.stroke()}
     ctx.fillStyle='#8a8a7a';ctx.fillRect(x-2,y-9,4,3);if(Math.sin(t*(10+n.t*20))>0){ctx.fillStyle='#ff5030';ctx.beginPath();ctx.arc(x,y-10,1.8,0,7);ctx.fill()}ctx.restore()}
   if(!K||K.type!=='drone'||K.state==='sleep'||K.state==='dead'||K.state==='lure')return;
+  if(!isFinite(K.sa)||!isFinite(K.x))return;
   const ex=K.x+K.w/2,ey=K.y+K.h,red=K.sp==='aim';let len=340;for(let q=12;q<340;q+=8){if(isSolid(Math.floor((ex+Math.cos(K.sa)*q)/T),Math.floor((ey+Math.sin(K.sa)*q)/T))){len=q+10;break}}
   ctx.save();const gr=ctx.createRadialGradient(ex,ey,4,ex,ey,len);gr.addColorStop(0,red?'rgba(255,90,70,.45)':'rgba(240,245,255,.32)');gr.addColorStop(1,'rgba(240,245,255,0)');
   ctx.fillStyle=gr;ctx.beginPath();ctx.moveTo(ex,ey);ctx.arc(ex,ey,len,K.sa-.3,K.sa+.3);ctx.closePath();ctx.fill();
@@ -4855,7 +4897,7 @@ const ACH=[
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de cachettes (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=27;
+const SECRET_TOTAL=29;
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -5930,9 +5972,9 @@ function zrPost(Lv){
     (zoneOfL(Lv,c)==='trench'?Z.rondins:Z.logs).push({x0:c*T,x1:(e+1)*T,top:r*T,bot:(b+1)*T,seed:c*7+r})}}
   // l'abri allemand du Mort-Homme : un long blockhaus, une rangée de lanternes ; la dernière clignote (cachette)
   if(Lv.def.blockhaus){const[c0,c1]=Lv.def.blockhaus,x0=c0*T,x1=(c1+1)*T,b=G0*T;Z.bh={x0,x1,b,lamps:[]};
-    // la porte est à gauche ; les lanternes suivent ; la dernière, tout à droite et plus haute, clignote
+    // la porte est à gauche (on la franchit à pied ; en sautant on passe devant) ; les lanternes suivent, toutes sur la même ligne ; la dernière clignote
     const ex=Lv.exit?Lv.exit.x+6:x0+80;for(let x=ex+110;x<x1-60;x+=78){const l={x,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
-    {const l={x:x1-26,y:b-108,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
+    {const l={x:x1-26,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
     if(Lv.def.exitByAct&&Lv.exit)Lv.acts.push({kind:'door',x:ex+T/2,y:b,open:0,t:0,used:false});
     const lb=Z.bh.lamps[Z.bh.lamps.length-1],a={kind:'secret',style:'lamp',ly:lb.y+4,x:lb.x,y:b,open:0,t:0,used:false,q:["Un nid de paille dans la lanterne : voilà pourquoi elle clignotait. Et le locataire s'en va !"]};Z.lampAct=a;Lv.acts.push(a);
     for(let x=x0;x<=x1;x+=40)Lv.avoid.push(x)}
@@ -5950,7 +5992,9 @@ function zrStep(dt){
   if(Z.bh){const l0=Z.bh.lamps[Z.bh.lamps.length-1],used=Z.lampAct.used;l0.i=used?.75:(((G.lt*7)%5<2.2||(G.lt*13)%7<1)?.75:0);
     if(used&&Z.lampAct.anim&&!Z.decoy){Z.decoy={x:l0.x,y:Z.bh.b-96,t:0};if(!G.sim){SFX.caw();bubble(l0.x,Z.bh.b-120,'KRA !','#2a2420')}
       const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Les corbeaux, eux, ne disent jamais merci.",3.6),500)}}}
-  if(Z.decoy){const d=Z.decoy;d.t+=dt;d.x-=560*dt;d.y-=Math.min(80,40+d.t*30)*dt;if(d.x<cam.x-900)Z.decoy=null}
+  // le corbeau s'ébroue un instant au-dessus de la lanterne, puis file vers la gauche (le drone a le temps de faire sa pirouette)
+  if(Z.decoy){const d=Z.decoy;d.t+=dt;if(d.t<.8){d.x-=40*dt;d.y-=50*dt}else{d.x-=Math.min(430,120+(d.t-.8)*700)*dt;d.y-=Math.max(0,30-d.t*8)*dt+Math.sin(d.t*5)*.6}
+    if(d.x<cam.x-1600)Z.decoy=null}
   const K=L.chaser;
   if(K&&K.type==='drone'&&K.state==='chase'&&!Z.said.leaf&&!P.dead&&zrLeaf()&&!G.sim){Z.said.leaf=1;say("Sous les feuilles, il ne me voit plus. Les arbres ont toujours été du côté des pigeons.",3.4)}
 }
@@ -6046,11 +6090,16 @@ function drawZrMid(t){
       g.fillStyle='rgba(0,0,0,.25)';for(let k=0;k<4;k++)g.fillRect(ex+sd*(30+k*6),h.top-3+(k%2)*2,3,2)}}
 }
 
-/* le drone poursuit le corbeau leurre et disparaît avec lui */
+/* le drone fait une pirouette, puis prend le corbeau en chasse à quelques mètres derrière lui ; on l'entend s'éloigner */
 function zrDroneLure(K,dt){
-  const d=L.zr&&L.zr.decoy,tx=d?d.x:K.x-600,ty=d?d.y:K.y-100,dx=tx-K.x,dy=ty-K.y,dd=Math.hypot(dx,dy)||1;
-  K.x+=dx/dd*560*dt;K.y+=dy/dd*560*dt;K.f=dx>=0?1:-1;K.sp='scan';K.sa=Math.PI/2;
-  if(K.x<cam.x-300||!d){K.state='dead';G.chase=false;setSong(songKey(G.li));loopSet('drone',0)}
+  const d=L.zr&&L.zr.decoy;K.sp='scan';K.sa=Math.PI/2;K.fire=0;
+  if(K.lt==null){K.lt=0;K.cx=K.x;K.cy=K.y-34;K.rot=0;if(!G.sim){tone(700,.5,'sawtooth',.05,1600);tone(1600,.35,'square',.03,600,.45)}}
+  K.lt+=dt;const PIR=.95;
+  if(K.lt<PIR){const u=K.lt/PIR,a=u*Math.PI*2;K.x=K.cx-Math.sin(a)*34;K.y=K.cy+Math.cos(a)*34;K.rot=-a;K.f=-1;return}
+  K.rot=0;
+  const tx=d?d.x+70:K.x-600,ty=d?d.y+16:K.y-60,dx=tx-K.x,dy=ty-K.y,dd=Math.hypot(dx,dy)||1;
+  const sp=Math.min(dd*6,720);K.x+=dx/dd*sp*dt;K.y+=dy/dd*sp*dt+Math.sin(K.t*7)*.5;K.f=-1;K.rot=Math.max(-.35,Math.min(.35,dx/900));
+  if(K.x<cam.x-1500||!d){K.state='dead';G.chase=false;setSong(songKey(G.li));loopSet('drone',0)}
 }
 function drawZrFront(t){
   const Z=L.zr;if(!Z||!Z.decoy)return;const d=Z.decoy,fl=Math.sin(t*30)*7;ctx.save();ctx.translate(d.x,d.y);ctx.rotate(-.12);
@@ -6115,7 +6164,7 @@ function drawBlockhaus(g,B,t){
 }
 
 /* =========================================================
-   2-4 · LE MUSÉE DE L'ABRI — l'abri allemand du Mort-Homme, devenu musée franco-allemand
+   2-4 · L'ABRI DU MORT-HOMME — l'abri allemand, devenu (sans que Raymond le sache) un musée franco-allemand
    ---------------------------------------------------------
    Option de niveau musee {cupboards:[col…], automata:[{c,side:'fr'|'de',task,grp,trench,fiente}]}
    · placards : E pour s'y cacher (le gardien passe sans rien voir), on en ressort en bougeant
@@ -6135,6 +6184,7 @@ function museePost(Lv){
     if(a.task==='letter')Lv.lights.push({x:a.x+24,y:a.b-40,r:120,i:.7,warm:2});
     if(a.task==='cook')Lv.lights.push({x:a.x+26,y:a.b-12,r:150,i:.7,warm:2});
     if(a.task==='map'||a.task==='phone')Lv.lights.push({x:a.x,y:a.b-70,r:150,i:.6,warm:1});
+    if(a.search){a.sact={kind:'secret',style:'autom',x:a.x-26,y:a.b,open:0,t:0,used:false,q:["Je fouille sa musette. Il ne bronche pas : il écrit. De la paille… et la photo d'une fiancée. Pardon, camarade, je ne prends que la paille."]};Lv.acts.push(a.sact)}
     if(a.fiente){a.act={kind:'secret',style:'fiente',x:a.x,y:a.b,open:0,t:0,used:false,q:["Je mériterais une promotion ! Mais ? J'ai enfin réussi à le faire !"]};a.act.when=()=>false;Lv.acts.push(a.act);M.fa=a}}
 }
 /* Raymond dans un placard */
@@ -6224,7 +6274,7 @@ function drawAutomate(g,a,t){
   const C=AUTO_COL[a.side],ph=t*1.6+a.ph,x=a.x,b=a.b;g.save();g.translate(x,b);
   if(!a.trench){// socle de musée et étiquette bilingue
     g.fillStyle='#3a2a1c';g.fillRect(-34,-6,68,6);g.fillStyle='#5a4430';g.fillRect(-34,-8,68,3);
-    g.fillStyle='#e9e1cc';g.fillRect(-16,-4,32,8);g.fillStyle='#2a2420';g.font='4px '+F_DISP;g.textAlign='center';g.fillText(a.side==='fr'?'POILU · FRANZÖSISCHER SOLDAT':'FELDGRAUER · SOLDAT ALLEMAND',0,1.5);g.translate(0,-8)}
+    g.fillStyle='#e9e1cc';g.fillRect(-18,-4,36,8);g.fillStyle='#2a2420';g.textAlign='center';{const lb=a.side==='fr'?'SOLDAT FRANÇAIS':'SOLDAT ALLEMAND';let fs=5;g.font=fs+'px '+F_DISP;while(fs>3&&g.measureText(lb).width>32){fs-=.25;g.font=fs+'px '+F_DISP}g.fillText(lb,0,1.6)}g.translate(0,-8)}
   const f=a.f;g.scale(f,1);
   if(a.task==='wounded'){// le blessé sur son brancard : il lève parfois la main
     g.fillStyle='#6a5034';g.fillRect(-36,-14,72,4);g.fillRect(-40,-15,6,3);g.fillRect(34,-15,6,3);g.fillStyle='#c8bfa4';g.fillRect(-30,-18,60,5);
@@ -6251,7 +6301,10 @@ function drawAutomate(g,a,t){
     else{// la lettre, à la bougie
       g.fillStyle='#7a5a36';g.fillRect(18,-30,30,30);g.fillStyle='#ece3cc';g.save();g.translate(30,-31);g.rotate(-.08);g.fillRect(-8,-1,16,2);g.restore();
       g.fillStyle='#e8dcc0';g.fillRect(40,-42,4,11);const fl=.8+Math.sin(t*11+a.ph)*.12;g.fillStyle='rgba(255,200,110,'+fl+')';g.beginPath();g.ellipse(42,-45,2.4,4,0,0,7);g.fill();
-      const s=Math.sin(ph*4);autoArm(g,8,-52,2.1,2.9+s*.25,C.coat2);autoArm(g,-4,-52,2.4,2.8,C.coat);autoHead(g,'fr',4,-64,.35+Math.sin(ph*.6)*.05)}
+      const s=Math.sin(ph*4);autoArm(g,8,-52,2.1,2.9+s*.25,C.coat2);autoArm(g,-4,-52,2.4,2.8,C.coat);autoHead(g,'fr',4,-64,.35+Math.sin(ph*.6)*.05);
+      // sa musette, posée contre la caisse (on peut la fouiller)
+      const op=a.sact?(a.sact.used?1:a.sact.open||0):0;g.save();g.translate(-26,-2);g.fillStyle='#6a6a4a';rr(g,-9,-16,18,16,4);g.fill();g.strokeStyle='#4a4a32';g.lineWidth=1.5;g.beginPath();g.moveTo(-7,-15);g.quadraticCurveTo(-14,-34,-2,-36);g.stroke();
+      g.fillStyle='#5a5a3c';g.save();g.translate(-9,-16);g.rotate(-op*1.1);rr(g,0,0,18,8,3);g.fill();g.restore();if(op>0){g.fillStyle='#d8b850';for(let k=-2;k<=2;k++)g.fillRect(k*3-1,-19-Math.abs(k),1.4,5)}g.restore()}
     g.restore();return}
   autoStand(g,a.side,{});
   if(a.task==='map'){// l'officier à la table des cartes, il pointe
@@ -6279,8 +6332,9 @@ function drawAutomate(g,a,t){
 /* ---------- chariot suspendu (au-dessus de la fosse) ---------- */
 function drawTrolley(g,m,t){
   const x=m.x,y=m.y,w=m.w;g.save();
-  g.strokeStyle='#2a2a2a';g.lineWidth=3;g.beginPath();g.moveTo(m.a0-30,y-170);g.lineTo(m.a1+w+30,y-170);g.stroke();
-  for(const sx of[x+10,x+w-10]){g.strokeStyle='#4a4a46';g.lineWidth=2;g.beginPath();g.moveTo(sx,y-170);g.lineTo(sx,y);g.stroke();g.fillStyle='#3a3a36';g.beginPath();g.arc(sx,y-170,5,0,7);g.fill()}
+  const ry=8*T+T+6;   // le rail, juste sous les barbelés de la dalle
+  g.strokeStyle='#2a2a2a';g.lineWidth=3;g.beginPath();g.moveTo(m.a0-30,ry);g.lineTo(m.a1+w+30,ry);g.stroke();
+  for(const sx of[x+10,x+w-10]){g.strokeStyle='#4a4a46';g.lineWidth=2;g.beginPath();g.moveTo(sx,ry);g.lineTo(sx,y);g.stroke();g.fillStyle='#3a3a36';g.beginPath();g.arc(sx,ry,5,0,7);g.fill()}
   g.fillStyle='#6a5a3a';g.fillRect(x,y,w,12);g.fillStyle='#4a3e28';g.fillRect(x,y+10,w,4);g.fillStyle='rgba(255,230,190,.25)';g.fillRect(x,y,w,1.5);
   g.fillStyle='#5a6252';rr(g,x+8,y-22,w-16,22,3);g.fill();g.fillStyle='rgba(240,230,210,.6)';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('MUNITION',x+w/2,y-9);
   g.restore();
@@ -6312,9 +6366,9 @@ function bunkerFar(L,g,wpx,R){
       for(let i=0;i<3;i++){const fx=x+i*70,fy=150+(i%2)*30;g.fillStyle='#1e1c18';g.fillRect(fx-3,fy-3,56,46);g.fillStyle=mix('#b8a07a','#6a5a48',R()*.6);g.fillRect(fx,fy,50,40);g.fillStyle='rgba(40,30,20,.5)';for(let j=0;j<3;j++)g.fillRect(fx+6+j*14,fy+16+R()*8,8,18)}x+=260}
     else if(k<.55){// carte du front, bilingue
       g.fillStyle='#d8cca8';g.fillRect(x,130,180,120);g.strokeStyle='rgba(120,60,40,.6)';g.lineWidth=2;g.beginPath();g.moveTo(x+10,200);g.quadraticCurveTo(x+90,150,x+170,210);g.stroke();g.strokeStyle='rgba(40,60,120,.6)';g.beginPath();g.moveTo(x+10,215);g.quadraticCurveTo(x+90,170,x+170,225);g.stroke();
-      g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('VERDUN 1916 · RIVE GAUCHE / LINKES UFER',x+90,144);x+=280}
+      g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('FRONT DE VERDUN · RIVE GAUCHE · 1916',x+90,144);x+=280}
     else if(k<.8){// bannières
-      for(let i=0;i<2;i++){const bx=x+i*60;g.fillStyle=i?'#2f4a6a':'#5a2a26';g.fillRect(bx,90,40,180);poly(g,[bx,270,bx+20,256,bx+40,270]);g.fill();g.fillStyle='#e9e1cc';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText('1916',bx+20,130);g.font='7px '+F_DISP;g.fillText(i?'MUSEUM':'MUSÉE',bx+20,150)}x+=220}
+      for(let i=0;i<2;i++){const bx=x+i*60;g.fillStyle=i?'#2f4a6a':'#5a2a26';g.fillRect(bx,90,40,180);poly(g,[bx,270,bx+20,256,bx+40,270]);g.fill();g.fillStyle='#e9e1cc';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText('1916',bx+20,130);g.font='7px '+F_DISP;g.fillText(i?'VERDUN':'MORT-H.',bx+20,150)}x+=220}
     else{// panneau de texte et vitrine
       g.fillStyle='#e9e1cc';g.fillRect(x,140,110,150);g.fillStyle='rgba(40,36,30,.5)';for(let j=0;j<12;j++)g.fillRect(x+10,156+j*10,80+R()*14,2);g.fillStyle='#5a2a26';g.fillRect(x,140,110,8);x+=200}
   }
@@ -6380,7 +6434,7 @@ function drawEntities(t){
   if(K){
     if(K.type==='cat'){if(K.state==='sleep')drawSleepingCat(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
       else drawCat(ctx,K.x+K.w/2,K.y+K.h,K.f||1,K.t,K.state==='chase'?1.4:0,{size:1.45,col:'#c7742e',rim:'#e9a050',stripes:true,eye:'#9ad84a',mouth:K.meowT>1.6||K.state==='wake'})}
-    else if(K.type==='drone'){if(K.state!=='dead')drawDrone(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.state!=='sleep')}
+    else if(K.type==='drone'){if(K.state!=='dead'){if(K.rot){ctx.save();ctx.translate(K.x+K.w/2,K.y+K.h/2);ctx.rotate(K.rot);drawDrone(ctx,0,0,K.t,true);ctx.restore()}else drawDrone(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.state!=='sleep')}}
     else if(K.type==='guardnet'&&K.state==='sleep')drawGuardAsleep(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
     else if(K.type==='guardnet')drawGuard(ctx,K.x+K.w/2,K.y+K.h,K.t,{f:K.f||1,walk:K.state==='chase'?1.4:0,net:true});
     else if(K.type==='sweeper')drawSweeper(ctx,K,K.t);
@@ -6952,7 +7006,7 @@ function renderLetter(t){
     if(LE.after>.8){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-12)}
     ctx.restore();
   }else{
-    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('Raymond vérifie que le courrier est lisible. Article 4 bis.',W-24,H-16);
+    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText(def.w===0?'Raymond vérifie que le courrier est lisible. Article 4 bis.':'Raymond lit la suite. L\'article 4 attendra.',W-24,H-16);
   }
 }
 /* fin de niveau : court bilan ; fin de mission : les quatre morceaux de lettre */
@@ -6961,7 +7015,7 @@ function endOfLevel(li){
   const after=()=>{
     if(li%4!==3){G.state='levelend';G.LE={mode:'short',li,after:0,st};G.fade=1;SFX.page();return}
     const first=li-3,go=()=>{G.state='levelend';G.LE={mode:'letter',li:first,last:li,chars:0,done:false,after:0};G.fade=1;SFX.page()};
-    if(def.w===0){G.state='intro';G.cards=TUBE;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=go}else go();
+    const pre=def.w===0?TUBE:LETTER_CARDS[def.w];if(pre){G.state='intro';G.cards=pre;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=go}else go();
   };
   if(li===18)unlock('a13');
   if(def.afterCards){G.state='intro';G.cards=def.afterCards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=after;if(def.afterSong)setSong(def.afterSong)}else after();

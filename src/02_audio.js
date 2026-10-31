@@ -164,7 +164,12 @@ function makeLoop(name){
   else if(name==='crowd'){f.type='bandpass';f.frequency.value=700;f.Q.value=.6}
   s.connect(f);f.connect(g);g.connect(sGain);s.start();return{g};
 }
-function loopSet(name,vol){if(!AC)return;let l=LOOPS[name];if(!l){if(!vol)return;l=LOOPS[name]=makeLoop(name)}l.g.gain.setTargetAtTime(S.muted?0:vol,AC.currentTime,.15)}
+/* volume d'une boucle : appelé à chaque image, on n'écrit dans la chronologie audio que si le volume change vraiment
+   (sinon Chrome empile des milliers d'automations setTargetAtTime et le jeu rame) */
+function loopSet(name,vol){if(!AC)return;let l=LOOPS[name];if(!l){if(!vol)return;l=LOOPS[name]=makeLoop(name)}
+  const v=S.muted?0:vol,now=AC.currentTime;if(l.v!=null&&(v===l.v||Math.abs(v-l.v)<.012&&v!==0))return;
+  if(l.v!=null&&v!==0&&now-l.at<.06)return;
+  l.v=v;l.at=now;const gp=l.g.gain;if(gp.cancelAndHoldAtTime)gp.cancelAndHoldAtTime(now);else{gp.cancelScheduledValues(now);gp.setValueAtTime(gp.value,now)}gp.setTargetAtTime(v,now,.15)}
 function loopsOff(){for(const k in LOOPS)loopSet(k,0)}
 const SFX={
   jump(){tone(380,.13,'square',.07,700)},

@@ -1,5 +1,5 @@
 /* =========================================================
-   2-4 · LE MUSÉE DE L'ABRI — l'abri allemand du Mort-Homme, devenu musée franco-allemand
+   2-4 · L'ABRI DU MORT-HOMME — l'abri allemand, devenu (sans que Raymond le sache) un musée franco-allemand
    ---------------------------------------------------------
    Option de niveau musee {cupboards:[col…], automata:[{c,side:'fr'|'de',task,grp,trench,fiente}]}
    · placards : E pour s'y cacher (le gardien passe sans rien voir), on en ressort en bougeant
@@ -19,6 +19,7 @@ function museePost(Lv){
     if(a.task==='letter')Lv.lights.push({x:a.x+24,y:a.b-40,r:120,i:.7,warm:2});
     if(a.task==='cook')Lv.lights.push({x:a.x+26,y:a.b-12,r:150,i:.7,warm:2});
     if(a.task==='map'||a.task==='phone')Lv.lights.push({x:a.x,y:a.b-70,r:150,i:.6,warm:1});
+    if(a.search){a.sact={kind:'secret',style:'autom',x:a.x-26,y:a.b,open:0,t:0,used:false,q:["Je fouille sa musette. Il ne bronche pas : il écrit. De la paille… et la photo d'une fiancée. Pardon, camarade, je ne prends que la paille."]};Lv.acts.push(a.sact)}
     if(a.fiente){a.act={kind:'secret',style:'fiente',x:a.x,y:a.b,open:0,t:0,used:false,q:["Je mériterais une promotion ! Mais ? J'ai enfin réussi à le faire !"]};a.act.when=()=>false;Lv.acts.push(a.act);M.fa=a}}
 }
 /* Raymond dans un placard */
@@ -108,7 +109,7 @@ function drawAutomate(g,a,t){
   const C=AUTO_COL[a.side],ph=t*1.6+a.ph,x=a.x,b=a.b;g.save();g.translate(x,b);
   if(!a.trench){// socle de musée et étiquette bilingue
     g.fillStyle='#3a2a1c';g.fillRect(-34,-6,68,6);g.fillStyle='#5a4430';g.fillRect(-34,-8,68,3);
-    g.fillStyle='#e9e1cc';g.fillRect(-16,-4,32,8);g.fillStyle='#2a2420';g.font='4px '+F_DISP;g.textAlign='center';g.fillText(a.side==='fr'?'POILU · FRANZÖSISCHER SOLDAT':'FELDGRAUER · SOLDAT ALLEMAND',0,1.5);g.translate(0,-8)}
+    g.fillStyle='#e9e1cc';g.fillRect(-18,-4,36,8);g.fillStyle='#2a2420';g.textAlign='center';{const lb=a.side==='fr'?'SOLDAT FRANÇAIS':'SOLDAT ALLEMAND';let fs=5;g.font=fs+'px '+F_DISP;while(fs>3&&g.measureText(lb).width>32){fs-=.25;g.font=fs+'px '+F_DISP}g.fillText(lb,0,1.6)}g.translate(0,-8)}
   const f=a.f;g.scale(f,1);
   if(a.task==='wounded'){// le blessé sur son brancard : il lève parfois la main
     g.fillStyle='#6a5034';g.fillRect(-36,-14,72,4);g.fillRect(-40,-15,6,3);g.fillRect(34,-15,6,3);g.fillStyle='#c8bfa4';g.fillRect(-30,-18,60,5);
@@ -135,7 +136,10 @@ function drawAutomate(g,a,t){
     else{// la lettre, à la bougie
       g.fillStyle='#7a5a36';g.fillRect(18,-30,30,30);g.fillStyle='#ece3cc';g.save();g.translate(30,-31);g.rotate(-.08);g.fillRect(-8,-1,16,2);g.restore();
       g.fillStyle='#e8dcc0';g.fillRect(40,-42,4,11);const fl=.8+Math.sin(t*11+a.ph)*.12;g.fillStyle='rgba(255,200,110,'+fl+')';g.beginPath();g.ellipse(42,-45,2.4,4,0,0,7);g.fill();
-      const s=Math.sin(ph*4);autoArm(g,8,-52,2.1,2.9+s*.25,C.coat2);autoArm(g,-4,-52,2.4,2.8,C.coat);autoHead(g,'fr',4,-64,.35+Math.sin(ph*.6)*.05)}
+      const s=Math.sin(ph*4);autoArm(g,8,-52,2.1,2.9+s*.25,C.coat2);autoArm(g,-4,-52,2.4,2.8,C.coat);autoHead(g,'fr',4,-64,.35+Math.sin(ph*.6)*.05);
+      // sa musette, posée contre la caisse (on peut la fouiller)
+      const op=a.sact?(a.sact.used?1:a.sact.open||0):0;g.save();g.translate(-26,-2);g.fillStyle='#6a6a4a';rr(g,-9,-16,18,16,4);g.fill();g.strokeStyle='#4a4a32';g.lineWidth=1.5;g.beginPath();g.moveTo(-7,-15);g.quadraticCurveTo(-14,-34,-2,-36);g.stroke();
+      g.fillStyle='#5a5a3c';g.save();g.translate(-9,-16);g.rotate(-op*1.1);rr(g,0,0,18,8,3);g.fill();g.restore();if(op>0){g.fillStyle='#d8b850';for(let k=-2;k<=2;k++)g.fillRect(k*3-1,-19-Math.abs(k),1.4,5)}g.restore()}
     g.restore();return}
   autoStand(g,a.side,{});
   if(a.task==='map'){// l'officier à la table des cartes, il pointe
@@ -163,8 +167,9 @@ function drawAutomate(g,a,t){
 /* ---------- chariot suspendu (au-dessus de la fosse) ---------- */
 function drawTrolley(g,m,t){
   const x=m.x,y=m.y,w=m.w;g.save();
-  g.strokeStyle='#2a2a2a';g.lineWidth=3;g.beginPath();g.moveTo(m.a0-30,y-170);g.lineTo(m.a1+w+30,y-170);g.stroke();
-  for(const sx of[x+10,x+w-10]){g.strokeStyle='#4a4a46';g.lineWidth=2;g.beginPath();g.moveTo(sx,y-170);g.lineTo(sx,y);g.stroke();g.fillStyle='#3a3a36';g.beginPath();g.arc(sx,y-170,5,0,7);g.fill()}
+  const ry=8*T+T+6;   // le rail, juste sous les barbelés de la dalle
+  g.strokeStyle='#2a2a2a';g.lineWidth=3;g.beginPath();g.moveTo(m.a0-30,ry);g.lineTo(m.a1+w+30,ry);g.stroke();
+  for(const sx of[x+10,x+w-10]){g.strokeStyle='#4a4a46';g.lineWidth=2;g.beginPath();g.moveTo(sx,ry);g.lineTo(sx,y);g.stroke();g.fillStyle='#3a3a36';g.beginPath();g.arc(sx,ry,5,0,7);g.fill()}
   g.fillStyle='#6a5a3a';g.fillRect(x,y,w,12);g.fillStyle='#4a3e28';g.fillRect(x,y+10,w,4);g.fillStyle='rgba(255,230,190,.25)';g.fillRect(x,y,w,1.5);
   g.fillStyle='#5a6252';rr(g,x+8,y-22,w-16,22,3);g.fill();g.fillStyle='rgba(240,230,210,.6)';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('MUNITION',x+w/2,y-9);
   g.restore();
@@ -196,9 +201,9 @@ function bunkerFar(L,g,wpx,R){
       for(let i=0;i<3;i++){const fx=x+i*70,fy=150+(i%2)*30;g.fillStyle='#1e1c18';g.fillRect(fx-3,fy-3,56,46);g.fillStyle=mix('#b8a07a','#6a5a48',R()*.6);g.fillRect(fx,fy,50,40);g.fillStyle='rgba(40,30,20,.5)';for(let j=0;j<3;j++)g.fillRect(fx+6+j*14,fy+16+R()*8,8,18)}x+=260}
     else if(k<.55){// carte du front, bilingue
       g.fillStyle='#d8cca8';g.fillRect(x,130,180,120);g.strokeStyle='rgba(120,60,40,.6)';g.lineWidth=2;g.beginPath();g.moveTo(x+10,200);g.quadraticCurveTo(x+90,150,x+170,210);g.stroke();g.strokeStyle='rgba(40,60,120,.6)';g.beginPath();g.moveTo(x+10,215);g.quadraticCurveTo(x+90,170,x+170,225);g.stroke();
-      g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('VERDUN 1916 · RIVE GAUCHE / LINKES UFER',x+90,144);x+=280}
+      g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('FRONT DE VERDUN · RIVE GAUCHE · 1916',x+90,144);x+=280}
     else if(k<.8){// bannières
-      for(let i=0;i<2;i++){const bx=x+i*60;g.fillStyle=i?'#2f4a6a':'#5a2a26';g.fillRect(bx,90,40,180);poly(g,[bx,270,bx+20,256,bx+40,270]);g.fill();g.fillStyle='#e9e1cc';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText('1916',bx+20,130);g.font='7px '+F_DISP;g.fillText(i?'MUSEUM':'MUSÉE',bx+20,150)}x+=220}
+      for(let i=0;i<2;i++){const bx=x+i*60;g.fillStyle=i?'#2f4a6a':'#5a2a26';g.fillRect(bx,90,40,180);poly(g,[bx,270,bx+20,256,bx+40,270]);g.fill();g.fillStyle='#e9e1cc';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText('1916',bx+20,130);g.font='7px '+F_DISP;g.fillText(i?'VERDUN':'MORT-H.',bx+20,150)}x+=220}
     else{// panneau de texte et vitrine
       g.fillStyle='#e9e1cc';g.fillRect(x,140,110,150);g.fillStyle='rgba(40,36,30,.5)';for(let j=0;j<12;j++)g.fillRect(x+10,156+j*10,80+R()*14,2);g.fillStyle='#5a2a26';g.fillRect(x,140,110,8);x+=200}
   }

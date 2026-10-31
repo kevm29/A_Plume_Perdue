@@ -268,6 +268,7 @@ function drawDroneExtras(t){
   if(L.grenades)for(const n of L.grenades){const x=n.x+4,y=n.y+4;ctx.save();ctx.fillStyle='#3a4a2a';ctx.beginPath();ctx.ellipse(x,y,5,6,0,0,7);ctx.fill();ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=.8;for(let k=-1;k<=1;k++){ctx.beginPath();ctx.moveTo(x-5,y+k*2.5);ctx.lineTo(x+5,y+k*2.5);ctx.stroke()}
     ctx.fillStyle='#8a8a7a';ctx.fillRect(x-2,y-9,4,3);if(Math.sin(t*(10+n.t*20))>0){ctx.fillStyle='#ff5030';ctx.beginPath();ctx.arc(x,y-10,1.8,0,7);ctx.fill()}ctx.restore()}
   if(!K||K.type!=='drone'||K.state==='sleep'||K.state==='dead'||K.state==='lure')return;
+  if(!isFinite(K.sa)||!isFinite(K.x))return;
   const ex=K.x+K.w/2,ey=K.y+K.h,red=K.sp==='aim';let len=340;for(let q=12;q<340;q+=8){if(isSolid(Math.floor((ex+Math.cos(K.sa)*q)/T),Math.floor((ey+Math.sin(K.sa)*q)/T))){len=q+10;break}}
   ctx.save();const gr=ctx.createRadialGradient(ex,ey,4,ex,ey,len);gr.addColorStop(0,red?'rgba(255,90,70,.45)':'rgba(240,245,255,.32)');gr.addColorStop(1,'rgba(240,245,255,0)');
   ctx.fillStyle=gr;ctx.beginPath();ctx.moveTo(ex,ey);ctx.arc(ex,ey,len,K.sa-.3,K.sa+.3);ctx.closePath();ctx.fill();

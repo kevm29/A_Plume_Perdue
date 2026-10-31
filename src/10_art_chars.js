@@ -338,6 +338,26 @@ function drawEasel(g,x,y,label,outdoor){
   g.fillStyle='#2a2420';g.font='10px '+F_DISP;g.textAlign='center';g.fillText('FIG.',0,-30);g.font='12px '+F_DISP;g.fillText(label,0,-21);g.restore();
   g.restore();
 }
+/* la meurtrière du mur du fond (2-4) : une ouverture dans le béton, le volet de fer rabattu, le ciel du soir dehors */
+function drawEmbrasure(g,e,t){
+  const x0=e.x+6,y0=e.y,w=3*T,h=2*T;g.save();
+  const sk=g.createLinearGradient(0,y0,0,y0+h);sk.addColorStop(0,'#2a3458');sk.addColorStop(.6,'#7a5a6e');sk.addColorStop(1,'#d8906a');g.fillStyle=sk;g.fillRect(x0,y0,w,h);
+  g.fillStyle='#f4ecd8';for(let k=0;k<7;k++){const sx=x0+14+((k*37)%(w-20)),sy=y0+6+((k*23)%34);g.globalAlpha=.4+.4*Math.sin(t*2+k*1.7);g.fillRect(sx,sy,1.6,1.6)}g.globalAlpha=1;
+  g.fillStyle='#fbf3dc';g.beginPath();g.arc(x0+w-34,y0+22,9,0,7);g.fill();g.fillStyle='rgba(42,52,88,.9)';g.beginPath();g.arc(x0+w-30,y0+19,8,0,7);g.fill();
+  // la crête du Mort-Homme, des arbres morts
+  g.fillStyle='#1e1a22';g.beginPath();g.moveTo(x0,y0+h);g.lineTo(x0,y0+h-16);g.quadraticCurveTo(x0+50,y0+h-30,x0+w,y0+h-12);g.lineTo(x0+w,y0+h);g.closePath();g.fill();
+  g.strokeStyle='#1e1a22';g.lineWidth=2;for(const[tx,th]of[[x0+30,30],[x0+78,22]]){g.beginPath();g.moveTo(tx,y0+h-20);g.lineTo(tx+1,y0+h-20-th);g.moveTo(tx+1,y0+h-14-th*.6);g.lineTo(tx+8,y0+h-22-th*.8);g.moveTo(tx,y0+h-18-th*.4);g.lineTo(tx-7,y0+h-24-th*.5);g.stroke()}
+  // l'embrasure biseautée dans l'épaisseur du béton
+  g.fillStyle='rgba(20,20,22,.55)';poly(g,[x0,y0,x0+14,y0+8,x0+14,y0+h-6,x0,y0+h]);g.fill();g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x0,y0,w,6);
+  g.fillStyle='rgba(255,230,200,.18)';g.fillRect(x0,y0+h-3,w,3);
+  // le volet de fer, ouvert vers l'intérieur, qui grince un peu
+  const sw=Math.sin(t*1.3)*.04;g.save();g.translate(x0,y0+2);g.transform(1,-.12+sw,0,1,0,0);g.fillStyle='#3a3c3a';g.fillRect(-34,0,34,h-6);g.fillStyle='#4a4c48';g.fillRect(-32,4,30,h-14);
+  g.fillStyle='#2a2a28';for(const yy of[10,h-20])g.fillRect(-36,yy,40,4);g.fillStyle='#6a6a62';for(const yy of[12,h-18])g.beginPath(),g.arc(-30,yy,1.6,0,7),g.fill();g.restore();
+  // le rayon du soir qui entre dans la salle
+  const gr=g.createLinearGradient(x0,y0,x0-160,y0+220);gr.addColorStop(0,'rgba(255,200,160,.16)');gr.addColorStop(1,'rgba(255,200,160,0)');g.fillStyle=gr;
+  g.beginPath();g.moveTo(x0,y0+4);g.lineTo(x0,y0+h);g.lineTo(x0-110,y0+h+170);g.lineTo(x0-220,y0+h+170);g.closePath();g.fill();
+  g.restore();
+}
 function drawExit(g,e,style,t,label){
   if(style==='blockhaus')return;   // dessiné avec le décor (11g_zonerouge.js)
   const x=e.x+6,y=e.y;
@@ -352,6 +372,7 @@ function drawExit(g,e,style,t,label){
     g.fillStyle='#a8322d';g.font='11px '+F_DISP;g.fillText('1916 – 2026',cx,gy-110+sw);
     for(let k=0;k<9;k++){g.fillStyle=['#c8302a','#e0b030','#3a6aa8'][k%3];g.beginPath();g.moveTo(cx-140+k*35,gy-150);g.lineTo(cx-128+k*35,gy-150);g.lineTo(cx-134+k*35,gy-138);g.fill()}
     g.restore();return}
+  if(style==='embrasure'){drawEmbrasure(g,e,t);return}
   g.save();
   if(style==='window'){
     g.fillStyle='#1b2630';g.beginPath();g.moveTo(x-12,y+86);g.lineTo(x-12,y-40);g.arc(x+20,y-40,32,Math.PI,0);g.lineTo(x+52,y+86);g.closePath();g.fill();

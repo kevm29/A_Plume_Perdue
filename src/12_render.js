@@ -47,7 +47,7 @@ function drawEntities(t){
   if(K){
     if(K.type==='cat'){if(K.state==='sleep')drawSleepingCat(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
       else drawCat(ctx,K.x+K.w/2,K.y+K.h,K.f||1,K.t,K.state==='chase'?1.4:0,{size:1.45,col:'#c7742e',rim:'#e9a050',stripes:true,eye:'#9ad84a',mouth:K.meowT>1.6||K.state==='wake'})}
-    else if(K.type==='drone'){if(K.state!=='dead')drawDrone(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.state!=='sleep')}
+    else if(K.type==='drone'){if(K.state!=='dead'){if(K.rot){ctx.save();ctx.translate(K.x+K.w/2,K.y+K.h/2);ctx.rotate(K.rot);drawDrone(ctx,0,0,K.t,true);ctx.restore()}else drawDrone(ctx,K.x+K.w/2,K.y+K.h/2,K.t,K.state!=='sleep')}}
     else if(K.type==='guardnet'&&K.state==='sleep')drawGuardAsleep(ctx,K.home.x+K.w/2,K.home.y+K.h,t);
     else if(K.type==='guardnet')drawGuard(ctx,K.x+K.w/2,K.y+K.h,K.t,{f:K.f||1,walk:K.state==='chase'?1.4:0,net:true});
     else if(K.type==='sweeper')drawSweeper(ctx,K,K.t);

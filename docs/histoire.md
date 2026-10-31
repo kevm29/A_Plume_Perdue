@@ -17,7 +17,7 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 | Mission | Lieu | Niveaux |
 |---|---|---|
 | 1 | Vittoncourt, le musée qui ferme | La vitrine · La galerie des insectes · L'étage du mammouth · La loge du gardien |
-| 2 | Verdun, les champs de l'ancien front | Les coquelicots · Les éoliennes · La zone rouge · Le musée de l'abri |
+| 2 | Verdun, les champs de l'ancien front | Retour à la case départ : Le sentier · Les éoliennes · La zone rouge · L'abri du Mort-Homme |
 | 3 | Reims, la ville puis la cathédrale | La rue de Vesle · La gare · La place d'Erlon · La cathédrale |
 | 4 | L'A4 sous l'orage, vers l'ouest | L'aire de repos · Les camions · L'orage · Le pont (sur la Marne) |
 | 5 | Villemareuil, le village de Marguerite | La route du village · Le clocher · La fête foraine · Le cimetière |
@@ -69,7 +69,8 @@ Chaque niveau terminé révèle un fragment, mais Raymond ne lit les quatre morc
 ## Transitions entre les missions
 
 - **1 → 2.** Raymond s'échappe par la fenêtre de la loge. Il vole mal. Il vole quand même. Direction l'ouest : le pigeonnier Vasseur, à Villemareuil. Il a décidé de livrer la gifle.
-- **2 → 3.** Il quitte Verdun avec un trou de mémoire de la taille d'un fort. Il s'oriente aux clochers, et la cathédrale de Reims est le plus gros de la région. C'est un détour. Il ne l'admettra jamais.
+- **Fin de la mission 2, avant la lettre.** Raymond n'a pas croisé Lucien. Hormis l'abri, les Allemands semblent avoir été repoussés plus loin : Lucien doit y être, en héros — Raymond l'a vu à l'œuvre, il est courageux. Mais si goujat… L'article 4 interdit de lire le courrier ; Raymond ne comprend pas cet homme-là et déplie la suite.
+- **2 → 3.** Il faut rentrer au pigeonnier, mais le pays a changé : des forêts sur le front, des moulins géants, plus un repère. Au loin, le plus haut clocher de la région, déjà croisé en 1915. Il met le cap dessus sans savoir où c'est. C'est Reims (mission 3, « Le cap céleste »).
 - **3 → 4.** Les ratures l'ont rendu silencieux. Une route immense, toute droite vers l'ouest, sans chevaux ni soldats. Il pleut des cordes.
 - **4 → 5.** L'orage est passé. La lettre est trempée, et Raymond sait maintenant ce qui est écrit au dos. Le village est en fête. Personne n'attend de pigeon.
 
@@ -79,7 +80,7 @@ Règles : aucune vie au départ, une de plus par médaille. Raymond a 5 états ;
 
 - **1-3, le gardien au filet** : dans l'étage plongé dans le noir, le gardien de nuit prend un filet à papillons et poursuit Raymond.
 - **2-3, le drone** : au début du soir, dans la zone rouge (forêt plantée sur le champ de bataille, obus non explosés, trous d'obus pleins d'eau), un drone à projecteur surveille le terrain ; on lui échappe sous le feuillage et dans une sape couverte, jusqu'à un abri allemand de 1916 sur le Mort-Homme (« Ils ont dû enfin reculer »).
-- **2-4, le musée de l'abri** : « Ce satané oiseau mécanique m'a forcé à rentrer chez l'ennemi. » L'abri est devenu un musée franco-allemand ; la nuit, des gardiens font leur ronde entre des automates de cire qui rejouent la guerre. Raymond les prend pour de vrais soldats : il crie aux Français de partir, mais personne ne comprend ses roucoulements. Au-dessus d'un officier allemand : « Il mériterait que je lui chie dessus. » Il le fait — la seule fois du jeu. « Je mériterais une promotion ! Mais ? J'ai enfin réussi à le faire ! » Après la salle des tranchées reconstituées, il sort par une fenêtre.
+- **2-4, l'abri du Mort-Homme** : « Ce satané oiseau mécanique m'a forcé à rentrer chez l'ennemi. » L'abri est devenu un musée franco-allemand, mais rien ne le dit et Raymond n'en sait rien ; la nuit, des gardiens font leur ronde entre des automates de cire qui rejouent la guerre. Raymond les prend pour de vrais soldats : il crie aux Français de partir, mais personne ne comprend ses roucoulements. Au-dessus d'un officier allemand : « Il mériterait que je lui chie dessus. » Il le fait — la seule fois du jeu. « Je mériterais une promotion ! Mais ? J'ai enfin réussi à le faire ! » Il fouille la musette d'un poilu qui écrit à la bougie (de la paille, et la photo d'une fiancée). Après les tranchées, il s'envole par une meurtrière ouverte dans le mur du fond.
 - **3-3, la balayeuse municipale** : elle aspire tout ce qui traîne par terre ; on lui échappe en restant en hauteur.
 - **4-3, l'orage** : l'écran avance tout seul, le front d'orage arrive par la gauche.
 - **5-1, la maison Vasseur** : au bout de la route, la maison est là, mais le pigeonnier a laissé place à un garage.
