@@ -1,10 +1,9 @@
 /* ------------------------------ MISSION 2 · VERDUN ------------------------------ */
 LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
- rows:20,deep:2,deepFill:'#',mineDelay:.22,helmetAt:[263,17],dugout:[233,243],marks:[[243,19]],nestAt:[154,3],
- frontLeaves:[[158,4],[161,6],[155,4]],communeName:'VERDUN',
+ rows:20,deep:2,deepFill:'#',mineDelay:.22,helmetAt:[263,17],dugout:[233,243],marks:[[243,19]],nestAt:[154,3],bedAt:[235,19],
+ frontLeaves:[[158,4],[161,6],[154,4,'nest']],communeName:'VERDUN',
  zoneProps:{field:['fence'],wood:['stump','fern','fern'],mines:[],trench:[],monument:['bench','flowerbed']},
  zoneTh:{monument:{type:'gravel',floor:'#6a5a46',floorTop:'#cfc6b2'}},
- stashQuips:["Un abri, sous le parapet. Une couchette, une bougie… Et de la paille. Quelqu'un dormait ici."],
  start:"Verdun ? Mais je connais ce lieu ! J'ai été enfermé toute une saison pour que ça refleurisse ainsi ?",
  hints:[["ARTICLE 9 — LA BOUE","Elle colle aux plumes : on n'y saute presque plus et on n'y bat plus des ailes, même un peu après. Et elle avale ce qui s'arrête. Avancer, toujours."],
         ["ARTICLE 10 — LA MINE","Ne pas s'y aventurer : un clic, et c'est l'explosion assurée."]],
@@ -73,7 +72,7 @@ LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SU
 .......o..........................
 qC#ff#########.......o............
 ###fffffffffffq......##..q......##
-###sffffffffff..o4.o.##..o.o.#####`},
+###fffffffffff..o4.o.##..o.o.#####`},
 {z:'monument',s:`
 ........o....o............o.......o.....
 .....q..Y.......q...6..........4....E...

@@ -7,6 +7,7 @@ function drawSecretProp(g,a,t){
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();
   const inner=()=>{g.fillStyle='#16110c'};
+  if(st==='bed'){g.restore();return}
   if(st==='nest'){
     g.fillStyle='#6a4a2c';g.beginPath();g.ellipse(0,-6,20,9,0,0,Math.PI);g.fill();g.beginPath();g.ellipse(0,-8,20,5,0,0,7);g.fill();
     g.strokeStyle='#4a3220';g.lineWidth=1.2;for(let k=0;k<9;k++){g.beginPath();g.moveTo(-20+k*5,-10+(k%2)*3);g.lineTo(-14+k*5,-2-(k%3));g.stroke()}

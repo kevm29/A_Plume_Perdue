@@ -26,7 +26,7 @@ function verdunParse(Lv,ch,c,r,x,y,cx,cy){
 }
 function verdunPost(Lv){
   for(const [c,r] of Lv.def.marks||[])Lv.mark.add(c+','+r);
-  for(const [c,r] of Lv.def.frontLeaves||[])Lv.decorFront.push({t:'leaves',x:c*T+T/2,y:r*T+T/2+6});
+  for(const [c,r,m] of Lv.def.frontLeaves||[])Lv.decorFront.push({t:'leaves',x:c*T+T/2,y:r*T+T/2+6,top:r*T,nest:m==='nest',s:m==='nest'?1.35:1.15});
   Lv.fallen=[];Lv.passers=[];Lv.moles=Lv.moles||[];
   if(Lv.hunters[0])Lv.hunters[0].demo=true;
 }
@@ -94,13 +94,11 @@ function verdunRespawn(){G.moleHit=false;for(const h of L.hunters||[]){h.state='
 /* buissons (devant le décor, derrière Raymond) */
 function drawBush(g,x,b,s,seed,rust){
   const sh=rust?Math.sin(G.lt*40)*2:0;
-  const cols=['#3f6a26','#4f7a2e','#5f8f36','#47722a','#6a9a3c'];
-  g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(x,b-2,46*s,7,0,0,7);g.fill();
-  for(let k=0;k<11;k++){const a=k/11*Math.PI,rx=Math.cos(a)*36*s,ry=-Math.sin(a)*30*s;g.fillStyle=cols[(k+seed)%5];g.beginPath();g.arc(x+rx+(k%2?sh:-sh),b-14*s+ry,(16+((k*7+seed)%6))*s,0,7);g.fill()}
-  g.fillStyle='#5a8a32';g.beginPath();g.arc(x+sh,b-34*s,20*s,0,7);g.fill();
-  // quelques feuilles qui jaunissent
-  for(let k=0;k<6;k++){g.fillStyle=k%2?'#c9a83a':'#b88a2a';g.beginPath();g.arc(x-30*s+((k*23+seed*7)%60)*s,b-40*s+((k*13+seed)%34)*s,3.2,0,7);g.fill()}
-  g.fillStyle='rgba(255,250,210,.16)';g.beginPath();g.arc(x-12*s,b-44*s,14*s,0,7);g.fill();
+  g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(x,b-2,48*s,7,0,0,7);g.fill();
+  g.strokeStyle='#4a3a26';g.lineWidth=2;for(let k=-2;k<=2;k++){g.beginPath();g.moveTo(x+k*6,b);g.lineTo(x+k*14+sh,b-22*s);g.stroke()}
+  drawLeafMass(g,x-18*s+sh,b-22*s,.62*s,seed+1);drawLeafMass(g,x+18*s-sh,b-22*s,.62*s,seed+2);drawLeafMass(g,x+sh,b-36*s,.7*s,seed+3);
+  // baies d'églantier
+  g.fillStyle='#b8302a';for(let k=0;k<5;k++){g.beginPath();g.arc(x-26*s+((k*19+seed*7)%52)*s,b-14*s-((k*11+seed)%30)*s,2.2,0,7);g.fill()}
 }
 function gRow(Lv){return (Lv.def.rows||15)-2}
 function inHiddenDugout(c){const G0=gRow(L),dg=L.def.dugout;if(!dg||(L.dugA||0)>.5)return false;const x=c.x+c.w/2,y=c.y+c.h/2;return x>dg[0]*T&&x<(dg[1]+1)*T&&y>G0*T&&y<(G0+2)*T}
@@ -117,6 +115,7 @@ function drawDugout(t){
   // couchette, caisse, bougie
   ctx.fillStyle='#6a4a2c';ctx.fillRect(x0+60,y1-26,96,6);ctx.fillRect(x0+62,y1-26,5,26);ctx.fillRect(x0+148,y1-26,5,26);
   ctx.fillStyle='#5a6448';ctx.fillRect(x0+66,y1-34,82,8);
+  {const bed=(L.acts||[]).find(a=>a.style==='bed');if(bed&&!bed.used){ctx.strokeStyle='#e0b04e';ctx.lineWidth=1.3;for(let k=0;k<10;k++){ctx.beginPath();ctx.moveTo(x0+76+k*6,y1-33);ctx.lineTo(x0+74+k*6+(k%2)*4,y1-41-(k%3)*2);ctx.stroke()}}}
   ctx.fillStyle='#7a5a36';ctx.fillRect(x0+230,y1-24,30,24);ctx.fillStyle='#e8dcc0';ctx.fillRect(x0+243,y1-34,5,10);
   const fl=.8+Math.sin(t*11)*.1+Math.sin(t*27)*.06;ctx.fillStyle='rgba(255,200,110,'+fl+')';ctx.beginPath();ctx.ellipse(x0+245.5,y1-38,2.6,4.5,0,0,7);ctx.fill();
   const gl=ctx.createRadialGradient(x0+245,y1-38,2,x0+245,y1-38,150);gl.addColorStop(0,'rgba(255,190,100,'+(.32*fl)+')');gl.addColorStop(1,'rgba(255,190,100,0)');ctx.fillStyle=gl;ctx.fillRect(x0,y0,x1-x0,y1-y0);
@@ -151,12 +150,17 @@ function drawVerdunFront(t){
   }
   for(const m of L.passers||[]){const fl=Math.sin(t*14)*6;ctx.save();ctx.translate(m.x,m.y);ctx.fillStyle='#1c1c22';ctx.beginPath();ctx.ellipse(0,0,12,6,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-2,0);ctx.lineTo(6,-8-fl);ctx.lineTo(12,-2);ctx.fill();ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(-16,-3);ctx.lineTo(-10,3);ctx.fill();ctx.fillStyle='#d8b04a';ctx.beginPath();ctx.moveTo(-12,-1);ctx.lineTo(-19,0);ctx.lineTo(-12,2);ctx.fill();ctx.restore()}
   for(const f of L.fallen||[]){ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.rot);ctx.fillStyle='#1c1c22';ctx.beginPath();ctx.ellipse(0,0,11,6,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-4,0);ctx.lineTo(-16,-8);ctx.lineTo(-6,4);ctx.fill();ctx.restore()}
-  for(const d of L.decorFront||[]){if(d.x<cam.x-200||d.x>cam.x+W+200)continue;if(d.t==='leaves'){const dd=Math.hypot(P.x+P.w/2-d.x,P.y+P.h/2-d.y);d.a=Math.max(.0,Math.min(1,(d.a==null?1:d.a)+((dd<190?-1:1)*0.04)));if(d.a<=0)continue;ctx.save();ctx.globalAlpha=d.a;drawLeafMass(ctx,d.x,d.y,1.15,7);ctx.restore()}}
+  for(const d of L.decorFront||[]){if(d.x<cam.x-200||d.x>cam.x+W+200)continue;if(d.t==='leaves'){const pcx=P.x+P.w/2,open=d.nest?(!P.dead&&Math.abs(P.y+P.h-d.top)<4&&Math.abs(pcx-d.x)<150):Math.hypot(pcx-d.x,P.y+P.h/2-d.y)<190;d.a=Math.max(0,Math.min(1,(d.a==null?1:d.a)+(open?-.05:.05)));if(d.a<=0)continue;ctx.save();ctx.globalAlpha=d.a;drawLeafMass(ctx,d.x,d.y,d.s,7);ctx.restore()}}
 }
 function drawLeafMass(g,x,y,s,seed){
-  const cols=['#3f6a26','#4f7a2e','#5f8f36','#6a9a3c','#c9a83a','#4a7a2c','#d8b04a','#5a8a32'];
-  for(let k=0;k<18;k++){const a=k*2.4,rr0=(k%6)*9*s;g.fillStyle=cols[(k*3+seed)%8];g.beginPath();g.arc(x+Math.cos(a)*rr0,y+Math.sin(a)*rr0*.7,(20-(k%4)*2)*s,0,7);g.fill()}
-  g.fillStyle='rgba(255,250,210,.12)';g.beginPath();g.arc(x-14*s,y-16*s,22*s,0,7);g.fill();
+  const R=mulberry(seed*97+Math.round(x)),greens=['#3f6a26','#4f7a2e','#5f8f36','#6a9a3c','#4a7a2c','#5a8a32'],golds=['#c9a83a','#d8b04a','#b8862a'];
+  // masse sombre, puis touffes, puis feuilles une à une, lumière en haut à gauche
+  g.fillStyle='#2f5420';for(let k=0;k<7;k++){const a=k*.9,d=(k%3)*12*s;g.beginPath();g.arc(x+Math.cos(a)*d,y+Math.sin(a)*d*.7+6*s,22*s,0,7);g.fill()}
+  for(let k=0;k<16;k++){const a=R()*6.28,d=Math.sqrt(R())*40*s;g.fillStyle=R()<.22?golds[k%3]:greens[k%6];g.beginPath();g.arc(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,(11+R()*7)*s,0,7);g.fill()}
+  for(let k=0;k<70;k++){const a=R()*6.28,d=Math.sqrt(R())*50*s,lx=x+Math.cos(a)*d,ly=y+Math.sin(a)*d*.72;const lit=(lx-x)+(ly-y)<-10*s;
+    g.fillStyle=R()<.2?golds[k%3]:(lit?'#7aab48':greens[(k+2)%6]);g.save();g.translate(lx,ly);g.rotate(R()*3.14);g.beginPath();g.ellipse(0,0,4.6*s,2.3*s,0,0,7);g.fill();g.restore()}
+  g.strokeStyle='rgba(40,30,20,.35)';g.lineWidth=1.2*s;for(let k=0;k<3;k++){const a=R()*6.28;g.beginPath();g.moveTo(x+Math.cos(a)*8*s,y+Math.sin(a)*6*s);g.lineTo(x+Math.cos(a)*34*s,y+Math.sin(a)*24*s);g.stroke()}
+  g.fillStyle='rgba(255,250,210,.10)';g.beginPath();g.arc(x-16*s,y-18*s,20*s,0,7);g.fill();
 }
 /* ---------- décors ---------- */
 const SIGN_STYLES={

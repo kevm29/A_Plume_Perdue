@@ -25,6 +25,7 @@ function actPost(L){
   for(const a of L.acts)if(a.kind==='lever'){let best=null,bd=1e9;for(const g of L.gates){const d=Math.abs(g.c*T-a.x);if(d<bd){bd=d;best=g}}a.gate=best}
   {let k=0;const sq=L.def.stashQuips||[];for(const a of L.acts)if(a.kind==='stash'){a.q=sq[k]?[sq[k]]:null;k++}}
   if(L.def.helmetAt){const[c,r]=L.def.helmetAt;L.acts.push({kind:'secret',style:'helmet',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Le casque tombe. Et dedans, de la paille. Quelqu'un avait gardé un nid pour l'hiver."]})}
+  if(L.def.bedAt){const[c,r]=L.def.bedAt;L.acts.push({kind:'secret',style:'bed',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Un abri, sous le parapet. Une couchette, une bougie… Et de la paille sous la couverture. Quelqu'un dormait ici."]})}
   if(L.def.nestAt){const[c,r]=L.def.nestAt;L.acts.push({kind:'secret',style:'nest',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Tiens, un nid. Quelle jolie paille… Ses propriétaires seront ravis de la partager avec un héros de la nation."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
