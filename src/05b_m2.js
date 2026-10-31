@@ -1,9 +1,9 @@
 /* ------------------------------ MISSION 2 · VERDUN ------------------------------ */
 LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
- deep:2,deepFill:'#',mineDelay:.22,helmetAt:[257,12],frontLeaves:[[158,1]],communeName:'VERDUN',
+ deep:2,deepFill:'#',mineDelay:.22,helmetAt:[263,12],dugout:[233,243],marks:[[243,14]],frontLeaves:[[158,1]],communeName:'VERDUN',
  zoneProps:{field:['fence','molehill','fence','molehill'],wood:['stump','fern','fern'],mines:[],trench:[],monument:['bench','flowerbed']},
  zoneTh:{monument:{type:'gravel',floor:'#6a5a46',floorTop:'#cfc6b2'}},
- stashQuips:["Un nid d'écureuil, tout en haut du chêne. Des glands… et de la paille."],
+ stashQuips:["Un nid d'écureuil, tout en haut du chêne. Des glands… et de la paille.","Un abri, sous le parapet. Une couchette, une bougie… Et de la paille. Quelqu'un dormait ici."],
  start:"Je reconnais le terrain. Enfin… il y a moins de boue. Et du blé qui pousse.",
  hints:[["ARTICLE 9 — LA BOUE","Elle colle aux plumes : on n'y saute presque plus et on n'y bat plus des ailes, même un peu après. Et elle avale ce qui s'arrête. Avancer, toujours."],
         ["ARTICLE 9 bis — LA CHASSE","En novembre, chaque buisson cache un fusil. Il tire sur tout ce qui vole au-dessus de lui. Traverser à pied : sauter, oui ; battre des ailes ou planer, non."],
@@ -13,6 +13,7 @@ LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SU
         "Un bois. Les arbres ont repoussé, et en couleurs. Chez nous, ils n'avaient plus une branche.",
         "Des panneaux « DANGER » plantés dans l'herbe. On ne marche pas ici. On s'y pose, à la rigueur.",
         "Une tranchée. Tondue, propre, silencieuse. Qui a eu le temps de faire le ménage ?",
+        "Ce bois, derrière… On dirait le bois Fumin. J'y suis passé en juin, avec un message du fort. Les arbres ont repoussé, mais le terrain, je le reconnais.",
         "Verdun. C'est d'ici que je suis parti. Je crois. Je ne sais plus très bien.",
         "Un cavalier, un sapeur, un fantassin, un artilleur, un territorial. Épaule contre épaule. On ne passe pas."],
  signs:["wood:SENTIER DE MÉMOIRE|Ne pas quitter le chemin"],
@@ -67,10 +68,10 @@ LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SU
 #######.,.#######.,.########.,.#######.,.#######
 ################################################`},
 {z:'trench',s:`
-..............................
-.C......q.....................
-#####..o....o.....o...o..#####
-#####....4....##.........#####`},
+.......o..........................
+qC############.......o............
+###fffffffffff....q..##.........##
+###sffff4fffff..o..o.##..o.o.#####`},
 {z:'monument',s:`
 ........o....o............o.......o.....
 ..7q......4........q6..........Y....E...

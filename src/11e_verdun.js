@@ -16,7 +16,7 @@ function verdunParse(Lv,ch,c,r,x,y,cx,cy){
     case'1':Lv.hunters.push({x:cx,y:y+T,state:'hid',t:c*.37,aimT:0,cool:0,peek:0,ang:-Math.PI/2,flash:0,tgt:null,rust:0});Lv.avoid.push(cx-80,cx-40,cx,cx+40,cx+80);return true;
     case'2':Lv.decor.push({t:'danger',x:cx,y,floor:fr*T});Lv.g[r][c]='t';Lv.avoid.push(cx);return false;
     case'3':Lv.decor.push({t:'tree',x:cx,c,r,floor:y+T});Lv.avoid.push(cx);return true;
-    case'4':Lv.rats.push({kind:'rat',x:cx-15,y:y+T-16,w:30,h:16,vx:95,vy:0,onGround:false,t:(c*.37)%9,sq:1+(c%3)});return true;
+    case'4':Lv.rats.push({kind:'rat',x:cx-15,y:y+T-16,w:30,h:16,vx:95,vy:0,onGround:false,t:(c*.37)%9,sq:1+(c%3)});if(Lv.g[r][c-1]==='f'||Lv.g[r][c+1]==='f'){Lv.g[r][c]='f';return false}return true;
     case'6':Lv.decor.push({t:'monument',x:cx,y:y+T});for(let k=-6;k<=6;k++)Lv.avoid.push(cx+k*50);return true;
     case'7':Lv.decor.push({t:'commune',x:cx,y:y+T,name:Lv.def.communeName||'VERDUN'});Lv.avoid.push(cx-60,cx,cx+60);return true;
     case'8':Lv.decor.push({t:'chasse',x:cx,y:y+T});Lv.avoid.push(cx);return true;
@@ -24,6 +24,7 @@ function verdunParse(Lv,ch,c,r,x,y,cx,cy){
   return true;
 }
 function verdunPost(Lv){
+  for(const [c,r] of Lv.def.marks||[])Lv.mark.add(c+','+r);
   for(const [c,r] of Lv.def.frontLeaves||[])Lv.decorFront.push({t:'leaves',x:c*T+T/2,y:r*T+T/2+6});
   Lv.fallen=[];
 }
@@ -75,7 +76,25 @@ function drawBush(g,x,b,s,seed,rust){
   for(let k=0;k<6;k++){g.fillStyle=k%2?'#c9a83a':'#b88a2a';g.beginPath();g.arc(x-30*s+((k*23+seed*7)%60)*s,b-40*s+((k*13+seed)%34)*s,3.2,0,7);g.fill()}
   g.fillStyle='rgba(255,250,210,.16)';g.beginPath();g.arc(x-12*s,b-44*s,14*s,0,7);g.fill();
 }
+function inHiddenDugout(c){const dg=L.def.dugout;if(!dg||(L.dugA||0)>.5)return false;const x=c.x+c.w/2,y=c.y+c.h/2;return x>dg[0]*T&&x<(dg[1]+1)*T&&y>13*T&&y<15*T}
+function drawDugout(t){
+  const dg=L.def.dugout;if(!dg)return;const x0=dg[0]*T,x1=(dg[1]+1)*T,y0=13*T,y1=15*T,pcx=P.x+P.w/2,pcy=P.y+P.h/2;
+  const inside=pcx>x0&&pcx<x1-T*.6&&pcy>y0&&pcy<y1;L.dugA=clamp((L.dugA||0)+(inside?3:-3)*(1/60),0,1);if(L.dugA<=0)return;
+  ctx.save();ctx.globalAlpha=L.dugA;
+  ctx.fillStyle='#2a1e14';ctx.fillRect(x0,y0,x1-x0,y1-y0);
+  ctx.fillStyle='#5a4228';ctx.fillRect(x0,y0,x1-x0,7);for(let x=x0+4;x<x1-10;x+=76)ctx.fillRect(x,y0,7,y1-y0);
+  ctx.fillStyle='#4a3420';ctx.fillRect(x0,y1-5,x1-x0,5);
+  // couchette, caisse, bougie
+  ctx.fillStyle='#6a4a2c';ctx.fillRect(x0+60,y1-26,96,6);ctx.fillRect(x0+62,y1-26,5,26);ctx.fillRect(x0+148,y1-26,5,26);
+  ctx.fillStyle='#5a6448';ctx.fillRect(x0+66,y1-34,82,8);
+  ctx.fillStyle='#7a5a36';ctx.fillRect(x0+230,y1-24,30,24);ctx.fillStyle='#e8dcc0';ctx.fillRect(x0+243,y1-34,5,10);
+  const fl=.8+Math.sin(t*11)*.1+Math.sin(t*27)*.06;ctx.fillStyle='rgba(255,200,110,'+fl+')';ctx.beginPath();ctx.ellipse(x0+245.5,y1-38,2.6,4.5,0,0,7);ctx.fill();
+  const gl=ctx.createRadialGradient(x0+245,y1-38,2,x0+245,y1-38,150);gl.addColorStop(0,'rgba(255,190,100,'+(.32*fl)+')');gl.addColorStop(1,'rgba(255,190,100,0)');ctx.fillStyle=gl;ctx.fillRect(x0,y0,x1-x0,y1-y0);
+  ctx.fillStyle='#4a4a3a';ctx.beginPath();ctx.ellipse(x0+330,y0+22,13,5,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(x0+330,y0+22,10,Math.PI,0);ctx.fill();
+  ctx.restore();
+}
 function drawVerdunBack(t){
+  drawDugout(t);
   for(const h of L.hunters||[]){if(h.x<cam.x-160||h.x>cam.x+W+160)continue;
     // le chasseur, accroupi derrière les feuilles ; il se relève pour viser
     const up=h.peek*58,hx=h.x+6,hy=h.y-62-up;
@@ -244,7 +263,7 @@ function verdunTiles(g,Lv){
       c=e}}
   for(const z of Lv.zones||[]){if(z.z!=='trench')continue;
     let lo=null,hi=null;
-    for(let c=z.c0;c<=z.c1;c++)for(let r=0;r<Lv.g.length-1;r++){const ch=Lv.g[r][c];if(ch!=='#')continue;
+    for(let c=z.c0;c<=z.c1;c++)for(let r=0;r<Lv.g.length-1;r++){const ch=Lv.g[r][c];if(ch!=='#'&&!(ch==='f'&&(Lv.g[r][c+1]==='.'||Lv.g[r][c-1]==='.')))continue;
       const ol=Lv.g[r][c-1]==='.'&&r>=13,orr=Lv.g[r][c+1]==='.'&&r>=13;
       if(ol||orr){const x=c*T,y=r*T,ex=orr?x+T-14:x;g.fillStyle='#6a5034';g.fillRect(ex,y,14,T);g.strokeStyle='#4a3622';g.lineWidth=1.4;
         for(let k=0;k<6;k++){g.beginPath();g.moveTo(ex,y+k*7+3);g.quadraticCurveTo(ex+7,y+k*7+(k%2?7:-1),ex+14,y+k*7+3);g.stroke()}
@@ -297,7 +316,8 @@ function fieldsMid(L,g,wpx,R){
     if(z==='wood'){autumnTree(g,x,526,200+R()*110,R,.12);x+=34+R()*40;continue}
     if(z==='mines'){if(R()<.5){g.fillStyle='#e8e4dc';g.fillRect(x,380,4,146);for(let k=0;k<5;k++){g.fillStyle=R()<.6?'#c9a83a':'#8aa04a';g.beginPath();g.arc(x+(R()-.5)*30,380+R()*50,12,0,7);g.fill()}x+=90+R()*80}
       else{g.fillStyle='#6a5442';g.fillRect(x,486,3,40);g.strokeStyle='rgba(90,70,50,.6)';g.lineWidth=1;g.beginPath();g.moveTo(x,494);g.quadraticCurveTo(x+40,502,x+80,494);g.stroke();x+=60+R()*60}continue}
-    if(z==='monument'||z==='trench'){if(z==='monument'&&R()<.45){const w=70+R()*60,h=70+R()*40;g.fillStyle=mix('#d8cfbc','#a8c0c4',.2);g.fillRect(x,526-h,w,h);g.fillStyle=mix('#5a6470','#a8c0c4',.2);poly(g,[x-6,526-h,x+w/2,526-h-34,x+w+6,526-h]);g.fill();
+    if(z==='trench'){autumnTree(g,x,526,230+R()*110,R,.18);x+=30+R()*34;continue}
+    if(z==='monument'){if(z==='monument'&&R()<.45){const w=70+R()*60,h=70+R()*40;g.fillStyle=mix('#d8cfbc','#a8c0c4',.2);g.fillRect(x,526-h,w,h);g.fillStyle=mix('#5a6470','#a8c0c4',.2);poly(g,[x-6,526-h,x+w/2,526-h-34,x+w+6,526-h]);g.fill();
         g.fillStyle='rgba(60,70,80,.45)';for(let i=0;i<Math.floor(w/22);i++)for(let j=0;j<2;j++)g.fillRect(x+8+i*22,526-h+12+j*30,10,16);x+=w+10}
       else{autumnTree(g,x,526,150+R()*90,R,.15);x+=70+R()*70}continue}
     // champ : haies, grands arbres isolés, piquets de clôture
