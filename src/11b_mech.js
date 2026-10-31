@@ -110,7 +110,7 @@ function mechStep(dt,pcx,pcy){
   for(const o of L.gargoyles){const cyc=(G.lt+o.ph)%3.2;o.state=cyc<1.6?'idle':cyc<2.2?'warn':'jet';o.len=o.state==='jet'?Math.min(170,(cyc-2.2)*900):0}
 }
 function guardBeam(g){const ex=g.x+g.w/2+g.dir*10,ey=g.y+20;if(g.sweep>0)return{ex,ey,ang:g.sweepAng,len:250,half:.32};const base=g.dir>0?0:Math.PI;return{ex,ey,ang:base+g.look+.12*(g.dir>0?1:-1),len:250,half:.32}}
-function hiddenNow(){if(inFake())return true;if(L.zr&&zrLeaf())return true;return !!coverHere()}
+function hiddenNow(){if(P.hideIn)return true;if(inFake())return true;if(L.zr&&zrLeaf())return true;return !!coverHere()}
 function guardSees(g,pcx,pcy){
   const b=guardBeam(g),dx=pcx-b.ex,dy=pcy-b.ey,d=Math.hypot(dx,dy);
   if(d>b.len)return false;
@@ -126,7 +126,7 @@ function mechMods(){
   // la boue colle aux plumes : à peine un sautillement, plus de battement ni de vol plané, un moment encore après en être sorti
   if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.36;P.mudCoat=1.4}
   if(P.mudCoat>0)m.noFly=true;
-  if(P.stun>0||P.ride)m.noInput=true;
+  if(P.stun>0||P.ride||P.hideIn)m.noInput=true;
   return m;
 }
 function sheltered(dir){

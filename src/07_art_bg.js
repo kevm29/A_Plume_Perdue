@@ -60,6 +60,7 @@ function archWindow(g,x,y,w,h,noRad){
 /* ---------- intérieurs ---------- */
 function buildInteriorFar(L,g,wpx,hpx,R){
   const th=L.th;
+  if(th.far==='bunker'){bunkerFar(L,g,wpx,R);L.windows=[];return}
   g.fillStyle=th.wall;g.fillRect(0,0,wpx,hpx);
   if(th.far==='belfry'){
     for(let y=0;y<hpx;y+=34)for(let x=((y/34)%2)*30;x<wpx;x+=60){g.fillStyle=shade(th.wall,(R()-.5)*.12);g.fillRect(x+1,y+1,58,32)}
@@ -243,6 +244,7 @@ function buildMid(L){
   let x=40+R()*120;
   const hz=th.horizon;
   if(hz==='fields'){fieldsMid(L,g,wpx,R);x=wpx}
+  if(th.far==='bunker'){bunkerMid(L,g,wpx,R);x=wpx}
   while(x<wpx){
     const k=R();
     g.fillStyle=base;g.strokeStyle=rim;g.lineWidth=2;

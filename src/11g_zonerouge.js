@@ -29,8 +29,11 @@ function zrPost(Lv){
     (zoneOfL(Lv,c)==='trench'?Z.rondins:Z.logs).push({x0:c*T,x1:(e+1)*T,top:r*T,bot:(b+1)*T,seed:c*7+r})}}
   // l'abri allemand du Mort-Homme : un long blockhaus, une rangée de lanternes ; la dernière clignote (cachette)
   if(Lv.def.blockhaus){const[c0,c1]=Lv.def.blockhaus,x0=c0*T,x1=(c1+1)*T,b=G0*T;Z.bh={x0,x1,b,lamps:[]};
-    for(let x=x0+44;x<x1-120;x+=78){const l={x,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
-    const a={kind:'secret',style:'lamp',x:Z.bh.lamps[0].x,y:b,open:0,t:0,used:false,q:["Un nid de paille dans la lanterne : voilà pourquoi elle clignotait. Et le locataire s'en va !"]};Z.lampAct=a;Lv.acts.push(a);
+    // la porte est à gauche ; les lanternes suivent ; la dernière, tout à droite et plus haute, clignote
+    const ex=Lv.exit?Lv.exit.x+6:x0+80;for(let x=ex+110;x<x1-60;x+=78){const l={x,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
+    {const l={x:x1-26,y:b-108,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
+    if(Lv.def.exitByAct&&Lv.exit)Lv.acts.push({kind:'door',x:ex+T/2,y:b,open:0,t:0,used:false});
+    const lb=Z.bh.lamps[Z.bh.lamps.length-1],a={kind:'secret',style:'lamp',ly:lb.y+4,x:lb.x,y:b,open:0,t:0,used:false,q:["Un nid de paille dans la lanterne : voilà pourquoi elle clignotait. Et le locataire s'en va !"]};Z.lampAct=a;Lv.acts.push(a);
     for(let x=x0;x<=x1;x+=40)Lv.avoid.push(x)}
   for(const h of Z.holes)Lv.avoid.push(h.x0-30,h.x1+30);
   for(const w of Z.wires)Lv.avoid.push(w.x0,(w.x0+w.x1)/2,w.x1);
@@ -43,7 +46,7 @@ function zrStep(dt){
   // les bêtes qui tombent dans un trou d'obus n'en ressortent pas
   for(const c of L.rats){if(c.dead)continue;const h=zrHole(c.x+c.w/2);if(h&&c.y+c.h>h.wy+4){c.dead=true;if(!G.sim){splash(c.x+c.w/2,h.wy);
     if(c.kind==='boar'&&!Z.said.boar){Z.said.boar=1;say("Plouf. Le sanglier a pris le trou d'obus pour une souille. Il y restera.",3.4)}}}}
-  if(Z.bh){const l0=Z.bh.lamps[0],used=Z.lampAct.used;l0.i=used?.75:(((G.lt*7)%5<2.2||(G.lt*13)%7<1)?.75:0);
+  if(Z.bh){const l0=Z.bh.lamps[Z.bh.lamps.length-1],used=Z.lampAct.used;l0.i=used?.75:(((G.lt*7)%5<2.2||(G.lt*13)%7<1)?.75:0);
     if(used&&Z.lampAct.anim&&!Z.decoy){Z.decoy={x:l0.x,y:Z.bh.b-96,t:0};if(!G.sim){SFX.caw();bubble(l0.x,Z.bh.b-120,'KRA !','#2a2420')}
       const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Les corbeaux, eux, ne disent jamais merci.",3.6),500)}}}
   if(Z.decoy){const d=Z.decoy;d.t+=dt;d.x-=560*dt;d.y-=Math.min(80,40+d.t*30)*dt;if(d.x<cam.x-900)Z.decoy=null}
@@ -195,11 +198,11 @@ function drawBlockhaus(g,B,t){
   // un coin éclaté, fers rouillés
   g.fillStyle='#5e5a52';poly(g,[x0,b-h,x0+34,b-h,x0+22,b-h+18,x0+8,b-h+30,x0,b-h+26]);g.fill();g.strokeStyle='#8a4a22';g.lineWidth=1.6;for(let k=0;k<3;k++){g.beginPath();g.moveTo(x0+6+k*9,b-h+6);g.quadraticCurveTo(x0+2+k*9,b-h-6,x0-4+k*11,b-h-14);g.stroke()}
   // meurtrières
-  for(const mx of[x0+150,x0+330]){g.fillStyle='#1a1814';g.fillRect(mx,b-h+40,70,10);g.fillStyle='#6a6458';g.fillRect(mx-4,b-h+36,78,4);g.fillStyle='rgba(120,60,30,.6)';g.fillRect(mx+4,b-h+50,62,2)}
+  for(const mx of[x0+250,x0+410]){g.fillStyle='#1a1814';g.fillRect(mx,b-h+40,70,10);g.fillStyle='#6a6458';g.fillRect(mx-4,b-h+36,78,4);g.fillStyle='rgba(120,60,30,.6)';g.fillRect(mx+4,b-h+50,62,2)}
   // le nom laissé à la peinture, presque effacé
-  g.fillStyle='rgba(30,28,24,.32)';g.font='bold 15px '+F_DISP;g.textAlign='center';g.fillText('TOTER MANN',x0+240,b-h+28);
-  // plaque de l'ONF
-  g.fillStyle='#7a4b2a';rr(g,ex-170,b-58,110,30,2);g.fill();g.strokeStyle='#f4ede0';g.lineWidth=1;rr(g,ex-167,b-55,104,24,2);g.stroke();g.fillStyle='#f4ede0';g.font='bold 7px '+F_DISP;g.fillText('ABRI ALLEMAND 1916',ex-115,b-45);g.font='italic 6px '+F_BODY;g.fillText('Le Mort-Homme · zone rouge',ex-115,b-36);
+  g.fillStyle='rgba(30,28,24,.32)';g.font='bold 15px '+F_DISP;g.textAlign='center';g.fillText('TOTER MANN',x0+300,b-h+28);
+  // plaque de l'ONF, à droite de la porte
+  g.fillStyle='#7a4b2a';rr(g,ex+66,b-58,110,30,2);g.fill();g.strokeStyle='#f4ede0';g.lineWidth=1;rr(g,ex+69,b-55,104,24,2);g.stroke();g.fillStyle='#f4ede0';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText('ABRI ALLEMAND 1916',ex+121,b-45);g.font='italic 6px '+F_BODY;g.fillText('Le Mort-Homme · zone rouge',ex+121,b-36);
   // la porte : marches, porte d'acier entrouverte, lumière dedans
   g.fillStyle='#2a2620';g.fillRect(ex-6,b-78,T+12,78);const lg=g.createLinearGradient(0,b-78,0,b);lg.addColorStop(0,'rgba(255,200,120,.5)');lg.addColorStop(1,'rgba(255,170,90,.25)');g.fillStyle=lg;g.fillRect(ex,b-72,T,72);
   g.fillStyle='#4a4e4c';poly(g,[ex+T,b-72,ex+T+14,b-76,ex+T+14,b+2,ex+T,b]);g.fill();g.fillStyle='#6a6e6a';g.fillRect(ex-10,b-84,T+20,8);
@@ -207,5 +210,5 @@ function drawBlockhaus(g,B,t){
   B.lamps.forEach((l,k)=>{const on=l.i>.1;g.fillStyle='#2a2a2a';g.fillRect(l.x-1.5,l.y-14,3,10);g.fillRect(l.x-6,l.y-18,12,4);
     g.fillStyle=on?'#ffd88a':'#5a5040';rr(g,l.x-5,l.y-4,10,13,2);g.fill();g.strokeStyle='#2a2a2a';g.lineWidth=1.4;g.strokeRect(l.x-5,l.y-4,10,13);
     if(on){const gl=g.createRadialGradient(l.x,l.y+3,1,l.x,l.y+3,34);gl.addColorStop(0,'rgba(255,210,130,.45)');gl.addColorStop(1,'rgba(255,210,130,0)');g.fillStyle=gl;g.beginPath();g.arc(l.x,l.y+3,34,0,7);g.fill()}
-    if(k===0&&!L.zr.lampAct.used){g.strokeStyle='#e0b04e';g.lineWidth=1;for(let j=0;j<3;j++){g.beginPath();g.moveTo(l.x-4+j*4,l.y-18);g.lineTo(l.x-5+j*4+(j%2)*3,l.y-24);g.stroke()}}});
+    if(k===B.lamps.length-1&&!L.zr.lampAct.used){g.strokeStyle='#e0b04e';g.lineWidth=1;for(let j=0;j<3;j++){g.beginPath();g.moveTo(l.x-4+j*4,l.y-18);g.lineTo(l.x-5+j*4+(j%2)*3,l.y-24);g.stroke()}}});
 }

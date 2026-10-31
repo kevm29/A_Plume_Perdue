@@ -92,6 +92,7 @@ function drawSweeper(g,K,t){
 }
 /* plateformes mobiles supplémentaires */
 function drawMechMover(g,m,t){
+  if(L.musee&&m.kind==='dolly'){drawTrolley(g,m,t);return true}
   if(m.kind==='tram'){
     const x=m.x,y=m.y,w=m.w;g.save();
     g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x+6,y+86,w-12,6);
