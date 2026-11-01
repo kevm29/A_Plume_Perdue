@@ -116,7 +116,7 @@ function gareStep(dt){
     if(Math.abs(pcx-p.x)<60&&P.y+P.h<F-60&&P.y+P.h>F-260&&p.cool<=0){p.wave=.9;p.cool=1.4;if(!G.sim){bubble(p.x,F-150,pick(["Hé ! Sale bête !","Pas sur moi !","Ouste !","Beurk !"]),'#2a3a5a');if(!S2.said.wave){S2.said.wave=1;setTimeout(()=>say("Ils battent des bras comme des sémaphores. Surtout, ne pas les toucher, ni eux ni leurs malles.",3.4),700)}}}
   }
   // les pigeons du square
-  for(const o of S2.pig){o.t+=dt;o.cool=Math.max(0,o.cool-dt);
+  for(const o of S2.pig){o.t+=dt;o.cool=Math.max(0,o.cool-dt);o.spit=Math.max(0,(o.spit||0)-dt);
     if(o.st==='flee'){o.vy-=400*dt;o.y+=o.vy*dt;o.x+=o.f*160*dt;continue}
     const dx=pcx-o.x,near=Math.abs(dx);
     if(o.k==='gros'){// marche un peu, puis vole de A à B, toujours le même trajet
@@ -127,15 +127,15 @@ function gareStep(dt){
       if(near<320&&P.y+P.h>F-120){o.st='run';o.f=Math.sign(dx)||1;o.x+=o.f*205*dt}else{o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*25*dt}
       o.x=clamp(o.x,(D.park[0]+2)*T,(D.park[1]-2)*T);if(near<160&&!S2.said.dep&&!G.sim){S2.said.dep=1;bubble(o.x,F-40,'Kroûû !','#6a4a4a')}}
     else{// le pigeon aux moignons : il s'arrête et mendie ; si on le survole, il crache une graine
-      if(near<130){o.st='beg';o.f=Math.sign(dx)||1;if(o.beg<=0&&!G.sim){o.beg=3;bubble(o.x,F-44,pick(["Une graine, pour un ancien combattant ?","Pitié, camarade…","Rien qu'une miette…"]),'#6a5a48')}}
+      if(near<230&&P.y+P.h>F-260){o.st='beg';o.f=Math.sign(dx)||1;if(o.beg<=0&&!G.sim){o.beg=2.6;bubble(o.x,F-44,pick(["Une graine, pour un ancien combattant ?","Pitié, camarade…","Rien qu'une miette…"]),'#6a5a48')}}
       else{o.st='walk';o.f=Math.sin(o.t*.4)>0?1:-1;o.x+=o.f*14*dt;o.x=clamp(o.x,o.home-120,o.home+120)}
       o.beg=Math.max(0,o.beg-dt);
-      if(near<30&&P.y+P.h<F-30&&!P.onGround&&o.cool<=0&&!P.dead){o.cool=2;S2.seeds.push({x:o.x,y:F-20});if(!G.sim){noise(.08,2600,.15,'bandpass');bubble(o.x,F-40,'Ptou !','#6a5a48')}}}
+      if(near<46&&P.y+P.h<F-24&&!P.onGround&&o.cool<=0&&!P.dead){o.cool=2;S2.seeds.push({x:o.x+o.f*8,y:F-30});o.spit=.35;if(!G.sim){noise(.08,2600,.15,'bandpass');bubble(o.x,F-40,'Ptou !','#6a5a48')}}}
     if(!P.dead&&o.k!=='moignon'&&overlap(hb,{x:o.x-(o.k==='gros'?16:12),y:o.y-(o.k==='gros'?30:24),w:o.k==='gros'?32:24,h:o.k==='gros'?28:22}))G.gareHit=o.k==='gros'?'pigeonGros':'pigeonDeplume'}
   S2.pig=S2.pig.filter(o=>o.y>-200);
   // la graine crachée ne rate jamais sa cible
   for(let i=S2.seeds.length-1;i>=0;i--){const s=S2.seeds[i],tx=pcx,ty=P.y+P.h/2,d=Math.hypot(tx-s.x,ty-s.y)||1;s.x+=(tx-s.x)/d*520*dt;s.y+=(ty-s.y)/d*520*dt;
-    if(d<10){S2.seeds.splice(i,1);if(!P.dead)G.gareHit='graine'}else if(P.dead)S2.seeds.splice(i,1)}
+    if(d<10){S2.seeds.splice(i,1);if(!G.sim)puff(tx,ty,4,false);if(!P.dead)G.gareHit='graine'}else if(P.dead)S2.seeds.splice(i,1)}
 }
 function gareAfterMove(){if(G.gareHit){const k=G.gareHit;G.gareHit=null;return k}return null}
 /* la bille, au square : tous les pigeons s'envolent */
@@ -385,7 +385,7 @@ function drawColbertFigure(g,cx,base){
 }
 function drawUglyPigeon(g,o,t){
   const x=o.x,y=o.y,f=o.f,k=o.k,fly=o.st==='fly'||o.st==='flee';g.save();g.translate(x,y);g.scale(f,1);
-  const big=k==='gros'?1.4:k==='moignon'?.9:1,hb=o.st==='run'||o.st==='walk'?Math.sin(t*(o.st==='run'?24:12))*2:0;g.scale(big,big);
+  const big=k==='gros'?1.4:k==='moignon'?1.15:1,hb=o.st==='run'||o.st==='walk'?Math.sin(t*(o.st==='run'?24:12))*2:0;g.scale(big,big);
   if(fly){const fl=Math.sin(t*28)*10;g.fillStyle=k==='gros'?'#5a6070':'#8a8a8a';poly(g,[-4,-14,-16,-28-fl,4,-16]);g.fill()}
   // pattes : moignons ou pattes rouges
   if(!fly){g.strokeStyle='#b4454c';g.lineWidth=2;if(k==='moignon'){g.beginPath();g.moveTo(-2,-8);g.lineTo(-2,-3);g.moveTo(3,-8);g.lineTo(4+Math.max(0,Math.sin(t*3))*2,0);g.stroke();g.fillStyle='#b4454c';g.beginPath();g.arc(-2,-3,2,0,7);g.fill()}
@@ -401,6 +401,9 @@ function drawUglyPigeon(g,o,t){
   g.fillStyle='#3a3836';poly(g,[hx+4,hy-1,hx+8,hy+.5,hx+4,hy+1.5]);g.fill();
   g.fillStyle=k==='gros'?'#e83a1a':'#d97a2a';g.beginPath();g.arc(hx+1,hy-1,1.8,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.arc(hx+1.3,hy-1,.8,0,7);g.fill();
   if(k==='gros'){g.strokeStyle='#111';g.lineWidth=1.2;g.beginPath();g.moveTo(hx-2,hy-4);g.lineTo(hx+3,hy-2.5);g.stroke()}
+  if(k==='moignon'&&o.st==='beg'){// l'aile tendue comme une main, la tête qui implore
+    g.fillStyle='#9a9ea6';g.save();g.translate(4,-16);g.rotate(-1.1+Math.sin(t*5)*.2);g.beginPath();g.ellipse(9,0,10,4,0,0,7);g.fill();g.strokeStyle='#5a5e66';g.lineWidth=1;for(let i=0;i<3;i++){g.beginPath();g.moveTo(12+i*2,-3);g.lineTo(18+i*2,0);g.stroke()}g.restore();}
+  if(k==='moignon'&&o.spit>0){g.fillStyle='#4a1a1a';g.beginPath();g.arc(hx+5,hy+.5,2,0,7);g.fill()}
   if(k==='moignon'&&o.st==='beg'){g.fillStyle='rgba(150,190,230,.8)';g.beginPath();g.ellipse(hx+1,hy+3+(t*2%1)*4,1,1.6,0,0,7);g.fill()}
   g.restore();
 }
