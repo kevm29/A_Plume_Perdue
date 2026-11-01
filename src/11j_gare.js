@@ -180,7 +180,7 @@ function drawGareMid(t){
   for(const p of S2.pass)if(vis(p.x-60,p.x+60))drawPassant(g,p,F,t);
   // la route : elle file dans la profondeur ; passage piéton au premier plan ; un camion qui arrive, une voiture qui s'en va
   {const[r0,r1]=D.road,a=r0*T,b=(r1+1)*T;if(vis(a-200,b+200)){const vx=(a+b)/2,HZ=404;
-      drawStreetGap(g,a,b,vx,HZ,F,t);
+      drawStreetGap(g,a,b,vx,HZ,F,t);drawStreetFront(g,a,b,F);
       drawTramStop(g,(r0-3)*T,F,t);
       for(const ln of S2.lanes)if(ln.st!=='idle')drawLaneVehicle(g,ln,vx,HZ,F,t)}}
   if(S2.van.on)drawGareVehicle(g,S2.van,t);
@@ -268,11 +268,24 @@ function drawStreetGap(g,a,b,vx,HZ,F,t){
     g.fillStyle='#cfc8b8';poly(g,[xn,F,xf,HZ,xf-sd*14,HZ,xn-sd*40,F]);g.fill();
     // un arbre d'alignement au premier plan
     const tx=xn-sd*22;g.fillStyle='#4a3424';g.fillRect(tx-3,F-70,6,70);g.fillStyle='#4a7a3a';g.beginPath();g.ellipse(tx,F-96,26,34,0,0,7);g.fill();g.fillStyle='rgba(255,255,255,.1)';g.beginPath();g.ellipse(tx-8,F-110,10,8,0,0,7);g.fill()}
+  // les deux immeubles d'angle, de face : la rue s'ouvre entre eux
+  for(const sd of[-1,1]){const x0=sd<0?L0-170:R0,x1=sd<0?L0:R0+170,yt=top;
+    g.fillStyle=sd<0?'#e8dfca':'#ddd2bb';g.fillRect(x0,yt,x1-x0,F-yt);g.fillStyle='#5e6474';poly(g,[x0-6,yt,x0+8,yt-24,x1-8,yt-24,x1+6,yt]);g.fill();
+    g.fillStyle='#d2c6ae';g.fillRect(x0-4,yt,x1-x0+8,6);g.fillRect(x0,yt+60,x1-x0,3);
+    for(let f=0;f<4;f++)for(let k=0;k<4;k++){const wx=x0+16+k*40,wy=yt+16+f*46;if(wy>F-90)continue;g.fillStyle='#4a5a6a';g.fillRect(wx,wy,18,30);g.fillStyle='#2a2a2a';g.fillRect(wx-3,wy+30,24,3);g.fillStyle='rgba(255,255,255,.15)';g.fillRect(wx+2,wy+2,4,26)}
+    g.fillStyle=sd<0?'#7a2a2a':'#2a4a5a';g.fillRect(x0+6,F-74,x1-x0-12,12);g.fillStyle='#f0e6cc';g.font='bold 9px '+F_DISP;g.textAlign='center';g.fillText(sd<0?'BRASSERIE':'PHARMACIE',(x0+x1)/2,F-65);
+    g.fillStyle='rgba(60,70,84,.85)';g.fillRect(x0+12,F-58,x1-x0-24,52);g.fillStyle='rgba(255,230,180,.25)';g.fillRect(x0+16,F-54,x1-x0-32,44);
+    g.fillStyle='rgba(0,0,0,.12)';g.fillRect(sd<0?x1-8:x0,yt,8,F-yt)}
   // la chaussée, sa ligne médiane, le passage piéton au premier plan
   g.fillStyle='#55575d';poly(g,[L0+40,F,vx-fx+14,HZ,vx+fx-14,HZ,R0-40,F]);g.fill();
   g.fillStyle='rgba(0,0,0,.12)';poly(g,[L0+40,F,vx-fx+14,HZ,vx-fx+30,HZ,L0+90,F]);g.fill();
   g.fillStyle='rgba(240,240,232,.9)';for(let k=0;k<8;k++){const u0=1-1/(1+k*.55),u1=1-1/(1+(k+.5)*.55),y0=F+(HZ-F)*u0,y1=F+(HZ-F)*u1,w0=3*(1-u0)+.5,w1=3*(1-u1)+.5;poly(g,[vx-w0,y0,vx+w0,y0,vx+w1,y1,vx-w1,y1]);g.fill()}
   g.fillStyle='rgba(240,240,232,.85)';for(let x=L0+52;x<R0-60;x+=34)poly(g,[x,F,x+18,F,x+20,F-8,x+4,F-8]),g.fill();
+}
+/* devant les tuiles : le passage piéton peint sur la chaussée, les bordures de granit */
+function drawStreetFront(g,a,b,F){
+  g.fillStyle='rgba(244,242,234,.92)';for(let x=a+20;x<b-30;x+=36){g.fillRect(x,F,20,6);poly(g,[x,F,x+20,F,x+20+DX*.6,F+DY*.6,x+DX*.6,F+DY*.6]);g.fill()}
+  for(const x of[a,b]){g.fillStyle='#bdb8ac';g.fillRect(x-4,F-6,8,46);g.fillStyle='#d8d4c8';g.fillRect(x-4,F-6,8,3)}
 }
 function drawLaneVehicle(g,ln,vx,HZ,F,t){
   const u=Math.min(1,ln.t/ln.d),lx=(ln.c0+ln.c1+1)/2*T,w0=(ln.c1-ln.c0+1)*T-12;let k,dy=0,al=1,s;
