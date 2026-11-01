@@ -193,7 +193,7 @@ function drawSpikes(g,ch,x,y,cc,r,th){
     for(let i=0;i<3;i++){g.beginPath();g.ellipse(x+7+i*13,(top+bot)/2,8,(bot-top)/2-2,0,0,7);g.stroke()}
     g.strokeStyle='#5a5a54';for(let i=0;i<8;i++){const bx=x+h01(cc*8+i,r)*T,byy=top+h01(r*8+i,cc)*(bot-top);g.beginPath();g.moveTo(bx-2,byy-2);g.lineTo(bx+2,byy+2);g.moveTo(bx+2,byy-2);g.lineTo(bx-2,byy+2);g.stroke()}
   }else if(k==='spikes'){
-    g.fillStyle='#8a8e96';g.fillRect(x,by,T,5);g.strokeStyle='#c8ccd4';g.lineWidth=1.3;
+    g.fillStyle=th.spikeBase||'#8a8e96';g.fillRect(x,by,T,5);g.strokeStyle=th.spikeCol||'#c8ccd4';g.lineWidth=th.spikeCol?1.8:1.3;
     for(let i=0;i<9;i++){const px=x+3+i*4.3,a=(i-4)*.07;g.beginPath();g.moveTo(px,up?by:by+5);g.lineTo(px+Math.sin(a)*22*(up?1:-1),up?by-22:by+27);g.stroke()}
   }else if(k==='glass'){
     for(let i=0;i<5;i++){const px=x+4+i*8,h=8+((cc+i*5+r)%4)*4;g.fillStyle=i%2?'rgba(170,210,190,.75)':'rgba(200,225,235,.7)';poly(g,[px-4,y+T,px+(i%2?3:-2),y+T-h-6,px+5,y+T]);g.fill()}

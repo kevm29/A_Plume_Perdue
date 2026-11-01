@@ -42,7 +42,7 @@ function drawEntities(t){
   if(L.carton&&L.carton.state!=='hold'&&L.carton.state)drawCarton(ctx,L.carton);
   else if(L.carton&&L.carton.state==='hold')drawCarton(ctx,L.carton);
   if(G.cut&&G.cut.thief.state!=='out'){const th2=G.cut.thief;if(th2.state!=='gone')drawThief(ctx,th2.x,L.dome.floor,G.t,{f:th2.f,head:th2.head,alpha:th2.alpha,pose:th2.state==='walk'?'walk':th2.state==='open'?'reach':th2.state==='oops'?'oops':th2.state==='look'?'look':th2.state==='sneak'||th2.state==='exit'?'sneak':'stand',lamp:th2.state!=='oops'})}
-  ctx.save();ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=0;
+  ctx.save();if(L.train){ctx.shadowColor='rgba(0,0,0,.18)';ctx.shadowOffsetX=2;ctx.shadowOffsetY=2;ctx.shadowBlur=2}else{ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=0}
   for(const c of L.rats)if(vis(c.x)&&!inHiddenDugout(c))drawWalker(ctx,c.kind,c.x+c.w/2,c.y+c.h,Math.sign(c.vx)||1,c.t);
   const K=L.chaser;
   if(K){

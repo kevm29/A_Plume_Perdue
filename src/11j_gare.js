@@ -8,7 +8,7 @@
    de Colbert (une bille au lieu d'une fiente), trois sortes de pigeons de ville ; la bille les fait tous fuir.
    ========================================================= */
 THEMES.gare={outdoor:true,far:'gareReims',horizon:'gareReims',sky:['#78a8d8','#bcd4e8','#eee6d2'],celestial:'none',fog:'#c8d0d6',dark:0,weather:'none',
-  floor:'#7a746a',floorTop:'#a8a090',type:'platform',x:'luggage',d:'drape',shelf:'girder',spike:'spikes',walker:'rat',flyer:'crow',awning:'#b8302a',
+  floor:'#7a746a',floorTop:'#a8a090',type:'platform',x:'luggage',d:'drape',shelf:'girder',spike:'spikes',spikeCol:'#3a3e46',spikeBase:'#2a2c32',walker:'rat',flyer:'crow',awning:'#b8302a',
   props:['bench','clockPost','vending']};
 const GR={FL:12*T};
 
@@ -76,6 +76,7 @@ function garePost(Lv){
   const mv=(kind,w,h)=>{const m={axis:'g',kind,x:-9999,y:99999,w,h:14,vh:h,dx:0,dy:0,t:0,speed:0,a0:0,a1:0,on:false,dir:-1};Lv.movers.push(m);return m};
   const S2={van:mv('van',168,82),truck:mv('truck2',150,176),car:mv('car',116,90),vanT:2.5,warn:0,pass:[],pig:[],seeds:[],said:{},fled:false};
   Lv.gare=S2;
+  S2.hang=[];for(let r=0;r<Lv.g.length;r++)for(let c=0;c<Lv.w;c++)if(Lv.g[r][c]==='v')S2.hang.push([c,r]);
   S2.lanes=[{m:S2.truck,k:'truck',c0:D.road[0]+2,c1:D.road[0]+7,st:'idle',t:0,d:.6},{m:S2.car,k:'car',c0:D.road[0]+11,c1:D.road[0]+15,st:'idle',t:0,d:1.8}];
   // les voyageurs du parvis
   const kinds=['valise','sac','costume','touriste','valise'];
@@ -162,6 +163,8 @@ function drawGareMid(t){
   for(const[c0,c1]of D.cart){const x0=c0*T,x1=(c1+1)*T;if(!vis(x0,x1))continue;g.fillStyle='#3a3e46';g.fillRect(x0,F-82,x1-x0,6);g.fillRect(x0,F-16,x1-x0,6);g.fillRect(x0+4,F-82,4,70);
     for(let k=0;k<3;k++){g.fillStyle=['#6a3a2a','#2a4a6a','#8a6a3a'][k];rr(g,x0+8+k*22,F-76+k%2*6,22,60-k%2*6,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x0+12+k*22,F-70+k%2*6,14,3)}
     g.fillStyle='#1e1e22';for(const wx of[x0+12,x1-12]){g.beginPath();g.arc(wx,F-6,6,0,7);g.fill()}}
+  // les pics suspendus tiennent à une tige accrochée à la verrière
+  for(const[c,r]of S2.hang){const x=c*T+T/2;if(vis(x,x)){g.fillStyle='#3a3e46';g.fillRect(x-1,40,2,r*T-40);g.fillRect(x-6,40,12,3)}}
   // les valises de la file (sur leurs cases) et les buissons du square
   {const v=(c,r,w,h,col,kind)=>{const x=c*T,y=(r+1)*T;if(!vis(x,x+T))return;g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(x+T/2,y,w/2+4,3,0,0,7);g.fill();g.fillStyle=col;
       if(kind==='roll'){rr(g,x+T/2-w/2,y-h,w,h,5);g.fill();g.fillStyle='rgba(0,0,0,.18)';for(let k=1;k<4;k++)g.fillRect(x+T/2-w/2+k*w/4,y-h+4,2,h-8);g.fillStyle='#2a2a2e';g.fillRect(x+T/2-8,y-h-12,2,12);g.fillRect(x+T/2+6,y-h-12,2,12);g.fillRect(x+T/2-8,y-h-14,16,3);g.beginPath();g.arc(x+T/2-w/2+5,y-2,3,0,7);g.arc(x+T/2+w/2-5,y-2,3,0,7);g.fill()}
@@ -207,7 +210,7 @@ function drawShop(g,[c0,c1],label,col,t){
 function drawKiosk(g,[c0,c1],t){
   const x0=c0*T,x1=(c1+1)*T,top=7*T,F=GR.FL;if(x1<cam.x-100||x0>cam.x+W+100)return;
   g.fillStyle='#2a4a3a';g.fillRect(x0,top,x1-x0,F-top);g.fillStyle='#1e3a2c';g.fillRect(x0-8,top-6,x1-x0+16,24);g.fillStyle='#e8d070';g.font='bold 12px '+F_DISP;g.textAlign='center';g.fillText('PRESSE',(x0+x1)/2,top+11);
-  const R=mulberry(c0);for(let row=0;row<3;row++)for(let k=0;k<5;k++){const x=x0+10+k*36,y=top+30+row*42;g.fillStyle=pick(['#ece8dc','#f0e0d0','#e0e8f0','#f4ecc8']);g.fillRect(x,y,28,36);g.fillStyle=pick(['#c8302a','#2a4a8a','#2a2a2a']);g.fillRect(x+2,y+2,24,6);g.fillStyle='rgba(40,40,40,.35)';for(let j=0;j<4;j++)g.fillRect(x+3,y+12+j*5,22,2)}
+  const R=mulberry(c0),pk=a=>a[Math.floor(R()*a.length)];for(let row=0;row<3;row++)for(let k=0;k<5;k++){const x=x0+10+k*36,y=top+30+row*42;g.fillStyle=pk(['#ece8dc','#f0e0d0','#e0e8f0','#f4ecc8']);g.fillRect(x,y,28,36);g.fillStyle=pk(['#c8302a','#2a4a8a','#2a2a2a']);g.fillRect(x+2,y+2,24,6);g.fillStyle='rgba(40,40,40,.35)';for(let j=0;j<4;j++)g.fillRect(x+3,y+12+j*5,22,2)}
   g.fillStyle='#2a2a2a';g.font='bold 5px '+F_DISP;g.fillText("L'UNION",x0+24,top+36);g.fillStyle='#c8302a';g.fillRect(x0,F-34,x1-x0,6);
 }
 function drawBuffet(g,[c0,c1],t){

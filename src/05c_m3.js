@@ -57,7 +57,7 @@ LEVELS.push((()=>{
   const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
   /* --- le quai --- */
   put(3,11,'S');put(14,11,'k');put(10,11,'|');put(18,11,'|');
-  box(20,24,10,11,'#');                                  // la camionnette de vidange
+  box(20,24,10,11,'X');                                  // la camionnette de vidange
   put(28,11,'C');
   box(40,41,10,11,'X');box(56,57,10,11,'X');box(70,71,10,11,'X');   // chariots à bagages : on s'y réfugie
   for(let c=53;c<=61;c++)put(c,6,'=');put(54,5,'^');put(55,5,'^');put(59,5,'^');put(60,5,'^');put(57,3,'v');   // une poutre de la verrière, ses pics anti-pigeons, le nid au milieu
@@ -66,11 +66,11 @@ LEVELS.push((()=>{
   put(77,11,'C');
   /* --- la file, la sandwicherie, le kiosque, le buffet --- */
   put(81,11,'X');put(84,11,'X');box(86,86,10,11,'X');
-  box(88,94,8,11,'#');put(90,7,'^');put(91,7,'^');put(93,5,'v');
-  box(97,101,7,11,'#');put(99,6,'^');put(101,4,'v');
+  box(88,94,8,11,'X');put(90,7,'^');put(91,7,'^');put(93,5,'v');
+  box(97,101,7,11,'X');put(99,6,'^');put(101,4,'v');
   put(103,11,'k');
   put(103,9,'A');put(104,9,'A');
-  box(105,112,6,11,'#');put(108,5,'^');put(110,5,'^');put(111,2,'v');
+  box(105,112,6,11,'X');put(108,5,'^');put(110,5,'^');put(111,2,'v');
   for(let c=114;c<=115;c++)put(c,10,'=');
   put(93,4,'m');put(113,5,'m');
   corn([82,9],[86,8],[92,6],[96,9],[99,4],[102,10],[104,6],[107,4],[111,4],[115,8]);
