@@ -7201,7 +7201,8 @@ function drawColbertFigure(g,cx,base){
   // le jabot de dentelle
   g.fillStyle=B3;g.beginPath();g.moveTo(-6,-90);g.lineTo(6,-90);g.lineTo(3,-80);g.lineTo(-3,-80);g.closePath();g.fill();g.fillStyle=B2;for(let k=0;k<3;k++)g.fillRect(-4,-88+k*3,8,1);
   // la grande perruque bouclée, qui tombe sur les épaules
-  g.fillStyle=B0;for(const[x,y,r]of[[-12,-90,5],[12,-90,5],[-13,-96,5],[13,-96,5],[-12,-103,5.5],[12,-103,5.5],[-9,-110,5.5],[9,-110,5.5],[-4,-114,5.5],[4,-114,5.5]]){g.beginPath();g.arc(x,y,r,0,7);g.fill()}
+  g.fillStyle=B0;g.beginPath();g.ellipse(0,-102,13,15,0,0,7);g.fill();g.fillRect(-15,-100,30,12);   // le volume de la perruque, sans jour entre les boucles et le visage
+  for(const[x,y,r]of[[-12,-90,5],[12,-90,5],[-13,-96,5],[13,-96,5],[-12,-103,5.5],[12,-103,5.5],[-9,-110,5.5],[9,-110,5.5],[-4,-114,5.5],[4,-114,5.5]]){g.beginPath();g.arc(x,y,r,0,7);g.fill()}
   g.fillStyle=B1;for(const[x,y]of[[-12,-92],[12,-92],[-12,-100],[12,-100],[-8,-108],[8,-108],[0,-114]]){g.beginPath();g.arc(x,y,2.4,0,7);g.fill()}
   // le visage : front, nez, menton
   g.fillStyle=B2;g.beginPath();g.ellipse(0,-100,6.5,9,0,0,7);g.fill();g.fillStyle=B3;g.fillRect(-1,-102,2,6);g.fillStyle=B1;g.fillRect(-4,-104,3,1.2);g.fillRect(1.5,-104,3,1.2);g.fillRect(-2,-94,4,1);
