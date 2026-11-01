@@ -108,7 +108,7 @@ function gareStep(dt){
       else if(ln.st==='leave'&&ln.t>ln.d)next('idle',ln.k==='truck'?1.2+rnd()*1.6:1+rnd()*1.4);
       m.dx=0;if(ln.st==='at')hitVeh(m,'voiture')}}
   // les voyageurs à valise : ils vont et viennent ; si on les survole, ils battent des bras
-  const [p0,p1]=[123*T,157*T];
+  const [p0,p1]=[126*T,152*T];   // ils ne vont ni sur le cartel du parvis ni derrière l'immeuble d'angle
   for(const p of S2.pass){p.x+=p.dir*p.sp*dt;if(p.x<p0){p.x=p0;p.dir=1}if(p.x>p1){p.x=p1;p.dir=-1}p.wave=Math.max(0,p.wave-dt);p.cool=Math.max(0,p.cool-dt);
     if(P.dead)continue;
     const body={x:p.x-11,y:F-100,w:22,h:100},bag={x:p.x-p.dir*30-11,y:F-40,w:22,h:40};
@@ -125,15 +125,25 @@ function gareStep(dt){
       else if(u<5.5){o.st='walk';o.x=B+Math.sin((u-3.5)*1.6)*14;o.y=F;o.f=-1}else{o.st='fly';const v=(u-5.5)/1.5;o.x=B+(A-B)*v;o.y=F-Math.sin(v*Math.PI)*150;o.f=-1}}
     else if(o.k==='deplume'){// court vers Raymond, ne vole pas
       if(near<320&&P.y+P.h>F-120){o.st='run';o.f=Math.sign(dx)||1;o.x+=o.f*205*dt}else{o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*25*dt}
-      o.x=clamp(o.x,(D.park[0]+2)*T,(D.park[1]-2)*T);if(near<160&&!S2.said.dep&&!G.sim){S2.said.dep=1;bubble(o.x,F-40,'Kroûû !','#6a4a4a')}}
+      o.x=clamp(o.x,o.home-7*T,o.home+7*T);if(near<160&&!S2.said.dep&&!G.sim){S2.said.dep=1;bubble(o.x,F-40,'Kroûû !','#6a4a4a')}}
     else{// le pigeon aux moignons : il boitille de gauche à droite et demande l'aumône ; inoffensif
       o.st='walk';o.f=Math.sin(o.t*.4)>0?1:-1;o.x+=o.f*16*dt;o.x=clamp(o.x,o.home-120,o.home+120);
       o.beg=Math.max(0,o.beg-dt);if(near<230&&o.beg<=0&&!G.sim){o.beg=2.8;bubble(o.x,F-44,pick(["Une graine, pour un ancien combattant ?","Pitié, camarade…","Rien qu'une miette…"]),'#6a5a48')}}
     if(!P.dead&&o.k!=='moignon'&&overlap(hb,{x:o.x-(o.k==='gros'?16:12),y:o.y-(o.k==='gros'?30:24),w:o.k==='gros'?32:24,h:o.k==='gros'?28:22}))G.gareHit=o.k==='gros'?'pigeonGros':'pigeonDeplume'}
   S2.pig=S2.pig.filter(o=>o.y>-200);
+  if(S2.grace>0){S2.grace-=dt;G.gareHit=null}
   // la graine crachée ne rate jamais sa cible
   for(let i=S2.seeds.length-1;i>=0;i--){const s=S2.seeds[i],tx=pcx,ty=P.y+P.h/2,d=Math.hypot(tx-s.x,ty-s.y)||1;s.x+=(tx-s.x)/d*520*dt;s.y+=(ty-s.y)/d*520*dt;
     if(d<10){S2.seeds.splice(i,1);if(!G.sim)puff(tx,ty,4,false);if(!P.dead)G.gareHit='graine'}else if(P.dead)S2.seeds.splice(i,1)}
+}
+/* au retour sur un cartel : deux secondes de répit, et personne n'attend Raymond dessus */
+function gareRespawn(){
+  const S2=L.gare;if(!S2)return;S2.grace=2;const cx=P.cp.x;
+  if(S2.van.on)gareVehicleSet(S2.van,-9999,false);S2.vanT=Math.max(S2.vanT,3);S2.warn=0;
+  for(const ln of S2.lanes){if(ln.st!=='idle'){ln.st='idle';ln.t=0;gareVehicleSet(ln.m,-9999,false)}ln.d=1.5}
+  for(const o of S2.pig)if(o.k==='deplume'){o.x=o.home;o.st='walk'}
+  for(const p of S2.pass)if(Math.abs(p.x-cx)<220)p.x=clamp(cx+(p.x<cx?-1:1)*240,126*T,152*T);
+  S2.seeds.length=0;
 }
 function gareAfterMove(){if(G.gareHit){const k=G.gareHit;G.gareHit=null;return k}return null}
 /* la bille, au square : tous les pigeons s'envolent */

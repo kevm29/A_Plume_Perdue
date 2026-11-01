@@ -113,8 +113,12 @@ function trainStep(dt){
       setTimeout(()=>bubble(Tn.loco+17*T,TRN.ROOF-40,"« …notre train entre en gare de R… »",'#3a4a6a'),1200);
       setTimeout(()=>say("En gare de quoi ? Le vent a mangé la moitié du nom.",3.4),3400)}}
 }
+/* au retour sur un cartel : un court répit, pas de pylône sur le nez */
+function trainRespawn(){const Tn=L.train;Tn.grace=1.8;Tn.pyl=Tn.pyl.filter(p=>Math.abs(p.x-P.x)>900);Tn.spawnT=Math.max(Tn.spawnT,2.4);Tn.proj.length=0;
+  for(const b of Tn.bottles)if(Math.abs(b.x-P.x)<90)b.x=clamp(P.x+(b.x<P.x?-1:1)*140,Tn.in3[0]+10,Tn.in3[1]-10)}
 function trainAfterMove(dt){
   const Tn=L.train;if(!Tn)return null;
+  if(Tn.grace>0){Tn.grace-=dt;G.trainHit=null}
   if(P.carried){const c=P.carried;P.x=c.p.x+c.dx;P.y=c.y;P.vx=P.vy=0;P.sx=.7;P.sy=1.2;
     if(P.x<cam.x-70){P.carried=null;if(S.infinite){resetPlayer();return null}return c.k}return null}
   if(G.trainHit){const k=G.trainHit;G.trainHit=null;return k}

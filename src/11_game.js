@@ -264,6 +264,7 @@ function stepPlay(dt){
   }
   if(P.onGround){P.flaps=0;P.jumping=false;if(!wasG&&vyBefore>280){P.sx=1.2;P.sy=.8;SFX.land();for(let i=0;i<5;i++)parts.push({type:'dust',x:P.x+P.w/2+(rnd()-.5)*20,y:P.y+P.h,vx:(rnd()-.5)*80,vy:-rnd()*40,life:0,max:.5})}}
   {const mk=mechAfterMove(dt,vyBefore);if(mk)return die(mk)}
+  if(P.carried)return;   // emporté par un pylône : rien d'autre ne le touche en route
   if(P.hideIn){P.sx=P.sy=1;return}   // dans un placard : rien ne touche Raymond
   P.sx=lerp(P.sx,1,Math.min(1,dt*12));P.sy=lerp(P.sy,1,Math.min(1,dt*12));
   const hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6};
@@ -334,7 +335,7 @@ function stepChaser(K,dt,pcx,pcy){
   else if(K.state==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.9||K.y>ROWS*T-60){K.state='hover';K.pt=0}}
 }
 function respawn(){
-  resetPlayer();P.wake=.35;
+  resetPlayer();P.wake=.35;if(L.gare)gareRespawn();if(L.train)trainRespawn();
   const K=L.chaser;
   if(K){
     if(K.state==='dead'){}

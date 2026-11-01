@@ -25,11 +25,13 @@ LEVELS.push((()=>{
   run(S.c0-2,S.c0-1,FLOOR,'t');run(B.c1+1,B.c1+2,FLOOR,'t');for(let r=8;r<=11;r++)put(B.c1+2,r,'t');   // attelages, échelle
   for(const w of wagons)if(w.k==='ext')for(const d of[11,12,21])put(w.c0+d+(w.n%2)*3,ROOF-1,'X');
   // rats et corbeaux
-  for(const[c,a,b]of[[wagons[1].c0+15,wagons[1].c0+9,wagons[1].c0+24],[wagons[3].c0+15,wagons[3].c0+8,wagons[3].c0+26],[B1.c0+17,B1.c0+12,B1.c0+27],[wagons[8].c0+14,wagons[8].c0+8,wagons[8].c0+26]]){put(c,ROOF-1,'k');put(a,ROOF-1,'|');put(b,ROOF-1,'|')}
+  // les rats courent entre deux climatiseurs, loin des cartels
+  for(const[c,a,b]of[[wagons[1].c0+16,wagons[1].c0+13,wagons[1].c0+20],[wagons[3].c0+16,wagons[3].c0+13,wagons[3].c0+20],[B1.c0+19,B1.c0+16,B1.c0+23],[wagons[8].c0+19,wagons[8].c0+16,wagons[8].c0+23]]){put(c,ROOF-1,'k');put(a,ROOF-1,'|');put(b,ROOF-1,'|')}
   for(const[c,r]of[[24,3],[70,2],[104,4],[B1.c0+8,3],[wagons[7].c0+20,2],[wagons[9].c0+6,4]])put(c,r,'m');
   for(const w of wagons){if(w.k==='ext'||w.k==='loco')corn([w.c0+7,5],[w.c0+16,4],[w.c0+26,5])}
   corn([S.c0-1,11],[S.c0+7,11],[S.c0+15,10],[S.c0+23,11],[S.c1+1,11],[B.c0+5,10],[B.c0+19,9],[B.c1-3,11]);
-  for(const[c,r]of[[wagons[1].c0+2,6],[wagons[3].c0+2,6],[S.c0+2,11],[B.c0+2,11],[B1.c0+2,6],[wagons[8].c0+2,6],[M.c0+2,6]])put(c,r,'C');
+  // cartels des toits : juste avant un climatiseur, à l'abri des rafales (loin du bord arrière)
+  for(const[c,r]of[[wagons[1].c0+10,6],[wagons[3].c0+10,6],[S.c0+2,11],[B.c0+2,11],[B1.c0+13,6],[wagons[8].c0+13,6],[M.c0+6,6]])put(c,r,'C');
   put(4,6,'S');put(M.c1,7,'E');
   put(wagons[3].c1-5,6,'q');put(S.c0+5,11,'q');put(B.c0+1,11,'q');put(B1.c0+4,6,'q');
   return {w:2,name:"Le train",theme:'train',exit:'train',seed:79,rows:RR,camY:.55,
@@ -56,14 +58,14 @@ LEVELS.push((()=>{
   const box=(c0,c1,r0,r1,ch)=>{for(let c=c0;c<=c1;c++)for(let r=r0;r<=r1;r++)g[r][c]=ch};
   const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
   /* --- le quai --- */
-  put(3,11,'S');put(14,11,'k');put(10,11,'|');put(18,11,'|');
+  put(3,11,'S');put(8,11,'k');put(5,11,'|');put(13,11,'|');
   box(20,24,10,11,'X');                                  // la camionnette de vidange
-  put(28,11,'C');
+  put(16,11,'C');   // à l'abri derrière la camionnette : la fourgonnette ne vient pas jusque-là
   box(40,41,10,11,'X');box(56,57,10,11,'X');box(70,71,10,11,'X');   // chariots à bagages : on s'y réfugie
   for(let c=53;c<=61;c++)put(c,6,'=');put(54,5,'^');put(55,5,'^');put(59,5,'^');put(60,5,'^');put(57,3,'v');   // une poutre de la verrière, ses pics anti-pigeons, le nid au milieu
   put(63,11,'k');put(60,11,'|');put(68,11,'|');
   corn([22,8],[33,10],[41,8],[49,10],[57,8],[65,10],[71,8],[76,10]);
-  put(77,11,'C');
+  put(79,11,'C');   // après la zone de la fourgonnette
   /* --- la file, la sandwicherie, le kiosque, le buffet --- */
   put(81,11,'X');put(84,11,'X');box(86,86,10,11,'X');
   box(88,94,8,11,'X');put(90,7,'^');put(91,7,'^');put(93,5,'v');
@@ -84,7 +86,7 @@ LEVELS.push((()=>{
   corn([186,9],[193,10],[204,7],[207,2],[217,9],[226,10],[233,9]);
   box(238,239,11,11,'X');box(243,243,11,11,'X');
   put(247,11,'E');
-  for(const[c,r]of[[17,11],[79,11],[121,11],[157,11],[183,11],[200,11]])put(c,r,'q');
+  for(const[c,r]of[[18,11],[80,11],[121,11],[157,11],[183,11],[200,11]])put(c,r,'q');
   const zones=[['quai',0,116],['hall',117,121],['parvis',122,158],['route',159,178],['parc',179,RW-1]];
   return {w:2,name:"La gare",theme:'gare',exit:'post',exitLabel:"PLACE D'ERLON",seed:83,rows:RR,
     zoneTh:{quai:{type:'platform',floor:'#7a746a',floorTop:'#a8a090',x:'none'},hall:{type:'stone',floor:'#8a8478',floorTop:'#b8b0a2'},
@@ -93,7 +95,7 @@ LEVELS.push((()=>{
     nestAt:[57,5],
     gare:{camion:[20,24],cart:[[40,41],[56,57],[70,71]],shop:[88,94],kiosk:[97,101],resto:[105,112],queue:[80,87],vanZone:[25,78],
       road:[159,178],park:[179,246],statue:207,
-      pigeons:[{k:'gros',a:182,b:193},{k:'gros',a:217,b:230},{k:'deplume',c:191},{k:'deplume',c:228},{k:'moignon',c:188},{k:'moignon',c:222}]},
+      pigeons:[{k:'gros',a:185,b:195},{k:'gros',a:217,b:230},{k:'deplume',c:191},{k:'deplume',c:228},{k:'moignon',c:188},{k:'moignon',c:222}]},
     start:"Une gare. Le clocher ne doit plus être bien loin. Je finis à pattes : je n'ai plus de souffle.",
     hints:[],
     quips:["Une voiture qui pompe le… Non. Je ne veux pas savoir ce qu'elle pompe.",

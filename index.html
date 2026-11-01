@@ -1269,11 +1269,13 @@ LEVELS.push((()=>{
   run(S.c0-2,S.c0-1,FLOOR,'t');run(B.c1+1,B.c1+2,FLOOR,'t');for(let r=8;r<=11;r++)put(B.c1+2,r,'t');   // attelages, échelle
   for(const w of wagons)if(w.k==='ext')for(const d of[11,12,21])put(w.c0+d+(w.n%2)*3,ROOF-1,'X');
   // rats et corbeaux
-  for(const[c,a,b]of[[wagons[1].c0+15,wagons[1].c0+9,wagons[1].c0+24],[wagons[3].c0+15,wagons[3].c0+8,wagons[3].c0+26],[B1.c0+17,B1.c0+12,B1.c0+27],[wagons[8].c0+14,wagons[8].c0+8,wagons[8].c0+26]]){put(c,ROOF-1,'k');put(a,ROOF-1,'|');put(b,ROOF-1,'|')}
+  // les rats courent entre deux climatiseurs, loin des cartels
+  for(const[c,a,b]of[[wagons[1].c0+16,wagons[1].c0+13,wagons[1].c0+20],[wagons[3].c0+16,wagons[3].c0+13,wagons[3].c0+20],[B1.c0+19,B1.c0+16,B1.c0+23],[wagons[8].c0+19,wagons[8].c0+16,wagons[8].c0+23]]){put(c,ROOF-1,'k');put(a,ROOF-1,'|');put(b,ROOF-1,'|')}
   for(const[c,r]of[[24,3],[70,2],[104,4],[B1.c0+8,3],[wagons[7].c0+20,2],[wagons[9].c0+6,4]])put(c,r,'m');
   for(const w of wagons){if(w.k==='ext'||w.k==='loco')corn([w.c0+7,5],[w.c0+16,4],[w.c0+26,5])}
   corn([S.c0-1,11],[S.c0+7,11],[S.c0+15,10],[S.c0+23,11],[S.c1+1,11],[B.c0+5,10],[B.c0+19,9],[B.c1-3,11]);
-  for(const[c,r]of[[wagons[1].c0+2,6],[wagons[3].c0+2,6],[S.c0+2,11],[B.c0+2,11],[B1.c0+2,6],[wagons[8].c0+2,6],[M.c0+2,6]])put(c,r,'C');
+  // cartels des toits : juste avant un climatiseur, à l'abri des rafales (loin du bord arrière)
+  for(const[c,r]of[[wagons[1].c0+10,6],[wagons[3].c0+10,6],[S.c0+2,11],[B.c0+2,11],[B1.c0+13,6],[wagons[8].c0+13,6],[M.c0+6,6]])put(c,r,'C');
   put(4,6,'S');put(M.c1,7,'E');
   put(wagons[3].c1-5,6,'q');put(S.c0+5,11,'q');put(B.c0+1,11,'q');put(B1.c0+4,6,'q');
   return {w:2,name:"Le train",theme:'train',exit:'train',seed:79,rows:RR,camY:.55,
@@ -1300,14 +1302,14 @@ LEVELS.push((()=>{
   const box=(c0,c1,r0,r1,ch)=>{for(let c=c0;c<=c1;c++)for(let r=r0;r<=r1;r++)g[r][c]=ch};
   const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
   /* --- le quai --- */
-  put(3,11,'S');put(14,11,'k');put(10,11,'|');put(18,11,'|');
+  put(3,11,'S');put(8,11,'k');put(5,11,'|');put(13,11,'|');
   box(20,24,10,11,'X');                                  // la camionnette de vidange
-  put(28,11,'C');
+  put(16,11,'C');   // à l'abri derrière la camionnette : la fourgonnette ne vient pas jusque-là
   box(40,41,10,11,'X');box(56,57,10,11,'X');box(70,71,10,11,'X');   // chariots à bagages : on s'y réfugie
   for(let c=53;c<=61;c++)put(c,6,'=');put(54,5,'^');put(55,5,'^');put(59,5,'^');put(60,5,'^');put(57,3,'v');   // une poutre de la verrière, ses pics anti-pigeons, le nid au milieu
   put(63,11,'k');put(60,11,'|');put(68,11,'|');
   corn([22,8],[33,10],[41,8],[49,10],[57,8],[65,10],[71,8],[76,10]);
-  put(77,11,'C');
+  put(79,11,'C');   // après la zone de la fourgonnette
   /* --- la file, la sandwicherie, le kiosque, le buffet --- */
   put(81,11,'X');put(84,11,'X');box(86,86,10,11,'X');
   box(88,94,8,11,'X');put(90,7,'^');put(91,7,'^');put(93,5,'v');
@@ -1328,7 +1330,7 @@ LEVELS.push((()=>{
   corn([186,9],[193,10],[204,7],[207,2],[217,9],[226,10],[233,9]);
   box(238,239,11,11,'X');box(243,243,11,11,'X');
   put(247,11,'E');
-  for(const[c,r]of[[17,11],[79,11],[121,11],[157,11],[183,11],[200,11]])put(c,r,'q');
+  for(const[c,r]of[[18,11],[80,11],[121,11],[157,11],[183,11],[200,11]])put(c,r,'q');
   const zones=[['quai',0,116],['hall',117,121],['parvis',122,158],['route',159,178],['parc',179,RW-1]];
   return {w:2,name:"La gare",theme:'gare',exit:'post',exitLabel:"PLACE D'ERLON",seed:83,rows:RR,
     zoneTh:{quai:{type:'platform',floor:'#7a746a',floorTop:'#a8a090',x:'none'},hall:{type:'stone',floor:'#8a8478',floorTop:'#b8b0a2'},
@@ -1337,7 +1339,7 @@ LEVELS.push((()=>{
     nestAt:[57,5],
     gare:{camion:[20,24],cart:[[40,41],[56,57],[70,71]],shop:[88,94],kiosk:[97,101],resto:[105,112],queue:[80,87],vanZone:[25,78],
       road:[159,178],park:[179,246],statue:207,
-      pigeons:[{k:'gros',a:182,b:193},{k:'gros',a:217,b:230},{k:'deplume',c:191},{k:'deplume',c:228},{k:'moignon',c:188},{k:'moignon',c:222}]},
+      pigeons:[{k:'gros',a:185,b:195},{k:'gros',a:217,b:230},{k:'deplume',c:191},{k:'deplume',c:228},{k:'moignon',c:188},{k:'moignon',c:222}]},
     start:"Une gare. Le clocher ne doit plus être bien loin. Je finis à pattes : je n'ai plus de souffle.",
     hints:[],
     quips:["Une voiture qui pompe le… Non. Je ne veux pas savoir ce qu'elle pompe.",
@@ -4212,6 +4214,7 @@ function stepPlay(dt){
   }
   if(P.onGround){P.flaps=0;P.jumping=false;if(!wasG&&vyBefore>280){P.sx=1.2;P.sy=.8;SFX.land();for(let i=0;i<5;i++)parts.push({type:'dust',x:P.x+P.w/2+(rnd()-.5)*20,y:P.y+P.h,vx:(rnd()-.5)*80,vy:-rnd()*40,life:0,max:.5})}}
   {const mk=mechAfterMove(dt,vyBefore);if(mk)return die(mk)}
+  if(P.carried)return;   // emporté par un pylône : rien d'autre ne le touche en route
   if(P.hideIn){P.sx=P.sy=1;return}   // dans un placard : rien ne touche Raymond
   P.sx=lerp(P.sx,1,Math.min(1,dt*12));P.sy=lerp(P.sy,1,Math.min(1,dt*12));
   const hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6};
@@ -4282,7 +4285,7 @@ function stepChaser(K,dt,pcx,pcy){
   else if(K.state==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.9||K.y>ROWS*T-60){K.state='hover';K.pt=0}}
 }
 function respawn(){
-  resetPlayer();P.wake=.35;
+  resetPlayer();P.wake=.35;if(L.gare)gareRespawn();if(L.train)trainRespawn();
   const K=L.chaser;
   if(K){
     if(K.state==='dead'){}
@@ -4488,7 +4491,7 @@ function sheltered(dir){
   const r0=Math.floor((P.y+4)/T),r1=Math.floor((P.y+P.h-4)/T),c=Math.floor((P.x+P.w/2)/T);
   for(let k=1;k<=3;k++)for(let r=r0;r<=r1;r++)if(isSolid(c-dir*k,r))return true;
   if(L.meuse&&meuseShelter(dir))return true;
-  if(L.train&&!trainOnRoof())return true;   // dans les voitures, pas de vent
+  if(L.train&&(!trainOnRoof()||L.train.w7))return true;   // dans les voitures, pas de vent ; sur la motrice qui freine non plus
   for(const mv of L.movers)if(mv.kind==='truck'||mv.kind==='tram'){const sx=dir<0?mv.x:mv.x+mv.w;if(P.y+P.h>mv.y&&Math.abs((P.x+P.w/2)-sx)<120&&((dir<0&&P.x+P.w<=mv.x+4)||(dir>0&&P.x>=mv.x+mv.w-4)))return true}
   return false;
 }
@@ -6499,8 +6502,12 @@ function trainStep(dt){
       setTimeout(()=>bubble(Tn.loco+17*T,TRN.ROOF-40,"« …notre train entre en gare de R… »",'#3a4a6a'),1200);
       setTimeout(()=>say("En gare de quoi ? Le vent a mangé la moitié du nom.",3.4),3400)}}
 }
+/* au retour sur un cartel : un court répit, pas de pylône sur le nez */
+function trainRespawn(){const Tn=L.train;Tn.grace=1.8;Tn.pyl=Tn.pyl.filter(p=>Math.abs(p.x-P.x)>900);Tn.spawnT=Math.max(Tn.spawnT,2.4);Tn.proj.length=0;
+  for(const b of Tn.bottles)if(Math.abs(b.x-P.x)<90)b.x=clamp(P.x+(b.x<P.x?-1:1)*140,Tn.in3[0]+10,Tn.in3[1]-10)}
 function trainAfterMove(dt){
   const Tn=L.train;if(!Tn)return null;
+  if(Tn.grace>0){Tn.grace-=dt;G.trainHit=null}
   if(P.carried){const c=P.carried;P.x=c.p.x+c.dx;P.y=c.y;P.vx=P.vy=0;P.sx=.7;P.sy=1.2;
     if(P.x<cam.x-70){P.carried=null;if(S.infinite){resetPlayer();return null}return c.k}return null}
   if(G.trainHit){const k=G.trainHit;G.trainHit=null;return k}
@@ -6936,7 +6943,7 @@ function gareStep(dt){
       else if(ln.st==='leave'&&ln.t>ln.d)next('idle',ln.k==='truck'?1.2+rnd()*1.6:1+rnd()*1.4);
       m.dx=0;if(ln.st==='at')hitVeh(m,'voiture')}}
   // les voyageurs à valise : ils vont et viennent ; si on les survole, ils battent des bras
-  const [p0,p1]=[123*T,157*T];
+  const [p0,p1]=[126*T,152*T];   // ils ne vont ni sur le cartel du parvis ni derrière l'immeuble d'angle
   for(const p of S2.pass){p.x+=p.dir*p.sp*dt;if(p.x<p0){p.x=p0;p.dir=1}if(p.x>p1){p.x=p1;p.dir=-1}p.wave=Math.max(0,p.wave-dt);p.cool=Math.max(0,p.cool-dt);
     if(P.dead)continue;
     const body={x:p.x-11,y:F-100,w:22,h:100},bag={x:p.x-p.dir*30-11,y:F-40,w:22,h:40};
@@ -6953,15 +6960,25 @@ function gareStep(dt){
       else if(u<5.5){o.st='walk';o.x=B+Math.sin((u-3.5)*1.6)*14;o.y=F;o.f=-1}else{o.st='fly';const v=(u-5.5)/1.5;o.x=B+(A-B)*v;o.y=F-Math.sin(v*Math.PI)*150;o.f=-1}}
     else if(o.k==='deplume'){// court vers Raymond, ne vole pas
       if(near<320&&P.y+P.h>F-120){o.st='run';o.f=Math.sign(dx)||1;o.x+=o.f*205*dt}else{o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*25*dt}
-      o.x=clamp(o.x,(D.park[0]+2)*T,(D.park[1]-2)*T);if(near<160&&!S2.said.dep&&!G.sim){S2.said.dep=1;bubble(o.x,F-40,'Kroûû !','#6a4a4a')}}
+      o.x=clamp(o.x,o.home-7*T,o.home+7*T);if(near<160&&!S2.said.dep&&!G.sim){S2.said.dep=1;bubble(o.x,F-40,'Kroûû !','#6a4a4a')}}
     else{// le pigeon aux moignons : il boitille de gauche à droite et demande l'aumône ; inoffensif
       o.st='walk';o.f=Math.sin(o.t*.4)>0?1:-1;o.x+=o.f*16*dt;o.x=clamp(o.x,o.home-120,o.home+120);
       o.beg=Math.max(0,o.beg-dt);if(near<230&&o.beg<=0&&!G.sim){o.beg=2.8;bubble(o.x,F-44,pick(["Une graine, pour un ancien combattant ?","Pitié, camarade…","Rien qu'une miette…"]),'#6a5a48')}}
     if(!P.dead&&o.k!=='moignon'&&overlap(hb,{x:o.x-(o.k==='gros'?16:12),y:o.y-(o.k==='gros'?30:24),w:o.k==='gros'?32:24,h:o.k==='gros'?28:22}))G.gareHit=o.k==='gros'?'pigeonGros':'pigeonDeplume'}
   S2.pig=S2.pig.filter(o=>o.y>-200);
+  if(S2.grace>0){S2.grace-=dt;G.gareHit=null}
   // la graine crachée ne rate jamais sa cible
   for(let i=S2.seeds.length-1;i>=0;i--){const s=S2.seeds[i],tx=pcx,ty=P.y+P.h/2,d=Math.hypot(tx-s.x,ty-s.y)||1;s.x+=(tx-s.x)/d*520*dt;s.y+=(ty-s.y)/d*520*dt;
     if(d<10){S2.seeds.splice(i,1);if(!G.sim)puff(tx,ty,4,false);if(!P.dead)G.gareHit='graine'}else if(P.dead)S2.seeds.splice(i,1)}
+}
+/* au retour sur un cartel : deux secondes de répit, et personne n'attend Raymond dessus */
+function gareRespawn(){
+  const S2=L.gare;if(!S2)return;S2.grace=2;const cx=P.cp.x;
+  if(S2.van.on)gareVehicleSet(S2.van,-9999,false);S2.vanT=Math.max(S2.vanT,3);S2.warn=0;
+  for(const ln of S2.lanes){if(ln.st!=='idle'){ln.st='idle';ln.t=0;gareVehicleSet(ln.m,-9999,false)}ln.d=1.5}
+  for(const o of S2.pig)if(o.k==='deplume'){o.x=o.home;o.st='walk'}
+  for(const p of S2.pass)if(Math.abs(p.x-cx)<220)p.x=clamp(cx+(p.x<cx?-1:1)*240,126*T,152*T);
+  S2.seeds.length=0;
 }
 function gareAfterMove(){if(G.gareHit){const k=G.gareHit;G.gareHit=null;return k}return null}
 /* la bille, au square : tous les pigeons s'envolent */
