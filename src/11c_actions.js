@@ -183,7 +183,7 @@ function dropMarble(){
   if(!elevated()||G.cut||G.tombSeq)return;if(!L.marbles)L.marbles=[];if(L.marbles.length>2)return;
   L.marbles.push({x:P.x+P.w/2-P.facing*6,y:P.y+P.h-10,w:8,h:8,vx:-P.facing*30,vy:40,t:0,b:0,heard:false,col:pick(['#4a8ac8','#c84a4a','#4ac87a','#d8b04a'])});
   P.sx=1.12;P.sy=.9;
-  if(!G.sim){noise(.08,1200,.08,'bandpass');G.marbleN=(G.marbleN||0)+1;if(G.marbleN===1||rnd()<.5)setTimeout(()=>say(pick(MARBLE_Q),3.6),350)}
+  if(!G.sim){noise(.08,1200,.08,'bandpass');G.marbleN=(G.marbleN||0)+1;const sq=L.gare&&gareStatueLine();if(sq){L.marbles[L.marbles.length-1].vx=-P.facing*120;setTimeout(()=>say(sq,4.2),350)}else if(G.marbleN===1||rnd()<.5)setTimeout(()=>say(pick(MARBLE_Q),3.6),350)}
 }
 function marbleStep(dt){
   if(!L.marbles)return;
@@ -199,6 +199,7 @@ function marbleHeard(m){
   for(const c of L.rats)if(Math.hypot(c.x+c.w/2-m.x,c.y-m.y)<R2){const d=Math.sign(m.x-(c.x+c.w/2))||1;c.vx=Math.abs(c.vx||c.base||95)*d;c.lastDir=d;c.lure=m.x}
   for(const g of L.guards)if(!(g.tangle>0)&&!(g.sweep>0)&&Math.hypot(g.x+g.w/2-m.x,g.y+g.h-m.y)<R2+80){g.dir=Math.sign(m.x-(g.x+g.w/2))||g.dir;g.pause=1.2;g.noFlip=true;if(!G.sim)bubble(g.x+g.w/2,g.y-14,'Hein ?','#2a3a5a')}
   if(L.meuse)meuseMarble(m);
+  if(L.gare)gareMarble(m);
   for(const w of L.watchers)if((w.mode==='sit'||!w.mode)&&Math.hypot(w.x-m.x,w.y-m.y)<R2+120){w.seen=true;w.mode='chase';w.ct=0;w.k={x:w.x-22,y:w.y-26,w:44,h:26,vx:0,vy:-380,onGround:false,f:P.x>w.x?1:-1};if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),200)}}
 }
 function drawMarbles(){if(!L.marbles)return;for(const m of L.marbles){const x=m.x+m.w/2,y=m.y+m.h/2;ctx.save();

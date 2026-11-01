@@ -42,66 +42,67 @@ LEVELS.push((()=>{
            "Revoilà les pylônes. Et un rat clandestin. On voyage en bonne compagnie."],
     segs:[{z:'train',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
-LEVELS.push({w:2,name:"La gare",theme:'station',exit:'post',exitLabel:"QUAI 1",seed:83,
- start:"Une gare. Des trains sans fumée. L'arrière s'est beaucoup modernisé, en deux ans.",
- quips:["Les gens parlent tout seuls dans de petites boîtes. Des espions, tous.","« Paris en quarante-cinq minutes. » Propagande.","Un kiosque à journaux. Aucun ne parle de Verdun. Censure, sûrement."],
- signs:["info:GARE DE REIMS|Accès aux quais"],
- hints:[],
- segs:[SEG_START_FLAT,`
-........................
-.......o.........o......
-......===.......===.....
-........................
-...AA.........q.........
-#####..........#########
-#####^^^^^^^^^^#########`,`
-..........................
-.....o......o......o......
-|.L.................|.....
-...^^^^^^^^^^^^^^^^^......
-##########################
-##########################`,`
-.............
-....o..o.....
-C..|....k..|.
-#############
-#############`,`
-........................
-.....m..........n.......
-........................
-..AA......AA......AA....
-........................
-####...............#####
-####^^^^^^^^^^^^^^^#####`,`
-..........*.........
-.........===........
-....................
-....................
-....AA.......===....
-....................
-..........q.........
-####################
-####################`,`
-............
-.....o.o....
-C...........
-############
-############`,`
-..........................
-...........o..............
-.........====.......AA....
-..........................
-.....o..........o.........
-|.L..............|........
-...^^^^^^^^^^^^^^^^^^^^...
-##########################
-##########################`,`
-..o.o.......
-............
-......E.....
-############
-############`]});
-
+/* 3-2 · La gare : le quai sous la verrière (camionnette de vidange, fourgonnette lancée à toute allure, rats),
+   la file devant la sandwicherie, les toits de la boutique, du kiosque et du buffet (pics, corbeaux) ;
+   le parvis (voyageurs à valises), le cours de la Gare (un camion, une voiture), le square Colbert
+   (sa statue, ses pigeons de ville) — mécaniques et décor : 11j_gare.js */
+LEVELS.push((()=>{
+  const RW=252,RR=15,G0=12;
+  const g=Array.from({length:RR},()=>Array(RW).fill('.'));
+  for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
+  const put=(c,r,ch)=>{g[r][c]=ch};
+  const box=(c0,c1,r0,r1,ch)=>{for(let c=c0;c<=c1;c++)for(let r=r0;r<=r1;r++)g[r][c]=ch};
+  const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
+  /* --- le quai --- */
+  put(3,11,'S');put(14,11,'k');put(10,11,'|');put(18,11,'|');
+  box(20,24,10,11,'#');                                  // la camionnette de vidange
+  put(28,11,'C');
+  box(40,41,10,11,'X');box(56,57,10,11,'X');box(70,71,10,11,'X');   // chariots à bagages : on s'y réfugie
+  for(let c=54;c<=60;c++)put(c,8,'=');                   // une poutre de la verrière
+  put(63,11,'k');put(60,11,'|');put(68,11,'|');
+  corn([22,8],[33,10],[41,8],[49,10],[57,6],[65,10],[71,8],[76,10]);
+  put(77,11,'C');
+  /* --- la file, la sandwicherie, le kiosque, le buffet --- */
+  put(81,11,'X');put(84,11,'X');box(86,86,10,11,'X');
+  box(88,94,8,11,'#');put(90,7,'^');put(91,7,'^');
+  box(97,101,7,11,'#');put(99,6,'^');
+  put(103,11,'k');
+  put(103,9,'A');put(104,9,'A');
+  box(105,112,6,11,'#');put(108,5,'^');put(110,5,'^');
+  for(let c=114;c<=115;c++)put(c,10,'=');
+  put(93,4,'m');put(113,5,'m');
+  corn([82,9],[86,8],[92,6],[96,9],[99,4],[102,10],[104,6],[107,4],[111,4],[115,8]);
+  put(104,2,'*');
+  put(117,11,'C');
+  /* --- le parvis, la route, le square --- */
+  put(123,11,'C');box(133,133,11,11,'X');box(148,148,11,11,'X');
+  corn([128,10],[133,8],[140,9],[148,8],[155,10],[162,8],[167,7],[172,8]);
+  put(181,11,'C');
+  // la statue de Colbert : marches, socle, piédestal, la statue (on peut se percher sur sa tête)
+  box(201,213,11,11,'#');box(202,212,10,10,'#');box(204,210,8,9,'#');box(205,209,6,7,'#');box(206,208,5,5,'#');box(207,207,2,4,'X');
+  corn([186,9],[193,10],[204,6],[207,1],[217,9],[226,10],[233,9]);
+  box(238,239,11,11,'X');box(243,243,11,11,'X');
+  put(247,11,'E');
+  for(const[c,r]of[[17,11],[79,11],[121,11],[157,11],[183,11],[200,11]])put(c,r,'q');
+  const zones=[['quai',0,116],['hall',117,121],['parvis',122,158],['route',159,178],['parc',179,RW-1]];
+  return {w:2,name:"La gare",theme:'gare',exit:'post',exitLabel:"PLACE D'ERLON",seed:83,rows:RR,
+    zoneTh:{quai:{type:'platform',floor:'#7a746a',floorTop:'#a8a090'},hall:{type:'stone',floor:'#8a8478',floorTop:'#b8b0a2'},
+      parvis:{type:'stone',floor:'#9a9284',floorTop:'#cfc6b2',x:'barrier'},route:{type:'asphalt',floor:'#3a3c40',floorTop:'#55575c'},parc:{type:'earth',floor:'#5c4630',floorTop:'#6c9a38',x:'hedge'}},
+    zoneProps:{quai:['bench','clockPost','vending','bench'],hall:[],parvis:['lampPost','binPark'],route:[],parc:['flowerbed','binPark','lampPost']},
+    nestAt:[57,7],
+    gare:{camion:[20,24],cart:[[40,41],[56,57],[70,71]],shop:[88,94],kiosk:[97,101],resto:[105,112],queue:[80,87],vanZone:[25,78],
+      road:[159,178],park:[179,246],statue:207,
+      pigeons:[{k:'gros',a:186,b:197},{k:'gros',a:216,b:230},{k:'deplume',c:192},{k:'deplume',c:228},{k:'moignon',c:198},{k:'moignon',c:221}]},
+    start:"Une gare. Le clocher ne doit plus être bien loin. Je finis à pattes : je n'ai plus de souffle.",
+    hints:[],
+    quips:["Une voiture qui pompe le… Non. Je ne veux pas savoir ce qu'elle pompe.",
+           "Une file d'attente pour du pain. Comme en 1917. Certaines choses ne changent pas.",
+           "Dehors. Des voyageurs qui tirent leurs malles sur des roulettes. Les malles ont des roues, maintenant.",
+           "Des automobiles, des camions… et pas un seul cheval. Où sont passés les chevaux ?",
+           "Un square. Et des pigeons… Quelle allure ! Ils ont fait la guerre, eux aussi ?",
+           "Un monsieur en bronze, avec une perruque. Il a l'air de quelqu'un qui compte tout."],
+    segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
+})());
 LEVELS.push({w:2,name:"La place d'Erlon",theme:'square',exit:'post',exitLabel:"CATHÉDRALE",seed:97,
  start:"Une grande place. Une vieille dame jette du pain. Je refuse. J'ai ma fierté. Bon, une miette.",
  chaseQuip:"Une machine verte qui avale tout ce qui traîne par terre. Ne pas traîner par terre !",

@@ -92,6 +92,7 @@ function drawSweeper(g,K,t){
 }
 /* plateformes mobiles supplémentaires */
 function drawMechMover(g,m,t){
+  if(m.axis==='g')return true;   // dessinés par 11j_gare.js
   if(L.musee&&m.kind==='dolly'){drawTrolley(g,m,t);return true}
   if(m.kind==='tram'){
     const x=m.x,y=m.y,w=m.w;g.save();

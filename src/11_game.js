@@ -149,6 +149,7 @@ function stepPlay(dt){
   G.lt+=dt;
   for(const m of L.movers){
     if(m.axis==='s'||m.axis==='p'){mechMoverStep(m,dt);continue}
+    if(m.axis==='g')continue;   // véhicules de la gare : déplacés par gareStep
     const px=m.x,py=m.y;m.t+=dt;const span=Math.abs(m.a1-m.a0)||1;
     let u=(m.t*m.speed/span)%2;u=u>1?2-u:u;u=u*u*(3-2*u);
     if(m.axis==='h')m.x=m.a0+(m.a1-m.a0)*u;else m.y=m.a0+(m.a1-m.a0)*u;
@@ -216,7 +217,7 @@ function stepPlay(dt){
   for(const c of L.rats){if(c.dead||c.runner)continue;const ch=tile(Math.floor((c.x+c.w/2)/T),Math.floor((c.y+c.h-2)/T));if(c.y>ROWS*T+40||ch==='^'){c.dead=true;if(!G.sim&&ch==='^'){puff(c.x+c.w/2,c.y,8,false);if(L.th.spike==='obus')obusBoom(c.x+c.w/2,c.y+c.h)}}}
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);trainStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
+  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);trainStep(dt);gareStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
