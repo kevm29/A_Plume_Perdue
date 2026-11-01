@@ -191,7 +191,7 @@ function drawGareMid(t){
   {const x=D.statue*T+T/2;if(vis(x-300,x+300))drawColbert(g,x,F,t)}
   // les pigeons du square, les graines
   for(const o of S2.pig)if(vis(o.x-40,o.x+40))drawUglyPigeon(g,o,t);
-  for(const s of S2.seeds){g.fillStyle='#c8a050';g.beginPath();g.ellipse(s.x,s.y,3,2,0,0,7);g.fill()}
+  for(const s of S2.seeds){g.fillStyle='rgba(200,160,80,.35)';g.beginPath();g.arc(s.x,s.y,7,0,7);g.fill();g.fillStyle='#8a5a20';g.beginPath();g.ellipse(s.x,s.y,4.5,3,0,0,7);g.fill();g.fillStyle='#e8c070';g.fillRect(s.x-2,s.y-1.5,2,1.5)}
   // l'annonce de la fourgonnette : gyrophare au bord de l'écran
   if(S2.warn&&!S2.van.on){const a=.5+.5*Math.sin(t*18);g.fillStyle='rgba(255,170,40,'+(.35*a)+')';g.beginPath();g.ellipse(cam.x+W,F-60,90,70,0,0,7);g.fill()}
 }

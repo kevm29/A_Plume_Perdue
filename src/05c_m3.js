@@ -93,7 +93,7 @@ LEVELS.push((()=>{
     nestAt:[57,5],
     gare:{camion:[20,24],cart:[[40,41],[56,57],[70,71]],shop:[88,94],kiosk:[97,101],resto:[105,112],queue:[80,87],vanZone:[25,78],
       road:[159,178],park:[179,246],statue:207,
-      pigeons:[{k:'gros',a:186,b:197},{k:'gros',a:216,b:230},{k:'deplume',c:192},{k:'deplume',c:228},{k:'moignon',c:198},{k:'moignon',c:221}]},
+      pigeons:[{k:'gros',a:182,b:193},{k:'gros',a:217,b:230},{k:'deplume',c:191},{k:'deplume',c:228},{k:'moignon',c:188},{k:'moignon',c:222}]},
     start:"Une gare. Le clocher ne doit plus être bien loin. Je finis à pattes : je n'ai plus de souffle.",
     hints:[],
     quips:["Une voiture qui pompe le… Non. Je ne veux pas savoir ce qu'elle pompe.",
