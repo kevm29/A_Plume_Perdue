@@ -134,6 +134,7 @@ function sheltered(dir){
   const r0=Math.floor((P.y+4)/T),r1=Math.floor((P.y+P.h-4)/T),c=Math.floor((P.x+P.w/2)/T);
   for(let k=1;k<=3;k++)for(let r=r0;r<=r1;r++)if(isSolid(c-dir*k,r))return true;
   if(L.meuse&&meuseShelter(dir))return true;
+  if(L.train&&!trainOnRoof())return true;   // dans les voitures, pas de vent
   for(const mv of L.movers)if(mv.kind==='truck'||mv.kind==='tram'){const sx=dir<0?mv.x:mv.x+mv.w;if(P.y+P.h>mv.y&&Math.abs((P.x+P.w/2)-sx)<120&&((dir<0&&P.x+P.w<=mv.x+4)||(dir>0&&P.x>=mv.x+mv.w-4)))return true}
   return false;
 }

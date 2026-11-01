@@ -373,7 +373,7 @@ function animalSounds(dt){
     }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:K.state==='lure'?clamp(1-d/1100,0,1)*.24:0);
   }
   const rain=0; // son de pluie retiré à la demande : seule la pluie visuelle reste
-  loopSet('rain',rain);loopSet('wind',L.def.gust&&L.gust&&L.gust.state==='blow'?.2:th.weather==='wind'||th.weather==='gale'?.06:th.weather==='storm'?.1:0);
+  loopSet('rain',rain);if(L.train){if(L.gust&&L.gust.state==='blow'&&trainOnRoof())loopSet('wind',.24)}else loopSet('wind',L.def.gust&&L.gust&&L.gust.state==='blow'?.2:th.weather==='wind'||th.weather==='gale'?.06:th.weather==='storm'?.1:0);
   // éclairs d'orage
   if(th.weather==='storm'||th.weather==='rain'||th.far==='storage'){G.flashT-=dt;if(G.flashT<=0){G.flash=th.weather==='storm'?1:.7;const v=th.weather==='storm'?1:.6;setTimeout(()=>SFX.thunder(v),300+rnd()*700);G.flashT=th.weather==='storm'?3.5+rnd()*3.5:9+rnd()*7}}
 }

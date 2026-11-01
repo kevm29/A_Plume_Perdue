@@ -1248,36 +1248,38 @@ LEVELS.push((()=>{
    voiture 4 (voiture-bar), toits 5-6 (pylônes, un rat, une passerelle), motrice 7 qui entre en gare.
    Mécaniques et décor : 11i_train.js */
 LEVELS.push((()=>{
-  const RW=230,RR=17,ROOF=7,FLOOR=12;
+  const RR=17,ROOF=7,FLOOR=12;
+  // A1-A4 : toits ; S : voyageurs (en coupe) ; B : voiture-bar ; B1-B4 : toits ; M : motrice
+  const spec=[['ext',30],['ext',30],['ext',30],['ext',30],['seats',32],['bar',32],['ext',30],['ext',30],['ext',30],['ext',30],['loco',30]];
+  const wagons=[];{let c=1;spec.forEach(([k,n],i)=>{wagons.push({c0:c,c1:c+n-1,k,n:i+1});c+=n+2})}
+  const RW=wagons[wagons.length-1].c1+2;   // la dernière colonne est un mur : on ne tombe pas devant la motrice
   const g=Array.from({length:RR},()=>Array(RW).fill('.'));
   const put=(c,r,ch)=>{g[r][c]=ch};
   const run=(c0,c1,r,ch)=>{for(let c=c0;c<=c1;c++)g[r][c]=ch};
   const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
-  const wagons=[{c0:1,c1:30,k:'ext',n:1},{c0:33,c1:62,k:'ext',n:2},{c0:65,c1:96,k:'seats',n:3},{c0:99,c1:130,k:'bar',n:4},
-                {c0:133,c1:162,k:'ext',n:5},{c0:165,c1:194,k:'ext',n:6},{c0:197,c1:226,k:'loco',n:7}];
   for(const w of wagons){
     if(w.k==='ext'||w.k==='loco'){for(let r=ROOF;r<=FLOOR;r++)run(w.c0,w.k==='loco'?w.c1-2:w.c1,r,'#');if(w.k==='loco')for(let r=ROOF+1;r<=FLOOR;r++)run(w.c1-1,w.c1,r,'#')}
     else{run(w.c0,w.c1,ROOF,'#');run(w.c0,w.c1,FLOOR,'#');put(w.c0,ROOF+1,'#');put(w.c1,ROOF+1,'#')}
   }
-  // soufflet fermé entre la 3 et la 4 ; porte automatique (D) au bout de la 3
-  run(97,98,ROOF,'#');run(97,98,ROOF+1,'#');run(97,98,FLOOR,'#');for(let r=9;r<=11;r++)put(96,r,'D');
-  // le comptoir du bar
-  for(let r=10;r<=11;r++)run(113,124,r,'#');
-  // la ligne haute tension sur les toits des voitures 3 et 4 (pantographe)
-  run(65,130,ROOF-1,'^');
-  // attelages où l'on peut se poser, échelle de la voiture 5
-  run(63,64,FLOOR,'t');run(131,132,FLOOR,'t');for(let r=8;r<=11;r++)put(132,r,'t');
-  // climatiseurs sur les toits
-  for(const c of[12,13,22,42,43,52,141,142,174,175,184,185])put(c,ROOF-1,'X');
-  // un rat clandestin sur le toit de la 5
-  put(150,ROOF-1,'k');put(145,ROOF-1,'|');put(160,ROOF-1,'|');
-  corn([8,5],[13,4],[26,5],[38,5],[48,3],[60,5],[64,11],[72,11],[80,10],[88,11],[97,11],[104,10],[116,9],[127,11],[138,5],[150,4],[158,5],[170,5],[180,3],[190,5],[205,5],[215,5]);
-  for(const[c,r]of[[35,6],[67,11],[101,11],[135,6],[167,6],[199,6]])put(c,r,'C');
-  put(4,6,'S');put(223,6,'E');
-  put(57,6,'q');put(70,11,'q');put(100,11,'q');put(137,6,'q');
+  const S=wagons[4],B=wagons[5],B1=wagons[6],M=wagons[10];
+  // soufflet fermé entre les voyageurs et le bar ; porte automatique (D)
+  run(S.c1+1,S.c1+2,ROOF,'#');run(S.c1+1,S.c1+2,ROOF+1,'#');run(S.c1+1,S.c1+2,FLOOR,'#');for(let r=9;r<=11;r++)put(S.c1,r,'D');
+  const cnt=[B.c0+14,B.c0+25];for(let r=10;r<=11;r++)run(cnt[0],cnt[1],r,'#');
+  run(S.c0,B.c1,ROOF-1,'^');                                    // ligne haute tension (pantographe)
+  run(S.c0-2,S.c0-1,FLOOR,'t');run(B.c1+1,B.c1+2,FLOOR,'t');for(let r=8;r<=11;r++)put(B.c1+2,r,'t');   // attelages, échelle
+  for(const w of wagons)if(w.k==='ext')for(const d of[11,12,21])put(w.c0+d+(w.n%2)*3,ROOF-1,'X');
+  // rats et corbeaux
+  for(const[c,a,b]of[[wagons[1].c0+15,wagons[1].c0+9,wagons[1].c0+24],[wagons[3].c0+15,wagons[3].c0+8,wagons[3].c0+26],[B1.c0+17,B1.c0+12,B1.c0+27],[wagons[8].c0+14,wagons[8].c0+8,wagons[8].c0+26]]){put(c,ROOF-1,'k');put(a,ROOF-1,'|');put(b,ROOF-1,'|')}
+  for(const[c,r]of[[24,3],[70,2],[104,4],[B1.c0+8,3],[wagons[7].c0+20,2],[wagons[9].c0+6,4]])put(c,r,'m');
+  for(const w of wagons){if(w.k==='ext'||w.k==='loco')corn([w.c0+7,5],[w.c0+16,4],[w.c0+26,5])}
+  corn([S.c0-1,11],[S.c0+7,11],[S.c0+15,10],[S.c0+23,11],[S.c1+1,11],[B.c0+5,10],[B.c0+19,9],[B.c1-3,11]);
+  for(const[c,r]of[[wagons[1].c0+2,6],[wagons[3].c0+2,6],[S.c0+2,11],[B.c0+2,11],[B1.c0+2,6],[wagons[8].c0+2,6],[M.c0+2,6]])put(c,r,'C');
+  put(4,6,'S');put(M.c1,7,'E');
+  put(wagons[3].c1-5,6,'q');put(S.c0+5,11,'q');put(B.c0+1,11,'q');put(B1.c0+4,6,'q');
   return {w:2,name:"Le train",theme:'train',exit:'train',seed:79,rows:RR,camY:.55,
+    gust:{period:5.3,dur:1.1,push:250,dir:-1},
     train:{wagons,seats:['old','empty','phone','sleep','bagblue','paper','empty','student','bagred','suit','sleep','phone','empty','knit'],
-      bottles:[70.5,77.5,84.5,91.2],door:96,counter:[113,124],chips:118.5},
+      bottles:[S.c0+5.5,S.c0+12.5,S.c0+19.5,S.c0+26.2],door:S.c1,counter:cnt,chips:cnt[0]+5.5},
     start:"Je ne volerai jamais jusque là-bas d'une traite. Ce train file vers le clocher : je monte dessus.",
     hints:[],
     quips:["Je n'en peux plus. C'est trop dangereux, là-haut : je descends entre les wagons.",
@@ -4320,7 +4322,7 @@ function animalSounds(dt){
     }else if(K.type==='drone')loopSet('drone',K.state==='chase'?clamp(1-d/700,.05,1)*.2:K.state==='lure'?clamp(1-d/1100,0,1)*.24:0);
   }
   const rain=0; // son de pluie retiré à la demande : seule la pluie visuelle reste
-  loopSet('rain',rain);loopSet('wind',L.def.gust&&L.gust&&L.gust.state==='blow'?.2:th.weather==='wind'||th.weather==='gale'?.06:th.weather==='storm'?.1:0);
+  loopSet('rain',rain);if(L.train){if(L.gust&&L.gust.state==='blow'&&trainOnRoof())loopSet('wind',.24)}else loopSet('wind',L.def.gust&&L.gust&&L.gust.state==='blow'?.2:th.weather==='wind'||th.weather==='gale'?.06:th.weather==='storm'?.1:0);
   // éclairs d'orage
   if(th.weather==='storm'||th.weather==='rain'||th.far==='storage'){G.flashT-=dt;if(G.flashT<=0){G.flash=th.weather==='storm'?1:.7;const v=th.weather==='storm'?1:.6;setTimeout(()=>SFX.thunder(v),300+rnd()*700);G.flashT=th.weather==='storm'?3.5+rnd()*3.5:9+rnd()*7}}
 }
@@ -4483,6 +4485,7 @@ function sheltered(dir){
   const r0=Math.floor((P.y+4)/T),r1=Math.floor((P.y+P.h-4)/T),c=Math.floor((P.x+P.w/2)/T);
   for(let k=1;k<=3;k++)for(let r=r0;r<=r1;r++)if(isSolid(c-dir*k,r))return true;
   if(L.meuse&&meuseShelter(dir))return true;
+  if(L.train&&!trainOnRoof())return true;   // dans les voitures, pas de vent
   for(const mv of L.movers)if(mv.kind==='truck'||mv.kind==='tram'){const sx=dir<0?mv.x:mv.x+mv.w;if(P.y+P.h>mv.y&&Math.abs((P.x+P.w/2)-sx)<120&&((dir<0&&P.x+P.w<=mv.x+4)||(dir>0&&P.x>=mv.x+mv.w-4)))return true}
   return false;
 }
@@ -6387,7 +6390,7 @@ function bunkerMid(L,g,wpx,R){
    voiture-bar (serveur qui frappe, paquet de chips), arrivée en gare et arrêt du train.
    ========================================================= */
 THEMES.train={outdoor:true,far:'train',horizon:'train',sky:['#5f97cf','#b4d0e6','#f4dcae'],celestial:'none',fog:'#c8d4dc',dark:0,weather:'none',
-  floor:'#5a5e66',floorTop:'#8a8e96',type:'zinc',x:'crate',d:'drape',shelf:'girder',spike:'elec',walker:'rat',flyer:'none',props:[]};
+  floor:'#5a5e66',floorTop:'#8a8e96',type:'zinc',x:'crate',d:'drape',shelf:'girder',spike:'elec',walker:'rat',flyer:'crow',props:[]};
 const TRN={ROOF:7*T,FLOOR:12*T,BOT:13*T,RAIL:590,WIRE:60,VN:650,DEC:7.5};
 const TR_LIV={body:'#e9e6de',band:'#2f4a72',band2:'#24395a',red:'#b8322c',roof:'#a9adb3',roof2:'#8a8e94',under:'#2c2e33',glass:'#20304a'};
 
@@ -6395,10 +6398,11 @@ const TR_LIV={body:'#e9e6de',band:'#2f4a72',band2:'#24395a',red:'#b8322c',roof:'
 function trainPost(Lv){
   if(Lv.def.theme!=='train')return;
   const D=Lv.def.train,R=mulberry(Lv.def.seed+3);
-  const w3=D.wagons[2],w4=D.wagons[3];
+  const w3=D.wagons.find(w=>w.k==='seats'),w4=D.wagons.find(w=>w.k==='bar'),ws=D.wagons.filter(w=>w.k==='ext'),wl=D.wagons[D.wagons.length-1];
   const Tn={v:1,sFar:0,sMid:0,sNear:0,sBal:0,pyl:[],spawnT:3.2,warn:0,nextKind:'pylon',bridgeDone:false,w5:false,
     dir:1,joltT:3,bottles:[],proj:[],litter:[],pass:[],said:{},clickT:.4,door:{c:D.door,open:0,shut:true},
-    waiter:{x:(D.counter[0]+3)*T,st:'idle',t:0,f:1},w7:false,dt:0,stopped:false,stRem:0,
+    waiter:{x:(D.counter[0]+3)*T,st:'idle',t:0,f:1,seen:false},w7:false,dt:0,stopped:false,stRem:0,
+    zA:[0,(w3.c0-2)*T],zB:[(w4.c1+2)*T,(wl.c0-2)*T],b1:ws[4].c0*T,b2:ws[5].c0*T,loco:wl.c0*T,end:(wl.c1+1)*T,stAnchor:(wl.c0-29)*T,panto:(w3.c0+5)*T,ladder:(w4.c1+2)*T+T/2,
     in3:[(w3.c0+1)*T,w3.c1*T],in4:[(w4.c0+1)*T,w4.c1*T],cnt:[D.counter[0]*T,(D.counter[1]+1)*T]};
   Lv.train=Tn;
   // les sièges de la voiture 3 : un tous les deux pas, tournés vers l'avant
@@ -6414,7 +6418,7 @@ function trainPost(Lv){
 }
 const trIn=(Tn,r)=>{const pcx=P.x+P.w/2;return pcx>r[0]&&pcx<r[1]&&P.y>8*T-10}
 function trainOnRoof(){return P.y+P.h<=TRN.ROOF+4}
-function trainZone(x){return x<64*T||(x>131*T&&x<195*T)}
+function trainZone(x){const Tn=L.train;return x<Tn.zA[1]||(x>Tn.zB[0]&&x<Tn.zB[1])}
 
 /* ---------- à chaque image ---------- */
 function trainStep(dt){
@@ -6428,12 +6432,12 @@ function trainStep(dt){
     loopSet('wind',trainOnRoof()?.15*v:.03*v)}
   // les pylônes : sur les toits 1-2 et 5-6
   const roofish=P.y<9*T&&!P.dead;
-  if(pcx>133*T&&!Tn.w5){Tn.w5=true;Tn.spawnT=Math.min(Tn.spawnT,3)}
-  if(pcx>168*T&&!Tn.bridgeDone&&Tn.spawnT>1.15){Tn.spawnT=1.15;Tn.nextKind='bridge'}
+  // aucun avertissement : un pylône (ou une passerelle) toutes les 2 à 5 secondes, à intervalles irréguliers
+  if(pcx>Tn.b1&&!Tn.w5){Tn.w5=true;Tn.spawnT=Math.min(Tn.spawnT,2.5)}
+  if(pcx>Tn.b2+3*T&&!Tn.bridgeDone){Tn.nextKind='bridge'}
   if(!Tn.w7&&roofish&&trainZone(pcx)){Tn.spawnT-=dt;
-    if(Tn.spawnT<=1&&!Tn.warn){Tn.warn=1;if(!G.sim){tone(1900,.05,'square',.04);tone(1900,.05,'square',.04,null,.16)}}
-    if(Tn.spawnT<=0){const k=Tn.nextKind;Tn.pyl.push({k,x:cam.x+W+70,said:false});if(k==='bridge')Tn.bridgeDone=true;
-      Tn.warn=0;Tn.spawnT=6+rnd()*4;Tn.nextKind=Tn.bridgeDone&&pcx>165*T&&rnd()<.35?'bridge':'pylon';if(!G.sim)noise(.5,300,.2,'lowpass')}}
+    if(Tn.spawnT<=0){const k=Tn.nextKind;Tn.pyl.push({k,x:Math.max(cam.x+W+70,pcx+560),said:false});if(k==='bridge')Tn.bridgeDone=true;
+      Tn.spawnT=2+rnd()*3;Tn.nextKind=Tn.bridgeDone&&pcx>Tn.b2&&rnd()<.45?'bridge':'pylon'}}
   for(let i=Tn.pyl.length-1;i>=0;i--){const p=Tn.pyl[i];p.x-=TRN.VN*Math.max(v,.0)*dt;
     if(!p.said&&p.x<pcx-60&&!P.dead&&!P.carried&&trainOnRoof()&&!G.sim){p.said=true;
       if(p.k==='bridge'&&!Tn.said.bridge){Tn.said.bridge=1;say("Ce n'était pas un pylône : c'était un pont ! Heureusement que j'avais les pattes à plat.",3.8)}
@@ -6446,7 +6450,7 @@ function trainStep(dt){
         :(hb.x+hb.w>p.x-62&&hb.x<p.x+62&&hb.y<TRN.ROOF-34&&hb.y+hb.h>TRN.ROOF-120);
       if(hit){P.carried={p,dx:P.x-p.x,y:Math.min(P.y,p.k==='pylon'?TRN.ROOF-30-P.h*.4:TRN.ROOF-34-P.h+4),k:p.k==='pylon'?'pylone':'passerelle'};P.vx=P.vy=0;
         if(!G.sim){G.shake=9;noise(.2,600,.5,'lowpass');tone(220,.15,'square',.08,90)}break}}
-    if(!P.carried&&hb.y<TRN.WIRE+4&&hb.y+hb.h>TRN.WIRE-4&&(trainZone(pcx)||pcx>197*T))G.trainHit='elec';}
+    if(!P.carried&&hb.y<TRN.WIRE+4&&hb.y+hb.h>TRN.WIRE-4&&(trainZone(pcx)||pcx>Tn.loco))G.trainHit='elec';}
   // secousses : tout ce qui roule part du même côté
   Tn.joltT-=dt;if(Tn.joltT<=0){Tn.dir*=-1;Tn.joltT=2.4+rnd()*2.2;if(!G.sim&&(trIn(Tn,Tn.in3)||trIn(Tn,Tn.in4))){G.shake=Math.max(G.shake,3.5);noise(.12,400,.35,'lowpass')}}
   const [a3,b3]=Tn.in3;
@@ -6461,8 +6465,11 @@ function trainStep(dt){
     if(sees&&pa.cool<=0){pa.shock=1.4;pa.cool=3.2;pa.throwT=.28;if(!G.sim){bubble(pa.x+24,TRN.FLOOR-112,pick(["Aaah ! Un pigeon !","Mais c'est dégoûtant !","Au secours !","Un pigeon dans le train !","Ouste, sale bête !"]),'#2a3a5a');
       if(!Tn.said.seen){Tn.said.seen=1;setTimeout(()=>say("Ils me prennent pour un pigeon des villes. Au ras du sol, ils ne me voient pas.",3.6),900)}}}
     if(pa.throwT>=0){pa.throwT-=dt;if(pa.throwT<0){const k=pa.k==='paper'?'news':pa.k==='suit'?'ball':pa.k==='student'||pa.k==='phone'?'can':'ball';
-      const x0=pa.x+30,y0=TRN.FLOOR-80,tx=P.x+P.w/2,ty=P.y+P.h/2,tt=.5;Tn.proj.push({x:x0,y:y0,vx:(tx-x0)/tt,vy:(ty-y0)/tt-.5*1400*tt,k,rot:0});if(!G.sim)noise(.12,1800,.12,'bandpass')}}}
-  for(let i=Tn.proj.length-1;i>=0;i--){const o=Tn.proj[i];o.vy+=1400*dt;o.x+=o.vx*dt;o.y+=o.vy*dt;o.rot+=dt*9;
+      const x0=pa.x+30,y0=TRN.FLOOR-80,tx=P.x+P.w/2,ty=P.y+P.h/2,d=Math.hypot(tx-x0,ty-y0)||1;Tn.proj.push({x:x0,y:y0,vx:(tx-x0)/d*480,vy:(ty-y0)/d*480-160,k,rot:0,t:0});if(!G.sim)noise(.12,1800,.12,'bandpass')}}}
+  for(let i=Tn.proj.length-1;i>=0;i--){const o=Tn.proj[i];o.t+=dt;
+    // ils visent bien : l'objet file droit sur Raymond tant qu'il est en l'air
+    if(o.t<1.4&&!P.dead){const tx=pcx-o.x,ty=P.y+P.h/2-o.y,d=Math.hypot(tx,ty)||1,k=Math.min(1,dt*7);o.vx+=(tx/d*560-o.vx)*k;o.vy+=(ty/d*560-o.vy)*k}else o.vy+=1400*dt;
+    o.x+=o.vx*dt;o.y+=o.vy*dt;o.rot+=dt*9;
     if(!P.dead&&Math.abs(o.x-pcx)<13&&Math.abs(o.y-(P.y+P.h/2))<15){G.trainHit='projectile';Tn.proj.splice(i,1);continue}
     if(o.y>=TRN.FLOOR-4||o.x<a3||o.x>b3){Tn.proj.splice(i,1);if(o.k==='can'&&Tn.bottles.length<7&&o.x>a3&&o.x<b3)Tn.bottles.push({x:o.x,vx:o.vx*.3,rot:0,k:'can'});else if(o.x>a3&&o.x<b3)Tn.litter.push({x:o.x,k:o.k,rot:o.rot});if(!G.sim)noise(.06,2400,.06,'highpass')}}
   // la porte automatique du soufflet
@@ -6471,16 +6478,19 @@ function trainStep(dt){
     else if(!want&&!d.shut&&!(P.x+P.w>d.c*T&&P.x<d.c*T+T)){d.shut=true;for(let r=9;r<=11;r++)L.g[r][d.c]='D'}}
   // le serveur
   {const w=Tn.waiter,[c0,c1]=Tn.cnt,in4=trIn(Tn,Tn.in4)&&!P.dead;w.t+=dt;
-    if(in4&&!Tn.said.bar&&pcx>c0-140&&!G.sim){Tn.said.bar=1;bubble(w.x,TRN.FLOOR-140,"Hé ! Pas d'animaux au bar !",'#2a2420')}
+    // il ne remarque Raymond qu'une fois sur le comptoir
+    const onBar=in4&&pcx>c0&&pcx<c1&&P.y+P.h<=TRN.FLOOR-74&&P.y+P.h>TRN.FLOOR-170;
+    if(onBar&&!w.seen){w.seen=true;if(!G.sim)bubble(w.x,TRN.FLOOR-140,"Hé ! Pas d'animaux sur mon comptoir !",'#2a2420')}
+    if(!in4)w.seen=false;
     const tx=clamp(pcx,c0+26,c1-26);
-    if(w.st==='idle'||w.st==='cool'){if(in4&&pcx>c0-80){const d=tx-w.x;w.x+=clamp(d,-130*dt,130*dt);if(Math.abs(d)>2)w.f=Math.sign(d)}
-      if(w.st==='cool'&&w.t>.75){w.st='idle';w.t=0}
-      if(w.st==='idle'&&in4&&Math.abs(w.x-pcx)<36&&P.y+P.h>TRN.FLOOR-150&&P.y+P.h<=TRN.FLOOR-70){w.st='wind';w.t=0;if(!G.sim){tone(500,.06,'square',.04);if(rnd()<.5)bubble(w.x,TRN.FLOOR-150,pick(["Ouste !","Dehors !","Sale bête !"]),'#2a2420')}}}
-    else if(w.st==='wind'&&w.t>.5){w.st='strike';w.t=0;if(!G.sim){noise(.1,1500,.25,'bandpass');G.shake=Math.max(G.shake,2)}}
-    else if(w.st==='strike'){if(!P.dead&&Math.abs(w.x+w.f*6-pcx)<30&&P.y+P.h>TRN.FLOOR-150&&P.y+P.h<=TRN.FLOOR-74)G.trainHit='serveur';if(w.t>.18){w.st='cool';w.t=0}}}
+    if(w.st==='idle'||w.st==='cool'){if(w.seen){const d=tx-w.x;w.x+=clamp(d,-175*dt,175*dt);if(Math.abs(d)>2)w.f=Math.sign(d)}else{w.x=clamp(w.x+Math.sin(G.lt*.6)*20*dt,c0+30,c1-30);w.f=Math.sin(G.lt*.6)>0?1:-1}
+      if(w.st==='cool'&&w.t>.45){w.st='idle';w.t=0}
+      if(w.st==='idle'&&w.seen&&Math.abs(w.x-pcx)<40&&P.y+P.h>TRN.FLOOR-150&&P.y+P.h<=TRN.FLOOR-70){w.st='wind';w.t=0;if(!G.sim){tone(500,.06,'square',.04);if(rnd()<.5)bubble(w.x,TRN.FLOOR-150,pick(["Ouste !","Dehors !","Sale bête !"]),'#2a2420')}}}
+    else if(w.st==='wind'&&w.t>.3){w.st='strike';w.t=0;if(!G.sim){noise(.1,1500,.25,'bandpass');G.shake=Math.max(G.shake,2)}}
+    else if(w.st==='strike'){if(!P.dead&&Math.abs(w.x+w.f*6-pcx)<30&&P.y+P.h>TRN.FLOOR-150&&P.y+P.h<=TRN.FLOOR-74)G.trainHit='serveur';if(w.t>.15){w.st='cool';w.t=0}}}
   // la motrice : carillon, annonce, freinage
-  if(!Tn.w7&&pcx>197*T&&!P.dead){Tn.w7=true;Tn.dt=0;if(!G.sim){[[659,0],[523,.32],[784,.64]].forEach(([f,d])=>tone(f,.5,'sine',.09,null,d));
-      setTimeout(()=>bubble(214*T,TRN.ROOF-40,"« …notre train entre en gare de R… »",'#3a4a6a'),1200);
+  if(!Tn.w7&&pcx>Tn.loco&&!P.dead){Tn.w7=true;Tn.dt=0;if(!G.sim){[[659,0],[523,.32],[784,.64]].forEach(([f,d])=>tone(f,.5,'sine',.09,null,d));
+      setTimeout(()=>bubble(Tn.loco+17*T,TRN.ROOF-40,"« …notre train entre en gare de R… »",'#3a4a6a'),1200);
       setTimeout(()=>say("En gare de quoi ? Le vent a mangé la moitié du nom.",3.4),3400)}}
 }
 function trainAfterMove(dt){
@@ -6552,7 +6562,7 @@ function drawTrainBack(t){
   {const sx=cx+140,sy=cy+150;const gl=g.createRadialGradient(sx,sy,8,sx,sy,170);gl.addColorStop(0,'rgba(255,244,210,.9)');gl.addColorStop(.12,'rgba(255,236,190,.55)');gl.addColorStop(1,'rgba(255,230,180,0)');g.fillStyle=gl;g.fillRect(sx-170,sy-170,340,340)}
   trTile(g,trClouds(),Tn.sFar*.6+t*4,cy+10,cx);
   // la cathédrale à l'horizon : elle grandit à mesure qu'on avance
-  {const pr=clamp(P.x/(226*T),0,1),s=.42+pr*.38+(Tn.w7?Math.min(1,Tn.dt/TRN.DEC)*.15:0),x=cx+W*.86-pr*40,y=HZ-34;g.save();g.translate(x,y);g.scale(s,s);g.fillStyle='rgba(120,130,150,.75)';
+  {const pr=clamp(P.x/Tn.end,0,1),s=.42+pr*.38+(Tn.w7?Math.min(1,Tn.dt/TRN.DEC)*.15:0),x=cx+W*.86-pr*40,y=HZ-34;g.save();g.translate(x,y);g.scale(s,s);g.fillStyle='rgba(120,130,150,.75)';
     g.fillRect(-60,-30,120,40);g.fillRect(-56,-78,26,60);g.fillRect(30,-78,26,60);poly(g,[-60,-30,0,-60,60,-30]);g.fill();g.fillRect(-8,-50,16,30);
     g.fillStyle='rgba(150,160,180,.6)';g.beginPath();g.arc(0,-20,9,0,7);g.fill();g.fillStyle='rgba(120,130,150,.75)';for(const tx of[-43,43]){poly(g,[tx-13,-78,tx,-90,tx+13,-78]);g.fill()}g.restore()}
   trTile(g,trFarStrip(),Tn.sFar,HZ-130,cx);
@@ -6609,7 +6619,7 @@ function drawBridgeFront(g,x,t){
 }
 /* la gare : derrière le train, le bâtiment et sa marquise ; devant, le bord du quai */
 function drawStationBack(g,Tn,t){
-  const ox=168*T+Tn.stRem;if(ox>cam.x+W+200)return;
+  const ox=Tn.stAnchor+Tn.stRem;if(ox>cam.x+W+200)return;
   g.fillStyle='#d8ccb0';g.fillRect(ox,150,2600,TRN.RAIL-150);
   for(let k=0;k<20;k++){const x=ox+60+k*126;g.fillStyle='#3a4a5a';g.beginPath();g.moveTo(x,TRN.RAIL-40);g.lineTo(x,230);g.arc(x+30,230,30,Math.PI,0);g.lineTo(x+60,TRN.RAIL-40);g.closePath();g.fill();g.fillStyle='rgba(255,220,150,.35)';g.fillRect(x+6,240,48,TRN.RAIL-290)}
   g.fillStyle='#b8a888';g.fillRect(ox,140,2600,14);for(let x=ox;x<ox+2600;x+=60){g.fillStyle='#c8b898';g.fillRect(x,128,30,14)}
@@ -6619,7 +6629,7 @@ function drawStationBack(g,Tn,t){
   for(let k=0;k<13;k++){const x=ox+120+k*190+(k%3)*30;g.fillStyle=['#3a4a6a','#8a3a3a','#4a6a4a'][k%3];g.fillRect(x,TRN.RAIL-60,12,30);g.fillStyle='#e0c0a0';g.beginPath();g.arc(x+6,TRN.RAIL-66,6,0,7);g.fill()}
 }
 function drawStationFront(g,Tn){
-  const ox=168*T+Tn.stRem;if(ox>cam.x+W+200)return;const y=TRN.BOT+16;
+  const ox=Tn.stAnchor+Tn.stRem;if(ox>cam.x+W+200)return;const y=TRN.BOT+16;
   g.fillStyle='#a8a296';g.fillRect(ox,y,2700,cam.y+H-y+10);g.fillStyle='#e8d040';g.fillRect(ox,y+6,2700,5);g.fillStyle='#c8c2b4';g.fillRect(ox,y,2700,4);
   for(let x=ox+80;x<ox+2700;x+=420){g.fillStyle='#5a4a3a';g.fillRect(x,y+18,70,6);g.fillRect(x+6,y+24,4,14);g.fillRect(x+60,y+24,4,14)}
   g.fillStyle='#2a3a5a';g.fillRect(ox+1700,y-70,6,80);g.fillRect(ox+1660,y-96,90,28);g.fillStyle='#f0ead8';g.font='bold 15px '+F_DISP;g.textAlign='center';g.fillText('REIMS',ox+1705,y-77);
@@ -6629,7 +6639,7 @@ function drawStationFront(g,Tn){
 function drawTrainMid(t){
   const Tn=L.train;if(!Tn)return;const g=ctx,F=TRN.FLOOR,vis=(a,b)=>b>cam.x-80&&a<cam.x+W+80;
   // étincelles sur la ligne haute tension des voitures 3-4
-  if(vis(65*T,131*T)&&(t*7|0)%5===0){const sx=65*T+((t*1300)%(66*T));g.strokeStyle='rgba(170,210,255,.9)';g.lineWidth=1.5;g.beginPath();g.moveTo(sx,TRN.ROOF-22);g.lineTo(sx+5,TRN.ROOF-30);g.lineTo(sx-2,TRN.ROOF-36);g.stroke()}
+  if(vis(Tn.in3[0],Tn.in4[1])&&(t*7|0)%5===0){const sx=Tn.in3[0]+((t*1300)%(Tn.in4[1]-Tn.in3[0]));g.strokeStyle='rgba(170,210,255,.9)';g.lineWidth=1.5;g.beginPath();g.moveTo(sx,TRN.ROOF-22);g.lineTo(sx+5,TRN.ROOF-30);g.lineTo(sx-2,TRN.ROOF-36);g.stroke()}
   if(vis(Tn.in3[0],Tn.in3[1])){
     for(const pa of Tn.pass)drawPassenger(g,pa,t);
     for(const l of Tn.litter)drawTrainLitter(g,l.x,F,l.k,l.rot);
@@ -6685,12 +6695,19 @@ function drawTrainThrown(g,k){if(k==='can'){g.fillStyle='#3a6ac8';rr(g,-5,-8,10,
 function drawTrainLitter(g,x,F,k,rot){g.save();g.translate(x,F-2);if(k==='news'){g.fillStyle='#e0dccf';poly(g,[-12,0,-2,-6,12,-1,4,0]);g.fill()}else{g.fillStyle='#e8e4d8';g.beginPath();g.arc(0,-4,5,0,7);g.fill()}g.restore()}
 /* la voiture-bar : le serveur derrière son comptoir, puis la façade du comptoir, puis les chips */
 function drawBarMid(g,Tn,t){
-  const F=TRN.FLOOR,[c0,c1]=Tn.cnt,w=Tn.waiter,top=10*T;
+  const F=TRN.FLOOR,[c0,c1]=Tn.cnt,w=Tn.waiter,top=10*T,x0=Tn.in4[0]-T;
+  // des voyageurs debout qui mangent aux tables hautes
+  [[x0+150,-1,'#5a3a4a','#e8c8a8',0],[x0+122,1,'#2a4a6a','#c89878',1],[x0+330,-1,'#4a5a3a','#e0b896',2]].forEach(([tx,f,coat,skin,i])=>{const x=tx+f*-30,b=Math.sin(t*1.4+i)*1;
+    g.fillStyle='#24262c';g.fillRect(x-7,F-52,6,52);g.fillRect(x+1,F-52,6,52);g.fillStyle=coat;rr(g,x-12,F-108+b,24,58,8);g.fill();
+    g.fillStyle=skin;g.beginPath();g.arc(x,F-118+b,10,0,7);g.fill();g.fillStyle=['#3a2a1a','#1a1a1a','#8a6a4a'][i];g.beginPath();g.arc(x,F-122+b,10,Math.PI,0);g.fill();
+    const bite=((t*.7+i*.4)%2)<.4;g.strokeStyle=coat;g.lineWidth=6;g.lineCap='round';g.beginPath();g.moveTo(x-f*2,F-96);g.lineTo(x-f*14,bite?F-114:F-84);g.stroke();g.lineCap='butt';
+    if(i===1){g.fillStyle='#f0ece4';g.fillRect(x-f*14-3,(bite?F-120:F-90),7,8)}else{g.fillStyle='#d8a860';rr(g,x-f*14-8,(bite?F-118:F-88),16,7,3);g.fill();g.fillStyle='#e8d8b0';g.fillRect(x-f*14-6,(bite?F-116:F-86),12,2)}
+    if(bite){g.fillStyle='#111';g.fillRect(x-f*6-1,F-114+b,3,2)}});
   {const x=w.x,y=F,f=w.f;g.save();g.translate(x,y);
     g.fillStyle='#1e1e22';g.fillRect(-10,-62,8,62);g.fillRect(2,-62,8,62);g.fillStyle='#f4f2ec';rr(g,-14,-118,28,58,8);g.fill();g.fillStyle='#2a2a2e';g.fillRect(-14,-104,28,40);g.fillStyle='#f4f2ec';poly(g,[-6,-118,0,-104,6,-118]);g.fill();
     g.fillStyle='#e8eae4';g.fillRect(-15,-70,30,32);g.fillStyle='#e8c4a0';g.beginPath();g.arc(0,-130,12,0,7);g.fill();g.fillStyle='#2a1a12';g.beginPath();g.arc(0,-134,12,Math.PI*1.05,Math.PI*1.95);g.fill();
     g.fillStyle='#2a1a12';g.fillRect(f*2-6,-125,12,3);g.fillStyle='#111';g.beginPath();g.arc(f*6,-132,1.5,0,7);g.fill();
-    const up=w.st==='wind'?Math.min(1,w.t/.35):w.st==='strike'?-.3:0;
+    const up=w.st==='wind'?Math.min(1,w.t/.22):w.st==='strike'?-.3:0;
     g.strokeStyle='#f4f2ec';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(f*10,-110);const hx=f*(18-up*6),hy=-90-up*46+(w.st==='strike'?34:0);g.lineTo(hx,hy);g.stroke();g.lineCap='butt';
     g.fillStyle='#f0f0ea';g.save();g.translate(hx,hy);g.rotate(f*(.4+up));g.fillRect(-3,0,10,26);g.fillStyle='#c8302a';g.fillRect(-3,8,10,3);g.restore();
     g.restore()}
@@ -6712,7 +6729,7 @@ function drawTrainFront(t){
   // traînées de vent au-dessus des toits
   if(Tn.v>.2){g.strokeStyle='rgba(255,255,255,'+(.3*Tn.v)+')';g.lineWidth=1;for(let k=0;k<9;k++){const x=cam.x+((k*233-t*900*Tn.v)%(W+200)+W+200)%(W+200)-100,y=60+((k*61)%200);g.beginPath();g.moveTo(x,y);g.lineTo(x+70,y);g.stroke()}}
   // l'annonce : un pylône (ou autre chose) arrive
-  if(Tn.warn&&!P.dead){const a=.6+.4*Math.sin(t*16),x=cam.x+W-46,y=TRN.ROOF-70;g.save();g.globalAlpha=a;g.fillStyle='#f0e6c8';rr(g,x-20,y-24,40,48,6);g.fill();g.strokeStyle='#a8322d';g.lineWidth=2.5;rr(g,x-20,y-24,40,48,6);g.stroke();
+  if(false){const a=.6+.4*Math.sin(t*16),x=cam.x+W-46,y=TRN.ROOF-70;g.save();g.globalAlpha=a;g.fillStyle='#f0e6c8';rr(g,x-20,y-24,40,48,6);g.fill();g.strokeStyle='#a8322d';g.lineWidth=2.5;rr(g,x-20,y-24,40,48,6);g.stroke();
     g.fillStyle='#3a4a42';g.fillRect(x-2,y-16,4,28);g.fillRect(x-10,y-16,20,4);g.fillStyle='#a8322d';g.font='bold 16px '+F_DISP;g.textAlign='center';g.fillText('!',x+11,y+16);
     g.fillStyle='rgba(168,50,45,.9)';poly(g,[x-28,y-6,x-36,y,x-28,y+6]);g.fill();g.restore()}
 }
@@ -6723,19 +6740,19 @@ function trainBuildTiles(Lv){
   const R=mulberry(Lv.def.seed+11),L0=Lv;
   for(const w of D.wagons)drawWagon(g,w,R,L0);
   // attelages, soufflets et échelle
-  for(const w of D.wagons){const x=(w.c1+1)*T;if(w.n===7)continue;
+  const ks=D.wagons.map(w=>w.k);for(const w of D.wagons){const x=(w.c1+1)*T;if(w.k==='loco')continue;const nx=ks[w.n]||'';
     g.fillStyle='#2a2c30';g.fillRect(x-4,TRN.FLOOR+10,88,10);g.fillStyle='#4a4e56';g.fillRect(x+30,TRN.FLOOR+6,20,18);
-    if(w.n===2||w.n===4){g.fillStyle='#5a5e66';g.fillRect(x,TRN.FLOOR,80,8);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x,TRN.FLOOR,80,1.5);g.fillStyle='rgba(0,0,0,.3)';for(let k=4;k<80;k+=8)g.fillRect(x+k,TRN.FLOOR+2,4,3)}
-    if(w.n!==3){// le soufflet en accordéon
+    if(nx==='seats'||w.k==='bar'){g.fillStyle='#5a5e66';g.fillRect(x,TRN.FLOOR,80,8);g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x,TRN.FLOOR,80,1.5);g.fillStyle='rgba(0,0,0,.3)';for(let k=4;k<80;k+=8)g.fillRect(x+k,TRN.FLOOR+2,4,3)}
+    if(w.k!=='seats'){// le soufflet en accordéon
       g.fillStyle='#34363b';rr(g,x+10,8*T+20,60,TRN.FLOOR-8*T-16,10);g.fill();g.strokeStyle='#4c4f56';g.lineWidth=3;for(let k=0;k<6;k++){g.beginPath();g.moveTo(x+16+k*9.5,8*T+24);g.lineTo(x+16+k*9.5,TRN.FLOOR);g.stroke()}
       g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x+10,TRN.FLOOR-6,60,6)}}
-  {const x=132*T+T/2;g.fillStyle='#e0b020';g.fillRect(x-14,8*T-4,3,TRN.FLOOR-8*T+4);g.fillRect(x+11,8*T-4,3,TRN.FLOOR-8*T+4);for(let r=8;r<=11;r++)g.fillRect(x-14,r*T,28,4)}
+  {const x=Lv.train.ladder;g.fillStyle='#e0b020';g.fillRect(x-14,8*T-4,3,TRN.FLOOR-8*T+4);g.fillRect(x+11,8*T-4,3,TRN.FLOOR-8*T+4);for(let r=8;r<=11;r++)g.fillRect(x-14,r*T,28,4)}
   // climatiseurs et ligne haute tension sur les toits
   for(let r=0;r<ROWS;r++)for(let cc=0;cc<Lv.w;cc++){const ch=Lv.g[r][cc],x=cc*T,y=r*T;
     if(ch==='X'){g.fillStyle='#b8bcc2';rr(g,x+1,y+12,T-2,T-12,4);g.fill();g.fillStyle='#8a8e96';for(let k=0;k<5;k++)g.fillRect(x+6,y+18+k*4,T-12,2);g.fillStyle='rgba(255,255,255,.4)';g.fillRect(x+2,y+12,T-4,2)}
     if(ch==='^'){g.fillStyle='#6a4a3a';for(let k=0;k<3;k++){g.beginPath();g.ellipse(x+20,y+T-6-k*5,6,2.4,0,0,7);g.fill()}g.fillStyle='#8a8e96';g.fillRect(x+18,y+T-22,4,6);g.fillStyle='#c8a030';g.fillRect(x,y+T-24,T,3)}}
   {// le pantographe de la voiture 3
-    const x=70*T,y=TRN.ROOF-6;g.strokeStyle='#3a3e44';g.lineWidth=3;g.beginPath();g.moveTo(x,y);g.lineTo(x+40,y-80);g.lineTo(x+10,TRN.WIRE+4);g.moveTo(x+70,y);g.lineTo(x+40,y-80);g.stroke();g.fillStyle='#3a3e44';g.fillRect(x-10,TRN.WIRE+2,46,4);g.fillStyle='#6a4a3a';g.fillRect(x-6,y-6,82,6)}
+    const x=Lv.train.panto,y=TRN.ROOF-6;g.strokeStyle='#3a3e44';g.lineWidth=3;g.beginPath();g.moveTo(x,y);g.lineTo(x+40,y-80);g.lineTo(x+10,TRN.WIRE+4);g.moveTo(x+70,y);g.lineTo(x+40,y-80);g.stroke();g.fillStyle='#3a3e44';g.fillRect(x-10,TRN.WIRE+2,46,4);g.fillStyle='#6a4a3a';g.fillRect(x-6,y-6,82,6)}
   return c;
 }
 function drawWagon(g,w,R,Lv){
@@ -6763,7 +6780,7 @@ function drawWagon(g,w,R,Lv){
       g.save();g.globalCompositeOperation='destination-out';g.fillRect(dx+6,top+44,13,44);g.fillRect(dx+25,top+44,13,44);g.restore();g.fillStyle='rgba(26,40,64,.55)';g.fillRect(dx+6,top+44,13,44);g.fillRect(dx+25,top+44,13,44);
       g.fillStyle='#e8c020';g.fillRect(dx-5,top+60,3,70);g.fillRect(dx+46,top+60,3,70);g.fillStyle='#3ac070';g.beginPath();g.arc(dx+22,top+120,3,0,7);g.fill()}
     g.fillStyle='#2a3a5a';g.font='bold 12px '+F_DISP;g.textAlign='left';g.fillText(String(w.n),x0+80,bot-40);g.font='8px '+F_DISP;g.fillText('TER · 2e classe',x0+96,bot-41);
-    if(w.n===6){g.fillStyle='#d84a8a';g.font='bold 22px '+F_DISP;g.save();g.translate(x0+500,bot-50);g.rotate(-.08);g.fillText('ZÉBU',0,0);g.restore()}
+    if(w.n===9){g.fillStyle='#d84a8a';g.font='bold 22px '+F_DISP;g.save();g.translate(x0+500,bot-50);g.rotate(-.08);g.fillText('ZÉBU',0,0);g.restore()}
     g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x0,bot,xe-x0,4);
     return}
   // voitures en coupe : on voit l'intérieur
@@ -6786,12 +6803,12 @@ function drawWagon(g,w,R,Lv){
       g.fillStyle='#355489';rr(g,x+4,F-36,44,11,4);g.fill();g.fillStyle='rgba(255,255,255,.12)';for(let k=0;k<5;k++)g.fillRect(x+8+k*8,F-34,3,3);g.fillStyle='#3a3e44';g.fillRect(x+18,F-25,10,25);g.fillRect(x+10,F-3,26,3);
       g.fillStyle='#4a5a6a';g.fillRect(x+30,F-50,16,4)}}
   else{// la voiture-bar : étagères, machine à café, ardoise, sticker
-    const bx=(113)*T;g.fillStyle='#5a3e2a';for(const y of[top+70,top+100])g.fillRect(bx,y,12*T,5);
+    const bx=Lv.def.train.counter[0]*T;g.fillStyle='#5a3e2a';for(const y of[top+70,top+100])g.fillRect(bx,y,12*T,5);
     for(let k=0;k<20;k++){const x=bx+10+k*23;g.fillStyle=['#5a8a5a','#c8302a','#e8b828','#3a6ac8','#8a2a4a'][k%5];rr(g,x,top+50+(k%2)*30,9,20,3);g.fill();g.fillRect(x+3,top+46+(k%2)*30,3,5)}
     g.fillStyle='#2a2a2e';rr(g,bx+200,top+104,60,52,4);g.fill();g.fillStyle='#8a8e96';g.fillRect(bx+210,top+112,40,10);g.fillStyle='#c83a2a';g.beginPath();g.arc(bx+230,top+136,4,0,7);g.fill();
     g.fillStyle='#2a2e2a';g.fillRect(x0+60,top+52,170,70);g.strokeStyle='#8a6a48';g.lineWidth=3;g.strokeRect(x0+60,top+52,170,70);
     g.fillStyle='#f0ece0';g.font='bold 12px '+F_DISP;g.textAlign='center';g.fillText('VOITURE-BAR',x0+145,top+70);g.font='italic 9px '+F_BODY;
-    ['Café ............ 2,30 €','Croissant ...... 1,90 €','Chips ............ 2,50 €','Jambon-beurre .. 5,90 €'].forEach((s,i)=>g.fillText(s,x0+145,top+84+i*10));
+    ['Café ............ 9,20 €','Croissant ...... 7,60 €','Chips .......... 10,00 €','Jambon-beurre . 23,60 €'].forEach((s,i)=>g.fillText(s,x0+145,top+84+i*10));
     g.fillStyle='#fff';g.beginPath();g.arc(bx-24,top+86,11,0,7);g.fill();g.strokeStyle='#c8302a';g.lineWidth=2;g.stroke();g.fillStyle='#2a2a2a';g.fillRect(bx-31,top+84,12,5);g.fillRect(bx-31,top+89,2,4);g.fillRect(bx-21,top+89,2,4);g.beginPath();g.arc(bx-19,top+83,2.5,0,7);g.fill();
     g.strokeStyle='#c8302a';g.beginPath();g.moveTo(bx-32,top+78);g.lineTo(bx-16,top+94);g.stroke();
     // tables hautes et tabourets

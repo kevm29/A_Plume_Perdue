@@ -4,36 +4,38 @@
    voiture 4 (voiture-bar), toits 5-6 (pylônes, un rat, une passerelle), motrice 7 qui entre en gare.
    Mécaniques et décor : 11i_train.js */
 LEVELS.push((()=>{
-  const RW=230,RR=17,ROOF=7,FLOOR=12;
+  const RR=17,ROOF=7,FLOOR=12;
+  // A1-A4 : toits ; S : voyageurs (en coupe) ; B : voiture-bar ; B1-B4 : toits ; M : motrice
+  const spec=[['ext',30],['ext',30],['ext',30],['ext',30],['seats',32],['bar',32],['ext',30],['ext',30],['ext',30],['ext',30],['loco',30]];
+  const wagons=[];{let c=1;spec.forEach(([k,n],i)=>{wagons.push({c0:c,c1:c+n-1,k,n:i+1});c+=n+2})}
+  const RW=wagons[wagons.length-1].c1+2;   // la dernière colonne est un mur : on ne tombe pas devant la motrice
   const g=Array.from({length:RR},()=>Array(RW).fill('.'));
   const put=(c,r,ch)=>{g[r][c]=ch};
   const run=(c0,c1,r,ch)=>{for(let c=c0;c<=c1;c++)g[r][c]=ch};
   const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
-  const wagons=[{c0:1,c1:30,k:'ext',n:1},{c0:33,c1:62,k:'ext',n:2},{c0:65,c1:96,k:'seats',n:3},{c0:99,c1:130,k:'bar',n:4},
-                {c0:133,c1:162,k:'ext',n:5},{c0:165,c1:194,k:'ext',n:6},{c0:197,c1:226,k:'loco',n:7}];
   for(const w of wagons){
     if(w.k==='ext'||w.k==='loco'){for(let r=ROOF;r<=FLOOR;r++)run(w.c0,w.k==='loco'?w.c1-2:w.c1,r,'#');if(w.k==='loco')for(let r=ROOF+1;r<=FLOOR;r++)run(w.c1-1,w.c1,r,'#')}
     else{run(w.c0,w.c1,ROOF,'#');run(w.c0,w.c1,FLOOR,'#');put(w.c0,ROOF+1,'#');put(w.c1,ROOF+1,'#')}
   }
-  // soufflet fermé entre la 3 et la 4 ; porte automatique (D) au bout de la 3
-  run(97,98,ROOF,'#');run(97,98,ROOF+1,'#');run(97,98,FLOOR,'#');for(let r=9;r<=11;r++)put(96,r,'D');
-  // le comptoir du bar
-  for(let r=10;r<=11;r++)run(113,124,r,'#');
-  // la ligne haute tension sur les toits des voitures 3 et 4 (pantographe)
-  run(65,130,ROOF-1,'^');
-  // attelages où l'on peut se poser, échelle de la voiture 5
-  run(63,64,FLOOR,'t');run(131,132,FLOOR,'t');for(let r=8;r<=11;r++)put(132,r,'t');
-  // climatiseurs sur les toits
-  for(const c of[12,13,22,42,43,52,141,142,174,175,184,185])put(c,ROOF-1,'X');
-  // un rat clandestin sur le toit de la 5
-  put(150,ROOF-1,'k');put(145,ROOF-1,'|');put(160,ROOF-1,'|');
-  corn([8,5],[13,4],[26,5],[38,5],[48,3],[60,5],[64,11],[72,11],[80,10],[88,11],[97,11],[104,10],[116,9],[127,11],[138,5],[150,4],[158,5],[170,5],[180,3],[190,5],[205,5],[215,5]);
-  for(const[c,r]of[[35,6],[67,11],[101,11],[135,6],[167,6],[199,6]])put(c,r,'C');
-  put(4,6,'S');put(223,6,'E');
-  put(57,6,'q');put(70,11,'q');put(100,11,'q');put(137,6,'q');
+  const S=wagons[4],B=wagons[5],B1=wagons[6],M=wagons[10];
+  // soufflet fermé entre les voyageurs et le bar ; porte automatique (D)
+  run(S.c1+1,S.c1+2,ROOF,'#');run(S.c1+1,S.c1+2,ROOF+1,'#');run(S.c1+1,S.c1+2,FLOOR,'#');for(let r=9;r<=11;r++)put(S.c1,r,'D');
+  const cnt=[B.c0+14,B.c0+25];for(let r=10;r<=11;r++)run(cnt[0],cnt[1],r,'#');
+  run(S.c0,B.c1,ROOF-1,'^');                                    // ligne haute tension (pantographe)
+  run(S.c0-2,S.c0-1,FLOOR,'t');run(B.c1+1,B.c1+2,FLOOR,'t');for(let r=8;r<=11;r++)put(B.c1+2,r,'t');   // attelages, échelle
+  for(const w of wagons)if(w.k==='ext')for(const d of[11,12,21])put(w.c0+d+(w.n%2)*3,ROOF-1,'X');
+  // rats et corbeaux
+  for(const[c,a,b]of[[wagons[1].c0+15,wagons[1].c0+9,wagons[1].c0+24],[wagons[3].c0+15,wagons[3].c0+8,wagons[3].c0+26],[B1.c0+17,B1.c0+12,B1.c0+27],[wagons[8].c0+14,wagons[8].c0+8,wagons[8].c0+26]]){put(c,ROOF-1,'k');put(a,ROOF-1,'|');put(b,ROOF-1,'|')}
+  for(const[c,r]of[[24,3],[70,2],[104,4],[B1.c0+8,3],[wagons[7].c0+20,2],[wagons[9].c0+6,4]])put(c,r,'m');
+  for(const w of wagons){if(w.k==='ext'||w.k==='loco')corn([w.c0+7,5],[w.c0+16,4],[w.c0+26,5])}
+  corn([S.c0-1,11],[S.c0+7,11],[S.c0+15,10],[S.c0+23,11],[S.c1+1,11],[B.c0+5,10],[B.c0+19,9],[B.c1-3,11]);
+  for(const[c,r]of[[wagons[1].c0+2,6],[wagons[3].c0+2,6],[S.c0+2,11],[B.c0+2,11],[B1.c0+2,6],[wagons[8].c0+2,6],[M.c0+2,6]])put(c,r,'C');
+  put(4,6,'S');put(M.c1,7,'E');
+  put(wagons[3].c1-5,6,'q');put(S.c0+5,11,'q');put(B.c0+1,11,'q');put(B1.c0+4,6,'q');
   return {w:2,name:"Le train",theme:'train',exit:'train',seed:79,rows:RR,camY:.55,
+    gust:{period:5.3,dur:1.1,push:250,dir:-1},
     train:{wagons,seats:['old','empty','phone','sleep','bagblue','paper','empty','student','bagred','suit','sleep','phone','empty','knit'],
-      bottles:[70.5,77.5,84.5,91.2],door:96,counter:[113,124],chips:118.5},
+      bottles:[S.c0+5.5,S.c0+12.5,S.c0+19.5,S.c0+26.2],door:S.c1,counter:cnt,chips:cnt[0]+5.5},
     start:"Je ne volerai jamais jusque là-bas d'une traite. Ce train file vers le clocher : je monte dessus.",
     hints:[],
     quips:["Je n'en peux plus. C'est trop dangereux, là-haut : je descends entre les wagons.",
