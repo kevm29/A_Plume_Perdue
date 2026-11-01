@@ -14,8 +14,11 @@ const BOLT_PERIOD=3.0;
    (une seconde par battement). Vidée, l'aile est « décousue » : plus de battement ni de vol plané avant 60. */
 const STAM_MAX=100,STAM_FLAP=30,STAM_GLIDE=15,STAM_REGEN=30,STAM_RESUME=60;
 
-function say(text,dur,who){G.quip={text,t:0,dur:Math.min(3,dur||3),who:who||'RAYMOND'}}
-function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:1.2+text.length*.035,col:col||'#a8322d',rot:(rnd()-.5)*.25})}
+/* toute parole reste au moins 3 s (plus si elle est longue) ; une nouvelle parole attend que la précédente ait été lue */
+function say(text,dur,who){if(!text)return;const d=Math.max(3,dur||3,1.2+text.length*.045);
+  if(G.quip&&G.quip.t<3&&G.quip.text!==text&&G.state==='play'){G.quipQ=G.quipQ||[];if(!G.quipQ.some(q=>q[1]===text)){G.quipQ.push([who||'RAYMOND',text,d]);if(G.quipQ.length>3)G.quipQ.shift()}return}
+  G.quip={text,t:0,dur:d,who:who||'RAYMOND'}}
+function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:Math.max(3,1.2+text.length*.035),col:col||'#a8322d',rot:(rnd()-.5)*.25})}
 function wear(){return S.run.wear||0}
 function loadLayers(i){
   const key=i+':'+RS;
@@ -31,7 +34,7 @@ function startLevel(i){
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
   setSong(songKey(i));loopsOff();
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
-  parts.length=0;G.quip=null;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
+  parts.length=0;G.quip=null;G.quipQ=[];G.hintShow=-1;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
   if(L.dome){
     const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
     L.acts.push({kind:'secret',style:'backdoor',x:L.backDoor.x+6,y:L.dome.floor,open:0,t:0,used:false});
@@ -284,7 +287,8 @@ function stepPlay(dt){
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;
-  if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0}G.hintT=(G.hintT||0)+dt;G.hintI=hn>=0&&G.hintT<3?hn:-1;
+  // un cartel s'affiche 3 s pleines, même si on s'en éloigne
+  if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0;if(hn>=0){G.hintShow=hn;G.hintShowT=0}}G.hintT=(G.hintT||0)+dt;G.hintShowT=(G.hintShowT||0)+dt;G.hintI=G.hintShow!=null&&G.hintShow>=0&&G.hintShowT<3?G.hintShow:-1;
   if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
   if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&trainExitOk()&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}

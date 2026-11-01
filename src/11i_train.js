@@ -91,7 +91,7 @@ function trainStep(dt){
     if(o.t<1.4&&!P.dead){const tx=pcx-o.x,ty=P.y+P.h/2-o.y,d=Math.hypot(tx,ty)||1,k=Math.min(1,dt*7);o.vx+=(tx/d*560-o.vx)*k;o.vy+=(ty/d*560-o.vy)*k}else o.vy+=1400*dt;
     o.x+=o.vx*dt;o.y+=o.vy*dt;o.rot+=dt*9;
     if(!P.dead&&Math.abs(o.x-pcx)<13&&Math.abs(o.y-(P.y+P.h/2))<15){G.trainHit='projectile';Tn.proj.splice(i,1);continue}
-    if(o.y>=TRN.FLOOR-4||o.x<a3||o.x>b3){Tn.proj.splice(i,1);if(o.k==='can'&&Tn.bottles.length<7&&o.x>a3&&o.x<b3)Tn.bottles.push({x:o.x,vx:o.vx*.3,rot:0,k:'can'});else if(o.x>a3&&o.x<b3)Tn.litter.push({x:o.x,k:o.k,rot:o.rot});if(!G.sim)noise(.06,2400,.06,'highpass')}}
+    if(o.y>=TRN.FLOOR-4||o.x<a3||o.x>b3){Tn.proj.splice(i,1);if(o.x>a3&&o.x<b3)Tn.litter.push({x:o.x,k:o.k,rot:o.rot});if(!G.sim)noise(.06,2400,.06,'highpass')}}
   // la porte automatique du soufflet
   {const d=Tn.door,dx=d.c*T+T/2,near=Math.abs(pcx-dx)<95&&P.y>8*T;d.open=clamp(d.open+(near?3:-1.6)*dt,0,1);
     const want=d.open>.55;if(want&&d.shut){d.shut=false;for(let r=9;r<=11;r++)L.g[r][d.c]='.';if(!G.sim)noise(.35,900,.1,'bandpass')}

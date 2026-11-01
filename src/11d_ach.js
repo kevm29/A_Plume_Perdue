@@ -152,8 +152,8 @@ const EMB={
 /* bandeau « succès débloqué » */
 function renderToasts(dt){
   const q=G.toasts;if(!q||!q.length)return;const T0=q[0];T0.t+=dt;const a=ACH_BY[T0.id];
-  // dans la bande du haut, entre l'étiquette du niveau et les compteurs : ne cache rien du décor
-  const k=Math.min(1,T0.t*4,(4-T0.t)*3),y=12-(1-k)*60,cx=W/2+20;
+  // les succès montent du bas de l'écran, sous la ligne de jeu
+  const k=Math.min(1,T0.t*4,(4-T0.t)*3),y=H-52+(1-k)*64,cx=W/2;
   ctx.save();ctx.globalAlpha=Math.max(0,k);ctx.font='15px '+F_DISP;const tw=Math.max(150,ctx.measureText(a.t).width)+70,x0=cx-tw/2;
   ctx.fillStyle='rgba(14,12,18,.9)';rr(ctx,x0,y,tw,40,8);ctx.fill();ctx.strokeStyle='rgba(201,162,74,.6)';ctx.lineWidth=1.2;rr(ctx,x0,y,tw,40,8);ctx.stroke();
   ctx.save();ctx.beginPath();ctx.rect(x0,y,tw,40);ctx.clip();drawAchMedal(ctx,x0+24,y+26,T0.id,true,.55);ctx.restore();

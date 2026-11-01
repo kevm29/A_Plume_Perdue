@@ -35,7 +35,7 @@ LEVELS.push((()=>{
   return {w:2,name:"Le train",theme:'train',exit:'train',seed:79,rows:RR,camY:.55,
     gust:{period:5.3,dur:1.1,push:250,dir:-1},
     train:{wagons,seats:['old','empty','phone','sleep','bagblue','paper','empty','student','bagred','suit','sleep','phone','empty','knit'],
-      bottles:[S.c0+5.5,S.c0+12.5,S.c0+19.5,S.c0+26.2],door:S.c1,counter:cnt,chips:cnt[0]+5.5},
+      bottles:[S.c0+6.5,S.c0+15.5,S.c0+25.2],door:S.c1,counter:cnt,chips:cnt[0]+5.5},
     start:"Je ne volerai jamais jusque là-bas d'une traite. Ce train file vers le clocher : je monte dessus.",
     hints:[],
     quips:["Je n'en peux plus. C'est trop dangereux, là-haut : je descends entre les wagons.",
@@ -60,17 +60,17 @@ LEVELS.push((()=>{
   box(20,24,10,11,'#');                                  // la camionnette de vidange
   put(28,11,'C');
   box(40,41,10,11,'X');box(56,57,10,11,'X');box(70,71,10,11,'X');   // chariots à bagages : on s'y réfugie
-  for(let c=54;c<=60;c++)put(c,8,'=');                   // une poutre de la verrière
+  for(let c=53;c<=61;c++)put(c,6,'=');put(54,5,'^');put(55,5,'^');put(59,5,'^');put(60,5,'^');put(57,3,'v');   // une poutre de la verrière, ses pics anti-pigeons, le nid au milieu
   put(63,11,'k');put(60,11,'|');put(68,11,'|');
-  corn([22,8],[33,10],[41,8],[49,10],[57,6],[65,10],[71,8],[76,10]);
+  corn([22,8],[33,10],[41,8],[49,10],[57,8],[65,10],[71,8],[76,10]);
   put(77,11,'C');
   /* --- la file, la sandwicherie, le kiosque, le buffet --- */
   put(81,11,'X');put(84,11,'X');box(86,86,10,11,'X');
-  box(88,94,8,11,'#');put(90,7,'^');put(91,7,'^');
-  box(97,101,7,11,'#');put(99,6,'^');
+  box(88,94,8,11,'#');put(90,7,'^');put(91,7,'^');put(93,5,'v');
+  box(97,101,7,11,'#');put(99,6,'^');put(101,4,'v');
   put(103,11,'k');
   put(103,9,'A');put(104,9,'A');
-  box(105,112,6,11,'#');put(108,5,'^');put(110,5,'^');
+  box(105,112,6,11,'#');put(108,5,'^');put(110,5,'^');put(111,2,'v');
   for(let c=114;c<=115;c++)put(c,10,'=');
   put(93,4,'m');put(113,5,'m');
   corn([82,9],[86,8],[92,6],[96,9],[99,4],[102,10],[104,6],[107,4],[111,4],[115,8]);
@@ -90,14 +90,14 @@ LEVELS.push((()=>{
     zoneTh:{quai:{type:'platform',floor:'#7a746a',floorTop:'#a8a090',x:'none'},hall:{type:'stone',floor:'#8a8478',floorTop:'#b8b0a2'},
       parvis:{type:'stone',floor:'#9a9284',floorTop:'#cfc6b2',x:'none'},route:{type:'asphalt',floor:'#3a3c40',floorTop:'#55575c'},parc:{type:'earth',floor:'#5c4630',floorTop:'#6c9a38',x:'none'}},
     zoneProps:{quai:['bench','clockPost','vending','bench'],hall:[],parvis:['lampPost','binPark'],route:[],parc:['flowerbed','binPark','lampPost']},
-    nestAt:[57,7],
+    nestAt:[57,5],
     gare:{camion:[20,24],cart:[[40,41],[56,57],[70,71]],shop:[88,94],kiosk:[97,101],resto:[105,112],queue:[80,87],vanZone:[25,78],
       road:[159,178],park:[179,246],statue:207,
       pigeons:[{k:'gros',a:186,b:197},{k:'gros',a:216,b:230},{k:'deplume',c:192},{k:'deplume',c:228},{k:'moignon',c:198},{k:'moignon',c:221}]},
     start:"Une gare. Le clocher ne doit plus être bien loin. Je finis à pattes : je n'ai plus de souffle.",
     hints:[],
     quips:["Une voiture qui pompe le… Non. Je ne veux pas savoir ce qu'elle pompe.",
-           "Une file d'attente pour du pain. Comme en 1917. Certaines choses ne changent pas.",
+           "Une file d'attente pour du pain. Comme à l'arrière, chez nous. Partout la même guerre.",
            "Dehors. Des voyageurs qui tirent leurs malles sur des roulettes. Les malles ont des roues, maintenant.",
            "Des automobiles, des camions… et pas un seul cheval. Où sont passés les chevaux ?",
            "Un square. Et des pigeons… Quelle allure ! Ils ont fait la guerre, eux aussi ?",

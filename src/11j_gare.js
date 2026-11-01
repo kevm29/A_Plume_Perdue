@@ -74,8 +74,9 @@ function gareMid(L,g,wpx,R){
 function garePost(Lv){
   const D=Lv.def.gare;if(!D)return;const R=mulberry(Lv.def.seed+5);
   const mv=(kind,w,h)=>{const m={axis:'g',kind,x:-9999,y:99999,w,h:14,vh:h,dx:0,dy:0,t:0,speed:0,a0:0,a1:0,on:false,dir:-1};Lv.movers.push(m);return m};
-  const S2={van:mv('van',168,82),truck:mv('truck2',214,116),car:mv('car',150,62),vanT:2.5,warn:0,truckT:1.2,carT:3.3,pass:[],pig:[],seeds:[],said:{},fled:false};
+  const S2={van:mv('van',168,82),truck:mv('truck2',228,118),car:mv('car',188,64),vanT:2.5,warn:0,pass:[],pig:[],seeds:[],said:{},fled:false};
   Lv.gare=S2;
+  S2.lanes=[{m:S2.truck,k:'truck',c0:D.road[0]+2,c1:D.road[0]+7,st:'idle',t:0,d:.6},{m:S2.car,k:'car',c0:D.road[0]+11,c1:D.road[0]+15,st:'idle',t:0,d:1.8}];
   // les voyageurs du parvis
   const kinds=['valise','sac','costume','touriste','valise'];
   for(let i=0;i<5;i++)S2.pass.push({x:(125+i*7.3)*T,dir:i%2?-1:1,sp:55+R()*30,k:kinds[i],wave:0,cool:0,ph:R()*6});
@@ -84,7 +85,7 @@ function garePost(Lv){
   // la statue
   Lv.avoid.push(D.statue*T);
 }
-function gareVehicleSet(m,x,on){m.x=x;m.on=on;m.y=on?GR.FL-m.vh:99999}
+function gareVehicleSet(m,x,on){m.x=x;m.on=on;m.y=on?GR.FL-m.vh:99999;if(!on&&P.onMover===m){P.onMover=null;P.onGround=false}}
 function gareStep(dt){
   const S2=L.gare;if(!S2)return;const D=L.def.gare,pcx=P.x+P.w/2,F=GR.FL;
   const hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6};
@@ -96,12 +97,15 @@ function gareStep(dt){
       if(S2.vanT<=0){gareVehicleSet(m,Math.max(cam.x+W+30,pcx+260),true);S2.vanT=4.5+rnd()*2.5;S2.warn=0;if(!G.sim)noise(.6,500,.18,'lowpass')}}
     m.dx=m.on?m.x-px:0;hitVeh(m,'fourgonnette');
     if(m.on&&!S2.said.van&&!G.sim&&m.x<pcx-200&&!P.dead){S2.said.van=1;say("Une voiture sur le quai, à fond de train ! Ils ne respectent plus rien.",3.4)}}
-  // la route : un camion vers la gauche, une voiture vers la droite
-  {const [r0,r1]=D.road,near=pcx>(r0-22)*T&&pcx<(r1+18)*T;
-    for(const[m,dir,key,sp]of[[S2.truck,-1,'truckT',240],[S2.car,1,'carT',290]]){const px=m.x;
-      if(m.on){m.x+=dir*sp*dt;if(dir<0?m.x+m.w<r0*T:m.x>(r1+1)*T)gareVehicleSet(m,-9999,false)}
-      else if(near){S2[key]-=dt;if(S2[key]<=0){gareVehicleSet(m,dir<0?(r1+1)*T:r0*T-m.w,true);S2[key]=3.6+rnd()*1.8;if(!G.sim&&Math.abs(pcx-m.x)<900)noise(.5,dir<0?220:420,.12,'lowpass')}}
-      m.dx=m.on?m.x-px:0;hitVeh(m,'voiture',[r0*T,(r1+1)*T])}}
+  // la route : la circulation va et vient dans la profondeur (un camion arrive vers nous, une voiture s'éloigne)
+  {const [r0,r1]=D.road,near=pcx>(r0-24)*T&&pcx<(r1+20)*T;
+    for(const ln of S2.lanes){const m=ln.m;ln.t+=dt;
+      const next=(st,d)=>{ln.st=st;ln.t=0;ln.d=d};
+      if(ln.st==='idle'){if(near&&ln.t>ln.d){next('come',ln.k==='truck'?1.5:.4);if(!G.sim&&Math.abs(pcx-(ln.c0+3)*T)<900)noise(.9,ln.k==='truck'?200:380,.14,'lowpass')}}
+      else if(ln.st==='come'&&ln.t>ln.d){next('at',ln.k==='truck'?1.3:.9);gareVehicleSet(m,ln.c0*T+6,true);if(!G.sim&&ln.k==='truck'){tone(180,.35,'sawtooth',.05,170)}}
+      else if(ln.st==='at'&&ln.t>ln.d){next('leave',ln.k==='truck'?.45:1.4);gareVehicleSet(m,-9999,false)}
+      else if(ln.st==='leave'&&ln.t>ln.d)next('idle',ln.k==='truck'?1.2+rnd()*1.6:1+rnd()*1.4);
+      m.dx=0;if(ln.st==='at')hitVeh(m,'voiture')}}
   // les voyageurs à valise : ils vont et viennent ; si on les survole, ils battent des bras
   const [p0,p1]=[123*T,157*T];
   for(const p of S2.pass){p.x+=p.dir*p.sp*dt;if(p.x<p0){p.x=p0;p.dir=1}if(p.x>p1){p.x=p1;p.dir=-1}p.wave=Math.max(0,p.wave-dt);p.cool=Math.max(0,p.cool-dt);
@@ -137,11 +141,11 @@ function gareAfterMove(){if(G.gareHit){const k=G.gareHit;G.gareHit=null;return k
 function gareMarble(m){
   const S2=L.gare,D=L.def.gare;if(!S2||S2.fled)return;if(m.x<D.park[0]*T||m.x>D.park[1]*T)return;
   S2.fled=true;for(const o of S2.pig){o.st='flee';o.vy=-120-rnd()*80;o.f=o.x<m.x?-1:1}
-  if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>SFX.flap(),k*90);setTimeout(()=>say("Tous envolés au bruit de ma bille ! Il reste encore un peu de respect pour l'uniforme.",3.8),1400)}
+  if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>SFX.flap(),k*90);setTimeout(()=>say("Tous envolés au « toc » de ma crotte. Une crotte qui rebondit… Il faudra que je voie le vétérinaire du régiment.",4),1400)}
 }
 function gareStatueLine(){
   const D=L.def.gare;if(!D)return null;const pcx=P.x+P.w/2;
-  if(Math.abs(pcx-(D.statue*T+T/2))<30&&P.y+P.h<=7*T)return"Je n'y arrive plus ! Une bille, encore une bille… Pourtant, fienter sur les statues, c'est le premier devoir d'un pigeon.";
+  if(Math.abs(pcx-(D.statue*T+T/2))<30&&P.y+P.h<=7*T)return"Je pousse, je pousse… et il ne sort qu'une petite boule toute dure. Je dois être constipé. Pourtant, fienter sur les statues, c'est le premier devoir d'un pigeon.";
   return null;
 }
 
@@ -174,10 +178,13 @@ function drawGareMid(t){
     for(let k=0;k<5;k++){g.fillStyle=k%2?'#4a7a3a':'#3e6a32';g.beginPath();g.ellipse(x+4+k*8,F-T-6-(k%3)*4,10,12,0,0,7);g.fill()}}
   // le parvis : les voyageurs
   for(const p of S2.pass)if(vis(p.x-60,p.x+60))drawPassant(g,p,F,t);
-  // la route : marquage, les véhicules, l'abri de tram et la haie qui les cachent
-  {const[r0,r1]=D.road,a=r0*T,b=(r1+1)*T;if(vis(a,b)){g.fillStyle='#f0f0e8';for(let x=a+20;x<b-20;x+=60)g.fillRect(x,F-2,30,2);
-      g.save();g.beginPath();g.rect(a,0,b-a,F+80);g.clip();for(const m of[S2.truck,S2.car])if(m.on)drawGareVehicle(g,m,t);g.restore();
-      drawTramStop(g,(r0-2)*T,F,t);drawHedge(g,(r1-1)*T,F,t)}}
+  // la route : elle file dans la profondeur ; passage piéton au premier plan ; un camion qui arrive, une voiture qui s'en va
+  {const[r0,r1]=D.road,a=r0*T,b=(r1+1)*T;if(vis(a-200,b+200)){const vx=(a+b)/2,HZ=286;
+      g.fillStyle='#4a4c52';poly(g,[a,F,vx-26,HZ,vx+26,HZ,b,F]);g.fill();g.fillStyle='#d8d4c8';poly(g,[a-14,F,vx-30,HZ,vx-26,HZ,a,F]);g.fill();poly(g,[b,F,vx+26,HZ,vx+30,HZ,b+14,F]);g.fill();
+      g.fillStyle='rgba(240,240,232,.85)';for(let k=0;k<7;k++){const u0=Math.pow(k/7,1.6),u1=Math.pow((k+.45)/7,1.6);const y0=HZ+(F-HZ)*u0,y1=HZ+(F-HZ)*u1,w0=1+u0*4,w1=1+u1*4;poly(g,[vx-w0,y0,vx+w0,y0,vx+w1,y1,vx-w1,y1]);g.fill()}
+      for(let x=a+10;x<b-10;x+=28)g.fillRect(x,F-4,16,4);
+      drawTramStop(g,(r0-3)*T,F,t);
+      for(const ln of S2.lanes)if(ln.st!=='idle')drawLaneVehicle(g,ln,vx,HZ,F,t)}}
   if(S2.van.on)drawGareVehicle(g,S2.van,t);
   // la statue de Colbert
   {const x=D.statue*T+T/2;if(vis(x-300,x+300))drawColbert(g,x,F,t)}
@@ -243,6 +250,25 @@ function drawGareVehicle(g,m,t){
     g.fillStyle='#b8302a';rr(g,x,y+20,w,h-30,10);g.fill();g.beginPath();g.moveTo(x+30,y+22);g.quadraticCurveTo(x+60,y-2,x+100,y+2);g.lineTo(x+126,y+22);g.closePath();g.fill();
     g.fillStyle='rgba(30,40,60,.7)';poly(g,[x+44,y+20,x+64,y+6,x+96,y+6,x+116,y+20]);g.fill();g.fillStyle='#fff6d0';g.fillRect(x+w-6,y+30,6,6)}
   for(const wx of m.kind==='car'?[x+28,x+w-30]:[x+30,x+w-36]){g.fillStyle='#1a1a1e';g.beginPath();g.arc(wx,F-8,12,0,7);g.fill();g.fillStyle='#8a8e96';g.beginPath();g.arc(wx,F-8,4.5,0,7);g.fill()}
+}
+function drawLaneVehicle(g,ln,vx,HZ,F,t){
+  const u=Math.min(1,ln.t/ln.d),lx=(ln.c0+ln.c1+1)/2*T,w0=(ln.c1-ln.c0+1)*T-12;let s,dy=0,al=1;
+  if(ln.k==='truck'){if(ln.st==='come')s=.1+.9*Math.pow(u,1.7);else if(ln.st==='at')s=1;else{s=1+u*.8;dy=u*150;al=1-u}}
+  else{if(ln.st==='come'){s=1.8-.8*u;dy=(1-u)*150;al=u}else if(ln.st==='at')s=1;else s=.1+.9*Math.pow(1-u,1.7)}
+  const k=Math.min(s,1),cx=vx+(lx-vx)*k+(s>1?(lx-vx)*(s-1):0),by=HZ+(F-HZ)*k+dy;
+  g.save();g.globalAlpha*=al;g.translate(cx,by);g.scale(s,s);const hw=w0/2;
+  if(ln.k==='truck'){// vu de face : caisse, cabine, calandre, phares
+    const h=118;g.fillStyle='#d8d4c4';g.fillRect(-hw,-h,w0,h-60);g.fillStyle='#2a5a8a';g.fillRect(-hw,-h+30,w0,8);g.fillStyle='#2a2a2a';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText('LIVRAISONS CHAMPENOISES',0,-h+22);
+    g.fillStyle='#2a5a8a';rr(g,-hw+10,-64,w0-20,58,8);g.fill();g.fillStyle='rgba(30,40,60,.8)';rr(g,-hw+20,-60,w0-40,24,5);g.fill();g.fillStyle='rgba(255,255,255,.2)';poly(g,[-hw+30,-60,-hw+50,-60,-hw+36,-36,-hw+24,-36]);g.fill();
+    g.fillStyle='#1e2a3a';g.fillRect(-40,-30,80,16);g.fillStyle='#fff6d0';for(const sx of[-hw+24,hw-24]){g.beginPath();g.ellipse(sx,-22,10,7,0,0,7);g.fill()}
+    if(ln.st==='come'){const gl=g.createRadialGradient(0,-22,4,0,-22,hw*1.4);gl.addColorStop(0,'rgba(255,240,200,.25)');gl.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=gl;g.fillRect(-hw*1.5,-60,hw*3,80)}
+    g.fillStyle='#2a2a2e';g.fillRect(-hw+8,-12,w0-16,8);g.fillStyle='#141416';g.fillRect(-hw+14,-6,26,6);g.fillRect(hw-40,-6,26,6)}
+  else{// vue de dos : lunette arrière, feux rouges, plaque
+    const h=64;g.fillStyle='#b8302a';rr(g,-hw,-h+20,w0,h-26,10);g.fill();g.beginPath();g.moveTo(-hw+18,-h+22);g.quadraticCurveTo(0,-h-8,hw-18,-h+22);g.fill();
+    g.fillStyle='rgba(30,40,60,.75)';poly(g,[-hw+30,-h+20,-hw+44,-h+4,hw-44,-h+4,hw-30,-h+20]);g.fill();
+    g.fillStyle=(t*4|0)%2&&ln.st==='leave'?'#ff6040':'#c81a1a';g.fillRect(-hw+6,-30,22,8);g.fillRect(hw-28,-30,22,8);g.fillStyle='#f0f0e8';g.fillRect(-20,-26,40,10);g.fillStyle='#2a2a2a';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText('AB-123-CD',0,-18);
+    g.fillStyle='#141416';g.fillRect(-hw+8,-6,24,6);g.fillRect(hw-32,-6,24,6)}
+  g.restore();
 }
 function drawTramStop(g,x,F,t){
   g.fillStyle='rgba(200,225,235,.5)';g.fillRect(x-10,F-150,90,140);g.strokeStyle='#4a5058';g.lineWidth=4;g.strokeRect(x-10,F-150,90,140);g.fillStyle='#4a5058';g.fillRect(x-20,F-158,110,10);
