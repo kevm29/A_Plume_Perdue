@@ -359,7 +359,7 @@ function drawEmbrasure(g,e,t){
   g.restore();
 }
 function drawExit(g,e,style,t,label){
-  if(style==='blockhaus')return;   // dessiné avec le décor (11g_zonerouge.js)
+  if(style==='blockhaus'||style==='train')return;   // dessiné avec le décor (11g_zonerouge.js)
   const x=e.x+6,y=e.y;
   if(style==='house'){drawHouse(g,e,t);return}
   if(style==='banner'){

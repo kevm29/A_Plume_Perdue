@@ -18,7 +18,7 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 |---|---|---|
 | 1 | Vittoncourt, le musée qui ferme | La vitrine · La galerie des insectes · L'étage du mammouth · La loge du gardien |
 | 2 | Verdun, les champs de l'ancien front | Retour à la case départ : Le sentier · Les éoliennes · La zone rouge · L'abri du Mort-Homme |
-| 3 | Reims, la ville puis la cathédrale | La rue de Vesle · La gare · La place d'Erlon · La cathédrale |
+| 3 | Le cap céleste : le train, Reims, la cathédrale | Le train · La gare · La place d'Erlon · La cathédrale |
 | 4 | L'A4 sous l'orage, vers l'ouest | L'aire de repos · Les camions · L'orage · Le pont (sur la Marne) |
 | 5 | Villemareuil, le village de Marguerite | La route du village · Le clocher · La fête foraine · Le cimetière |
 
@@ -71,6 +71,7 @@ Chaque niveau terminé révèle un fragment, mais Raymond ne lit les quatre morc
 - **1 → 2.** Raymond s'échappe par la fenêtre de la loge. Il vole mal. Il vole quand même. Direction l'ouest : le pigeonnier Vasseur, à Villemareuil. Il a décidé de livrer la gifle.
 - **Fin de la mission 2, avant la lettre.** Raymond n'a pas croisé Lucien. Hormis l'abri, les Allemands semblent avoir été repoussés plus loin : Lucien doit y être, en héros — Raymond l'a vu à l'œuvre, il est courageux. Mais si goujat… L'article 4 interdit de lire le courrier ; Raymond ne comprend pas cet homme-là et déplie la suite.
 - **2 → 3.** Il faut rentrer au pigeonnier, mais le pays a changé : des forêts sur le front, des moulins géants, plus un repère. Au loin, le plus haut clocher de la région, déjà croisé en 1915. Il met le cap dessus sans savoir où c'est. C'est Reims (mission 3, « Le cap céleste »).
+- **3-1, le train** : trop las pour voler jusque-là, Raymond se pose sur le toit d'un train qui file vers le clocher. Deux toits sous les pylônes, puis « Je n'en peux plus » : il descend entre les wagons. Voyageurs pendus à leur « petite plaque lumineuse », qui hurlent et jettent journaux et canettes quand ils le voient sauter ; un sac à dos rouge (paille) ; la voiture-bar, « Interdit aux animaux », un serveur au torchon, un paquet de chips confisqué (une cachette sans paille). Remonté par l'échelle, un rat clandestin, une passerelle qu'on prend pour un pylône. Sur la motrice, un carillon, une annonce dont le vent mange le nom de la gare, et le train s'arrête : c'est écrit REIMS sur le quai, mais Raymond ne lit pas les panneaux.
 - **3 → 4.** Les ratures l'ont rendu silencieux. Une route immense, toute droite vers l'ouest, sans chevaux ni soldats. Il pleut des cordes.
 - **4 → 5.** L'orage est passé. La lettre est trempée, et Raymond sait maintenant ce qui est écrit au dos. Le village est en fête. Personne n'attend de pigeon.
 

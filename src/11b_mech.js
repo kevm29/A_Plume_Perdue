@@ -126,7 +126,7 @@ function mechMods(){
   // la boue colle aux plumes : à peine un sautillement, plus de battement ni de vol plané, un moment encore après en être sorti
   if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.36;P.mudCoat=1.4}
   if(P.mudCoat>0)m.noFly=true;
-  if(P.stun>0||P.ride||P.hideIn)m.noInput=true;
+  if(P.stun>0||P.ride||P.hideIn||P.carried)m.noInput=true;
   return m;
 }
 function sheltered(dir){
@@ -154,6 +154,7 @@ function mechAfterMove(dt,vyBefore){
   if(P.stun>0)P.stun-=dt;
   if(L.meuse){const k=meuseAfterMove(dt);if(k)return k}
   {const k=zrAfterMove();if(k)return k}
+  {const k=trainAfterMove(dt);if(k)return k}
   return null;
 }
 /* ---------- collisions mortelles ---------- */

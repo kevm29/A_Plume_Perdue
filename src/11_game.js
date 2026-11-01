@@ -46,7 +46,7 @@ function startLevel(i){
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
 }
 function resetPlayer(){
-  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;P.ride=null;P.lift=0;P.hideIn=null;
+  P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;P.ride=null;P.lift=0;P.hideIn=null;P.carried=null;
 }
 function puff(x,y,n,straw){
   for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,s=60+rnd()*260;parts.push({type:straw?'straw':'feather',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,life:0,max:.9+rnd()*1.1,rot:rnd()*6,vr:(rnd()-.5)*14,len:4+rnd()*7})}
@@ -54,7 +54,7 @@ function puff(x,y,n,straw){
 function obusBoom(x,y){if(G.sim)return;if(G.lt-(G.boomT||-9)<.4)return;G.boomT=G.lt;G.shake=18;noise(.9,240,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<24;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x,y:y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.5})}parts.push({type:'ring',x,y:y-10,life:0,max:.4});G.flash=Math.max(G.flash,.35)}
 function die(kind,tiles){
   if(P.dead)return;
-  if(kind==='obus'){obusBoom(P.x+P.w/2,P.y+P.h);tiles=null}
+  if(kind==='obus'){obusBoom(P.x+P.w/2,P.y+P.h);tiles=null}if(kind==='elec')tiles=null;
   if(G.sim){P.dead=true;return}
   // mode caché : rien ne tue Raymond ; une chute hors du niveau le ramène simplement au cartel
   if(S.infinite){if(P.y>ROWS*T)resetPlayer();return}
@@ -216,7 +216,7 @@ function stepPlay(dt){
   for(const c of L.rats){if(c.dead||c.runner)continue;const ch=tile(Math.floor((c.x+c.w/2)/T),Math.floor((c.y+c.h-2)/T));if(c.y>ROWS*T+40||ch==='^'){c.dead=true;if(!G.sim&&ch==='^'){puff(c.x+c.w/2,c.y,8,false);if(L.th.spike==='obus')obusBoom(c.x+c.w/2,c.y+c.h)}}}
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
+  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);trainStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -286,7 +286,7 @@ function stepPlay(dt){
   if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0}G.hintT=(G.hintT||0)+dt;G.hintI=hn>=0&&G.hintT<3?hn:-1;
   if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
-  if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
+  if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&trainExitOk()&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');
@@ -387,6 +387,7 @@ function updateParticles(dt){
   G.flash=Math.max(0,G.flash-dt*2.4);
 }
 function updateCamera(dt){
+  if(P.carried)return;   // emporté par un pylône : la caméra reste où elle est
   let tx=clamp(P.x+P.w/2-W/2+P.facing*70,0,L.wpx-W);
   // vertical : la caméra suit le dernier sol touché, pas les sauts (on ne voit pas ce qui est au-dessus en sautant)
   if(P.onGround||P.lastGY==null)P.lastGY=P.y;

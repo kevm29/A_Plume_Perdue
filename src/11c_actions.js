@@ -79,9 +79,9 @@ function tryAct(){
 }
 function grantSecret(a,py){
   a.used=true;{const gt=gotOf(G.li);if(!gt.sec.includes(a.sid))gt.sec.push(a.sid)}achSecret(G.li,a.sid);if(a.style==='backdoor')unlock('a2');
-  if((S.run.wear||0)>0){S.run.wear--;P.sx=1.15;P.sy=1.15}
+  if(!a.noStraw&&(S.run.wear||0)>0){S.run.wear--;P.sx=1.15;P.sy=1.15}
   save();
-  if(!G.sim){SFX.secret();setTimeout(()=>SFX.straw(),180);parts.push({type:'tuftpop',x:a.x,y:py,life:0,max:1.3});puff(a.x,py+4,8,true);say(pick(a.q||SECRET_Q),3.8)}
+  if(!G.sim){SFX.secret();if(a.noStraw)noise(.25,3200,.2,'highpass');else{setTimeout(()=>SFX.straw(),180);parts.push({type:'tuftpop',x:a.x,y:py,life:0,max:1.3});puff(a.x,py+4,8,true)}say(pick(a.q||SECRET_Q),3.8)}
 }
 /* le drap sous lequel se trouve Raymond */
 function coverHere(){const cx=P.x+P.w/2,cy=P.y+P.h/2;for(const c of L.covers)if(!c.gone&&cx>c.x+4&&cx<c.x+c.w-4&&cy>c.y&&cy<c.y+c.h)return c;return null}

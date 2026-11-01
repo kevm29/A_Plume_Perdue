@@ -42,6 +42,13 @@ const DEATH_Q={
   blade:["Coupé net par un moulin. Le meunier ne s'est même pas excusé.","Fauché par une aile de moulin. Ma paille vole en trois morceaux.","Haché menu, comme du tabac de troupe."],
   obus:["Un vieil obus qui dépassait à peine. Il attendait quelqu'un depuis longtemps. Il n'a pas raté son tour.","Le nez d'un obus. Il a suffi d'une patte. Le génie aurait dû passer avant moi.","Boum. Un vieux de la vieille, qui n'avait pas dit son dernier mot."],
   trou:["Tombé dans un trou d'obus. L'eau y croupit depuis des années, et moi avec.","Un trou d'obus plein d'eau. Le ciel s'y reflétait si bien que je n'ai pas vu le fond."],
+  pylone:["Un pylône en pleine figure. Le train, lui, ne s'est même pas arrêté.","Emporté par un poteau. Je ne savais pas que les poteaux voyageaient.","Le pylône m'a cueilli comme une prune. Il fallait sauter."],
+  passerelle:["Un pont. J'ai sauté pile dedans. Il fallait rester à plat.","La passerelle m'a ramassé au vol. Ce n'était pas un pylône, c'était pire."],
+  bouteille:["Une canette m'a fauché les pattes. Abattu par un soda.","Une bouteille qui roule. Le bowling, version pigeon."],
+  projectile:["Touché par un voyageur. Ils visent mieux que les artilleurs.","Un journal en pleine tête. Au moins, j'aurai lu les nouvelles."],
+  serveur:["Un coup de torchon. Le serveur n'aime pas les pigeons au comptoir.","Chassé du bar comme un client sans le sou."],
+  rails:["Tombé sous le train. Le règlement ne prévoit même pas ce cas.","Entre les wagons, il n'y a que les rails. Et maintenant moi."],
+  elec:["Une décharge ! Ma paille fume. Ça sent le foin grillé.","Le fil de fer était chargé comme un canon. Je le saurai."],
   drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
 };
 const TUFT_Q=["De la paille. Bizarre, je me sens tout de suite plus épais.","Tiens, de la paille. Je ne sais pas pourquoi, ça me fait du bien.","Encore de la paille. Je ne comprends pas, mais je ne me plains pas."];
@@ -62,10 +69,10 @@ const WORLD_CARDS=[
    {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
    {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Il faut rentrer au pigeonnier Vasseur, à Villemareuil.\nMais le pays a changé de visage."},
-   {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : plus un seul repère."},
-   {t:"Au loin, au-dessus de tout, un clocher. Le plus haut de la région.\nIl l'a déjà croisé, en 1915."},
-   {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond met le cap sur le clocher. Il ne sait pas où c'est.\nC'est Reims."}],
+  [{t:"Raymond doit rentrer au pigeonnier Vasseur, à Villemareuil.\nMais il ne reconnaît plus le pays."},
+   {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
+   {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
+   {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
    {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCe soir, le vent se lève."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
@@ -92,10 +99,10 @@ const DATE_CARDS=[
 /* intertitres muets avant les morceaux de lettre d'une mission (la mission 1 a TUBE) */
 const LETTER_CARDS={
   1:[{t:"Raymond n'a pas croisé Lucien.\nNi dans les champs, ni sous les bois, ni dans l'abri."},
-     {t:"Hormis cet abri, les Allemands semblent repoussés bien plus loin.\nLucien Vasseur doit y être, en première ligne."},
-     {t:"Raymond l'a déjà vu à l'œuvre. Un brave, Lucien.\nUn héros. Mais si goujat…"},
-     {t:"Article 4 : un pigeon militaire ne lit jamais le courrier.\nRaymond le connaît par cœur. Il ne comprend pas cet homme-là."},
-     {t:"Il déplie la suite."}]
+     {t:"Hormis cet abri, Raymond en conclut que les Allemands ont été repoussés plus loin.\nPour lui, Lucien Vasseur doit y être, en première ligne."},
+     {t:"Raymond l'a déjà vu à l'œuvre : à ses yeux, Lucien est un brave, un héros.\nMais il le trouve si goujat…"},
+     {t:"L'article 4 interdit de lire le courrier. Raymond le connaît par cœur.\nMais il ne comprend pas le comportement de son maître."},
+     {t:"La curiosité l'emporte : Raymond déplie la suite."}]
 };
 /* intertitres muets avant la toute première lettre : pourquoi Raymond la lit */
 const TUBE=[
@@ -108,7 +115,7 @@ const GAMEOVER=[
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
   {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
-  {name:"Le cap céleste",levels:["Les toits","Les pics anti-pigeons","La gare","Le square"]},
+  {name:"Le cap céleste",levels:["Le train","Les pics anti-pigeons","La gare","Le square"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
 ];

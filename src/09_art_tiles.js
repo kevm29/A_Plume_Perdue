@@ -22,6 +22,7 @@ function matCols(ch,th){
   return null;
 }
 function buildTiles(L){
+  if(L.def.theme==='train')return trainBuildTiles(L);
   const th=L.th,R=mulberry(L.def.seed+9);
   const wpx=L.wpx+DX+8,hpx=ROWS*T+PAD;
   const TR=Math.min(RS,1.5),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);

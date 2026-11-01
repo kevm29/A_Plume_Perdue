@@ -224,6 +224,7 @@ function buildOutdoorFar(L,g,wpx,hpx,R){
 function bakeFog(g,th,wpx,op){g.save();g.globalCompositeOperation=op;const fg=g.createLinearGradient(0,0,0,600);fg.addColorStop(0,rgba(th.fog,th.outdoor?.18:.32));fg.addColorStop(1,rgba(th.fog,.04));g.fillStyle=fg;g.fillRect(0,0,wpx,600);g.fillStyle=rgba(th.fog,th.outdoor?.18:.32);g.fillRect(0,-2000,wpx,2000);g.restore()}
 function layerH(pf){return Math.max(600,Math.ceil((ROWS*T-H)*pf+H+8))}
 function buildFar(L){
+  if(L.th.far==='train'){L.windows=[];L.turbines=[];return{width:1,height:1,chunks:[],rs:1}}   // le paysage du train est dessiné à part (11i_train.js)
   const R=mulberry(L.def.seed);
   const wpx=Math.ceil((L.wpx-W)*PF_FAR+W)+60,hpx=layerH(PF_FAR),yOff=hpx-600;
   const BR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);g.scale(BR,BR);c.rs=BR;
@@ -237,6 +238,7 @@ function buildFar(L){
   return c;
 }
 function buildMid(L){
+  if(L.th.far==='train')return{width:1,height:1,chunks:[],rs:1};
   const th=L.th,R=mulberry(L.def.seed+5);
   const wpx=Math.ceil((L.wpx-W)*PF_MID+W)+60,hpx=layerH(PF_MID);
   const BR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);g.scale(BR,BR);c.rs=BR;g.translate(0,Math.max(0,hpx-600));
