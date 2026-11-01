@@ -106,10 +106,10 @@ function gareStep(dt){
   const [p0,p1]=[123*T,157*T];
   for(const p of S2.pass){p.x+=p.dir*p.sp*dt;if(p.x<p0){p.x=p0;p.dir=1}if(p.x>p1){p.x=p1;p.dir=-1}p.wave=Math.max(0,p.wave-dt);p.cool=Math.max(0,p.cool-dt);
     if(P.dead)continue;
-    const body={x:p.x-12,y:F-104,w:24,h:104},bag={x:p.x-p.dir*30-11,y:F-40,w:22,h:40};
+    const body={x:p.x-11,y:F-100,w:22,h:100},bag={x:p.x-p.dir*30-11,y:F-40,w:22,h:40};
     if(overlap(hb,body)||(p.k!=='sac'&&overlap(hb,bag)))G.gareHit='passant';
-    if(Math.abs(pcx-p.x)<44&&P.y+P.h<F-100&&P.y+P.h>F-230&&p.cool<=0){p.wave=.9;p.cool=1.4;if(!G.sim){bubble(p.x,F-150,pick(["Hé ! Sale bête !","Pas sur moi !","Ouste !","Beurk !"]),'#2a3a5a');if(!S2.said.wave){S2.said.wave=1;setTimeout(()=>say("Ils battent des bras comme des sémaphores. Il faut passer bien plus haut.",3.4),700)}}}
-    if(p.wave>.15&&overlap(hb,{x:p.x-34,y:F-176,w:68,h:76}))G.gareHit='passant'}
+    if(Math.abs(pcx-p.x)<60&&P.y+P.h<F-60&&P.y+P.h>F-260&&p.cool<=0){p.wave=.9;p.cool=1.4;if(!G.sim){bubble(p.x,F-150,pick(["Hé ! Sale bête !","Pas sur moi !","Ouste !","Beurk !"]),'#2a3a5a');if(!S2.said.wave){S2.said.wave=1;setTimeout(()=>say("Ils battent des bras comme des sémaphores. Surtout, ne pas les toucher, ni eux ni leurs malles.",3.4),700)}}}
+  }
   // les pigeons du square
   for(const o of S2.pig){o.t+=dt;o.cool=Math.max(0,o.cool-dt);
     if(o.st==='flee'){o.vy-=400*dt;o.y+=o.vy*dt;o.x+=o.f*160*dt;continue}
@@ -141,7 +141,7 @@ function gareMarble(m){
 }
 function gareStatueLine(){
   const D=L.def.gare;if(!D)return null;const pcx=P.x+P.w/2;
-  if(Math.abs(pcx-(D.statue*T+T/2))<30&&P.y+P.h<=6*T)return"Je n'y arrive plus ! Une bille, encore une bille… Pourtant, fienter sur les statues, c'est le premier devoir d'un pigeon.";
+  if(Math.abs(pcx-(D.statue*T+T/2))<30&&P.y+P.h<=7*T)return"Je n'y arrive plus ! Une bille, encore une bille… Pourtant, fienter sur les statues, c'est le premier devoir d'un pigeon.";
   return null;
 }
 
@@ -158,6 +158,13 @@ function drawGareMid(t){
   for(const[c0,c1]of D.cart){const x0=c0*T,x1=(c1+1)*T;if(!vis(x0,x1))continue;g.fillStyle='#3a3e46';g.fillRect(x0,F-82,x1-x0,6);g.fillRect(x0,F-16,x1-x0,6);g.fillRect(x0+4,F-82,4,70);
     for(let k=0;k<3;k++){g.fillStyle=['#6a3a2a','#2a4a6a','#8a6a3a'][k];rr(g,x0+8+k*22,F-76+k%2*6,22,60-k%2*6,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x0+12+k*22,F-70+k%2*6,14,3)}
     g.fillStyle='#1e1e22';for(const wx of[x0+12,x1-12]){g.beginPath();g.arc(wx,F-6,6,0,7);g.fill()}}
+  // les valises de la file (sur leurs cases) et les buissons du square
+  {const v=(c,r,w,h,col,kind)=>{const x=c*T,y=(r+1)*T;if(!vis(x,x+T))return;g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(x+T/2,y,w/2+4,3,0,0,7);g.fill();g.fillStyle=col;
+      if(kind==='roll'){rr(g,x+T/2-w/2,y-h,w,h,5);g.fill();g.fillStyle='rgba(0,0,0,.18)';for(let k=1;k<4;k++)g.fillRect(x+T/2-w/2+k*w/4,y-h+4,2,h-8);g.fillStyle='#2a2a2e';g.fillRect(x+T/2-8,y-h-12,2,12);g.fillRect(x+T/2+6,y-h-12,2,12);g.fillRect(x+T/2-8,y-h-14,16,3);g.beginPath();g.arc(x+T/2-w/2+5,y-2,3,0,7);g.arc(x+T/2+w/2-5,y-2,3,0,7);g.fill()}
+      else if(kind==='bag'){g.beginPath();g.ellipse(x+T/2,y-h/2,w/2,h/2,0,0,7);g.fill();g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=2;g.beginPath();g.arc(x+T/2,y-h+4,9,Math.PI,0);g.stroke();g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x+T/2-w/2+6,y-h/2-2,w-12,3)}
+      else{rr(g,x+T/2-w/2,y-h,w,h,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x+T/2-w/2,y-h/2-1,w,3);g.fillStyle='#c8a050';g.fillRect(x+T/2-4,y-h-4,8,4);g.fillStyle='#e8e0cc';g.fillRect(x+T/2-w/2+5,y-h+6,10,6)}};
+    v(81,11,30,40,'#b8302a','roll');v(84,11,40,30,'#3a6a4a','bag');v(86,11,38,40,'#2a4a7a','hard');v(86,10,32,40,'#c8a878','hard');
+    for(const c of[238,239,243]){const x=c*T;if(!vis(x,x+T))continue;for(let k=0;k<4;k++){g.fillStyle=k%2?'#3e6a32':'#4a7a3a';g.beginPath();g.ellipse(x+8+k*8,F-16-(k%2)*6,14,18,0,0,7);g.fill()}g.fillStyle='rgba(255,255,255,.1)';g.beginPath();g.ellipse(x+16,F-28,6,4,0,0,7);g.fill()}}
   // la file d'attente
   {const[a,b]=D.queue;if(vis(a*T,b*T)){[[80.4,'#3a4a6a','#e0c0a0'],[82.6,'#7a3a3a','#c89878'],[85.2,'#4a5a3a','#e8c8a8'],[87.3,'#2a2a30','#a87858']].forEach(([c,coat,skin],i)=>drawQueuer(g,c*T,F,coat,skin,t+i*1.7,i))}}
   // la sandwicherie, le kiosque, le buffet
@@ -243,19 +250,27 @@ function drawTramStop(g,x,F,t){
   g.fillStyle='#3a3e44';g.fillRect(x,F-40,60,4);
 }
 function drawHedge(g,x,F,t){for(let k=0;k<6;k++){g.fillStyle=k%2?'#3e6a32':'#4a7a3a';g.beginPath();g.ellipse(x+10+k*14,F-40+((k*7)%3)*4,26,48,0,0,7);g.fill()}g.fillStyle='rgba(255,255,255,.12)';g.beginPath();g.ellipse(x+30,F-70,14,10,0,0,7);g.fill()}
+/* un bloc en papier découpé : face avant, dessus (en biais vers le fond) et flanc droit, calé exactement sur ses cases */
+function gBlock(g,x0,x1,y0,y1,front,top,side){g.fillStyle=side;poly(g,[x1,y0,x1+DX,y0+DY,x1+DX,y1+DY,x1,y1]);g.fill();g.fillStyle=top;poly(g,[x0,y0,x0+DX,y0+DY,x1+DX,y0+DY,x1,y0]);g.fill();g.fillStyle=front;g.fillRect(x0,y0,x1-x0,y1-y0)}
 function drawColbert(g,x,F,t){
-  // marches (sur leurs cases), socle de pierre claire aux médaillons de bronze, la statue en bronze
-  g.fillStyle='#b8b2a4';g.fillRect(x-260,F-40,520,40);g.fillStyle='#c8c2b4';g.fillRect(x-220,F-80,440,40);g.fillStyle='rgba(255,255,255,.3)';g.fillRect(x-260,F-40,520,3);g.fillRect(x-220,F-80,440,3);
-  g.fillStyle='#d8d0bc';g.fillRect(x-140,F-160,280,80);g.fillStyle='#e8dfc4';g.beginPath();g.ellipse(x,F-160,140,10,0,0,7);g.fill();
-  g.fillStyle='#e4d8b4';g.fillRect(x-100,F-240,200,80);g.fillStyle='#d0c49e';g.fillRect(x-108,F-246,216,10);g.fillRect(x-108,F-170,216,10);
-  for(const mx of[x-48,x+48]){g.fillStyle='#6a5a3a';g.beginPath();g.arc(mx,F-205,20,0,7);g.fill();g.fillStyle='#8a7a4a';g.beginPath();g.arc(mx,F-205,15,0,7);g.fill()}
-  g.fillStyle='#e8dcc0';g.fillRect(x-60,F-280,120,40);g.fillStyle='#3a3226';g.fillRect(x-60,F-284,120,6);
-  // Colbert : grande perruque, manteau, la main posée sur une colonne de livres
-  const b=F-280;g.fillStyle='#3a3428';g.fillRect(x-22,b-120,44,120);g.beginPath();g.moveTo(x-26,b);g.lineTo(x-34,b-60);g.lineTo(x-20,b-110);g.lineTo(x+20,b-110);g.lineTo(x+30,b-50);g.lineTo(x+24,b);g.closePath();g.fill();
-  g.fillStyle='#2e2a20';g.fillRect(x+22,b-58,20,58);g.fillStyle='#4a4232';g.fillRect(x+20,b-62,24,6);
-  g.fillStyle='#3a3428';g.beginPath();g.arc(x,b-122,14,0,7);g.fill();g.fillStyle='#2e2a20';g.beginPath();g.ellipse(x,b-118,19,22,0,Math.PI*.9,Math.PI*2.1);g.fill();
-  g.strokeStyle='#4a4232';g.lineWidth=6;g.beginPath();g.moveTo(x+12,b-96);g.lineTo(x+30,b-64);g.stroke();
-  g.fillStyle='rgba(120,160,120,.25)';g.fillRect(x-22,b-120,8,110);
+  // la statue de Colbert, square Colbert : deux marches, un socle mouluré aux médaillons de bronze, un fût, Colbert en bronze
+  const c=x/T|0,X=k=>k*T;
+  gBlock(g,X(c-6),X(c+7),11*T,12*T,'#b4ae9f','#cdc7b8','#8f8a7d');g.fillStyle='rgba(255,255,255,.25)';g.fillRect(X(c-6),11*T,13*T,2);
+  gBlock(g,X(c-5),X(c+6),10*T,11*T,'#beb8a9','#d6d0c1','#99948a');g.fillStyle='rgba(255,255,255,.25)';g.fillRect(X(c-5),10*T,11*T,2);
+  gBlock(g,X(c-3),X(c+4),9*T,10*T,'#e0d4b2','#ece2c6','#b8ac8c');g.fillStyle='#cfc2a0';g.fillRect(X(c-3),9*T,7*T,7);g.fillRect(X(c-3),10*T-8,7*T,8);
+  gBlock(g,X(c-2),X(c+3),7*T,9*T,'#e6dbbb','#f0e8d0','#beb294');g.fillStyle='#d2c6a4';g.fillRect(X(c-2),7*T,5*T,7);g.fillRect(X(c-2),9*T-8,5*T,8);
+  for(const mx of[X(c)-30,X(c+1)+30]){g.fillStyle='#5a4a2e';g.beginPath();g.arc(mx,8*T,19,0,7);g.fill();g.fillStyle='#7a6a40';g.beginPath();g.arc(mx,8*T,14,0,7);g.fill();g.fillStyle='rgba(120,170,130,.35)';g.beginPath();g.arc(mx-3,8*T-3,6,0,7);g.fill()}
+  g.fillStyle='rgba(120,100,70,.3)';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('COLBERT',x,9*T-12);
+  gBlock(g,X(c-1),X(c+2),6*T,7*T,'#4a4232','#5e5442','#342e22');
+  // Colbert, dans sa case : perruque, manteau, la main sur une pile de livres
+  const x0=X(c),cx=x0+T/2,top=3*T;g.fillStyle='#342e22';g.fillRect(x0+T-2,top+70,16,50);g.fillStyle='#4a4232';g.fillRect(x0+T-4,top+66,20,6);
+  g.fillStyle='#3e3628';g.beginPath();g.moveTo(x0+2,6*T);g.lineTo(x0+4,top+40);g.quadraticCurveTo(cx,top+22,x0+T-4,top+40);g.lineTo(x0+T+2,6*T);g.closePath();g.fill();
+  g.fillStyle='#463e2e';g.beginPath();g.moveTo(cx-3,top+40);g.lineTo(x0+T+6,6*T);g.lineTo(x0+T-6,6*T);g.closePath();g.fill();
+  g.strokeStyle='#3e3628';g.lineWidth=6;g.lineCap='round';g.beginPath();g.moveTo(x0+T-8,top+46);g.lineTo(x0+T+6,top+68);g.stroke();g.lineCap='butt';
+  g.fillStyle='#2e281e';g.beginPath();g.ellipse(cx,top+22,16,20,0,0,7);g.fill();g.fillStyle='#3e3628';g.beginPath();g.arc(cx+2,top+14,10,0,7);g.fill();
+  g.fillStyle='#2e281e';g.beginPath();g.ellipse(cx,top+6,13,8,0,Math.PI,0);g.fill();g.fillRect(cx-13,top+6,26,4);
+  g.fillStyle='rgba(130,180,140,.3)';g.fillRect(x0+5,top+44,5,70);g.fillRect(cx-10,top+10,4,22);
+  g.fillStyle='rgba(255,240,200,.18)';g.fillRect(x0+T-10,top+44,4,70);
 }
 function drawUglyPigeon(g,o,t){
   const x=o.x,y=o.y,f=o.f,k=o.k,fly=o.st==='fly'||o.st==='flee';g.save();g.translate(x,y);g.scale(f,1);

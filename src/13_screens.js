@@ -277,7 +277,7 @@ function drawStatsCard(w,ct){
   ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText(WORLDS[w].name,W/2,140);
   const cols=[120,440,530,620,710,820],hy=184;
   ctx.font='12px '+F_DISP;ctx.fillStyle='rgba(233,223,199,.55)';
-  ['NIVEAU','PAILLE','MÉDAILLE','CACHETTE','ACCROCS','POINTS'].forEach((h,k)=>{ctx.textAlign=k?'center':'left';ctx.fillText(h,cols[k],hy)});
+  ['NIVEAU','PAILLE','MÉDAILLE','SECRET','ACCROCS','POINTS'].forEach((h,k)=>{ctx.textAlign=k?'center':'left';ctx.fillText(h,cols[k],hy)});
   ctx.fillStyle='rgba(233,223,199,.2)';ctx.fillRect(110,hy+10,750,1);
   let tot=0,totMax=0;
   for(let j=0;j<4;j++){const li=w*4+j,o=st[li],y=hy+48+j*44,a=Math.min(1,Math.max(0,(ct-.2-j*.25)*4));
@@ -427,7 +427,7 @@ function renderLevelDone(t){
   ctx.fillStyle='#8a5a2a';ctx.font='13px '+F_DISP;ctx.textAlign='center';ctx.fillText(`MISSION ${def.w+1} · NIVEAU ${LE.li%4+1} TRAVERSÉ`,-5,-88);
   ctx.fillStyle='#2a2420';ctx.font='32px '+F_DISP;ctx.fillText(def.name,-5,-48);
   ctx.fillStyle='rgba(42,36,32,.25)';ctx.fillRect(-180,-30,350,1);
-  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Cachettes':'Cachette',`${st.secFound||0} / ${st.secTotal||1}`],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${st.max||levelMax(st)}`]);
+  const rows=[['Paille ramassée',`${st.corn} / ${st.cornTotal}`]];if(st.hasMedal)rows.push(['Médaille',st.medal?'trouvée':'non trouvée']);rows.push([st.secTotal>1?'Secrets':'Secret',`${st.secFound||0} / ${st.secTotal||1}`],['Accrocs',String(st.deaths)],['Points',`${st.points} / ${st.max||levelMax(st)}`]);
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});

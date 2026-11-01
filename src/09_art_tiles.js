@@ -3,7 +3,7 @@
    ========================================================= */
 const MAT={
   X:{carton:['#a9824f','#c79d63','#7f6038'],sandbag:['#8a7a5a','#a8987a','#6a5a40'],brick:['#7a3a2a','#9a5a3a','#5a2a1e'],luggage:['#6a3a2a','#8a5a3a','#4a2a1e'],
-     bench:['#2f4a3a','#456a52','#1e3226'],barrier:['#9a968e','#b8b4ac','#78746c'],hay:['#c9a24a','#e0bc6a','#a8823a'],crate:['#6a4a2a','#8a6a44','#4a321a'],tomb:['#85857f','#a5a59f','#65655f'],hedge:['#3a5a2e','#4e7a3a','#2a4220']},
+     bench:['#2f4a3a','#456a52','#1e3226'],barrier:['#9a968e','#b8b4ac','#78746c'],hay:['#c9a24a','#e0bc6a','#a8823a'],crate:['#6a4a2a','#8a6a44','#4a321a'],tomb:['#85857f','#a5a59f','#65655f'],hedge:['#3a5a2e','#4e7a3a','#2a4220'],none:['#000','#000','#000']},
   D:{drape:['#d3cab5','#ebe4d2','#aaa18c'],hedge:['#3a5a2e','#4e7a3a','#2a4220'],stall:['#8a5a3a','#c8302a','#6a4028'],vault:['#7a7670','#9a968e','#5a5650']},
   '=':{shelf:['#7a5332','#9a6d44','#5a3c24'],duck:['#6a5236','#8a6e4a','#4a3a26'],gutter:['#5a6470','#7a8692','#3e4650'],girder:['#7a4a32','#9a6a4a','#5a3424'],
      table:['#6a5a44','#8a7a5a','#4a3e2e'],branch:['#5a4330','#7a5c40','#3e2e20'],plank:['#7a5a3a','#9a7a52','#5a4028'],beam:['#5a3e26','#7a5a3a','#3e2a18']}
@@ -43,12 +43,12 @@ function buildTiles(L){
   }
   g.save();g.globalCompositeOperation='source-atop';g.fillStyle=rgba(th.fog,th.outdoor?.22:.28);g.fillRect(0,-PAD,wpx,hpx);g.restore();
   const sh=mk(wpx,hpx),sg=sh.getContext('2d');sg.translate(0,PAD);sg.fillStyle='#000';
-  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!(ch==='X'&&th.x==='log'))sg.fillRect(cc*T+10,r*T+12,T,T);else if(ch==='='||ch==='B')sg.fillRect(cc*T+10,r*T+12,T,12)}
+  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!(ch==='X'&&(th.x==='log'||thAtCol(L,cc).x==='none')))sg.fillRect(cc*T+10,r*T+12,T,T);else if(ch==='='||ch==='B')sg.fillRect(cc*T+10,r*T+12,T,12)}
   g.save();g.globalAlpha=th.outdoor?.38:.5;g.filter='blur(7px)';g.drawImage(sh,0,-PAD);g.restore();
   for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){
     const ch=L.g[r][cc],x=cc*T,y=r*T,thc=thAtCol(L,cc),mc=matCols(ch,thc);if(!mc)continue;
     if(ch==='='&&th.shelf==='branch')continue;
-    if(ch==='X'&&th.x==='log')continue;
+    if(ch==='X'&&(th.x==='log'||thc.x==='none'))continue;
     if(ch==='='||ch==='B'){faceTop(g,x,y,mc[1]);if(tile(cc+1,r)!==ch)faceSide(g,x,y,12,mc[2]);continue}
     if(!isSolid(cc,r-1))faceTop(g,x,y,mc[1]);
     if(!isSolid(cc+1,r))faceSide(g,x,y,T,mc[2]);
@@ -57,7 +57,7 @@ function buildTiles(L){
   verdunTiles(g,L);
   // arête nette sous chaque face avant : rendu plus « carré »
   g.fillStyle='rgba(0,0,0,.35)';
-  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!(ch==='X'&&th.x==='log')&&!isSolid(cc,r+1)&&r<ROWS-1)g.fillRect(cc*T,r*T+T-1.5,T,1.5)}
+  for(let r=0;r<ROWS;r++)for(let cc=0;cc<L.w;cc++){const ch=L.g[r][cc];if(SOLID_ART.includes(ch)&&!(ch==='X'&&(th.x==='log'||thAtCol(L,cc).x==='none'))&&!isSolid(cc,r+1)&&r<ROWS-1)g.fillRect(cc*T,r*T+T-1.5,T,1.5)}
   // coins arrondis des blocs et des bords exposés
   g.save();g.globalCompositeOperation='destination-out';
   const cut=(cx,cy,sx,sy,R0)=>{g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+sx*R0,cy);g.quadraticCurveTo(cx,cy,cx,cy+sy*R0);g.closePath();g.fill()};
@@ -207,7 +207,7 @@ function drawSpikes(g,ch,x,y,cc,r,th){
   }
 }
 function drawTileFront(g,ch,x,y,cc,r,th){
-  if(ch==='X'&&th.x==='log')return;   // troncs et rondins : dessinés à part (11g_zonerouge.js)
+  if(ch==='X'&&(th.x==='log'||th.x==='none'))return;   // troncs et rondins : dessinés à part (11g_zonerouge.js)
   const mc=matCols(ch,th);
   const topOpen=!isSolid(cc,r-1);
   if(ch==='#')drawFloor(g,x,y,cc,r,th,mc,topOpen);

@@ -75,21 +75,20 @@ LEVELS.push((()=>{
   put(93,4,'m');put(113,5,'m');
   corn([82,9],[86,8],[92,6],[96,9],[99,4],[102,10],[104,6],[107,4],[111,4],[115,8]);
   put(104,2,'*');
-  put(117,11,'C');
   /* --- le parvis, la route, le square --- */
   put(123,11,'C');box(133,133,11,11,'X');box(148,148,11,11,'X');
   corn([128,10],[133,8],[140,9],[148,8],[155,10],[162,8],[167,7],[172,8]);
   put(181,11,'C');
   // la statue de Colbert : marches, socle, piédestal, la statue (on peut se percher sur sa tête)
-  box(201,213,11,11,'#');box(202,212,10,10,'#');box(204,210,8,9,'#');box(205,209,6,7,'#');box(206,208,5,5,'#');box(207,207,2,4,'X');
-  corn([186,9],[193,10],[204,6],[207,1],[217,9],[226,10],[233,9]);
+  box(201,213,11,11,'X');box(202,212,10,10,'X');box(204,210,9,9,'X');box(205,209,7,8,'X');box(206,208,6,6,'X');box(207,207,3,5,'X');
+  corn([186,9],[193,10],[204,7],[207,2],[217,9],[226,10],[233,9]);
   box(238,239,11,11,'X');box(243,243,11,11,'X');
   put(247,11,'E');
   for(const[c,r]of[[17,11],[79,11],[121,11],[157,11],[183,11],[200,11]])put(c,r,'q');
   const zones=[['quai',0,116],['hall',117,121],['parvis',122,158],['route',159,178],['parc',179,RW-1]];
   return {w:2,name:"La gare",theme:'gare',exit:'post',exitLabel:"PLACE D'ERLON",seed:83,rows:RR,
-    zoneTh:{quai:{type:'platform',floor:'#7a746a',floorTop:'#a8a090'},hall:{type:'stone',floor:'#8a8478',floorTop:'#b8b0a2'},
-      parvis:{type:'stone',floor:'#9a9284',floorTop:'#cfc6b2',x:'barrier'},route:{type:'asphalt',floor:'#3a3c40',floorTop:'#55575c'},parc:{type:'earth',floor:'#5c4630',floorTop:'#6c9a38',x:'hedge'}},
+    zoneTh:{quai:{type:'platform',floor:'#7a746a',floorTop:'#a8a090',x:'none'},hall:{type:'stone',floor:'#8a8478',floorTop:'#b8b0a2'},
+      parvis:{type:'stone',floor:'#9a9284',floorTop:'#cfc6b2',x:'none'},route:{type:'asphalt',floor:'#3a3c40',floorTop:'#55575c'},parc:{type:'earth',floor:'#5c4630',floorTop:'#6c9a38',x:'none'}},
     zoneProps:{quai:['bench','clockPost','vending','bench'],hall:[],parvis:['lampPost','binPark'],route:[],parc:['flowerbed','binPark','lampPost']},
     nestAt:[57,7],
     gare:{camion:[20,24],cart:[[40,41],[56,57],[70,71]],shop:[88,94],kiosk:[97,101],resto:[105,112],queue:[80,87],vanZone:[25,78],

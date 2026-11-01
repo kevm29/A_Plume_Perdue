@@ -20,7 +20,7 @@ const ACH=[
  ['a17','P','Article 4 bis',"Lire les vingt morceaux de la lettre."],
  ['a24','C','Rembourré à neuf',"Revenir à cinq crans pleins après être descendu au dernier."],
  ['a26','C','Bardé de décorations',"Trouver les cinq médailles dans une même partie."],
- ['a30','C',"Rien ne m'échappe","Trouver toutes les cachettes du jeu."],
+ ['a30','C',"Rien ne m'échappe","Trouver tous les secrets du jeu."],
  ['a35','C','Mission parfaite',"Tout trouver dans une mission."],
  ['a49','D','Recousu de travers',"Perdre la tête une première fois."],
  ['a50','D','Depuis la remise',"Perdre sa dernière vie et tout recommencer."],
@@ -33,7 +33,7 @@ const ACH=[
  ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."]
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
-/* nombre total de cachettes (1-1 : trois ; les autres niveaux : une) */
+/* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
 const SECRET_TOTAL=30;
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){

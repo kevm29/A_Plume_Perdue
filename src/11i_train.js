@@ -26,7 +26,7 @@ function trainPost(Lv){
   D.seats.forEach((k,i)=>{const x=(w3.c0+2+i*2)*T+4;const pa={x,k,cool:0,shock:0,throwT:-1,ph:R()*6};Tn.pass.push(pa);
     if(k==='bagred'){pa.act={kind:'secret',style:'sac',x:x+30,y:TRN.FLOOR,open:0,t:0,used:false,
       q:["Un sac à dos rouge, sans personne. Dedans : un pull, un livre… et de la paille d'emballage. Réquisitionnée."]};Lv.acts.push(pa.act)}});
-  for(const c of D.bottles)Tn.bottles.push({x:c*T,vx:0,rot:0,k:Tn.bottles.length%2?'can':'bottle'});
+  for(const c of D.bottles)Tn.bottles.push({x:c*T,vx:(R()-.5)*120,rot:0,k:Tn.bottles.length%2?'can':'bottle'});
   // le paquet de chips : une cachette sans paille
   Lv.acts.push({kind:'secret',style:'chips',noStraw:true,x:D.chips*T,y:10*T,open:0,t:0,used:false,
     q:["Un paquet de chips. Pas un brin de paille dedans, mais ça craque comme le pain de guerre. Je le confisque."]});
@@ -69,10 +69,13 @@ function trainStep(dt){
         if(!G.sim){G.shake=9;noise(.2,600,.5,'lowpass');tone(220,.15,'square',.08,90)}break}}
     if(!P.carried&&hb.y<TRN.WIRE+4&&hb.y+hb.h>TRN.WIRE-4&&(trainZone(pcx)||pcx>Tn.loco))G.trainHit='elec';}
   // secousses : tout ce qui roule part du même côté
-  Tn.joltT-=dt;if(Tn.joltT<=0){Tn.dir*=-1;Tn.joltT=2.4+rnd()*2.2;if(!G.sim&&(trIn(Tn,Tn.in3)||trIn(Tn,Tn.in4))){G.shake=Math.max(G.shake,3.5);noise(.12,400,.35,'lowpass')}}
+  // à chaque secousse, tout ce qui roule part du même côté, chacun avec son élan ; puis ça ralentit
+  Tn.joltT-=dt;if(Tn.joltT<=0){Tn.dir*=-1;Tn.joltT=1.8+rnd()*1.8;for(const b of Tn.bottles){const dw=Tn.dir>0?Tn.in3[1]-b.x:b.x-Tn.in3[0];b.vx=clamp(b.vx*.3+Tn.dir*(70+rnd()*110)*Math.max(v,.3)*clamp(dw/(10*T),.25,1),-170,170)}
+    if(!G.sim&&(trIn(Tn,Tn.in3)||trIn(Tn,Tn.in4))){G.shake=Math.max(G.shake,3.5);noise(.12,400,.35,'lowpass')}}
   const [a3,b3]=Tn.in3;
-  for(const b of Tn.bottles){b.vx=clamp(b.vx+Tn.dir*260*dt*Math.max(v,.2),-150,150);b.x+=b.vx*dt;b.rot+=b.vx*dt/7;
-    if(b.x<a3+8){b.x=a3+8;b.vx=Math.abs(b.vx)*.35}if(b.x>b3-8){b.x=b3-8;b.vx=-Math.abs(b.vx)*.35}
+  Tn.bottles.sort((p,q)=>p.x-q.x);for(let i=0;i+1<Tn.bottles.length;i++){const p=Tn.bottles[i],q=Tn.bottles[i+1];if(q.x-p.x<26){const m=(p.x+q.x)/2;p.x=m-13;q.x=m+13;const t2=p.vx;p.vx=q.vx*.8;q.vx=t2*.8}}
+  for(const b of Tn.bottles){const f=40*dt;b.vx=Math.abs(b.vx)<=f?0:b.vx-Math.sign(b.vx)*f;b.x+=b.vx*dt;b.rot+=b.vx*dt/7;
+    if(b.x<a3+8){b.x=a3+8;b.vx=Math.abs(b.vx)*.5}if(b.x>b3-8){b.x=b3-8;b.vx=-Math.abs(b.vx)*.5}
     if(!P.dead&&Math.abs(b.x-pcx)<12&&P.y+P.h>TRN.FLOOR-12&&P.y<TRN.FLOOR)G.trainHit='bouteille'}
   // les voyageurs : horrifiés s'ils voient Raymond sauter devant eux
   const inside3=trIn(Tn,Tn.in3);
@@ -147,7 +150,7 @@ function trMidStrip(){return trStrip('mid',3200,230,(g,w,h,R)=>{
   for(let k=0;k<4;k++){const vx=300+k*780+R()*120;for(let j=0;j<7;j++){const hx=vx+j*24,hh=18+R()*8;g.fillStyle=R()<.5?'#e8e0cc':'#d8cdb4';g.fillRect(hx,46-hh+6,22,hh);g.fillStyle=R()<.6?'#a8503a':'#5a5a62';poly(g,[hx-2,46-hh+6,hx+11,46-hh-6,hx+24,46-hh+6]);g.fill();g.fillStyle='#4a4a52';g.fillRect(hx+6,46-hh+12,4,5)}
     g.fillStyle='#d8d0bc';g.fillRect(vx+70,6,12,40);g.fillStyle='#5a5a62';poly(g,[vx+68,6,vx+76,-26,vx+84,6]);g.fill()}
   {const x=1900;g.fillStyle='#ece4d0';g.fillRect(x,8,120,40);g.fillStyle='#4a4a52';poly(g,[x-6,8,x+60,-12,x+126,8]);g.fill();for(let j=0;j<5;j++){g.fillStyle='#3a4a5a';g.fillRect(x+10+j*22,20,10,14)}
-    g.fillStyle='#2a3a5a';g.fillRect(x+130,0,150,36);g.fillStyle='#e8d8a8';g.font='bold 15px '+F_DISP;g.textAlign='center';g.fillText('CHAMPAGNE GARNIER',x+205,18);g.font='9px '+F_DISP;g.fillText('maison fondée en 1921',x+205,30);g.fillStyle='#3a3a3a';g.fillRect(x+150,36,3,12);g.fillRect(x+258,36,3,12)}
+    g.fillStyle='#2a3a5a';g.fillRect(x+130,0,150,36);g.fillStyle='#e8d8a8';g.textAlign='center';{let fs=15;g.font='bold '+fs+'px '+F_DISP;while(g.measureText('CHAMPAGNE BRUNEAU & FILS').width>138){fs-=.5;g.font='bold '+fs+'px '+F_DISP}g.fillText('CHAMPAGNE BRUNEAU & FILS',x+205,18)}g.font='9px '+F_DISP;g.fillText('maison fondée en 1921',x+205,30);g.fillStyle='#3a3a3a';g.fillRect(x+150,36,3,12);g.fillRect(x+258,36,3,12)}
   {const x=2700,y=110;g.fillStyle='#c83a2a';g.fillRect(x-14,y-40,28,14);g.fillStyle='#2a2a2a';g.fillRect(x-18,y-28,4,30);g.fillRect(x+14,y-28,4,30);g.beginPath();g.arc(x-16,y+2,6,0,7);g.arc(x+16,y+2,6,0,7);g.fill();g.fillStyle='#9ac0d8';g.fillRect(x-10,y-38,10,8)}
   g.fillStyle='#8a8478';g.fillRect(0,40,w,5);
 })}
