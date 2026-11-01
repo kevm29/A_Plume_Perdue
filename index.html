@@ -6954,11 +6954,9 @@ function gareStep(dt){
     else if(o.k==='deplume'){// court vers Raymond, ne vole pas
       if(near<320&&P.y+P.h>F-120){o.st='run';o.f=Math.sign(dx)||1;o.x+=o.f*205*dt}else{o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*25*dt}
       o.x=clamp(o.x,(D.park[0]+2)*T,(D.park[1]-2)*T);if(near<160&&!S2.said.dep&&!G.sim){S2.said.dep=1;bubble(o.x,F-40,'Kroûû !','#6a4a4a')}}
-    else{// le pigeon aux moignons : il s'arrête et mendie ; si on le survole, il crache une graine
-      if(near<230&&P.y+P.h>F-260){o.st='beg';o.f=Math.sign(dx)||1;if(o.beg<=0&&!G.sim){o.beg=2.6;bubble(o.x,F-44,pick(["Une graine, pour un ancien combattant ?","Pitié, camarade…","Rien qu'une miette…"]),'#6a5a48')}}
-      else{o.st='walk';o.f=Math.sin(o.t*.4)>0?1:-1;o.x+=o.f*14*dt;o.x=clamp(o.x,o.home-120,o.home+120)}
-      o.beg=Math.max(0,o.beg-dt);
-      if(near<46&&P.y+P.h<F-24&&!P.onGround&&o.cool<=0&&!P.dead){o.cool=2;S2.seeds.push({x:o.x+o.f*8,y:F-30});o.spit=.35;if(!G.sim){noise(.08,2600,.15,'bandpass');bubble(o.x,F-40,'Ptou !','#6a5a48')}}}
+    else{// le pigeon aux moignons : il boitille de gauche à droite et demande l'aumône ; inoffensif
+      o.st='walk';o.f=Math.sin(o.t*.4)>0?1:-1;o.x+=o.f*16*dt;o.x=clamp(o.x,o.home-120,o.home+120);
+      o.beg=Math.max(0,o.beg-dt);if(near<230&&o.beg<=0&&!G.sim){o.beg=2.8;bubble(o.x,F-44,pick(["Une graine, pour un ancien combattant ?","Pitié, camarade…","Rien qu'une miette…"]),'#6a5a48')}}
     if(!P.dead&&o.k!=='moignon'&&overlap(hb,{x:o.x-(o.k==='gros'?16:12),y:o.y-(o.k==='gros'?30:24),w:o.k==='gros'?32:24,h:o.k==='gros'?28:22}))G.gareHit=o.k==='gros'?'pigeonGros':'pigeonDeplume'}
   S2.pig=S2.pig.filter(o=>o.y>-200);
   // la graine crachée ne rate jamais sa cible
