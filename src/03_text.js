@@ -2,6 +2,13 @@
    TEXTES — Raymond se croit toujours en 1916
    ========================================================= */
 const DEATH_Q={
+  camion:["Écrasé par un semi-remorque. Il ne m'a même pas vu. Personne ne regarde jamais les pigeons.","Le camion est arrivé avant que je saute. Il fallait sauter à la lumière."],
+  pont:["Le pont m'a raboté. On ne reste pas sur un toit de camion sous un pont : c'est écrit sur le panneau.","Aplati sous le tablier. 3,50 m, ils disaient. Pas pour un pigeon debout sur un camion."],
+  objet:["Une chaussure en pleine tête. Ce n'est même pas à moi qu'elle était destinée.","Pris entre deux feux. Les civils sont pires que les artilleurs."],
+  benne:["La benne s'est levée sur moi. Il fallait attendre qu'elle redescende.","Renversé par la benne. Le règlement dit d'attendre son tour."],
+  goudron:["Englué dans le goudron chaud. Plumé, goudronné… il ne manque que les plumes.","Une coulée de goudron. Ça colle, ça brûle, et ça ne pardonne pas."],
+  rouleau:["Aplani par le rouleau. Lisse comme la route.","Le rouleau est revenu plus vite que prévu. Il fallait sauter au bon moment."],
+  ouvriers:["Les cantonniers m'ont attrapé au vol. Ils discutaient, pourtant.","Un coup de casque d'ouvrier. Ils ne plaisantent pas, sur les chantiers."],
   bigrat:["Le gros rat blanc m'a rattrapé. Il avait les dents plus longues que mes ambitions.","Mordu par le roi des rats du cours Langlet. Il fallait courir, pas flâner."],
   sauteur:["Un pigeon de parvis m'a sauté dessus. Ils sont chez eux, ici, et ils le font savoir.","Percuté en plein vol par un costaud du parvis."],
   mendiant:["Il m'a demandé une miette. J'ai voulu passer. Il s'est accroché à mes plumes.","Bousculé par un mendiant. Il n'avait rien, et maintenant moi non plus."],
@@ -88,7 +95,9 @@ const WORLD_CARDS=[
    {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
   [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
-   {title:"MISSION 4 · L'A4",t:"Une route immense, toute droite vers l'ouest, sans chevaux ni soldats.\nCe soir, le vent se lève."}],
+   {t:"Du haut de la cathédrale, Raymond aperçoit un grand axe qui file vers l'ouest.\nAu loin, il reconnaît les paysages."},
+   {t:"Il décide d'y filer. Une route immense, sans chevaux ni soldats,\noù des lumières roulent toute la nuit."},
+   {title:"MISSION 4 · L'A4",t:"C'est l'A4. Il fait nuit, et les camions roulent vite."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
    {title:"MISSION 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
@@ -130,6 +139,6 @@ const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
   {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
   {name:"Le cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
-  {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
+  {name:"L'A4 sous l'orage",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
 ];

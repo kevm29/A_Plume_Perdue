@@ -159,6 +159,7 @@ function mechAfterMove(dt,vyBefore){
   {const k=gareAfterMove();if(k)return k}
   {const k=langletAfterMove();if(k)return k}
   {const k=facadeAfterMove(dt);if(k)return k}
+  {const k=a4AfterMove();if(k)return k}
   return null;
 }
 /* ---------- collisions mortelles ---------- */
@@ -219,6 +220,7 @@ function mechLights(){
   if(L.chaser&&L.chaser.type==='guardnet'&&L.chaser.state!=='sleep'){const K=L.chaser;out.push({x:K.x+K.w/2+K.f*80,y:K.y+24,r:160,i:.8,warm:1})}
   for(const w of L.watchers)if(w.open>0)out.push({x:w.x+6,y:w.y-40,r:60,i:.5*w.open});
   for(const f of L.fires)out.push({x:f.x,y:f.y-30,r:180,i:.6,warm:2});
+  if(L.a4)for(const l of a4Lights())out.push(l);
   return out;
 }
 

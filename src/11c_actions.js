@@ -74,6 +74,7 @@ function tryAct(){
     if(!G.sim){noise(.25,2600,.18,'highpass');if(a.step===1)say("Du scotch. Du bon scotch d'avant-guerre. Il résiste.",3);else if(a.step===2)say("Les rabats. Du papier journal froissé… de 1931.",3)}
     if(a.step===3){grantSecret(a,a.y-40);if(!G.sim)sayQueue([['RAYMOND',"De la paille de calage. Et au fond… une enclume de cordonnier.",3.6],['RAYMOND',"Étiquetée « FRAGILE ». Voilà donc ce qui m'a libéré.",3.6]])}
     return}
+  if(L.a4&&(a.kind==='beacon'||a.kind==='secret')&&a4Act(a))return;
   if(a.kind==='door'){winLevel();return}
   if(a.kind==='hide'){museeHide(a);return}
   if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}

@@ -1,5 +1,35 @@
 /* ------------------------------ MISSION 4 · L'A4 ------------------------------ */
-LEVELS.push({w:3,name:"L'aire de repos",theme:'aire',exit:'post',exitLabel:"A4 → OUEST",seed:103,
+/* 4-1 · L'autoroute de l'Est : de nuit, sur l'A4, à dos de camion sous trois ponts, l'embouteillage du péage de Thillois,
+   les travaux, jusqu'à l'aire de Gueux — 11m_a4.js */
+LEVELS.push((()=>{
+  const RW=442,RR=16,G0=14,T0=40;
+  const g=Array.from({length:RR},()=>Array(RW).fill('.'));
+  for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
+  const block=(x0,x1,h)=>{for(let c=Math.floor(x0/T0);c<=Math.floor((x1-1)/T0);c++)for(let r=G0-h;r<G0;r++)g[r][c]='X'};
+  // l'embouteillage : [x0,x1,genre,hauteur en cases]
+  const jam=[[9800,10020,'car',2],[10060,10340,'van',3],[10380,10600,'car',2],[10640,11080,'truck',4],[11120,11340,'car',2],[11380,11780,'bus',4],[11820,11990,'car',2],
+             [12080,12230,'carB',2],[12280,12520,'carA',2]];
+  for(const[x0,x1,,h]of jam)block(x0,x1,h);
+  g[G0-1][Math.floor(12240/T0)]='X';                       // le moteur à nu de la voiture qui a percuté (on peut s'y poser)
+  block(12640,12760,3);                                     // l'îlot de la cabine de péage
+  // les travaux : plots, camionnettes, camion-benne (le châssis ; la benne est animée), cabine
+  const cones=[13240,13280,13640,14240,15920,15960,16560];for(const x of cones)g[G0-1][Math.floor(x/T0)]='X';
+  const vans=[[13800,14040],[16700,16940]];for(const[a,b]of vans)block(a,b,3);
+  block(14400,14700,2);block(14700,14860,4);
+  // rats, corbeaux, cartels, paille, médaille, départ, sortie
+  for(const[c,a,b]of[[336,332,344],[402,398,407]]){g[G0-1][c]='k';g[G0-1][a]='|';g[G0-1][b]='|'}
+  for(const[c,r,ch]of[[252,7,'m'],[268,5,'n'],[284,8,'m'],[300,6,'n']])g[r][c]=ch;
+  for(const c of[74,134,194,236,322,358,372,412])g[G0-1][c]='C';
+  for(const[c,r]of[[20,9],[48,12],[90,12],[110,9],[150,12],[170,9],[214,12],[248,9],[262,10],[278,8],[306,10],[330,12],[349,9],[380,12],[396,12],[418,12],[428,12]])g[r][c]='o';
+  g[7][289]='*';g[G0-1][3]='S';g[G0-1][434]='E';
+  return {w:3,name:"L'autoroute de l'Est",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.62,
+    a4:{G0,bridges:[[2400,2760],[4800,5160],[7200,7560]],jamX:9800,jam,booth:[12640,12760],canopy:[12420,13020],vans,cones,tar:{x0:14400,x1:14700,c1:14860},
+        roller:[15020,15820],workers:[16300,16345,16392],tyre:4990,engine:12260,exitX:17360},
+    start:"Sur le dos d'un camion, en pleine nuit, à toute allure vers l'ouest. Le règlement n'a rien prévu : c'est donc autorisé.",
+    hints:[],quips:[],
+    segs:[{z:'a4',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
+})());
+LEVELS.push({w:3,name:"L'aire de Gueux",theme:'aire',exit:'post',exitLabel:"A4 → OUEST",seed:103,
  gust:{period:6,dur:2.2,push:240,dir:-1},
  start:"Une route sans fin, toute droite vers l'ouest. Et un vent à décorner les bœufs.",
  hints:[["ARTICLE 18 — LE VENT DE FACE","Les traînées de vent annoncent la rafale. Se mettre à l'abri derrière une barrière ou un camion."],
@@ -54,69 +84,6 @@ LEVELS.push({w:3,name:"L'aire de repos",theme:'aire',exit:'post',exitLabel:"A4 �
 ......E.....
 ############
 ############`]});
-
-LEVELS.push({w:3,name:"Les camions",theme:'road',exit:'post',exitLabel:"CHÂTEAU-THIERRY",seed:107,
- gust:{period:8,dur:1.8,push:170,dir:-1},
- start:"Des camions grands comme des maisons. Le ravitaillement a beaucoup grossi.",
- hints:[["ARTICLE 20 — LE CAMION","Monter sur le toit. Ne pas demander où il va. Voir aussi la figure 9 : le diable."]],
- quips:["Ils roulent sans chevaux, et le chauffeur ne chante même pas. Triste époque.","Du verre partout sur la route. Un convoi s'est fait mitrailler, c'est sûr.","Encore du verre. Ils n'ont donc personne pour balayer, à l'arrière ?"],
- signs:["works:TRAVAUX|Route barrée"],
- segs:[`
-.....g....
-..S...h...
-##########
-##########`,`
-.....o.......o.......o..
-........................
-.|N....................|
-XX......................
-XX^^^^^^^^^^^^^^^^^^^^^^
-########################
-########################`,`
-.....o......
-............
-C|q..k....|.
-############
-############`,`
-.............*..............
-............................
-............................
-.......m.........m..........
-...........o.......o........
-.|N.......................|.
-XX..........................
-XX^^^^^^^^^^^^^^^^^^^^^^^^^^
-############################
-############################`,`
-....o.o.....
-............
-C|...k....|.
-############
-############`,`
-......m.........m.......
-.........o..............
-.|N...................|.
-XX......................
-XX^^^^^^^^^^^^^^^^^^^^^^
-########################
-########################`,`
-....o.o.....
-............
-C|..q.....|.
-############
-############`,`
-..........................
-.......m..........m.......
-.....o.........o..........
-.|N......................|
-XX........................
-XX^^^^^^^^^^^^^^^^^^^^^^^^
-##########################
-##########################`,`
-..........
-......E...
-##########
-##########`]});
 
 LEVELS.push({w:3,name:"L'orage",theme:'storm',exit:'post',exitLabel:"OUEST →",seed:109,
  auto:{speed:118},
