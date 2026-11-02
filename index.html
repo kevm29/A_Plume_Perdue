@@ -7365,11 +7365,19 @@ function lgWin(g,x,y,w,h,o){o=o||{};
   if(o.rail){g.strokeStyle='#26282c';g.lineWidth=1.2;g.strokeRect(x-4,y+h-14,w+8,14);for(let k=x;k<x+w+4;k+=4){g.beginPath();g.moveTo(k,y+h-14);g.lineTo(k,y+h);g.stroke()}}
   if(o.sill!==false){g.fillStyle=o.sillCol||'#d8cfbc';g.fillRect(x-5,y+h+3,w+10,4)}
 }
-function lgBalcony(g,x0,x1,y,kind){// balcon filant sur une planche (y = niveau du sol du balcon)
-  if(kind==='stone'){g.fillStyle='#d4c9b2';g.fillRect(x0,y-4,x1-x0,8);g.fillStyle='#c4b89e';for(let x=x0+4;x<x1-4;x+=9){g.fillRect(x,y-18,5,14);g.beginPath();g.ellipse(x+2.5,y-12,3.5,4,0,0,7);g.fill()}g.fillRect(x0,y-22,x1-x0,5);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x0,y+4,x1-x0,3)}
-  else if(kind==='orange'){g.fillStyle='#c9c4b4';g.fillRect(x0,y-4,x1-x0,8);g.fillStyle='#d8763c';for(let x=x0+4;x<x1-4;x+=8){g.fillRect(x,y-18,5,14)}g.fillStyle='#c9c4b4';g.fillRect(x0,y-22,x1-x0,5)}
-  else{g.fillStyle='#bcb3a0';g.fillRect(x0,y-3,x1-x0,6);g.strokeStyle='#202226';g.lineWidth=1.2;g.beginPath();g.moveTo(x0,y-20);g.lineTo(x1,y-20);g.moveTo(x0,y-17);g.lineTo(x1,y-17);g.stroke();
-    for(let x=x0+3;x<x1;x+=5){g.beginPath();g.moveTo(x,y-20);g.lineTo(x,y-3);g.stroke()}for(let x=x0+10;x<x1-6;x+=20){g.beginPath();g.arc(x,y-11,4,0,7);g.stroke()}}
+/* balcon : la dalle reste dans le décor ; le garde-corps est noté pour être dessiné DEVANT Raymond (il se pose derrière les barreaux) */
+function lgBalcony(g,x0,x1,y,kind){// y = niveau du sol du balcon
+  if(kind==='stone'){g.fillStyle='#d4c9b2';g.fillRect(x0,y-4,x1-x0,8);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x0,y+4,x1-x0,3)}
+  else if(kind==='orange'){g.fillStyle='#c9c4b4';g.fillRect(x0,y-4,x1-x0,8)}
+  else if(kind==='mini'){g.fillStyle='#8a9188';g.fillRect(x0,y-3,x1-x0,5)}
+  else{g.fillStyle='#bcb3a0';g.fillRect(x0,y-3,x1-x0,6)}
+  if(LG.rec)LG.rec.push([x0,x1,y,kind]);else lgRail(g,x0,x1,y,kind)}
+function lgRail(g,x0,x1,y,kind){
+  if(kind==='stone'){g.fillStyle='#c4b89e';for(let x=x0+4;x<x1-4;x+=9){g.fillRect(x,y-18,5,14);g.beginPath();g.ellipse(x+2.5,y-12,3.5,4,0,0,7);g.fill()}g.fillStyle='#d4c9b2';g.fillRect(x0,y-22,x1-x0,5);g.fillStyle='#c9bea6';g.fillRect(x0,y-5,x1-x0,2)}
+  else if(kind==='orange'){g.fillStyle='#d8763c';for(let x=x0+4;x<x1-4;x+=8){g.fillRect(x,y-18,5,14)}g.fillStyle='#c9c4b4';g.fillRect(x0,y-22,x1-x0,5)}
+  else if(kind==='mini'){g.strokeStyle='rgba(38,40,44,.8)';g.lineWidth=1;g.beginPath();g.moveTo(x0,y-13);g.lineTo(x1,y-13);for(let x=x0+2;x<x1;x+=5){g.moveTo(x,y-13);g.lineTo(x,y-3)}g.stroke()}
+  else{g.strokeStyle='#202226';g.lineWidth=1.2;g.beginPath();g.moveTo(x0,y-20);g.lineTo(x1,y-20);g.moveTo(x0,y-17);g.lineTo(x1,y-17);
+    for(let x=x0+3;x<x1;x+=5){g.moveTo(x,y-20);g.lineTo(x,y-3)}for(let x=x0+10;x<x1-6;x+=20){g.moveTo(x+4,y-11);g.arc(x,y-11,4,0,7)}g.stroke()}
 }
 function lgMansard(g,x0,x1,y,h,o){o=o||{};// toit à la Mansart, ardoise, lucarnes
   g.fillStyle=LGC.slate;poly(g,[x0-6,y,x0+10,y-h,x1-10,y-h,x1+6,y]);g.fill();g.fillStyle='rgba(255,255,255,.06)';for(let k=0;k<h;k+=6)g.fillRect(x0+4,y-k,x1-x0-8,1);
@@ -7408,7 +7416,7 @@ function lgRotonde(g,c0,c1,R){// l'immeuble vert-de-gris à rotonde : trois balc
       g.fillStyle='#c8673e';g.fillRect(wx+6,y-76,12,5)}}
   lgMansard(g,xr,x1,top,62,{dxs:[12.5*T,16.5*T,20.5*T],style:'pediment',dcol:'#b9beb2'});
   // trois petits balconnets de fer au pied des lucarnes
-  for(const c of[12,16,20]){const bx=c*T+2;g.fillStyle='#8a9188';g.fillRect(bx,top-3,T-4,5);g.strokeStyle='rgba(38,40,44,.75)';g.lineWidth=1;g.beginPath();g.moveTo(bx,top-13);g.lineTo(bx+T-4,top-13);for(let x=bx+2;x<bx+T-4;x+=5){g.moveTo(x,top-13);g.lineTo(x,top-3)}g.stroke()}
+  for(const c of[12,16,20])lgBalcony(g,c*T+2,c*T+T-2,top,'mini');
   // rez-de-chaussée : portes cintrées vertes, deux boutiques
   for(const dx of[x0+30,x0+130]){g.fillStyle='#8a9188';g.beginPath();g.moveTo(dx-6,b);g.lineTo(dx-6,b-90);g.arc(dx+30,b-90,36,Math.PI,0);g.lineTo(dx+66,b);g.closePath();g.fill();
     g.fillStyle='#1e4a6a';g.beginPath();g.moveTo(dx,b);g.lineTo(dx,b-90);g.arc(dx+30,b-90,30,Math.PI,0);g.lineTo(dx+60,b);g.closePath();g.fill();g.strokeStyle='#4ac04a';g.lineWidth=2;g.strokeRect(dx+6,b-84,22,80);g.strokeRect(dx+32,b-84,22,80)}
@@ -7465,10 +7473,9 @@ function lgHotelBrique(g,c0,c1,R){// l'hôtel en brique et pierre, en retrait de
   {const dx=x0+pw*.82;g.fillStyle='#ddd0b4';g.fillRect(dx-6,b-90,40,90);poly(g,[dx-12,b-90,dx+14,b-108,dx+40,b-90]);g.fill();g.fillStyle='#1e1e22';g.fillRect(dx,b-82,28,82)}
   lgMansard(g,x0,x1,top-8,52*s/.86,{dormers:9,style:'pediment',dcol:'#ddd0b4',chim:[x0+40,x1-30]});
   // la place : bancs, arbres en grille, corbeilles, bornes
-  for(const bx of[x0+pw*.28,x0+pw*.62]){g.fillStyle='#2a2c30';g.fillRect(bx,LG.BASE-30,70,5);g.fillRect(bx+4,LG.BASE-25,4,18);g.fillRect(bx+62,LG.BASE-25,4,18);g.fillRect(bx,LG.BASE-40,70,4)}
-  for(const tx of[x0+pw*.45,x0+pw*.9]){g.strokeStyle='#4a3a2c';g.lineWidth=4;g.beginPath();g.moveTo(tx,LG.BASE);g.lineTo(tx,LG.BASE-150);g.stroke();g.lineWidth=1.5;for(let k=0;k<8;k++){const y=LG.BASE-60-k*12;g.beginPath();g.moveTo(tx,y);g.lineTo(tx+(k%2?1:-1)*(20+k*3),y-24);g.stroke()}
-    g.fillStyle='rgba(200,150,60,.55)';for(let k=0;k<14;k++){g.beginPath();g.arc(tx+(R()-.5)*60,LG.BASE-110-R()*60,3,0,7);g.fill()}}
-  for(const px of[c0*T+30,c1*T-40]){g.fillStyle='#2a2c30';g.fillRect(px,LG.BASE-140,6,140)}
+  for(const bx of[x0+pw*.28,x0+pw*.62])LG.furn.push({k:'bench',x:bx});
+  for(const tx of[x0+pw*.45,x0+pw*.9])LG.furn.push({k:'ptree',x:tx,seed:tx|0});
+  for(const px of[c0*T+30,c1*T-40])LG.furn.push({k:'post',x:px});
 }
 function lgCoupole(g,c0,c1,R){// l'immeuble crème à la tourelle d'angle : bow-window polygonal coiffé d'une coupole d'ardoise, hautes souches de brique, grandes lucarnes de pierre à fronton
   const x0=c0*T,x1=c1*T,b=LG.BASE,F=LG.FH,top=b-LG.GF-3*F,stone='#e6dcc4',bx0=x0+16,bx1=x0+176,sd=30;
@@ -7483,7 +7490,7 @@ function lgCoupole(g,c0,c1,R){// l'immeuble crème à la tourelle d'angle : bow-
   const cols=[67,70,73,76].map(c=>(c+.5)*T);
   for(let k=1;k<=3;k++){const y=b-LG.GF-(k-1)*F;for(const cx of cols){lgWin(g,cx-14,y-68,28,52,{frame:'#efe8d8',lintel:'#d8ccb0',key:1,blind:k===3&&cx>2900?.55:0});
       if(k===1){g.fillStyle='#3a5a2a';g.fillRect(cx-16,y-14,32,6);g.fillStyle='#5a8a3a';for(let j=0;j<5;j++){g.beginPath();g.arc(cx-12+j*6,y-15,3,0,7);g.fill()}}
-      if(k===2){g.fillStyle='#d4c9b2';g.fillRect(cx-20,y-3,40,6);g.strokeStyle='#26282c';g.lineWidth=1.2;g.beginPath();g.moveTo(cx-20,y-18);g.lineTo(cx+20,y-18);for(let x=cx-18;x<cx+20;x+=5){g.moveTo(x,y-18);g.lineTo(x,y-3)}g.stroke();g.beginPath();g.arc(cx,y-10,4,0,7);g.stroke()}}}
+      if(k===2)lgBalcony(g,cx-20,cx+20,y,'iron')}}
   g.strokeStyle='rgba(0,0,0,.1)';g.lineWidth=2;for(let y=b-LG.GF+12;y<b;y+=16){g.beginPath();g.moveTo(bx1,y);g.lineTo(x1,y);g.stroke()}
   for(const cx of cols.slice(0,3)){lgWin(g,cx-16,b-100,32,64,{frame:'#e2d8c2',glass:'#3e4a58',lintel:'#d8ccb0',key:1})}
   {const dx=cols[3]-34;g.fillStyle='#d4c8ae';g.beginPath();g.moveTo(dx-8,b);g.lineTo(dx-8,b-78);g.arc(dx+34,b-78,42,Math.PI,0);g.lineTo(dx+76,b);g.closePath();g.fill();
@@ -7503,7 +7510,7 @@ function lgCoupole(g,c0,c1,R){// l'immeuble crème à la tourelle d'angle : bow-
   for(let k=1;k<=4;k++){const y=b-LG.GF-(k-1)*F;g.fillStyle='#d4c8ae';g.fillRect(bx0-3,y-6,bx1-bx0+6,6);
     lgWin(g,fx0+14,y-68,26,52,{frame:'#efe8d8',lintel:k<4?'#d8ccb0':null});lgWin(g,fx1-40,y-68,26,52,{frame:'#efe8d8',lintel:k<4?'#d8ccb0':null});
     lgWin(g,bx0+9,y-64,12,44,{frame:'#e2d8c2',sill:false});lgWin(g,fx1+9,y-64,12,44,{frame:'#d6ccb4',sill:false,glass:'#46525f'});
-    if(k===2){const cx=(bx0+bx1)/2;g.fillStyle='#d4c9b2';g.fillRect(fx0-4,y-3,fx1-fx0+8,6);g.strokeStyle='#26282c';g.lineWidth=1.2;g.beginPath();g.moveTo(fx0-4,y-18);g.lineTo(fx1+4,y-18);for(let x=fx0-2;x<fx1+4;x+=5){g.moveTo(x,y-18);g.lineTo(x,y-3)}g.stroke();g.beginPath();g.arc(cx,y-10,4,0,7);g.stroke()}}
+    if(k===2)lgBalcony(g,fx0-4,fx1+4,y,'iron')}
   // la console sous la tourelle
   g.fillStyle='#cfc3aa';poly(g,[bx0,b-LG.GF,bx1,b-LG.GF,bx1-24,b-LG.GF+22,bx0+24,b-LG.GF+22]);g.fill();g.fillStyle='rgba(0,0,0,.12)';g.fillRect(bx0+24,b-LG.GF+18,bx1-bx0-48,4);
   // la coupole d'ardoise, son œil-de-bœuf, son épi
@@ -7663,20 +7670,18 @@ function lgAwning(g,a,e,col){const y=LG.BASE-LG.GF-2,n=Math.max(4,Math.round((e-
 /* ---------- la couche des façades (en cache) ---------- */
 function langletBuild(Lv){
   const wpx=Lv.wpx+40,hpx=ROWS*T+PAD,TR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);const R=mulberry(Lv.def.seed+21);
-  const D=Lv.def.langlet;
+  const D=Lv.def.langlet;LG.rec=[];LG.furn=[];
   // les rues transversales d'abord : les façades voisines se posent par-dessus leurs bords
   const order=D.facades.filter(f=>f.k==='rue').concat(D.facades.filter(f=>f.k!=='rue'));for(const f of order){g.save();
     if(f.k==='rotonde')lgRotonde(g,f.c0,f.c1,R);else if(f.k==='hotel')lgHotelBrique(g,f.c0,f.c1,R);else if(f.k==='rue'){const i=D.facades.indexOf(f);lgRue(g,f.c0,f.c1,f,lgInfo(D.facades[i-1]),lgInfo(D.facades[i+1]))}else if(f.k==='gothique')lgGothique(g,f.c0,f.c1,R);else if(f.k==='coupole')lgCoupole(g,f.c0,f.c1,R);
     else if(f.k==='verre')lgVerre(g,f.c0,f.c1);else if(f.k==='moderne')lgModerne(g,f.c0,f.c1);else if(f.k==='blanc')lgBanqueBlanche(g,f.c0,f.c1,R);else if(f.k==='nouveau')lgArtNouveau(g,f.c0,f.c1,R);
     else if(f.k==='cl')lgCreditLyonnais(g,f.c0,f.c1,R);else if(f.k==='cathedrale')lgCathedrale(g,f.c0,f.c1,R);else lgImm(g,f,R);g.restore()}
   for(const[a,e,col]of Lv.def.awnSpans||[])lgAwning(g,a,e,col);
-  // mobilier du trottoir : arbres en grille, lampadaires, potelets, l'arrêt du tram
-  for(const tx of D.trees){const x=tx*T;g.strokeStyle='#4a3a2c';g.lineWidth=4;g.beginPath();g.moveTo(x,LG.BASE);g.lineTo(x,LG.BASE-170);g.stroke();g.lineWidth=1.5;for(let k=0;k<9;k++){const y=LG.BASE-70-k*12;g.beginPath();g.moveTo(x,y);g.lineTo(x+(k%2?1:-1)*(16+k*3),y-26);g.stroke()}
-    g.fillStyle='#3a3c40';g.fillRect(x-22,LG.BASE-4,44,4)}
-  for(const lx of D.lamps){const x=lx*T;g.fillStyle='#2a2c30';g.fillRect(x-2,LG.BASE-200,5,200);g.fillStyle='#3a3e44';rr(g,x-10,LG.BASE-214,22,16,4);g.fill();g.fillStyle='rgba(255,240,200,.6)';g.fillRect(x-6,LG.BASE-200,14,3)}
-  for(let x=D.bollards[0]*T;x<D.bollards[1]*T;x+=36){g.fillStyle='#2a2c30';g.fillRect(x,LG.BASE-28,5,28)}
-  {const x=D.shelter*T;g.fillStyle='rgba(200,220,230,.4)';g.fillRect(x,LG.BASE-140,150,130);g.strokeStyle='#4a5058';g.lineWidth=3;g.strokeRect(x,LG.BASE-140,150,130);g.fillStyle='#4a5058';g.fillRect(x-10,LG.BASE-150,170,10);
-    g.fillStyle='#e8e2d4';g.fillRect(x+96,LG.BASE-130,46,80);g.fillStyle='#6a3a8a';g.fillRect(x+100,LG.BASE-126,38,60);g.fillStyle='#2a2a2a';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('LANGLET',x+75,LG.BASE-154)}
+  Lv.lgRails=LG.rec;LG.rec=null;
+  // mobilier du trottoir : dessiné en direct, devant ou derrière Raymond selon qu'il est sur la chaussée ou en hauteur
+  for(const tx of D.trees)LG.furn.push({k:'tree',x:tx*T});for(const lx of D.lamps)LG.furn.push({k:'lamp',x:lx*T});
+  for(let x=D.bollards[0]*T;x<D.bollards[1]*T;x+=36)LG.furn.push({k:'bollard',x});LG.furn.push({k:'shelter',x:D.shelter*T,w:160});
+  Lv.lgFurn=LG.furn;LG.furn=null;
   return c;
 }
 
@@ -7696,6 +7701,8 @@ function langletStep(dt){
     if(S3.tramT<=0){m.dir=S3.ndir||-1;m.col=pick(['#c8302a','#2a6ab8','#e0a020','#5aa040','#8a3a9a']);lgTramSet(m,m.dir<0?cam.x+W+40:cam.x-m.w-40,true);S3.tramT=9+rnd()*6;S3.warn=0;
       if(!S3.said.tram&&!G.sim){S3.said.tram=1;setTimeout(()=>say("Un tramway sans chevaux ni fil, qui sonne comme une cloche de vache. Et il roule sur la chaussée, comme chez lui.",4),1500)}}}
   m.dx=m.on?m.x-px:0;
+  // Raymond « en hauteur » (posé sur une façade) : la rue, ses arbres, son tram passent devant lui
+  if(P.onGround)S3.elev=P.y+P.h<F-20&&P.onMover!==m;
   if(m.on&&!P.dead&&P.onMover!==m&&overlap(hb,{x:m.x+10,y:m.y+10,w:m.w-20,h:m.vh-10}))G.lgHit='tram';
   // les groupes de touristes : ils avancent derrière leur guide, s'arrêtent pour photographier
   for(const gp of S3.groups){gp.t+=dt;
@@ -7705,7 +7712,7 @@ function langletStep(dt){
     if(!S3.said.tour&&Math.abs(gp.x-pcx)<380&&!G.sim){S3.said.tour=1;say("Une troupe en civil derrière un chef qui lève un parapluie. Ils mitraillent les façades avec de petites boîtes.",4)}}
 }
 function langletAfterMove(){if(G.lgHit){const k=G.lgHit;G.lgHit=null;return k}return null}
-function langletRespawn(){const S3=L.lg;if(!S3)return;if(S3.tram.on)lgTramSet(S3.tram,-9999,false);S3.tramT=Math.max(S3.tramT,4);S3.warn=0;for(const gp of S3.groups)if(Math.abs(gp.x-P.cp.x)<260)gp.x=clamp(P.cp.x+(gp.x<P.cp.x?-1:1)*320,gp.a,gp.b)}
+function langletRespawn(){const S3=L.lg;if(!S3)return;S3.elev=false;if(S3.tram.on)lgTramSet(S3.tram,-9999,false);S3.tramT=Math.max(S3.tramT,4);S3.warn=0;for(const gp of S3.groups)if(Math.abs(gp.x-P.cp.x)<260)gp.x=clamp(P.cp.x+(gp.x<P.cp.x?-1:1)*320,gp.a,gp.b)}
 
 /* ---------- dessin ---------- */
 function drawLangletBack(t,cx){const Lv=L;if(!Lv.lgLayer)return;const tr=Lv.lgLayer.rs||1,sx=Math.max(0,cx-30),sw=Math.min(W+80,Lv.lgLayer.width/tr-sx);if(sw>0)blitLayer(ctx,Lv.lgLayer,sx*tr,0,sw*tr,Lv.lgLayer.height,sx,-PAD,sw,Lv.lgLayer.height/tr)}
@@ -7713,8 +7720,7 @@ function drawLangletMid(t){
   const S3=L.lg;if(!S3)return;const g=ctx,F=LG.BASE;
   // les rails du tram, encastrés dans le pavé
   g.fillStyle='#6a6a68';g.fillRect(cam.x-20,F+3,W+40,3);g.fillRect(cam.x-20,F+14,W+40,3);g.fillStyle='rgba(255,255,255,.25)';g.fillRect(cam.x-20,F+3,W+40,1);g.fillRect(cam.x-20,F+14,W+40,1);
-  for(const gp of S3.groups)if(gp.x>cam.x-300&&gp.x<cam.x+W+300)for(const mb of gp.m)drawTouriste(g,gp.x+mb.dx*gp.dir,F,gp.dir,mb,gp.st,t);
-  if(S3.tram.on)drawTram3(g,S3.tram,t);
+  lgStreet(t,false);
 }
 function drawTouriste(g,x,F,f,mb,st,t){
   const k=mb.k,small=k==='enfant',s=small?.68:1,walk=st==='walk'?Math.sin(t*6+mb.ph):0;g.save();g.translate(x,F);g.scale(f*s,s);
@@ -7745,6 +7751,23 @@ function drawTram3(g,m,t){// le tram de Reims : nez arrondi en tulipe, couleur v
   g.restore();
 }
 
+/* ---------- devant / derrière Raymond ---------- */
+function lgFurnDraw(g,f){const B=LG.BASE,x=f.x;
+  if(f.k==='tree'){g.strokeStyle='#4a3a2c';g.lineWidth=4;g.beginPath();g.moveTo(x,B);g.lineTo(x,B-170);g.stroke();g.lineWidth=1.5;for(let k=0;k<9;k++){const y=B-70-k*12;g.beginPath();g.moveTo(x,y);g.lineTo(x+(k%2?1:-1)*(16+k*3),y-26);g.stroke()}g.fillStyle='#3a3c40';g.fillRect(x-22,B-4,44,4)}
+  else if(f.k==='ptree'){g.strokeStyle='#4a3a2c';g.lineWidth=4;g.beginPath();g.moveTo(x,B);g.lineTo(x,B-150);g.stroke();g.lineWidth=1.5;for(let k=0;k<8;k++){const y=B-60-k*12;g.beginPath();g.moveTo(x,y);g.lineTo(x+(k%2?1:-1)*(20+k*3),y-24);g.stroke()}
+    const R=mulberry(f.seed);g.fillStyle='rgba(200,150,60,.55)';for(let k=0;k<14;k++){g.beginPath();g.arc(x+(R()-.5)*60,B-110-R()*60,3,0,7);g.fill()}}
+  else if(f.k==='lamp'){g.fillStyle='#2a2c30';g.fillRect(x-2,B-200,5,200);g.fillStyle='#3a3e44';rr(g,x-10,B-214,22,16,4);g.fill();g.fillStyle='rgba(255,240,200,.6)';g.fillRect(x-6,B-200,14,3)}
+  else if(f.k==='bollard'){g.fillStyle='#2a2c30';g.fillRect(x,B-28,5,28)}
+  else if(f.k==='post'){g.fillStyle='#2a2c30';g.fillRect(x,B-140,6,140)}
+  else if(f.k==='bench'){g.fillStyle='#2a2c30';g.fillRect(x,B-30,70,5);g.fillRect(x+4,B-25,4,18);g.fillRect(x+62,B-25,4,18);g.fillRect(x,B-40,70,4)}
+  else if(f.k==='shelter'){g.fillStyle='rgba(200,220,230,.4)';g.fillRect(x,B-140,150,130);g.strokeStyle='#4a5058';g.lineWidth=3;g.strokeRect(x,B-140,150,130);g.fillStyle='#4a5058';g.fillRect(x-10,B-150,170,10);
+    g.fillStyle='#e8e2d4';g.fillRect(x+96,B-130,46,80);g.fillStyle='#6a3a8a';g.fillRect(x+100,B-126,38,60);g.fillStyle='#2a2a2a';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('LANGLET',x+75,B-154)}}
+function lgStreet(t,front){const S3=L.lg;if(!S3||!!S3.elev!==front)return;const g=ctx,F=LG.BASE,a=cam.x-260,b=cam.x+W+260;
+  for(const f of L.lgFurn||[])if(f.x>a&&f.x<b)lgFurnDraw(g,f);
+  for(const gp of S3.groups)if(gp.x>cam.x-300&&gp.x<cam.x+W+300)for(const mb of gp.m)drawTouriste(g,gp.x+mb.dx*gp.dir,F,gp.dir,mb,gp.st,t);
+  if(S3.tram.on)drawTram3(g,S3.tram,t)}
+function drawLangletFront(t){if(!L.lg)return;const a=cam.x-60,b=cam.x+W+60;for(const[x0,x1,y,k]of L.lgRails||[])if(x1>a&&x0<b)lgRail(ctx,x0,x1,y,k);lgStreet(t,true)}
+
 /* =========================================================
    RENDU EN JEU
    ========================================================= */
@@ -7772,7 +7795,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.tiles){const tr=lv.tiles.rs||RS,sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/tr-sx);if(sw>0)blitLayer(ctx,lv.tiles,sx*tr,0,sw*tr,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/tr)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
   for(const u of lv.updrafts||[]){if(u.x<cx-100||u.x>cx+W+100)continue;ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1.5;for(let k=0;k<7;k++){const ph=((t*.9+k/7)%1),yy=u.bottom-ph*u.bottom,xx=u.x+10+((k*17)%(u.w-20))+Math.sin(t*3+k)*6;ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-20,xx,yy-44);ctx.stroke()}ctx.globalAlpha=1}
-  if(!opts.noEntities){if(lv.zr)drawZrMid(t);if(lv.musee)drawMuseeMid(t);if(lv.train)drawTrainMid(t);if(lv.gare)drawGareMid(t);if(lv.lg)drawLangletMid(t);drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawMeuseFront(t);if(L.zr)drawZrFront(t);if(L.musee)drawMuseeFront(t);if(L.train)drawTrainFront(t);drawActPrompt(t)}
+  if(!opts.noEntities){if(lv.zr)drawZrMid(t);if(lv.musee)drawMuseeMid(t);if(lv.train)drawTrainMid(t);if(lv.gare)drawGareMid(t);if(lv.lg)drawLangletMid(t);drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawMeuseFront(t);if(L.zr)drawZrFront(t);if(L.musee)drawMuseeFront(t);if(L.train)drawTrainFront(t);if(L.lg)drawLangletFront(t);drawActPrompt(t)}
   ctx.restore();
 }
 let rayC=null,rayG=null;

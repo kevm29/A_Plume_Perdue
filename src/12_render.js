@@ -25,7 +25,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.tiles){const tr=lv.tiles.rs||RS,sx=Math.max(0,cx-30),sw=Math.min(W+80,lv.tiles.width/tr-sx);if(sw>0)blitLayer(ctx,lv.tiles,sx*tr,0,sw*tr,lv.tiles.height,sx,-PAD,sw,lv.tiles.height/tr)}
   if(lv.dome){const dg=domeGeom(lv.dome);drawPlinth(ctx,lv.dome.x,dg.top,lv.dome.floor);drawDome(ctx,lv.dome.x,dg.oy,DOME_S,t,{noBird:true,broken:lv.dome.broken})}
   for(const u of lv.updrafts||[]){if(u.x<cx-100||u.x>cx+W+100)continue;ctx.strokeStyle='rgba(235,240,250,.22)';ctx.lineWidth=1.5;for(let k=0;k<7;k++){const ph=((t*.9+k/7)%1),yy=u.bottom-ph*u.bottom,xx=u.x+10+((k*17)%(u.w-20))+Math.sin(t*3+k)*6;ctx.globalAlpha=Math.sin(ph*Math.PI);ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-20,xx,yy-44);ctx.stroke()}ctx.globalAlpha=1}
-  if(!opts.noEntities){if(lv.zr)drawZrMid(t);if(lv.musee)drawMuseeMid(t);if(lv.train)drawTrainMid(t);if(lv.gare)drawGareMid(t);if(lv.lg)drawLangletMid(t);drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawMeuseFront(t);if(L.zr)drawZrFront(t);if(L.musee)drawMuseeFront(t);if(L.train)drawTrainFront(t);drawActPrompt(t)}
+  if(!opts.noEntities){if(lv.zr)drawZrMid(t);if(lv.musee)drawMuseeMid(t);if(lv.train)drawTrainMid(t);if(lv.gare)drawGareMid(t);if(lv.lg)drawLangletMid(t);drawMechBack(t);drawVerdunBack(t);drawEntities(t);drawMarbles();drawMines(t);drawDroneExtras(t);drawMechFront(t);drawVerdunFront(t);drawMeuseFront(t);if(L.zr)drawZrFront(t);if(L.musee)drawMuseeFront(t);if(L.train)drawTrainFront(t);if(L.lg)drawLangletFront(t);drawActPrompt(t)}
   ctx.restore();
 }
 let rayC=null,rayG=null;
