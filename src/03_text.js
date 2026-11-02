@@ -2,6 +2,7 @@
    TEXTES — Raymond se croit toujours en 1916
    ========================================================= */
 const DEATH_Q={
+  bigrat:["Le gros rat blanc m'a rattrapé. Il avait les dents plus longues que mes ambitions.","Mordu par le roi des rats du cours Langlet. Il fallait courir, pas flâner."],
   sauteur:["Un pigeon de parvis m'a sauté dessus. Ils sont chez eux, ici, et ils le font savoir.","Percuté en plein vol par un costaud du parvis."],
   mendiant:["Il m'a demandé une miette. J'ai voulu passer. Il s'est accroché à mes plumes.","Bousculé par un mendiant. Il n'avait rien, et maintenant moi non plus."],
   crachat:["Une gargouille m'a craché dessus. Huit cents ans de pratique.","Douché par une gargouille. On apprend l'humilité, à Reims."],

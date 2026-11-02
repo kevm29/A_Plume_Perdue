@@ -393,6 +393,8 @@ function langletPost(Lv){
   const D=Lv.def.langlet;if(!D)return;
   const tram={axis:'g',kind:'tram3',x:-9999,y:99999,w:520,h:14,vh:118,dx:0,dy:0,t:0,speed:0,a0:0,a1:0,on:false,dir:-1,col:'#c8302a'};Lv.movers.push(tram);
   const S3={tram,tramT:6,warn:0,groups:[],said:{}};Lv.lg=S3;
+  // le gros rat blanc : il dort derrière la première porte cochère de l'hôtel en brique, puis nous poursuit
+  if(Lv.def.bigRat){const br=Lv.def.bigRat,y=LG.BASE-30;Lv.chaser={type:'bigrat',home:{x:br.x-25,y},x:br.x-25,y,w:50,h:30,vx:0,vy:0,state:'sleep',wakeT:0,onGround:true,t:0,f:1,meowT:2};Lv.triggerX=br.trig}
   for(const gr of D.groups){const n=gr.n||5;const m=[];for(let i=0;i<n;i++)m.push({dx:i*30-(n-1)*15,k:i===0?'guide':['photo','sac','chapeau','enfant','photo'][i%5],ph:i*1.3});S3.groups.push({x:gr.c*T,a:gr.a*T,b:gr.b*T,dir:1,st:'walk',t:0,m})}
 }
 function lgTramSet(m,x,on){m.x=x;m.on=on;m.y=on?LG.BASE-m.vh:99999;if(!on&&P.onMover===m){P.onMover=null;P.onGround=false}}
@@ -473,3 +475,25 @@ function lgStreet(t,front){const S3=L.lg;if(!S3||!!S3.elev!==front)return;const 
   for(const gp of S3.groups)if(gp.x>cam.x-300&&gp.x<cam.x+W+300)for(const mb of gp.m)drawTouriste(g,gp.x+mb.dx*gp.dir,F,gp.dir,mb,gp.st,t);
   if(S3.tram.on)drawTram3(g,S3.tram,t)}
 function drawLangletFront(t){if(!L.lg)return;const a=cam.x-60,b=cam.x+W+60;for(const[x0,x1,y,k]of L.lgRails||[])if(x1>a&&x0<b)lgRail(ctx,x0,x1,y,k);lgStreet(t,true)}
+
+/* le gros rat blanc du cours Langlet : plus gros que les autres, pelage blanc grisonnant, yeux rouges, incisives jaunes bien sorties */
+function drawBigRat(g,x,y,f,t,run){const ph=run?t*16:t*3,b=run?Math.abs(Math.sin(ph))*3:0;g.save();g.translate(x,y);g.scale(f*1.25,1.25);
+  // la queue, longue et rose
+  g.strokeStyle='#d89a9a';g.lineWidth=2.4;g.lineCap='round';g.beginPath();g.moveTo(-20,-8);g.quadraticCurveTo(-34,-4+Math.sin(ph*.5)*4,-44,-12+Math.sin(ph*.5)*6);g.stroke();
+  // pattes
+  g.strokeStyle='#c9a8a0';g.lineWidth=3;for(const[px,o]of[[-12,0],[-6,Math.PI],[8,Math.PI/2],[13,Math.PI*1.5]]){const s=run?Math.sin(ph+o)*5:0;g.beginPath();g.moveTo(px,-6);g.lineTo(px+s,0);g.stroke()}
+  // le corps blanc, poils gris
+  g.fillStyle='#ece8e0';g.beginPath();g.ellipse(-2,-12-b,21,11,0,0,7);g.fill();g.fillStyle='#d8d2c8';g.beginPath();g.ellipse(-4,-7-b,18,5,0,0,7);g.fill();
+  g.strokeStyle='rgba(120,116,110,.7)';g.lineWidth=1;for(let k=-16;k<12;k+=4){g.beginPath();g.moveTo(k,-19-b);g.lineTo(k-3,-14-b);g.stroke()}
+  g.fillStyle='rgba(140,136,128,.45)';g.beginPath();g.ellipse(-8,-17-b,8,3,.2,0,7);g.fill();
+  // la tête, le museau pointu, l'oreille rose
+  g.fillStyle='#ece8e0';g.beginPath();g.moveTo(12,-20-b);g.quadraticCurveTo(26,-18-b,32,-11-b);g.quadraticCurveTo(26,-5-b,14,-6-b);g.closePath();g.fill();
+  g.fillStyle='#e8b8b8';g.beginPath();g.ellipse(14,-22-b,5,6,-.3,0,7);g.fill();g.fillStyle='#ece8e0';g.beginPath();g.ellipse(13,-21-b,2.5,3.5,-.3,0,7);g.fill();
+  g.fillStyle='#d88a8a';g.beginPath();g.arc(32,-11-b,2,0,7);g.fill();
+  // l'œil rouge qui luit
+  g.fillStyle='rgba(255,40,30,.35)';g.beginPath();g.arc(22,-15-b,4,0,7);g.fill();g.fillStyle='#d01810';g.beginPath();g.arc(22,-15-b,2,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(22.6,-15.6-b,.6,0,7);g.fill();
+  // les incisives, longues et jaunes
+  g.fillStyle='#f0dc90';g.fillRect(27,-8-b,2,6);g.fillRect(29.4,-8-b,2,5);g.strokeStyle='rgba(120,90,40,.6)';g.lineWidth=.5;g.strokeRect(27,-8-b,2,6);
+  // moustaches
+  g.strokeStyle='rgba(80,80,80,.6)';g.lineWidth=.7;for(const d of[-3,0,3]){g.beginPath();g.moveTo(29,-11-b);g.lineTo(38,-12-b+d);g.stroke()}
+  g.lineCap='butt';g.restore()}

@@ -278,7 +278,7 @@ function stepPlay(dt){
   for(const m of L.moths)if(overlap(hb,{x:m.x-10,y:m.y-8,w:20,h:16}))return die(m.kind);
   for(const b of L.bolts)if(b.state==='strike'&&Math.abs(b.x-pcx)<24)return die('bolt');
   {const mh=mechHit(hb);if(mh)return die(mh)}
-  if(K&&K.state!=='sleep'&&K.state!=='wake'&&K.state!=='burn'&&K.state!=='dead'&&K.state!=='lure'&&overlap(hb,{x:K.x+6,y:K.y+5,w:K.w-12,h:K.h-6}))return die(K.type);
+  if(K&&K.state!=='sleep'&&K.state!=='wake'&&K.state!=='burn'&&K.state!=='dead'&&K.state!=='lure'&&K.state!=='gone'&&overlap(hb,{x:K.x+6,y:K.y+5,w:K.w-12,h:K.h-6}))return die(K.type);
   if(P.y>ROWS*T+40)return die(L.th.horizon==='bridge'?'drown':'fall');
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
@@ -299,17 +299,20 @@ function wakeChaser(K){
   if(K.type==='cat'){K.state='wake';K.wakeT=.9;K.meowT=2.4;if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),250)}say("Bijou est réveillé. Règlement, article 3 : en cas de chat, courir.",3.4)}
   else if(K.type==='guardnet'){K.state='wake';K.wakeT=1.1;if(!G.sim)SFX.whistle();bubble(K.x+K.w/2,K.y-16,'Un papillon ! Un gros !','#2a3a5a');say(L.def.chaseQuip||'',3.6)}
   else if(K.type==='sweeper'){K.state='wake';K.wakeT=.8;if(!G.sim)SFX.honk();say(L.def.chaseQuip||'',3.6)}
+  else if(K.type==='bigrat'){K.state='wake';K.wakeT=.8;if(!G.sim){noise(.35,1400,.18,'bandpass');tone(180,.25,'sawtooth',.05)}say(L.def.chaseQuip||'',3.8)}
   else if(K.type==='buse'){K.state='hover';K.pt=-2.2;if(!G.sim)SFX.screech();sayQueue(L.def.chaseLines||[['RAYMOND',L.def.chaseQuip||'',3.6]])}
   else{K.state='chase';K.pt=0;K.meowT=1.5;say(L.def.chaseQuip||'',3.6)}
 }
 function stepChaser(K,dt,pcx,pcy){
   K.t+=dt;
   if(K.type==='guardnet'||K.type==='sweeper'){stepGroundChaser(K,dt,pcx,pcy);return}
-  if(K.type==='cat'){
+  if(K.type==='bigrat'&&(K.state==='gone'||K.state==='dead')){if(K.state==='gone'){K.x-=380*dt;K.f=-1;if(K.x<cam.x-200)K.state='dead'}return}
+  if(K.type==='bigrat'&&K.state==='chase'&&L.def.chaseEnd&&pcx>L.def.chaseEnd){K.state='gone';G.chase=false;setSong(songKey(G.li));if(!G.sim)say(L.def.chaseEndQuip||'',3.8);return}
+  if(K.type==='cat'||K.type==='bigrat'){
     if(K.state==='wake'){K.wakeT-=dt;if(K.wakeT<=0)K.state='chase'}
     if(K.state!=='chase')return;
     const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
-    const sp=clamp(205+(Math.abs(dist)-160)*.25,205,300);
+    const sp=K.type==='bigrat'?clamp(230+(Math.abs(dist)-160)*.3,230,310):clamp(205+(Math.abs(dist)-160)*.25,205,300);
     K.leapT=(K.leapT||0)-dt;if(!(K.leapT>0&&!K.onGround))K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*6));K.f=dir;
     K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
     moveX(K,K.vx*dt);K.onGround=false;moveY(K,K.vy*dt);
@@ -340,7 +343,7 @@ function respawn(){
   if(K){
     if(K.state==='dead'){}
     else if(K.type==='cat'||P.cp.x<L.triggerX){K.state='sleep';K.x=K.home.x;K.y=K.home.y;K.vx=K.vy=0;G.chase=false;setSong(songKey(G.li))}
-    else if(K.type==='guardnet'||K.type==='sweeper'){K.x=P.x-(K.type==='sweeper'?520:440);K.y=P.y+P.h-K.h;K.vx=K.vy=0;K.state='chase'}
+    else if(K.type==='guardnet'||K.type==='sweeper'||K.type==='bigrat'){K.x=P.x-(K.type==='sweeper'?520:440);K.y=P.y+P.h-K.h;K.vx=K.vy=0;K.state='chase'}
     else{K.x=P.x-460;K.y=P.y-220;K.state=K.type==='buse'?'hover':'chase';K.pt=0}
   }
   if(L.auto&&L.auto.on){L.auto.x=Math.max(0,P.x-300);cam.x=L.auto.x}
