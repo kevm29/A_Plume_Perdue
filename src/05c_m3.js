@@ -143,7 +143,7 @@ LEVELS.push((()=>{
     {c0:270,c1:277,col:'#d8ccb0',n:1,wn:3,dormers:2,chim:[180],gf:[{t:'win',x:20,w:56},{t:'door',x:110,w:40},{t:'win',x:190,w:56}]},
     {c0:277,c1:284,col:'#9a9282',n:1,wn:3,dormers:3,chim:[220],gf:[{t:'door',x:10,w:110,col:'#e8e4da'},{t:'door',x:140,w:40,col:'#c8c0a8'},{t:'win',x:200,w:60}]},
     {c0:284,c1:291,col:'#e2d8c2',n:1,wn:3,dormers:2,dstyle:'oeil',gf:[{t:'win',x:30,w:56},{t:'win',x:170,w:56}]},
-    {c0:291,c1:303,col:'#d8ccb0',n:2,wn:4,bal:[1],dormers:4,dstyle:'round',chim:[60,260,420],sign:[150,'R. G.-DE-MACHAULT'],gf:[{t:'win',x:30,w:56},{t:'win',x:130,w:56},{t:'door',x:240,w:46,col:'#e8e4da'},{t:'win',x:340,w:56}]},
+    {c0:291,c1:303,col:'#d8ccb0',n:2,wn:4,bal:[1],dormers:4,dstyle:'round',chim:[60,260,420],sign:[316,'R. G.-DE-MACHAULT',6],gf:[{t:'win',x:30,w:56},{t:'win',x:130,w:56},{t:'door',x:240,w:46,col:'#e8e4da'},{t:'win',x:340,w:56}]},
     {k:'rue',c0:303,c1:309,cobble:true,endCol:'#ddd2b8',endH:3},
     {k:'cathedrale',c0:309,c1:RW}];
   // balcons de la rotonde (trois étages), balcons filants, balcons de l'angle Art nouveau
@@ -151,7 +151,7 @@ LEVELS.push((()=>{
   // pics anti-pigeons sur toute la balustrade du dernier balcon de la rotonde : on ne s'y pose pas
   run(4,10,BR(3)-1,'^');
   for(const f of F)if(f.bal)for(const k of f.bal)run(f.c0,f.c1-1,BR(k),'t');
-  run(223,225,BR(2),'t');for(const k of[1,2,3,4])run(234,235,BR(k),'t');
+  for(const k of[2,3]){run(223,225,BR(k),'t');run(234,235,BR(k),'t')}
   // l'immeuble à coupole : balconnets du deuxième étage, corniche entre les lucarnes
   for(const c of[64,67,70,73,76])put(c,BR(2),'t');run(67,77,BR(4),'t');
   // l'aile de la rotonde : trois balconnets au pied des lucarnes ; le lanterneau du dôme et sa girouette
@@ -167,7 +167,7 @@ LEVELS.push((()=>{
   // rats, cartels, paille, répliques
   for(const[c,a,b]of[[38,30,44],[138,133,148],[298,294,302]]){put(c,G0-1,'k');put(a,G0-1,'|');put(b,G0-1,'|')}
   for(const c of[48,124,172,238,292])put(c,G0-1,'C');
-  corn([8,BR(1)-1],[9,BR(2)-1],[5,BR(2)-1],[30,17],[58,BR(2)-1],[70,BR(4)-1],[84,BR(4)-1],[100,BR(3)-1],[112,16],[135,BR(1)-1],[150,BR(4)-1],[166,BR(3)-1],[186,16],[205,17],[224,BR(2)-1],[235,BR(4)-1],[256,16],[280,17],[297,BR(1)-1]);
+  corn([8,BR(1)-1],[9,BR(2)-1],[5,BR(2)-1],[30,17],[58,BR(2)-1],[70,BR(4)-1],[84,BR(4)-1],[100,BR(3)-1],[112,16],[135,BR(1)-1],[150,BR(4)-1],[166,BR(3)-1],[186,16],[205,17],[224,BR(2)-1],[235,BR(3)-1],[256,16],[280,17],[297,BR(1)-1]);
   put(2,G0-1,'S');put(322,G0-1,'E');
   for(const c of[14,244,300])put(c,G0-1,'q');
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,

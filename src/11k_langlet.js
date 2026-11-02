@@ -119,7 +119,7 @@ function lgImm(g,o,R){// immeuble générique : pierre, brique, pilastres, balco
     else if(s.t==='door'){g.fillStyle='#c8bca2';g.fillRect(a-6,b-100,e-a+12,100);g.fillStyle=s.col||'#6a3a22';g.fillRect(a,b-94,e-a,94);g.fillStyle='rgba(0,0,0,.2)';g.fillRect((a+e)/2-1,b-94,2,94);if(s.ped){g.fillStyle='#c8bca2';poly(g,[a-12,b-100,(a+e)/2,b-124,e+12,b-100]);g.fill()}}
     else if(s.t==='win'){lgWin(g,a,b-96,e-a,62,{frame:'#e2d8c2',glass:'#3e4a58'});g.strokeStyle='#202226';g.lineWidth=1.5;for(let x=a+4;x<e;x+=6){g.beginPath();g.moveTo(x,b-96);g.lineTo(x,b-34);g.stroke()}}
     else if(s.t==='glass'){g.fillStyle='rgba(60,74,90,.9)';g.fillRect(a,b-110,e-a,108);g.fillStyle='rgba(200,220,235,.25)';for(let x=a+4;x<e;x+=26)g.fillRect(x,b-104,20,96);if(s.label){g.fillStyle=s.col||'#2a4a8a';g.fillRect(a+6,b-124,e-a-12,14);g.fillStyle='#f0f0f0';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText(s.label,(a+e)/2,b-114)}}}
-  if(o.sign){g.fillStyle='#2a4a8a';rr(g,x0+o.sign[0],b-LG.GF-26,96,18,3);g.fill();g.fillStyle='#f0f2f6';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText(o.sign[1],x0+o.sign[0]+48,b-LG.GF-14)}
+  if(o.sign){const sy=b-LG.GF+(o.sign[2]||-26);g.fillStyle='#2a4a8a';rr(g,x0+o.sign[0],sy,96,18,3);g.fill();g.strokeStyle='#e8ecf4';g.lineWidth=1;rr(g,x0+o.sign[0]+2,sy+2,92,14,2);g.stroke();g.fillStyle='#f0f2f6';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText(o.sign[1],x0+o.sign[0]+48,sy+12)}
 }
 function lgHotelBrique(g,c0,c1,R){// l'hôtel en brique et pierre, en retrait derrière sa petite place : toit Mansart, lucarnes à fronton
   const x0=c0*T+56,x1=c1*T-10,b=LG.BASE-22,s=.86,H=LG.GF+LG.FH,top=b-H*s;
@@ -231,19 +231,45 @@ function lgBanqueBlanche(g,c0,c1,R){// le grand immeuble blanc à l'angle arrond
   g.fillStyle='#e4e0d4';g.fillRect(x0,b-LG.GF,x1-x0,LG.GF);g.fillStyle='#efebe0';g.fillRect(x0+6,b-LG.GF,26,LG.GF);g.fillStyle='rgba(0,0,0,.1)';g.fillRect(x0+26,b-LG.GF,6,LG.GF);
   for(const[s,e]of[[x0+50,x0+200],[x0+220,x0+370]]){g.fillStyle='rgba(50,64,80,.9)';g.fillRect(s,b-LG.GF+10,e-s,LG.GF-12);g.fillStyle='rgba(220,230,240,.25)';for(let x=s+6;x<e-6;x+=30)g.fillRect(x,b-LG.GF+16,24,LG.GF-24);g.fillStyle='#2a4a8a';g.fillRect(s+20,b-62,e-s-40,12);g.fillStyle='#fff';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('BANQUE',(s+e)/2,b-53)}
   g.fillStyle='#4a5868';g.beginPath();g.ellipse(x0+400,b-80,14,22,0,0,7);g.fill();g.fillStyle='#6a5a4a';g.fillRect(x0+440,b-90,30,90)}
-function lgArtNouveau(g,c0,c1,R){// l'immeuble Art nouveau à l'angle : balcons galbés, fer forgé, rez-de-chaussée en arcades
-  const x0=c0*T,x1=c1*T,b=LG.BASE,n=4,top=b-LG.GF-n*LG.FH;lgAshlar(g,x0,top,x1,b,'#ddd2bc',R);
-  for(let k=1;k<=n;k++){const y=b-LG.GF-(k-1)*LG.FH;for(const wx of[x0+40,x0+120,x0+200,x0+280])if(wx<x1-60)lgWin(g,wx,y-66,26,50,{frame:'#e8dcc4',arch:k===2||k===3,rail:k!==2});
-    if(k===2){lgBalcony(g,x0+30,x0+170,y,'iron');g.fillStyle='#d4c8ae';g.beginPath();g.ellipse(x0+100,y+4,74,10,0,0,Math.PI);g.fill()}
-    // l'angle arrondi à balcons galbés
-    g.fillStyle='rgba(0,0,0,.1)';g.fillRect(x1-70,top,70,b-top);lgWin(g,x1-50,y-64,22,46,{frame:'#e8dcc4'});g.fillStyle='#c8bca2';g.beginPath();g.ellipse(x1-38,y+2,40,10,0,0,Math.PI);g.fill();lgBalcony(g,x1-74,x1-2,y,'iron')}
-  g.fillStyle='#ddd2bc';g.beginPath();g.moveTo(x0,top);g.bezierCurveTo(x0+60,top-26,x0+140,top-10,x0+200,top-30);g.bezierCurveTo(x0+260,top-50,x1-60,top-20,x1,top-60);g.lineTo(x1,top);g.closePath();g.fill();
-  g.fillStyle='#e8e2d4';for(let x=x0+20;x<x1-20;x+=14){g.fillRect(x,top-8,6,8)}g.fillStyle='#ece6d6';g.beginPath();g.arc(x1-30,top-60,22,Math.PI,0);g.fill();
-  // rez-de-chaussée : porte sculptée, grande arcade d'angle
-  g.fillStyle='#c8bca2';g.beginPath();g.moveTo(x0+120,b);g.lineTo(x0+120,b-90);g.arc(x0+150,b-90,30,Math.PI,0);g.lineTo(x0+180,b);g.closePath();g.fill();g.fillStyle='#1e2226';g.beginPath();g.moveTo(x0+126,b);g.lineTo(x0+126,b-90);g.arc(x0+150,b-90,24,Math.PI,0);g.lineTo(x0+174,b);g.closePath();g.fill();
-  g.strokeStyle='#5a5e66';g.lineWidth=1;for(let k=0;k<5;k++){g.beginPath();g.arc(x0+150,b-90,6+k*4,Math.PI,0);g.stroke()}
-  g.fillStyle='#c8bca2';g.beginPath();g.moveTo(x1-190,b);g.lineTo(x1-190,b-60);g.arc(x1-110,b-60,80,Math.PI,0);g.lineTo(x1-30,b);g.closePath();g.fill();g.fillStyle='rgba(60,70,80,.9)';g.beginPath();g.moveTo(x1-182,b);g.lineTo(x1-182,b-60);g.arc(x1-110,b-60,72,Math.PI,0);g.lineTo(x1-38,b);g.closePath();g.fill();
-  lgShop(g,x0+10,x0+100,'#2a4a3a','LIBRAIRIE',{door:x0+55})}
+function lgArtNouveau(g,c0,c1,R){// l'immeuble Art nouveau à l'angle (d'après le cliché) : trois étages, angle arrondi à balcons galbés, grosse corniche
+  // moulurée, balustrade, et l'angle couronné d'une crête sculptée à volutes ; au rez-de-chaussée, porte sculptée et grandes arcades
+  const x0=c0*T,x1=c1*T,b=LG.BASE,n=3,top=b-LG.GF-n*LG.FH,st='#ddd2bc',cx0=x1-90;
+  // la crête d'angle, derrière la corniche
+  g.fillStyle=st;g.beginPath();g.moveTo(cx0-40,top-30);g.bezierCurveTo(cx0-30,top-60,cx0-6,top-58,cx0+4,top-74);g.bezierCurveTo(cx0+14,top-104,cx0+40,top-128,cx0+60,top-118);
+  g.bezierCurveTo(cx0+80,top-110,x1+4,top-92,x1+2,top-60);g.lineTo(x1+2,top-30);g.closePath();g.fill();
+  g.fillStyle='rgba(0,0,0,.1)';g.beginPath();g.moveTo(cx0+60,top-118);g.bezierCurveTo(cx0+80,top-110,x1+4,top-92,x1+2,top-60);g.lineTo(x1+2,top-30);g.lineTo(cx0+56,top-30);g.closePath();g.fill();
+  g.strokeStyle='#c4b89c';g.lineWidth=3;g.beginPath();g.arc(cx0+4,top-66,9,Math.PI*.2,Math.PI*1.9);g.stroke();g.beginPath();g.arc(cx0+52,top-104,7,Math.PI*1.1,Math.PI*2.8);g.stroke();
+  g.fillStyle='#cfc3a6';g.beginPath();g.ellipse(cx0+60,top-122,6,9,0,0,7);g.fill();
+  // la façade
+  lgAshlar(g,x0,top,x1,b,st,R);
+  {const gr=g.createLinearGradient(x1-90,0,x1,0);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(.55,'rgba(255,255,255,.07)');gr.addColorStop(1,'rgba(0,0,0,.2)');g.fillStyle=gr;g.fillRect(x1-90,top,90,b-top)}
+  g.fillStyle='rgba(0,0,0,.06)';g.fillRect(x0+6,top,4,b-top);   // la descente d'eau pluviale
+  const bays=[x0+80,x0+200],nb=x0+300;
+  for(let k=1;k<=n;k++){const y=b-LG.GF-(k-1)*LG.FH;g.fillStyle='#d4c8ae';g.fillRect(x0,y-4,x1-x0,4);
+    for(const bx of bays){lgWin(g,bx-16,y-70,32,54,{arch:k===1||k===3,frame:'#e8dcc4',lintel:k===2?'#cfc3a6':null,rail:k===1&&bx===bays[1]})
+      g.fillStyle='#cfc3a6';g.fillRect(bx-24,y-4,48,4);if(k===1){g.beginPath();g.moveTo(bx-14,y);g.lineTo(bx-6,y+10);g.lineTo(bx+6,y+10);g.lineTo(bx+14,y);g.closePath();g.fill()}}
+    lgWin(g,nb-8,y-66,16,46,{arch:true,frame:'#e8dcc4',sill:false});g.fillStyle='#cfc3a6';g.fillRect(nb-12,y-18,24,4);
+    lgWin(g,x1-56,y-66,24,48,{frame:'#e8dcc4',rail:k===1});
+    if(k>=2){// balcons de fer de la première travée, balcons galbés de pierre à l'angle
+      lgBalcony(g,x0+40,x0+160,y,'iron');g.fillStyle='#cfc3a6';g.beginPath();g.moveTo(x0+46,y+3);g.quadraticCurveTo(x0+100,y+22,x0+154,y+3);g.closePath();g.fill();
+      g.fillStyle='#c8bca2';g.beginPath();g.ellipse(x1-38,y+4,40,13,0,0,Math.PI);g.fill();g.fillStyle='rgba(0,0,0,.12)';g.beginPath();g.ellipse(x1-38,y+12,26,7,0,0,Math.PI);g.fill();
+      lgBalcony(g,x1-74,x1-2,y,'stone')}
+    if(k===2){g.strokeStyle='#26282c';g.lineWidth=1.2;g.beginPath();g.moveTo(bays[1]-20,y-14);g.quadraticCurveTo(bays[1],y-24,bays[1]+20,y-14);g.stroke()}}
+  // la grosse corniche moulurée, qui s'arrondit à l'angle
+  g.fillStyle='#d6cab0';g.fillRect(x0-4,top-30,x1-x0+8,30);g.fillStyle='#e4d9c2';g.fillRect(x0-4,top-30,x1-x0+8,6);
+  g.fillStyle='#c4b89c';for(let x=x0;x<x1;x+=12)g.fillRect(x,top-12,6,7);g.fillStyle='rgba(0,0,0,.16)';g.fillRect(x0-4,top,x1-x0+8,5);
+  g.strokeStyle='rgba(120,100,70,.35)';g.lineWidth=1.2;for(let x=x0+20;x<x1-40;x+=46){g.beginPath();g.moveTo(x,top-19);g.bezierCurveTo(x+10,top-27,x+20,top-11,x+30,top-19);g.stroke()}
+  // la balustrade du toit, au milieu
+  {const a=x0+70,e=cx0-36,y=top-30;g.fillStyle='#d6cab0';g.fillRect(a,y-4,e-a,4);lgRail(g,a,e,y,'stone')}
+  // rez-de-chaussée : la porte sculptée, la grande arcade, l'arcade d'angle
+  {const dx=bays[0];g.fillStyle='#c8bca2';g.fillRect(dx-40,b-118,80,118);g.beginPath();g.arc(dx,b-84,40,Math.PI,0);g.fill();
+   g.fillStyle='#1e2226';g.beginPath();g.moveTo(dx-26,b);g.lineTo(dx-26,b-80);g.arc(dx,b-80,26,Math.PI,0);g.lineTo(dx+26,b);g.closePath();g.fill();
+   g.strokeStyle='#5a5e66';g.lineWidth=1;for(let k=0;k<5;k++){g.beginPath();g.arc(dx,b-80,6+k*4,Math.PI,0);g.stroke()}
+   g.strokeStyle='rgba(120,100,70,.5)';g.lineWidth=2;g.beginPath();g.moveTo(dx-34,b-108);g.bezierCurveTo(dx-20,b-128,dx+20,b-128,dx+34,b-108);g.stroke()}
+  for(const[a,e]of[[x0+150,x0+340],[x1-104,x1-22]]){const m=(a+e)/2,r=(e-a)/2;g.fillStyle='#c8bca2';g.beginPath();g.moveTo(a-8,b);g.lineTo(a-8,b-104+r);g.arc(m,b-104+r,r+8,Math.PI,0);g.lineTo(e+8,b);g.closePath();g.fill();
+    g.fillStyle='rgba(60,70,80,.9)';g.beginPath();g.moveTo(a,b);g.lineTo(a,b-104+r);g.arc(m,b-104+r,r,Math.PI,0);g.lineTo(e,b);g.closePath();g.fill();g.fillStyle='rgba(255,230,190,.18)';g.fillRect(a+6,b-60,e-a-12,56)}
+  g.fillStyle='#c84a3a';g.fillRect(x0+352,b-112,12,40);
+}
 function lgCreditLyonnais(g,c0,c1,R){// l'ancienne banque : rotonde d'angle à dôme, façade classique, inscription gravée, colonnes, balustres
   const x0=c0*T,x1=c1*T,b=LG.BASE,n=2,top=b-LG.GF-n*LG.FH-20,xr=x0+5*T;lgAshlar(g,x0,top,x1,b,'#e2d6be',R);
   // bossages du rez-de-chaussée
@@ -302,7 +328,7 @@ function lgCathedrale(g,c0,c1,R){// le flanc nord de la cathédrale : bas-côté
 function lgInfo(f){const B=LG.BASE,G=LG.GF,H=LG.FH;
   switch(f.k){case'rotonde':return{top:B-G-4*H,mh:62,col:'#a9b0a4'};case'hotel':return{top:B-22-(G+H)*.86,mh:52,col:'#b85a3e',brick:1};case'gothique':return{top:B-G-H,mh:70,col:'#e4dcc8'};case'coupole':return{top:B-G-3*H,mh:74,col:'#e6dcc4'};case'cathedrale':return{top:B-176,mh:0,col:'#9a8e76',noWin:1,rubble:1};
     case'verre':return{top:B-G-2*H,mh:0,col:'#5a6a7a'};case'moderne':return{top:B-G-4*H-30,mh:0,col:'#e2dccc'};case'blanc':return{top:B-G-3*H,mh:60,col:'#efebe0'};
-    case'nouveau':return{top:B-G-4*H,mh:20,col:'#ddd2bc'};case'cl':return{top:B-G-2*H-20,mh:40,col:'#e2d6be'};}
+    case'nouveau':return{top:B-G-3*H-30,mh:0,col:'#ddd2bc'};case'cl':return{top:B-G-2*H-20,mh:40,col:'#e2d6be'};}
   return{top:B-G-(f.n||4)*H,tile:f.roof==='tile',mh:f.mans===false?0:(f.mansH||64),col:f.mat==='brick'?'#b85a3e':f.mat==='orange'?'#d98a4a':(f.col||LGC.stone),brick:f.mat==='brick'||f.mat==='orange'}}
 /* une rue transversale qui s'enfonce entre deux immeubles : chaque côté prolonge l'immeuble voisin (même hauteur, même matière) */
 function lgRue(g,c0,c1,o,Lf,Rf){
