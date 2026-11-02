@@ -6,7 +6,8 @@ function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
   if(st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips')return;
   if(st==='stump'){drawOldStump(g,a,t);return}
-  if(st==='vane'){drawVane(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
+  if(st==='vane'){drawVane(g,a,t);return}
+  if(st==='linge'){drawLinge(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   if(st!=='nest'){g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();}
   const inner=()=>{g.fillStyle='#16110c'};
@@ -282,4 +283,19 @@ function drawVane(g,a,t){const x=a.x,y=a.y,c=Math.cos(a.ang),sn=Math.sin(a.ang);
   g.fillStyle='#c84a18';g.beginPath();g.arc(12.6,-28,1.2,0,7);g.fill();g.fillStyle='#2a1a04';g.beginPath();g.arc(12.8,-28,.6,0,7);g.fill();
   // un éclat de lumière qui glisse quand elle tourne
   g.fillStyle='rgba(255,250,220,'+(.35+.35*Math.abs(sn))+')';g.beginPath();g.ellipse(2,-18,3,1.6,-.4,0,7);g.fill();
+  g.restore()}
+
+/* le linge qui sèche, jeté sur le bout d'une balustrade : un drap rayé qui pend devant la façade et ondule au vent ;
+   quand Raymond fouille dedans, il se gonfle un instant */
+function drawLinge(g,a,t){const x=a.x-14,y=a.y-20,o=a.open||0,sw=Math.sin(t*1.7)*3+o*8,L2=70+o*6;g.save();
+  g.fillStyle='rgba(0,0,0,.12)';poly(g,[x+4,y+4,x+40,y+4,x+42+sw*.6,y+L2+4,x+6+sw,y+L2+6]);g.fill();
+  g.fillStyle='#f2efe6';g.beginPath();g.moveTo(x-4,y-2);g.lineTo(x+40,y-2);g.quadraticCurveTo(x+44+sw*.4,y+L2*.5,x+38+sw*.7,y+L2);
+  for(let k=0;k<5;k++){const px=x+38+sw*.7-(k+1)*8.6;g.quadraticCurveTo(px+4,y+L2+5-(k%2)*6,px,y+L2+(k%2?2:-1))}
+  g.quadraticCurveTo(x-6+sw*.3,y+L2*.5,x-4,y-2);g.closePath();g.fill();
+  g.save();g.clip();g.fillStyle='rgba(60,100,170,.55)';for(const sx of[4,14,26])g.fillRect(x+sx+sw*.3,y,4,L2+8);g.fillStyle='rgba(0,0,0,.07)';g.fillRect(x+20,y,6,L2+8);g.restore();
+  // le repli sur la main courante
+  g.fillStyle='#e4dfd2';g.fillRect(x-4,y-6,46,8);g.fillStyle='rgba(60,100,170,.5)';for(const sx of[4,14,26])g.fillRect(x+sx,y-6,4,8);
+  // une pince à linge
+  g.fillStyle='#b88a52';g.fillRect(x+8,y-10,3,9);g.fillRect(x+30,y-10,3,9);
+  if(!a.used){g.fillStyle='rgba(230,190,90,.9)';for(let k=0;k<3;k++){g.save();g.translate(x+16+k*5,y+L2-6);g.rotate(-.5+k*.4);g.fillRect(-1,-8,2,10);g.restore()}}
   g.restore()}

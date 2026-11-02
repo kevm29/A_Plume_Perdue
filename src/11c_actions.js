@@ -28,7 +28,9 @@ function actPost(L){
   if(L.def.bedAt){const[c,r]=L.def.bedAt;L.acts.push({kind:'secret',style:'bed',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Un abri, sous le parapet. Une couchette, une bougie… Et de la paille sous la couverture. Quelqu'un dormait ici."]})}
   if(L.def.nestAt){const[c,r]=L.def.nestAt;L.acts.push({kind:'secret',style:'nest',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,q:["Tiens, un nid. Quelle jolie paille… Ses propriétaires seront ravis de la partager avec un héros de la nation."]})}
   if(L.def.vaneAt){const[c,r]=L.def.vaneAt;L.acts.push({kind:'secret',style:'vane',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,ang:.6,av:0,
-    q:["La girouette grince, tourne… et du coq tombe une touffe de paille. Il y a des héros qui couvent sans le savoir."]})}
+    q:["La girouette grince, tourne… et du pigeon d'or tombe une touffe de paille. Un collègue en métal précieux. Lui, au moins, on l'a mis sur un piédestal."]})}
+  if(L.def.lingeAt){const[c,r]=L.def.lingeAt;L.acts.push({kind:'secret',style:'linge',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
+    q:["Un drap qui sèche au balcon. Et dans le pli, de la paille. Quelqu'un secoue ses draps sur la rue depuis cent ans."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -74,7 +76,7 @@ function tryAct(){
   if(a.kind==='hide'){museeHide(a);return}
   if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
   if(a.kind==='secret'){
-    if(a.style==='vane'){a.av=(a.av>0?a.av:0)+9;if(!G.sim)noise(.3,1800,.08,'bandpass');if(a.used){if(!G.sim)say(pick(["Nord, sud, est, ouest. Il tourne, le coq, mais il ne va nulle part. Je connais ça.","Le vent n'y est pour rien. C'est moi qui décide, ici."]),3);return}grantSecret(a,a.y-30);return}
+    if(a.style==='vane'){a.av=(a.av>0?a.av:0)+9;if(!G.sim)noise(.3,1800,.08,'bandpass');if(a.used){if(!G.sim)say(pick(["Nord, sud, est, ouest. Il tourne, le pigeon d'or, mais il ne va nulle part. Je connais ça.","Le vent n'y est pour rien. C'est moi qui décide, ici."]),3);return}grantSecret(a,a.y-30);return}
     if(a.used){a.t=0;a.anim=1;if(!G.sim)say(pick(["Vide. J'ai déjà tout pris.","Plus rien là-dedans. Je repasserai à la prochaine guerre."]),2.6);return}
     if(a.locked&&!G.key){if(!G.sim){tone(220,.12,'square',.05);say(a.lockQ||"Fermé à clef. Le gardien a les clefs. Le gardien a toujours les clefs.",3.4)}return}
     a.anim=1;a.t=0;grantSecret(a,a.y-24);

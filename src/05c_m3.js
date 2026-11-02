@@ -147,7 +147,7 @@ LEVELS.push((()=>{
     {k:'rue',c0:303,c1:309,cobble:true,endCol:'#ddd2b8',endH:3},
     {k:'cathedrale',c0:309,c1:RW}];
   // balcons de la rotonde (trois étages), balcons filants, balcons de l'angle Art nouveau
-  for(const k of[1,2,3])run(4,10,BR(k),'t');
+  for(const k of[1,2])run(4,10,BR(k),'t');
   // pics anti-pigeons sur toute la balustrade du dernier balcon de la rotonde : on ne s'y pose pas
   run(4,10,BR(3)-1,'^');
   for(const f of F)if(f.bal)for(const k of f.bal)run(f.c0,f.c1-1,BR(k),'t');
@@ -171,7 +171,7 @@ LEVELS.push((()=>{
   put(2,G0-1,'S');put(322,G0-1,'E');
   for(const c of[14,244,300])put(c,G0-1,'q');
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,
-    vaneAt:[7,4],
+    vaneAt:[7,4],lingeAt:[129,9],
     awnSpans:AWN,awnBounce:1.1,
     langlet:{facades:F,trees:[50,68,100,136,186,214,232,262,288],lamps:[30,92,150,200,256,296],bollards:[270,302],shelter:131,
       groups:[{c:72,a:64,b:100,n:6},{c:252,a:244,b:290,n:5}]},
