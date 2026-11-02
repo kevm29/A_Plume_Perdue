@@ -106,65 +106,71 @@ LEVELS.push((()=>{
            "Un monsieur en bronze, avec une perruque. Il a l'air de quelqu'un qui compte tout."],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
-LEVELS.push({w:2,name:"La place d'Erlon",theme:'square',exit:'post',exitLabel:"CATHÉDRALE",seed:97,
- start:"Une grande place. Une vieille dame jette du pain. Je refuse. J'ai ma fierté. Bon, une miette.",
- chaseQuip:"Une machine verte qui avale tout ce qui traîne par terre. Ne pas traîner par terre !",
- hints:[],
- quips:["Elle aspire les mégots, les feuilles et les pigeons. Le progrès.","La statue regarde vers l'ouest. Moi aussi. On a au moins ça en commun."],
- signs:["street:PLACE DROUET-D'ERLON"],
- segs:[SEG_START_FLAT,`
-..................
-...o.....o........
-.P........T...q...
-##################
-##################`,`
-........................
-.......o........o.......
-....AA......XX......AA..
-............XX..........
-########################
-########################`,`
-......................
-..........o...........
-........=====.........
-......................
-...XX.........XXX.....
-...XX.........XXX.....
-######################
-######################`,`
-..........................
-......o.........o.........
-..AA.......AAA.......AA...
-..........................
-##########################
-##########################`,`
-................
-.....o..o.......
-..C.............
-################
-################`,`
-......................
-.........*............
-........===...........
-.....i................
-....XXX......AAA......
-....XXX...............
-....XXX...............
-######################
-######################`,`
-........................
-.....o.......o.......o..
-...XX......XX......XX...
-...XX......XX......XX...
-########################
-########################`,`
-....................
-....................
-.........===........
-.....AA.........E...
-####################
-####################`]});
-
+/* 3-3 · Le cours Langlet : de l'immeuble à rotonde jusqu'au flanc de la cathédrale, façade après façade
+   (d'après les relevés du cours Jean-Baptiste-Langlet, rue du Trésor, rue Guillaume-de-Machault) — 11k_langlet.js */
+LEVELS.push((()=>{
+  const RW=330,RR=21,G0=19;
+  const g=Array.from({length:RR},()=>Array(RW).fill('.'));
+  for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
+  const put=(c,r,ch)=>{g[r][c]=ch};
+  const run=(c0,c1,r,ch)=>{for(let c=c0;c<=c1;c++)if(g[r][c]==='.')g[r][c]=ch};
+  const corn=(...cs)=>{for(const[c,r]of cs)g[r][c]='o'};
+  const BR=k=>16-(k-1)*2;   // ligne d'un balcon posé au plancher de l'étage k
+  const F=[
+    {k:'rotonde',c0:4,c1:22},
+    {k:'hotel',c0:22,c1:46},
+    {k:'rue',c0:46,c1:52,dome:true,stop:true,endCol:'#cfc3aa',lcol:'#c8a890',rcol:'#b85a3e'},
+    {c0:52,c1:62,mat:'brick',n:4,wn:3,bal:[2],dormers:3,chim:[30,330],gf:[{t:'door',x:20,w:44,col:'#3a4a5a'},{t:'win',x:90,w:60},{t:'win',x:200,w:60},{t:'win',x:300,w:60}]},
+    {c0:62,c1:78,col:'#e6dcc4',n:4,wn:5,bal:[2,4],bay:[260,380],bayDome:true,dormers:3,chim:[40,110,520,590],dstyle:'pediment',lintel:'#d8ccb0',key:1,gf:[{t:'arch',x:20,w:60,col:'#5a3a22'},{t:'win',x:120,w:60},{t:'win',x:440,w:60},{t:'arch',x:540,w:60,col:'#3a2a1a'}]},
+    {c0:78,c1:89,col:'#ddd0b4',n:5,wn:4,bal:[2,5],dormers:3,chim:[80,360],rails:1,lintel:'#cfc3aa',gf:[{t:'arch',x:20,w:56,col:'#2a2c30',glass:1},{t:'win',x:120,w:60},{t:'win',x:220,w:60},{t:'door',x:330,w:50}]},
+    {k:'gothique',c0:89,c1:95},
+    {c0:95,c1:106,col:'#ece6d6',n:4,wn:3,pil:[110,290],bal:[2,3],dormers:3,dstyle:'oeil',chim:[200],gf:[{t:'door',x:60,w:46,col:'#7a3a22',ped:1},{t:'win',x:160,w:60},{t:'shop',x:250,w:180,col:'#2a2a2e',label:'CAFÉ DU COURS'}]},
+    {c0:106,c1:116,col:'#e2d8c2',n:4,wn:3,dormers:2,chim:[60,170,300],rails:1,gf:[{t:'shop',x:10,w:200,col:'#5a2a3a',label:'BOUTIQUE'},{t:'door',x:270,w:50}]},
+    {c0:116,c1:122,mat:'brick',n:3,wn:2,mans:false,flatRoof:1,gf:[{t:'shop',x:6,w:228,col:'#1e1e22',label:'SALLE DE SPORT'}]},
+    {k:'rue',c0:122,c1:129,cobble:true,endCol:'#d8ccb0',lcol:'#b85a3e',rcol:'#d98a4a'},
+    {c0:129,c1:152,mat:'orange',n:4,wn:9,bal:[1,4],dormers:6,dstyle:'round',chim:[60,300,600,860],gf:[{t:'arch',x:30,w:80,col:'#2a2c30',glass:1},{t:'arch',x:160,w:80,col:'#2a2c30',glass:1},{t:'arch',x:300,w:80,col:'#2a2c30',glass:1},{t:'arch',x:440,w:80,col:'#2a2c30',glass:1},{t:'shop',x:580,w:150,col:'#2a3a6a',label:'PHARMACIE'},{t:'arch',x:780,w:80,col:'#2a2c30',glass:1}]},
+    {k:'verre',c0:152,c1:157},
+    {c0:157,c1:161,col:'#e6dcc6',n:5,wn:2,rails:1,dormers:1,mansH:70,gf:[{t:'door',x:20,w:40,col:'#5a3a22'},{t:'shop',x:80,w:76,col:'#6a2a2a',label:'IMMOBILIER'}]},
+    {c0:161,c1:170,mat:'brick',n:4,wn:3,bal:[3],dormers:2,dstyle:'pediment',chim:[300],gf:[{t:'door',x:20,w:46,col:'#6a3a22'},{t:'shop',x:110,w:240,col:'#1e1e22',label:'BOUTIQUE DE MODE'}]},
+    {k:'rue',c0:170,c1:176,endCol:'#e6e2d8',lcol:'#b85a3e',rcol:'#efebe0'},
+    {k:'blanc',c0:176,c1:195},
+    {k:'moderne',c0:195,c1:209},
+    {c0:209,c1:218,col:'#d8ccb0',n:2,wn:3,dormers:3,dstyle:'round',chim:[40,320],gf:[{t:'win',x:30,w:60},{t:'door',x:150,w:50},{t:'win',x:260,w:60}]},
+    {c0:218,c1:222,col:'#e2d6be',n:5,wn:1,bay:[30,130],rails:1,dormers:1,gf:[{t:'shop',x:6,w:148,col:'#3a5a2a',label:'ÉPICERIE FINE'}]},
+    {k:'nouveau',c0:222,c1:236},
+    {k:'rue',c0:236,c1:242,endCol:'#d8ccb0',lcol:'#ddd2bc',rcol:'#e2d6be'},
+    {k:'cl',c0:242,c1:270},
+    {c0:270,c1:277,col:'#d8ccb0',n:2,wn:3,dormers:2,chim:[180],gf:[{t:'win',x:20,w:56},{t:'door',x:110,w:40},{t:'win',x:190,w:56}]},
+    {c0:277,c1:284,col:'#9a9282',n:2,wn:3,dormers:3,chim:[220],gf:[{t:'door',x:10,w:110,col:'#e8e4da'},{t:'door',x:140,w:40,col:'#c8c0a8'},{t:'win',x:200,w:60}]},
+    {c0:284,c1:291,col:'#e2d8c2',n:2,wn:3,dormers:2,dstyle:'oeil',gf:[{t:'win',x:30,w:56},{t:'win',x:170,w:56}]},
+    {c0:291,c1:303,col:'#d8ccb0',n:3,wn:4,bal:[1],dormers:4,dstyle:'round',chim:[60,260,420],sign:[150,'R. G.-DE-MACHAULT'],gf:[{t:'win',x:30,w:56},{t:'win',x:130,w:56},{t:'door',x:240,w:46,col:'#e8e4da'},{t:'win',x:340,w:56}]},
+    {k:'cathedrale',c0:303,c1:RW}];
+  // balcons de la rotonde (trois étages), balcons filants, balcons de l'angle Art nouveau
+  for(const k of[1,2,3])run(4,11,BR(k),'t');
+  for(const f of F)if(f.bal)for(const k of f.bal)run(f.c0,f.c1-1,BR(k),'t');
+  run(223,226,BR(2),'t');for(const k of[1,2,3,4])run(234,235,BR(k),'t');
+  // pics anti-pigeons sur quelques balcons
+  for(const[c,r]of[[81,BR(5)-1],[82,BR(5)-1],[140,BR(4)-1],[141,BR(4)-1],[146,BR(1)-1],[66,BR(4)-1]])put(c,r,'^');
+  // bannes des boutiques (auvents qui font rebondir)
+  for(const[c0,c1]of[[13,16],[102,105],[117,120],[147,150],[164,168],[218,221]])for(let c=c0;c<=c1;c++)put(c,15,'A');
+  // rats, cartels, paille, répliques
+  for(const[c,a,b]of[[38,30,44],[138,133,148],[298,294,302]]){put(c,G0-1,'k');put(a,G0-1,'|');put(b,G0-1,'|')}
+  for(const c of[48,124,172,238,292])put(c,G0-1,'C');
+  corn([8,BR(1)-1],[9,BR(2)-1],[6,BR(3)-1],[30,17],[58,BR(2)-1],[70,BR(4)-1],[84,BR(5)-1],[100,BR(3)-1],[112,16],[135,BR(1)-1],[150,BR(4)-1],[166,BR(3)-1],[186,16],[205,17],[224,BR(2)-1],[235,BR(4)-1],[256,16],[280,17],[297,BR(1)-1]);
+  put(2,G0-1,'S');put(322,G0-1,'E');
+  for(const c of[14,244,300])put(c,G0-1,'q');
+  return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,
+    nestAt:[6,11],
+    awningCol:c=>['#2a5a8a','#8a2a2a','#2a6a4a','#c8a030','#5a3a6a','#2a4a3a'][Math.floor(c/30)%6],
+    langlet:{facades:F,trees:[50,68,100,136,186,214,232,262,288],lamps:[30,92,150,200,256,296],bollards:[270,302],shelter:131,
+      groups:[{c:72,a:64,b:100,n:6},{c:252,a:244,b:290,n:5}]},
+    start:"Une grande rue toute droite, avec des rails. Je ne la reconnais pas : ici, il n'y avait que des ruelles et des chantiers.",
+    hints:[],
+    quips:["« Cours Jean-Baptiste Langlet. » Le maire ! Il doit être bien sûr de lui, pour donner son propre nom à une rue.",
+           "Le Crédit Lyonnais, toujours debout. Les obus passent, les banques restent.",
+           "La cathédrale. Je l'ai vue brûler, en 1914. Elle tient encore debout. Moi aussi, à peu près."],
+    segs:[{z:'cours',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
+})());
 LEVELS.push({w:2,name:"La cathédrale",theme:'cathedral',exit:'post',exitLabel:"TOUR NORD",seed:101,rows:30,
  start:"La cathédrale. D'en haut, je verrai tout l'ouest. Il suffit de monter.",
  hints:[["ARTICLE 16 — LE VOLET","Ouvert, on s'y pose. Il tremble juste avant de se refermer."],

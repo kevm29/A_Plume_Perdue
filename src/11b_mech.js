@@ -157,6 +157,7 @@ function mechAfterMove(dt,vyBefore){
   {const k=zrAfterMove();if(k)return k}
   {const k=trainAfterMove(dt);if(k)return k}
   {const k=gareAfterMove();if(k)return k}
+  {const k=langletAfterMove();if(k)return k}
   return null;
 }
 /* ---------- collisions mortelles ---------- */

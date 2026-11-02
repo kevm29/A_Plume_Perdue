@@ -48,6 +48,8 @@ const DEATH_Q={
   pigeonGros:["Un gros pigeon de ville. Il m'a regardé de haut, puis de très près.","Bousculé par un costaud du square. Aucune camaraderie."],
   pigeonDeplume:["Rattrapé par un déplumé. Il court plus vite qu'il n'a l'air.","Ce pigeon tout nu m'a mis à terre. Je n'en parlerai à personne."],
   graine:["Une graine, crachée en plein bec. Il visait bien, le vieux.","Je l'ai survolé : il m'a craché sa graine. Il fallait passer devant lui."],
+  tram:["Renversé par le tramway. Il a sonné, pourtant. Deux fois.","Le tramway ne s'arrête pas pour les pigeons. Ni pour personne, d'ailleurs."],
+  touristes:["Piétiné par une troupe de touristes. Ils m'ont pris en photo, au moins.","Bousculé par un visiteur qui regardait en l'air."],
   pylone:["Un pylône en pleine figure. Le train, lui, ne s'est même pas arrêté.","Emporté par un poteau. Je ne savais pas que les poteaux voyageaient.","Le pylône m'a cueilli comme une prune. Il fallait sauter."],
   passerelle:["Un pont. J'ai sauté pile dedans. Il fallait rester à plat.","La passerelle m'a ramassé au vol. Ce n'était pas un pylône, c'était pire."],
   bouteille:["Une canette m'a fauché les pattes. Abattu par un soda.","Une bouteille qui roule. Le bowling, version pigeon."],
@@ -121,7 +123,7 @@ const GAMEOVER=[
 const WORLDS=[
   {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
   {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
-  {name:"Le cap céleste",levels:["Le train","Les pics anti-pigeons","La gare","Le square"]},
+  {name:"Le cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
   {name:"L'A4 sous l'orage",levels:["L'aire de repos","Les camions","L'orage","Le pont"]},
   {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
 ];
