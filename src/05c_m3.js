@@ -147,25 +147,27 @@ LEVELS.push((()=>{
     {k:'rue',c0:303,c1:309,cobble:true,endCol:'#ddd2b8',endH:3},
     {k:'cathedrale',c0:309,c1:RW}];
   // balcons de la rotonde (trois étages), balcons filants, balcons de l'angle Art nouveau
-  for(const k of[1,2,3])run(4,11,BR(k),'t');
+  for(const k of[1,2,3])run(4,10,BR(k),'t');
+  // pics anti-pigeons sur toute la balustrade du dernier balcon de la rotonde : on ne s'y pose pas
+  run(4,10,BR(3)-1,'^');
   for(const f of F)if(f.bal)for(const k of f.bal)run(f.c0,f.c1-1,BR(k),'t');
-  run(223,226,BR(2),'t');for(const k of[1,2,3,4])run(234,235,BR(k),'t');
+  run(223,225,BR(2),'t');for(const k of[1,2,3,4])run(234,235,BR(k),'t');
   // l'immeuble à coupole : balconnets du deuxième étage, corniche entre les lucarnes
-  for(const c of[64,67,70,73,76])put(c,BR(2),'t');run(66,77,BR(4),'t');
+  for(const c of[64,67,70,73,76])put(c,BR(2),'t');run(67,77,BR(4),'t');
   // l'aile de la rotonde : trois balconnets au pied des lucarnes ; le lanterneau du dôme et sa girouette
   for(const c of[12,16,20])put(c,8,'t');run(6,8,5,'t');
   // le balcon de pierre de l'hôtel en brique, la maison à pignon
   run(24,27,BR(1),'t');run(91,92,BR(1),'t');
   // pics anti-pigeons sur quelques balcons
-  for(const[c,r]of[[81,BR(4)-1],[82,BR(4)-1],[140,BR(4)-1],[141,BR(4)-1],[146,BR(1)-1],[66,BR(4)-1]])put(c,r,'^');
+  for(const[c,r]of[[81,BR(4)-1],[82,BR(4)-1],[140,BR(4)-1],[141,BR(4)-1],[146,BR(1)-1],[67,BR(4)-1]])put(c,r,'^');
   // bannes des boutiques (auvents qui font rebondir)
   // bannes : posées pile sur le haut des devantures, de toute leur longueur (x en pixels, d'après les vitrines dessinées)
   const AWN=[[630,870,'#2a5a8a'],[4050,4230,'#8a2a2a'],[4646,4874,'#2a6a4a'],[5740,5890,'#2a7a5a'],[6550,6790,'#5a3a6a'],[8726,8874,'#c8a030']];
-  for(const[a,b]of AWN)for(let c=Math.floor(a/T);c<=Math.floor((b-1)/T);c++)if(g[16][c]==='.')g[16][c]='A';
+  for(const[a,b]of AWN)for(let c=Math.round(a/T);c<Math.round(b/T);c++)if(g[16][c]==='.')g[16][c]='A';
   // rats, cartels, paille, répliques
   for(const[c,a,b]of[[38,30,44],[138,133,148],[298,294,302]]){put(c,G0-1,'k');put(a,G0-1,'|');put(b,G0-1,'|')}
   for(const c of[48,124,172,238,292])put(c,G0-1,'C');
-  corn([8,BR(1)-1],[9,BR(2)-1],[6,BR(3)-1],[30,17],[58,BR(2)-1],[70,BR(4)-1],[84,BR(4)-1],[100,BR(3)-1],[112,16],[135,BR(1)-1],[150,BR(4)-1],[166,BR(3)-1],[186,16],[205,17],[224,BR(2)-1],[235,BR(4)-1],[256,16],[280,17],[297,BR(1)-1]);
+  corn([8,BR(1)-1],[9,BR(2)-1],[5,BR(2)-1],[30,17],[58,BR(2)-1],[70,BR(4)-1],[84,BR(4)-1],[100,BR(3)-1],[112,16],[135,BR(1)-1],[150,BR(4)-1],[166,BR(3)-1],[186,16],[205,17],[224,BR(2)-1],[235,BR(4)-1],[256,16],[280,17],[297,BR(1)-1]);
   put(2,G0-1,'S');put(322,G0-1,'E');
   for(const c of[14,244,300])put(c,G0-1,'q');
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,

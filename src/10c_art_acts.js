@@ -251,13 +251,35 @@ function drawAdrian(g,hx,hy,rot){
 /* piquet de tranchée coiffé d'un casque */
 function drawHelmetPost(g,x,b){g.save();g.translate(x,b);g.fillStyle='#4a3a28';g.fillRect(-3,-86,6,86);g.fillStyle='#3a2c1e';g.fillRect(-3,-86,2,86);g.strokeStyle='#5a5a52';g.lineWidth=1;for(let k=0;k<3;k++){g.beginPath();g.moveTo(-3,-40+k*12);g.lineTo(-14,-34+k*12);g.lineTo(-3,-30+k*12);g.stroke()}drawAdrian(g,0,-88,0);g.restore()}
 
-/* la girouette du dôme : un coq de tôle sur sa flèche, les quatre points cardinaux ; elle tourne (vue de face, on l'aplatit) */
-function drawVane(g,a,t){const x=a.x+14,y=a.y,c=Math.cos(a.ang),sn=Math.sin(a.ang);g.save();
-  g.strokeStyle='#2c2e32';g.lineWidth=3;g.beginPath();g.moveTo(x,y);g.lineTo(x,y-64);g.stroke();
-  g.lineWidth=1.6;g.beginPath();g.moveTo(x-16,y-26);g.lineTo(x+16,y-26);g.moveTo(x-5,y-23);g.lineTo(x+5,y-29);g.stroke();
-  g.fillStyle='#2c2e32';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('O',x-21,y-23);g.fillText('E',x+21,y-23);g.fillText('N',x-8,y-31);g.fillText('S',x+8,y-17);
-  g.fillStyle='#b8862a';g.beginPath();g.arc(x,y-40,3,0,7);g.fill();
-  // la flèche et le coq tournent autour du mât
-  g.translate(x,y-58);g.scale(c,1);g.fillStyle='#2c2e32';g.fillRect(-20,-1,40,2);poly(g,[20,-5,28,0,20,5]);g.fill();poly(g,[-20,-6,-26,-6,-22,0,-26,6,-20,6]);g.fill();
-  g.fillStyle=sn>0?'#c8963a':'#9a6e22';g.beginPath();g.moveTo(-12,0);g.quadraticCurveTo(-16,-14,-6,-12);g.quadraticCurveTo(-2,-22,4,-16);g.lineTo(10,-20);g.lineTo(8,-14);g.quadraticCurveTo(12,-8,6,-2);g.lineTo(2,0);g.closePath();g.fill();
-  g.fillStyle='#a83a2a';poly(g,[4,-17,7,-23,9,-18]);g.fill();g.restore()}
+/* la girouette du dôme : un pigeon d'or posé sur sa flèche, au-dessus de la croix des points cardinaux ;
+   elle tourne autour du mât (vue de face, on l'aplatit selon l'angle, et l'on voit tantôt un flanc, tantôt l'autre) */
+function drawVane(g,a,t){const x=a.x,y=a.y,c=Math.cos(a.ang),sn=Math.sin(a.ang);g.save();g.lineCap='round';
+  // le mât, sa boule, la croix des points cardinaux
+  g.strokeStyle='#2c2e32';g.lineWidth=3;g.beginPath();g.moveTo(x,y);g.lineTo(x,y-58);g.stroke();
+  g.fillStyle='#2c2e32';g.fillRect(x-5,y-4,10,4);
+  g.lineWidth=1.6;g.beginPath();g.moveTo(x-17,y-22);g.lineTo(x+17,y-22);g.moveTo(x-6,y-18);g.lineTo(x+6,y-26);g.stroke();
+  g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('O',x-22,y-19);g.fillText('E',x+22,y-19);g.fillText('N',x-9,y-27);g.fillText('S',x+9,y-12);
+  const gb=g.createRadialGradient(x-2,y-36,1,x,y-34,6);gb.addColorStop(0,'#fff0b0');gb.addColorStop(1,'#b8862a');g.fillStyle=gb;g.beginPath();g.arc(x,y-34,4.5,0,7);g.fill();
+  // la flèche et le pigeon d'or tournent ensemble
+  g.translate(x,y-58);g.scale(c,1);const face=c*Math.sign(sn||1)>=0,lit=.55+.45*Math.abs(c);
+  g.fillStyle='#8a6418';g.fillRect(-26,-1.2,52,2.4);poly(g,[26,-6,36,0,26,6]);g.fill();
+  for(const k of[0,1,2]){poly(g,[-26+k*5,-1,-32+k*5,-8,-29+k*5,0,-32+k*5,8,-26+k*5,1]);g.fill()}
+  const gold=g.createLinearGradient(0,-30,0,0);gold.addColorStop(0,'rgba(255,236,160,'+lit+')');gold.addColorStop(.45,'#e0b040');gold.addColorStop(1,'#9a6e1c');
+  // les pattes sur la flèche
+  g.strokeStyle='#9a6e1c';g.lineWidth=1.6;g.beginPath();g.moveTo(-2,-7);g.lineTo(-3,-1);g.moveTo(3,-7);g.lineTo(4,-1);g.stroke();
+  // la queue en éventail
+  g.fillStyle=gold;g.beginPath();g.moveTo(-10,-14);g.lineTo(-27,-15);g.lineTo(-28,-11.5);g.lineTo(-27,-9);g.lineTo(-9,-8);g.closePath();g.fill();
+  g.strokeStyle='rgba(120,80,20,.6)';g.lineWidth=.8;g.beginPath();g.moveTo(-12,-12);g.lineTo(-27,-12.5);g.moveTo(-12,-10);g.lineTo(-27,-10);g.stroke();
+  // le corps dodu, le jabot bombé
+  g.fillStyle=gold;g.beginPath();g.moveTo(-13,-12);g.bezierCurveTo(-10,-19,0,-20,7,-19);g.bezierCurveTo(15,-18,15,-9,8,-7);g.bezierCurveTo(1,-5,-8,-6,-13,-12);g.closePath();g.fill();
+  // l'aile repliée, ses rémiges
+  g.fillStyle='rgba(150,100,24,.55)';g.beginPath();g.moveTo(-8,-17);g.bezierCurveTo(-2,-21,6,-18,6,-14);g.bezierCurveTo(2,-11,-6,-10,-15,-12);g.closePath();g.fill();
+  g.strokeStyle='rgba(110,72,16,.7)';g.lineWidth=.8;for(const k of[0,1,2]){g.beginPath();g.moveTo(-6+k*4,-15);g.lineTo(-13+k*3,-12.5);g.stroke()}
+  // le cou et la tête ronde, le bec, l'œil
+  g.fillStyle=gold;g.beginPath();g.moveTo(3,-18);g.quadraticCurveTo(6,-25,10,-27);g.lineTo(14,-23);g.quadraticCurveTo(14,-16,11,-12);g.closePath();g.fill();
+  g.beginPath();g.arc(12,-27,3.6,0,7);g.fill();g.strokeStyle='rgba(255,240,170,.8)';g.lineWidth=1.2;g.beginPath();g.arc(9,-19,5,-.2,1.6);g.stroke();
+  g.fillStyle='#a87820';poly(g,[15,-28,20.5,-26.8,15,-25.8]);g.fill();g.fillStyle='#fbf0c8';g.beginPath();g.ellipse(15.3,-27.9,1.4,.9,0,0,7);g.fill();
+  g.fillStyle='#c84a18';g.beginPath();g.arc(12.6,-28,1.2,0,7);g.fill();g.fillStyle='#2a1a04';g.beginPath();g.arc(12.8,-28,.6,0,7);g.fill();
+  // un éclat de lumière qui glisse quand elle tourne
+  g.fillStyle='rgba(255,250,220,'+(.35+.35*Math.abs(sn))+')';g.beginPath();g.ellipse(2,-18,3,1.6,-.4,0,7);g.fill();
+  g.restore()}
