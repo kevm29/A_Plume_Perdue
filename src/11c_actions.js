@@ -12,7 +12,7 @@ function gotOf(li){if(!S.run.got)S.run.got={};const g=S.run.got[li]||(S.run.got[
 const isSecretAct=a=>a.kind==='secret'||a.kind==='stash'||a.kind==='carton';
 
 const SECRET_STYLE={vitrine:'drawer',insectes:'case',mammouth:'drawer',loge:'mailbox',front:'crate',turbines:'crate',trench:'crate',
-  roofs:'postbox',station:'locker',square:'postbox',cathedral:'chest',aire:'bin',road:'bin',storm:'phone',bridge:'bin',
+  roofs:'postbox',station:'locker',facade:'chest',square:'postbox',cathedral:'chest',aire:'bin',road:'bin',storm:'phone',bridge:'bin',
   village:'mailbox',belfry:'chest',fete:'chest',cemetery:'vase'};
 const SECRET_Q=["Un secret ! Le règlement appelle ça « dépôt clandestin ». Moi, j'appelle ça un casse-croûte.",
   "De la paille, bien au chaud. Quelqu'un pensait à moi.","Un secret. Je savais bien que le monde était plein de recoins.",

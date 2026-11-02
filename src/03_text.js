@@ -2,6 +2,11 @@
    TEXTES — Raymond se croit toujours en 1916
    ========================================================= */
 const DEATH_Q={
+  sauteur:["Un pigeon de parvis m'a sauté dessus. Ils sont chez eux, ici, et ils le font savoir.","Percuté en plein vol par un costaud du parvis."],
+  mendiant:["Il m'a demandé une miette. J'ai voulu passer. Il s'est accroché à mes plumes.","Bousculé par un mendiant. Il n'avait rien, et maintenant moi non plus."],
+  crachat:["Une gargouille m'a craché dessus. Huit cents ans de pratique.","Douché par une gargouille. On apprend l'humilité, à Reims."],
+  jetPierre:["Pris dans le jet d'une grande gargouille. Elle balaie comme un tuyau d'arrosage.","Le jet m'a balayé de la corniche. Il fallait attendre qu'il passe."],
+  fiente:["Une fiente, en plein sur la tête. Le comble, pour un pigeon.","Bombardé par un collègue. Aucune solidarité dans ce clocher."],
   any:["Encore de la paille. D'où sort toute cette paille ?","Ça ne fait pas mal. C'est justement ça qui m'inquiète.","Je me sens plus léger. Pour un pigeon de mon grade, ce n'est pas bon signe.","Si quelqu'un demande, c'était volontaire.","Bizarre. J'aurais juré que c'était grave.","Article 7 : un pigeon ne meurt pas en service. Il y a sûrement un article 7 bis."],
   pins:["Épinglé comme un papillon. Et cette paille qui sort de nulle part…","Une épingle. On m'a pris pour un papillon. Vexant.","Aïe. Enfin, « aïe » de principe. Je ne sens rien. C'est nouveau."],
   wire:["Les barbelés. Ça, au moins, je connais.","Le barbelé garde ma paille. Le barbelé garde tout.","Accroché au barbelé. Comme la semaine dernière, devant le fort."],

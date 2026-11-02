@@ -182,40 +182,31 @@ LEVELS.push((()=>{
            "La cathédrale. Je l'ai vue brûler, en 1914. Elle tient encore debout. Moi aussi, à peu près."],
     segs:[{z:'cours',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
-LEVELS.push({w:2,name:"La cathédrale",theme:'cathedral',exit:'post',exitLabel:"TOUR NORD",seed:101,rows:30,
- start:"La cathédrale. D'en haut, je verrai tout l'ouest. Il suffit de monter.",
- hints:[["ARTICLE 16 — LE VOLET","Ouvert, on s'y pose. Il tremble juste avant de se refermer."],
-        ["ARTICLE 17 — LA GARGOUILLE","Elle crache à intervalles réguliers. Une goutte prévient toujours avant le jet."]],
- quips:["Les gargouilles. Elles crachent sur tout le monde. Même sur les décorés.","D'ici, on voit jusqu'à la Marne. Le pigeonnier est par là. Je le sens."],
- signs:["brown:CATHÉDRALE NOTRE-DAME|Visite des tours"],
- segs:[full([
-'........................................',
-'........................................',
-'........................................',
-'......*.........o..o..E.................',
-'..............XXXXXXXXXXX...............',
-'........................................',
-'......o.................................',
-'....======..............................',
-'........................................',
-'.........XO...o.........................',
-'.........XX..JJJJ.......................',
-'........................................',
-'......................o.q......n........',
-'....................XXXXXX..............',
-'...............................o........',
-'...........................|..C..k.|....',
-'............................=======.....',
-'........................................',
-'.........................o..............',
-'........................JJJ.............',
-'........................................',
-'.................o....OX................',
-'...............XXXXXX.XX................',
-'...........m............................',
-'.........q..h...........................',
-'........======..........................',
-'..........o.............................',
-'.g.S..h.................................',
-'########################################',
-'########################################'])]});
+/* 3-4 · La cathédrale : l'escalade de la façade, au soleil couchant (d'après le schéma) — 11l_facade.js
+   Plateformes : corniches, consoles, dais des statues, la galerie des rois ; les hauteurs sont réglées sur le saut de Raymond :
+   les sauts prévus font au plus 4 cases, ceux qui doivent être impossibles au moins 7. */
+LEVELS.push((()=>{
+  const RW=46,RR=58,G0=56;
+  const g=Array.from({length:RR},()=>Array(RW).fill('.'));
+  for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
+  const put=(c,r,ch)=>{g[r][c]=ch};
+  // [c0,c1,ligne] : la ligne est celle de la planche (on se pose à son sommet)
+  const PL=[[9,10,53],[17,18,53],[28,29,53],[28,29,51],[36,37,51],[39,39,49],[38,38,47],          // portails, consoles, contrefort d'angle
+    [20,21,44],[22,24,43],[25,26,44],                                                               // le gâble du portail central
+    [9,10,43],[17,18,43],[28,29,43],[36,38,43],[8,8,40],                                            // la coursière au-dessus des portails
+    [8,10,36],[17,18,36],[28,29,36],[36,37,36],[37,38,32],                                          // les dais des grandes statues
+    [12,13,28],[18,28,29],[33,34,29],[11,12,24],                                                    // la galerie des rois
+    [10,11,20],[13,13,21],[15,15,21],[17,17,20],[20,20,21],[23,23,21],[26,26,21],[29,29,21],[31,31,21],[32,32,20],[33,33,21],[35,36,20]]; // les dais des tours
+  for(const[c0,c1,r]of PL)for(let c=c0;c<=c1;c++)put(c,r,'t');
+  // rats : sur le faîte du gâble, sur la galerie des rois
+  put(23,42,'k');put(21,42,'|');put(25,42,'|');put(23,28,'k');put(20,28,'|');put(26,28,'|');
+  // cartels, paille, médaille, départ, fenêtre de la tour sud
+  for(const[c,r]of[[4,55],[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
+  for(const[c,r]of[[17,52],[29,50],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55]])put(c,r,'o');
+  put(10,52,'*');put(6,55,'S');put(32,19,'E');
+  return {w:2,name:"La cathédrale",theme:'facade',exit:'window',exitLabel:"TOUR SUD",seed:101,rows:RR,camY:.55,
+    facade:{G0},
+    start:"Notre-Dame de Reims. Toute une journée de route, et j'arrive juste quand le soleil se couche sur elle.",
+    hints:[],quips:[],
+    segs:[{z:'facade',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
+})());
