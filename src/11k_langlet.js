@@ -365,12 +365,15 @@ function langletStep(dt){
   const S3=L.lg;if(!S3)return;const pcx=P.x+P.w/2,F=LG.BASE,m=S3.tram,hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6};
   // le tramway : il sonne, puis traverse tout l'écran ; on peut monter sur son toit
   const px=m.x;if(m.on){m.x+=m.dir*240*dt;if((m.dir<0&&m.x+m.w<cam.x-300)||(m.dir>0&&m.x>cam.x+W+300))lgTramSet(m,-9999,false)}
-  else{S3.tramT-=dt;if(S3.tramT<1.6&&!S3.warn){S3.warn=1;S3.ndir=rnd()<.5?-1:1;if(!G.sim){tone(1320,.18,'triangle',.08);tone(1320,.18,'triangle',.08,null,.25);bubble(S3.ndir<0?cam.x+W-60:cam.x+60,F-150,'Ding ding !','#2a3a5a')}}
+  else{S3.tramT-=dt;if(S3.tramT<1.6&&!S3.warn){S3.warn=1;S3.ndir=-1;if(!G.sim){tone(1320,.18,'triangle',.08);tone(1320,.18,'triangle',.08,null,.25);bubble(S3.ndir<0?cam.x+W-60:cam.x+60,F-150,'Ding ding !','#2a3a5a')}}
     if(S3.tramT<=0){m.dir=S3.ndir||-1;m.col=pick(['#c8302a','#2a6ab8','#e0a020','#5aa040','#8a3a9a']);lgTramSet(m,m.dir<0?cam.x+W+40:cam.x-m.w-40,true);S3.tramT=9+rnd()*6;S3.warn=0;
       if(!S3.said.tram&&!G.sim){S3.said.tram=1;setTimeout(()=>say("Un tramway sans chevaux ni fil, qui sonne comme une cloche de vache. Et il roule sur la chaussée, comme chez lui.",4),1500)}}}
   m.dx=m.on?m.x-px:0;
   // Raymond « en hauteur » (posé sur une façade) : la rue, ses arbres, son tram passent devant lui
   if(P.onGround)S3.elev=P.y+P.h<F-20&&P.onMover!==m;
+  // succès : monter sur le tram après la rue Guillaume-de-Machault et rester sur son toit jusqu'au début du cours
+  if(P.onGround&&P.onMover===m){if(!S3.ride&&P.x>309*T)S3.ride=1;if(S3.ride&&P.x<2*T){S3.ride=0;unlock('a70');if(!G.sim){say("Terminus ! Toute la rue sans battre une aile. Le règlement appelle ça « économie de moyens ».",4)}}}
+  else if(P.onGround||P.dead)S3.ride=0;
   if(m.on&&!P.dead&&P.onMover!==m&&overlap(hb,{x:m.x+10,y:m.y+10,w:m.w-20,h:m.vh-10}))G.lgHit='tram';
   // les groupes de touristes : ils avancent derrière leur guide, s'arrêtent pour photographier
   for(const gp of S3.groups){gp.t+=dt;
@@ -380,7 +383,7 @@ function langletStep(dt){
     if(!S3.said.tour&&Math.abs(gp.x-pcx)<380&&!G.sim){S3.said.tour=1;say("Une troupe en civil derrière un chef qui lève un parapluie. Ils mitraillent les façades avec de petites boîtes.",4)}}
 }
 function langletAfterMove(){if(G.lgHit){const k=G.lgHit;G.lgHit=null;return k}return null}
-function langletRespawn(){const S3=L.lg;if(!S3)return;S3.elev=false;if(S3.tram.on)lgTramSet(S3.tram,-9999,false);S3.tramT=Math.max(S3.tramT,4);S3.warn=0;for(const gp of S3.groups)if(Math.abs(gp.x-P.cp.x)<260)gp.x=clamp(P.cp.x+(gp.x<P.cp.x?-1:1)*320,gp.a,gp.b)}
+function langletRespawn(){const S3=L.lg;if(!S3)return;S3.elev=false;S3.ride=0;if(S3.tram.on)lgTramSet(S3.tram,-9999,false);S3.tramT=Math.max(S3.tramT,4);S3.warn=0;for(const gp of S3.groups)if(Math.abs(gp.x-P.cp.x)<260)gp.x=clamp(P.cp.x+(gp.x<P.cp.x?-1:1)*320,gp.a,gp.b)}
 
 /* ---------- dessin ---------- */
 function drawLangletBack(t,cx){const Lv=L;if(!Lv.lgLayer)return;const tr=Lv.lgLayer.rs||1,sx=Math.max(0,cx-30),sw=Math.min(W+80,Lv.lgLayer.width/tr-sx);if(sw>0)blitLayer(ctx,Lv.lgLayer,sx*tr,0,sw*tr,Lv.lgLayer.height,sx,-PAD,sw,Lv.lgLayer.height/tr)}

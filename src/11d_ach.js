@@ -28,6 +28,7 @@ const ACH=[
  ['a54','E',"Bijou s'emmêle","Faire s'emmêler le chat dans un drap."],
  ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
  ['c1','E','Instinct de pie',"Chiper dix clefs aux gardiens."],
+ ['a70','S','Terminus, tout le monde descend',"Au cours Langlet, monter sur un tramway après la rue Guillaume-de-Machault et rester sur son toit jusqu'au tout début de la rue."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
  ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond et l'entendre roucouler."],
  ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."]
