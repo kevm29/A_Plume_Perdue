@@ -37,6 +37,10 @@ const SONGS={
   orage:{tempo:116,bpb:4,lead:['pizz','harpsi'],bass:'pulse',gap:1,
     prog:'Em Em C B B C G G Em B B Em',
     mel:'E5:1 r:1 E5:.5 F5:.5 E5:1 B4:2 C5:1 B4:1 r:1 E5:.5 F5:.5 G5:2 F#5:1 E5:1 r:1 B4:.5 C5:.5 D#5:2 E5:2 r:2 G5:1 r:1 G5:.5 A5:.5 G5:1 D5:2 E5:1 D5:1 r:1 G5:.5 A5:.5 B5:2 A5:1 G5:1 F#5:1 E5:1 D#5:2 B4:2 r:2 E5:4'},
+  // cantique de la cathédrale : mode de ré, flûte d'orgue sur un plein-jeu tenu
+  cantique:{tempo:66,bpb:4,lead:['pipe','pipe','box'],bass:'chorale',gap:2,
+    prog:'Dm Dm C Dm F C Dm Am Dm Gm Dm C F C Dm Dm',
+    mel:'D5:2 E5:1 F5:1 G5:2 F5:1 E5:1 E5:2 D5:1 C5:1 D5:4 F5:2 G5:1 A5:1 G5:2 F5:1 E5:1 F5:2 E5:1 D5:1 E5:4 A5:2 G5:1 F5:1 G5:2 F5:1 D5:1 F5:2 E5:1 D5:1 E5:2 D5:1 C5:1 F5:2 G5:1 A5:1 G5:2 E5:1 C5:1 D5:3 C5:1 D5:4'},
   // polka de la fête
   polka:{tempo:128,bpb:4,lead:['accord','box'],bass:'polka',gap:1,
     prog:'C G C G C F G C',
@@ -47,7 +51,7 @@ const LEVEL_SONGS={
   's1-1':{base:'valse'},'s1-2':{base:'menuet'},'s1-3':{base:'marche'},'s1-4':{base:'pizz'},
   's2-1':{base:'complainte'},'s2-2':{base:'complainte',tr:3,tempo:96,lead:['box','harpsi'],bass:'soft'},
   's2-3':{base:'complainte',tempo:138,lead:['harpsi','box'],bass:'gallop',gap:0},'s2-4':{base:'complainte',tr:-2,tempo:70,lead:['box'],bass:'soft'},
-  's3-1':{base:'tango'},'s3-2':{base:'tango',tr:2,lead:['harpsi','accord']},'s3-3':{base:'tango',tempo:134,lead:['box','accord']},'s3-4':{base:'valse',tr:5,lead:['accord','box']},
+  's3-1':{base:'tango'},'s3-2':{base:'tango',tr:2,lead:['harpsi','accord']},'s3-3':{base:'tango',tempo:134,lead:['box','accord']},'s3-4':{base:'cantique'},
   's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'orage',tempo:136,bass:'gallop'},'s4-3':{base:'orage',tr:-2,lead:['clar','pizz']},'s4-4':{base:'orage',tr:3,lead:['harpsi','box']},
   's5-1':{base:'polka'},'s5-2':{base:'polka',tr:-5,tempo:100,lead:['box','harpsi'],bass:'soft'},'s5-3':{base:'galop',tr:2},'s5-4':{base:'title',tempo:64},
   'chase':{base:'galop'},'title':{base:'title'}
@@ -90,6 +94,9 @@ const INST={
   clar(t,m,dur,v){const g=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1500;g.connect(lp);lp.connect(mGain);env(g,t,v||.16,.04,Math.max(.01,dur*.8),.08);const o=osc('square',mtof(m),t,t+dur+.2,g);const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=5;lg.gain.value=4;lf.connect(lg);lg.connect(o.frequency);lf.start(t);lf.stop(t+dur+.2)},
   pizz(t,m,dur,v){const g=AC.createGain();g.connect(mGain);env(g,t,v||.42,.003,0,.22);const o=osc('triangle',mtof(m),t,t+.4,g);o.frequency.setValueAtTime(mtof(m)*1.01,t);o.frequency.exponentialRampToValueAtTime(mtof(m),t+.05)},
   tuba(t,m,dur,v){const g=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=420;g.connect(lp);lp.connect(mGain);env(g,t,v||.32,.02,dur*.5,.1);osc('square',mtof(m),t,t+dur+.2,g)},
+  pipe(t,m,dur,v){const g=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2200;g.connect(lp);lp.connect(mGain);env(g,t,v||.2,.07,Math.max(.05,dur*.85),.35);
+    osc('sine',mtof(m),t,t+dur+.6,g);osc('sine',mtof(m)*2,t,t+dur+.6,g,.22);osc('triangle',mtof(m)*.5,t,t+dur+.6,g,.18);
+    const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=4.2;lg.gain.value=1.6;lf.connect(lg);const o=osc('sine',mtof(m)*1.003,t,t+dur+.6,g,.3);lg.connect(o.frequency);lf.start(t);lf.stop(t+dur+.6)},
   organ(t,ms,dur,v){const g=AC.createGain();g.connect(mGain);env(g,t,v||.05,.02,dur*.6,.1);for(const m of ms){osc('sine',mtof(m),t,t+dur+.2,g);osc('sine',mtof(m)*2,t,t+dur+.2,g,.35)}},
   snare(t,v){const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=noiseBuf;f.type='bandpass';f.frequency.value=1800;f.Q.value=.8;s.connect(f);f.connect(g);g.connect(mGain);env(g,t,v||.25,.002,0,.12);s.start(t,rnd());s.stop(t+.2)}
 };
@@ -109,6 +116,7 @@ function playTick(s,tk,t,spb){
     case'gallop':INST.tuba(t,bt%2===0?root-12:root,spb*.25,.2);if(bt===2||bt===6)INST.organ(t,v,spb*.3,.04);break;
     case'tango':if(bt===0||bt===3||bt===4||bt===6)INST.tuba(t,bt===3?ch[2]-12:root-12,spb*.4,.26);if(bt===2||bt===6)accordion(t,v,spb*.3,.035);break;
     case'pulse':INST.pizz(t,(bt%4===2?ch[2]:root)-12,spb*.3,.16);if(bt===0)INST.organ(t,v,spb*1.6,.03);break;
+    case'chorale':if(bt===0){INST.organ(t,v,spb*s.bpb*2*.48,.04);INST.organ(t,[root-12,root-24],spb*s.bpb*2*.48,.035)}break;
     case'polka':if(bt===0||bt===4)INST.tuba(t,bt===0?root-12:ch[2]-12,spb*.45,.3);else if(bt===2||bt===6)accordion(t,v,spb*.35,.05);break;
   }
 }

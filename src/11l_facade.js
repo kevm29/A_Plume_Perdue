@@ -130,11 +130,38 @@ function fcArchivolts(g,x,yb,w,h,bands,R){for(let b=bands;b>=0;b--){const ww=w+b
       for(const[px,py]of pts){g.fillStyle=FCC.lit;g.beginPath();g.ellipse(px,py+2,3.2,6,0,0,7);g.fill();g.beginPath();g.arc(px,py-6,2.4,0,7);g.fill();g.fillStyle='rgba(80,56,40,.5)';g.fillRect(px+1,py-2,1.5,8)}}}
 }
 // gargouille : une bête qui sort du mur, gueule ouverte
-function fcGargoyle(g,x,y,f,s){g.save();g.translate(x,y);g.scale(f*s,s);g.fillStyle=FCC.mid;g.beginPath();g.moveTo(-18,-10);g.quadraticCurveTo(2,-16,16,-10);g.quadraticCurveTo(26,-10,30,-2);g.lineTo(24,2);g.quadraticCurveTo(14,8,-18,8);g.closePath();g.fill();
-  g.fillStyle=FCC.sh;g.beginPath();g.moveTo(-18,8);g.quadraticCurveTo(0,10,22,2);g.lineTo(22,6);g.quadraticCurveTo(0,14,-18,12);g.closePath();g.fill();
-  g.fillStyle=FCC.lit;poly(g,[4,-14,8,-24,12,-13]);g.fill();poly(g,[12,-12,18,-20,19,-10]);g.fill();g.fillStyle=FCC.dark;g.beginPath();g.ellipse(25,0,5,3,0,0,7);g.fill();g.fillStyle='#1a1416';g.beginPath();g.arc(17,-7,1.8,0,7);g.fill();
-  g.fillStyle=FCC.mid;g.beginPath();g.ellipse(-4,10,4,6,.3,0,7);g.fill();g.beginPath();g.ellipse(10,8,3,6,-.2,0,7);g.fill();
-  g.strokeStyle=FCC.sh;g.lineWidth=1;for(let k=-14;k<14;k+=5){g.beginPath();g.moveTo(k,-12);g.lineTo(k+2,-6);g.stroke()}g.restore()}
+/* gargouille : une bête de pierre grise, plus sombre et plus verdie que la façade (lichens, coulures), qui s'agrippe à
+   son corbeau, ailes repliées, cornes, oreilles pointues, gueule ouverte sur un tuyau de plomb ; jaw = ouverture de la mâchoire */
+const FGC={a:'#8a8478',b:'#6c675e',c:'#4e4a44',d:'#2c2826',moss:'rgba(104,122,70,.55)',wet:'rgba(40,52,66,.35)'};
+function fcMouth(x,y,f,s){return[x+f*s*33,y+s*1]}
+function fcGargoyle(g,x,y,f,s,jaw){jaw=jaw||0;g.save();g.translate(x,y);g.scale(f*s,s);g.lineJoin='round';
+  // le corbeau de pierre qui la porte, scellé dans le mur
+  g.fillStyle=FGC.b;poly(g,[-26,-4,-8,-4,-12,14,-26,14]);g.fill();g.fillStyle=FGC.c;for(let k=0;k<3;k++)g.fillRect(-26,-2+k*6,16,1.5);
+  // la queue enroulée
+  g.strokeStyle=FGC.b;g.lineWidth=4;g.beginPath();g.moveTo(-16,2);g.quadraticCurveTo(-30,10,-24,20);g.quadraticCurveTo(-20,24,-16,18);g.stroke();
+  // le corps, écailles et côtes, l'aile repliée
+  g.fillStyle=FGC.a;g.beginPath();g.moveTo(-18,-6);g.bezierCurveTo(-10,-16,8,-16,18,-10);g.quadraticCurveTo(24,-8,26,-4);g.lineTo(22,4);g.bezierCurveTo(10,10,-6,10,-18,6);g.closePath();g.fill();
+  g.fillStyle=FGC.c;g.beginPath();g.moveTo(-18,6);g.bezierCurveTo(-6,10,10,10,22,4);g.lineTo(21,7);g.bezierCurveTo(8,13,-8,13,-18,9);g.closePath();g.fill();
+  g.strokeStyle='rgba(40,36,32,.55)';g.lineWidth=.8;for(let k=-12;k<14;k+=4){g.beginPath();g.arc(k,-4,2.5,0,Math.PI);g.stroke()}for(let k=-8;k<16;k+=5){g.beginPath();g.moveTo(k,2);g.lineTo(k-1,8);g.stroke()}
+  g.fillStyle=FGC.b;g.beginPath();g.moveTo(-10,-12);g.quadraticCurveTo(-2,-30,10,-24);g.quadraticCurveTo(4,-18,6,-12);g.closePath();g.fill();
+  g.strokeStyle=FGC.c;g.lineWidth=1;for(let k=0;k<4;k++){g.beginPath();g.moveTo(-6+k*3,-13);g.quadraticCurveTo(-2+k*3,-22,4+k*2,-24+k);g.stroke()}
+  // pattes griffues sur le corbeau
+  g.fillStyle=FGC.b;g.beginPath();g.ellipse(-6,8,3.5,6,.3,0,7);g.fill();g.beginPath();g.ellipse(10,7,3,6,-.3,0,7);g.fill();
+  g.fillStyle=FGC.d;for(const[cx,cy]of[[-8,14],[-5,14],[-2,13],[8,13],[11,13],[13,12]]){poly(g,[cx-1,cy,cx+1,cy,cx,cy+3]);g.fill()}
+  // la tête : crâne, cornes, oreilles, arcade sourcilière, mâchoire qui s'ouvre, crocs, le tuyau de plomb
+  g.fillStyle=FGC.a;g.beginPath();g.moveTo(16,-12);g.quadraticCurveTo(24,-17,31,-9);g.lineTo(34,-3);g.lineTo(18,-1);g.closePath();g.fill();
+  g.fillStyle=FGC.b;poly(g,[19,-14,15,-25,22,-15]);g.fill();poly(g,[24,-14,27,-22,27,-12]);g.fill();
+  g.fillStyle=FGC.c;g.save();g.translate(19,0);g.rotate(jaw*.45);g.beginPath();g.moveTo(0,0);g.lineTo(14,-1);g.lineTo(12,5);g.quadraticCurveTo(4,7,0,4);g.closePath();g.fill();
+   g.fillStyle='#d8d0c0';for(const k of[4,8,11]){poly(g,[k,-1,k+1.5,-1,k+.7,2]);g.fill()}g.restore();
+  g.fillStyle=FGC.d;g.beginPath();g.moveTo(20,-2);g.lineTo(34,-3);g.lineTo(32,1+jaw*5);g.lineTo(20,1+jaw*3);g.closePath();g.fill();
+  g.fillStyle='#d8d0c0';for(const k of[24,28,31]){poly(g,[k,-3,k+1.5,-3,k+.7,0]);g.fill()}
+  g.fillStyle='#7a7c80';g.fillRect(29,-2.5,6,3);g.fillStyle='#3a3c40';g.beginPath();g.ellipse(35,-1,1.4,1.8,0,0,7);g.fill();
+  g.fillStyle=FGC.d;g.beginPath();g.ellipse(25,-9,2.4,1.6,0,0,7);g.fill();g.fillStyle='#c84020';g.beginPath();g.arc(25.4,-9,.9,0,7);g.fill();
+  g.strokeStyle=FGC.c;g.lineWidth=1.2;g.beginPath();g.moveTo(21,-12);g.lineTo(28,-11);g.stroke();
+  // lichens, traînées d'humidité, lumière du couchant sur le dos
+  g.fillStyle=FGC.moss;for(const[mx,my,r]of[[-8,-8,3],[4,-12,2.5],[12,-6,2],[-14,2,2.5],[28,-12,1.6]]){g.beginPath();g.arc(mx,my,r,0,7);g.fill()}
+  g.fillStyle=FGC.wet;g.fillRect(30,0,2,8);g.fillStyle='rgba(255,190,130,.35)';g.beginPath();g.moveTo(-14,-9);g.bezierCurveTo(-6,-15,8,-15,18,-11);g.lineTo(16,-9);g.bezierCurveTo(6,-12,-6,-12,-14,-7);g.closePath();g.fill();
+  g.restore()}
 // corniche saillante dont le dessus est exactement la planche : tablette éclairée, moulure, corbeaux
 function fcLedge(g,x0,x1,y,o){o=o||{};g.fillStyle='rgba(30,20,30,.28)';g.fillRect(x0+2,y+12,x1-x0,6);g.fillStyle=FCC.lit;g.fillRect(x0-3,y,x1-x0+6,5);g.fillStyle=FCC.mid;g.fillRect(x0-2,y+5,x1-x0+4,6);
   g.fillStyle=FCC.sh;for(let x=x0+3;x<x1-4;x+=9){g.beginPath();g.moveTo(x,y+11);g.lineTo(x+6,y+11);g.lineTo(x+4,y+17);g.lineTo(x+2,y+17);g.closePath();g.fill()}
@@ -192,10 +219,20 @@ function facadeBuild(Lv){
   /* --- la coursière au-dessus des portails : balustrade continue --- */
   /* --- les portails : voussures peuplées, gâbles à crochets, roses des tympans, statues des ébrasements, portes --- */
   const portals=[[(X0+100+iL-45)/2,170,true],[AX,240,false],[(iR+45+X1-100)/2,170,true]];
+  // le soubassement à arcatures aveugles (interrompu par les portes)
+  g.fillStyle=FCC.sh;g.fillRect(X0,GY-60,X1-X0,60);for(let x=X0+8;x<X1-20;x+=26){g.fillStyle=FCC.deep;fcOgivePath(g,x+10,GY-6,16,44);g.fill()}g.fillStyle=FCC.lit;g.fillRect(X0,GY-62,X1-X0,4);
   for(const[px,pw,side]of portals){const yb=GY-60,ah=side?300:360;
     // le gâble au-dessus du portail
     if(side)fcGable(g,px-pw/2-50,px+pw/2+50,yb-ah-40,170,{trefoil:1,cross:1});
-    else{fcGable(g,AX-185,AX+185,fcY(44)+62,150,{cross:1.4,trefoil:1});}
+    else{const yb=fcY(44)+62,yt=fcY(43);g.fillStyle=FCC.mid;poly(g,[AX-185,yb,AX-60,yt,AX+60,yt,AX+185,yb]);g.fill();g.fillStyle='rgba(0,0,0,.12)';poly(g,[AX,yb,AX,yt,AX+60,yt,AX+185,yb]);g.fill();
+      g.fillStyle=FCC.deep;for(const[dx,dy]of[[0,-20],[-18,8],[18,8]]){g.beginPath();g.arc(AX+dx,yb-50+dy,17,0,7);g.fill()}
+      // les rampants : tuiles de pierre, crochets, le bord sur lequel on glisse
+      g.strokeStyle=FCC.lit;g.lineWidth=6;g.beginPath();g.moveTo(AX-188,yb+2);g.lineTo(AX-60,yt);g.lineTo(AX+60,yt);g.lineTo(AX+188,yb+2);g.stroke();
+      g.strokeStyle='rgba(90,64,48,.45)';g.lineWidth=1.2;for(let k=1;k<6;k++){g.beginPath();g.moveTo(AX-185+k*8,yb);g.lineTo(AX-60+k*3,yt+k*7);g.stroke();g.beginPath();g.moveTo(AX+185-k*8,yb);g.lineTo(AX+60-k*3,yt+k*7);g.stroke()}
+      fcCrockets(g,AX-185,yb-4,AX-60,yt-4,13,1);fcCrockets(g,AX+185,yb-4,AX+60,yt-4,13,-1);
+      // le groupe sculpté du couronnement, sur le replat du sommet
+      for(const[dx,h,o]of[[-30,58,{crown:1,attr:'sceptre'}],[0,70,{halo:1,crown:1,attr:'book'}],[30,58,{halo:1,attr:'book'}]])fcStatue(g,AX+dx,yt-4,h,Object.assign({niche:false,canopy:false},o),R);
+      fcCross(g,AX,yt-80,1.2)}
     fcArchivolts(g,px,yb,pw,ah,4,R);
     // le tympan ajouré d'une rose (comme à Reims), la porte
     g.fillStyle=FCC.mid;fcOgivePath(g,px,yb,pw,ah);g.fill();fcRose(g,px,yb-ah*.62,pw*.3,side?8:10);
@@ -206,13 +243,9 @@ function facadeBuild(Lv){
     g.fillStyle=FCC.mid;g.fillRect(px-9,yb-ah*.35,18,ah*.35+60);fcStatue(g,px,yb-ah*.35-6,62,{niche:false,halo:true,attr:side?'book':'sceptre'},R);
     // les statues des ébrasements, de part et d'autre
     for(const sd of[-1,1])for(let k=0;k<3;k++){const sx=px+sd*(pw/2+18+k*26),smile=side&&px<AX&&sd>0&&k===1;fcStatue(g,sx,GY-70,96,{halo:k!==1||smile,wings:smile,smile,beard:!smile&&k===2,attr:['book','key','staff'][k],niche:false,canopy:k===0},R)}}
-  // le soubassement à arcatures aveugles
-  g.fillStyle=FCC.sh;g.fillRect(X0,GY-60,X1-X0,60);for(let x=X0+8;x<X1-20;x+=26){g.fillStyle=FCC.deep;fcOgivePath(g,x+10,GY-6,16,44);g.fill()}g.fillStyle=FCC.lit;g.fillRect(X0,GY-62,X1-X0,4);
   // dais et niches des contreforts au niveau des portails ; gargouilles
   for(const bx of[oL,iL,iR,oR]){fcStatue(g,bx,GY-150,84,{halo:true,attr:'staff'},R);fcPinnacle(g,bx,fcY(48)-6,40,150,R)}
-  for(const bx of[oL,iL,iR,oR])fcGargoyle(g,bx+(bx<AX?18:-18),fcY(48)+8,bx<AX?1:-1,1.25);
   // les gargouilles n°2 : au pied de la rose et au sommet des tours
-  for(const[gx,gy,f]of FC_G2)fcGargoyle(g,gx,gy,f,1.7);
   // le contrefort d'angle de droite et ses consoles
   {const x=1560;g.fillStyle=FCC.sh;g.fillRect(x-30,fcY(30),70,GY-fcY(30));g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x+24,fcY(30),16,GY-fcY(30));fcPinnacle(g,x,fcY(30)+4,50,200,R)}
   for(let r=0;r<ROWS;r++){let c=0;while(c<Lv.w){if(Lv.g[r][c]==='t'){let e=c;while(e+1<Lv.w&&Lv.g[r][e+1]==='t')e++;const x0=c*T,x1=(e+1)*T,y=r*T,mx=(x0+x1)/2;
@@ -230,7 +263,7 @@ function facadeBuild(Lv){
   return c;
 }
 /* positions des gargouilles n°2 [x, y, sens] : deux au pied de la rose, une au sommet de chaque tour */
-const FC_G2=[[840,fcY(33),1],[1040,fcY(33),-1],[557,fcY(10),1],[1322,fcY(10),-1]];
+const FC_G2=[[850,fcY(33),-1],[1030,fcY(33),1],[557,fcY(10),1],[1322,fcY(10),-1]];
 
 /* ---------- après lecture : les bêtes et les jets ---------- */
 function facadePost(Lv){if(!Lv.def.facade)return;
@@ -244,15 +277,15 @@ function facadePost(Lv){if(!Lv.def.facade)return;
   // sur la galerie des rois : un sauteur
   pig('gros',760,1080,fcY(29),90,2.2);
   // les gargouilles n°1 : elles crachent droit sur la console du dessous
-  for(const[x,r]of[[FC.AX-FC.OB,53],[FC.AX-FC.IB,53],[FC.AX+FC.IB,51],[FC.AX+FC.OB,51]])S.g1.push({x:x+(x<FC.AX?40:-40),y:fcY(48)+8,yb:fcY(r),ph:(x*.013)%3.4,st:'idle'});
+  for(const[cx,r]of[[400,53],[720,53],[1160,52],[1480,51]]){const f=cx<FC.AX?1:-1,s=1.3,gx=cx-f*s*33,gy=fcY(48)+8,[mx,my]=fcMouth(gx,gy,f,s);S.g1.push({gx,gy,f,s,x:mx,y:my,yb:fcY(r),ph:(cx*.013)%3.4,st:'idle'})}
   // les gargouilles n°2 : le jet passe d'une cible à l'autre
   const tg=(c,r)=>[c*T+T/2,fcY(r)-12];
-  S.g2.push({g:FC_G2[0],tg:[tg(17.5,36),tg(17.5,43),tg(28.5,36)],ph:0});S.g2.push({g:FC_G2[1],tg:[tg(28.5,36),tg(28.5,43),tg(17.5,36)],ph:4.5});
+  S.rose={seq:[[1,tg(28.5,36)],[1,tg(23,43)],[0,tg(17.5,36)]],t:0,i:-1,blob:null,warn:-1,splash:null};
   S.g2.push({g:FC_G2[2],tg:[tg(10.5,20),tg(13,21),tg(15,21),tg(17,20)],ph:1});S.g2.push({g:FC_G2[3],tg:[tg(29,21),tg(31,21),tg(33,21),tg(35.5,20)],ph:3});
   // les pigeons chieurs : sur les plateformes du haut ; chacun à son rythme
   for(const[x,r,ph]of[[505,28,0],[760,29,1.3],[1120,29,2.6],[1385,29,.7]])S.shit.push({x,y:fcY(r),ph,t:ph,lift:0});
 }
-function fcJetPts(o,ang){const[gx,gy,f]=o.g,mx=gx+f*44,my=gy+2;const tgs=o.tg,n=tgs.length;
+function fcJetPts(o,ang){const[gx,gy,f]=o.g,[mx,my]=fcMouth(gx,gy,f,1.7);const tgs=o.tg,n=tgs.length;
   // position de la cible le long du parcours (aller-retour entre les cibles, avec un temps d'arrêt sur chacune)
   const seg=ang,i=Math.min(n-2,Math.floor(seg)),u=Math.max(0,Math.min(1,(seg-i)*1.5-.25)),tx=tgs[i][0]+(tgs[i+1][0]-tgs[i][0])*u,ty=tgs[i][1]+(tgs[i+1][1]-tgs[i][1])*u;
   const pts=[];for(let k=0;k<=16;k++){const v=k/16,cx=mx+f*60;pts.push([ (1-v)*(1-v)*mx+2*(1-v)*v*cx+v*v*tx,(1-v)*(1-v)*my+2*(1-v)*v*(my-40)+v*v*ty])}return pts}
@@ -273,6 +306,13 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
   for(const o of S.g2){const n=o.tg.length,per=(n-1)*1.3,cyc=per*2+2.4,u=(G.lt+o.ph)%cyc;
     if(u<per*2){o.on=true;const p=u<per?u/1.3:(per*2-u)/1.3;o.pts=fcJetPts(o,Math.min(n-1-1e-3,p))}else{o.on=false;o.pts=null;o.warn=u>cyc-.8}
     if(o.on&&!P.dead)for(const[x,y]of o.pts)if(Math.abs(x-pcx)<12+P.w/2-4&&Math.abs(y-pcy)<12+P.h/2-6){hit='jetPierre';break}}
+  // la gargouille de la rose : un crachat à la fois, sur la plateforme de droite, puis le haut du gâble, puis celle de gauche ; puis une pause
+  {const Ro=S.rose,FL=1.25,GAP=.75,PAUSE=1.8,cyc=3*(FL+GAP)+PAUSE,u=(G.lt+.5)%cyc,i=Math.floor(u/(FL+GAP)),v=u-i*(FL+GAP);Ro.blob=null;Ro.warn=-1;Ro.splash=null;
+   if(i<3){const[gi,tgt]=Ro.seq[i],[gx,gy,f]=FC_G2[gi],[mx,my]=fcMouth(gx,gy,f,1.7);
+     if(v<GAP){Ro.warn=gi;Ro.jaw=v/GAP}else{const w=(v-GAP)/FL;if(w<.92){const cx2=(mx+tgt[0])/2,cy2=Math.min(my,tgt[1])-110,x=(1-w)*(1-w)*mx+2*(1-w)*w*cx2+w*w*tgt[0],y=(1-w)*(1-w)*my+2*(1-w)*w*cy2+w*w*tgt[1];Ro.blob=[x,y,gi];
+       if(!P.dead&&Math.hypot(x-pcx,y-pcy)<15)hit='jetPierre'}else Ro.splash=tgt;Ro.jaw=Math.max(0,1-w*3)}}else Ro.jaw=0;
+   // le crachat éclabousse sa cible un court instant
+   if(Ro.splash&&!P.dead&&Math.abs(Ro.splash[0]-pcx)<28&&Math.abs(Ro.splash[1]-pcy)<20)hit='jetPierre'}
   // pigeons chieurs : chacun lâche sa fiente à son tour ; elle tombe jusqu'à ce qu'elle touche quelque chose
   for(const o of S.shit){o.t+=dt;const u=o.t%4.2;o.lift=u>3.4&&u<3.8?1:0;if(u>=3.6&&u-dt<3.6)S.drops.push({x:o.x+6,y:o.y-6,vy:60})}
   for(const d of S.drops){d.vy=Math.min(700,d.vy+1400*dt);d.y+=d.vy*dt;const c=Math.floor(d.x/T),r=Math.floor(d.y/T);if(r>=ROWS||'t#'.includes(tile(c,r))&&d.y>r*T&&d.y<r*T+10){d.dead=1;d.splat=.6}
@@ -288,7 +328,17 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
   say1('rois',P.onGround&&P.y+P.h<=fcY(29)+2&&pcx>700&&pcx<1180,"La galerie des rois. Cinquante-six gaillards couronnés qui regardent passer les siècles. Et maintenant, un pigeon.");
   say1('tour',P.onGround&&P.y+P.h<=fcY(21)+2&&pcx>1150,"La tour sud. Une fenêtre entrouverte, juste là… Ça sent le bronze et la corde de cloche.");
 }
-function facadeAfterMove(){if(G.fcHit){const k=G.fcHit;G.fcHit=null;return k}return null}
+/* les rampants du gâble central : on s'y pose, mais on glisse doucement vers le vide ; en marchant vers le haut on résiste à peine
+   (on recule encore un peu) : il faut sautiller pour monter */
+const FC_SLOPES=[{xa:FC.AX-185,ya:fcY(44)+62,xb:FC.AX-60,yb:fcY(43)},{xa:FC.AX+60,ya:fcY(43),xb:FC.AX+185,yb:fcY(44)+62}];
+function fcSlope(dt){const S=L.fc;if(!S)return;const cx=P.x+P.w/2,feet=P.y+P.h,pf=S.pf==null?feet:S.pf;S.onSlope=null;
+  if(!P.dead&&P.vy>=0&&!P.onMover)for(const sl of FC_SLOPES){if(cx<sl.xa||cx>sl.xb)continue;const ys=sl.ya+(sl.yb-sl.ya)*(cx-sl.xa)/(sl.xb-sl.xa);
+    if(pf<=ys+8&&feet>=ys-2){const down=sl.yb>sl.ya?1:-1;   // sens de la pente vers le bas (en x)
+      const up=keys.has(down>0?'left':'right'),dn=keys.has(down>0?'right':'left');
+      if(up){P.x-=P.vx*dt;P.x+=down*22*dt}else if(!dn){P.x-=P.vx*dt;P.x+=down*75*dt}else P.x+=down*30*dt;
+      const c2=P.x+P.w/2;if(c2>=sl.xa&&c2<=sl.xb){P.y=sl.ya+(sl.yb-sl.ya)*(c2-sl.xa)/(sl.xb-sl.xa)-P.h;P.vy=0;P.onGround=true;S.onSlope=sl}break}}
+  S.pf=P.y+P.h}
+function facadeAfterMove(dt){if(L.fc)fcSlope(dt||1/60);if(G.fcHit){const k=G.fcHit;G.fcHit=null;return k}return null}
 function facadeRespawn(){const S=L.fc;if(!S)return;S.grace=1.2;S.drops=[];G.fcHit=null}
 
 /* ---------- dessin ---------- */
@@ -296,13 +346,19 @@ function drawFacadeBack(t,cx,cy){const Lv=L;if(!Lv.fcLayer)return;const ly=Lv.fc
   if(sw>0&&sh>0)blitLayer(ctx,ly,sx*tr,sy*tr,sw*tr,sh*tr,sx,sy-PAD,sw,sh)}
 function drawFacadeMid(t){const S=L.fc;if(!S)return;const g=ctx,vis=(x,y)=>x>cam.x-120&&x<cam.x+W+120&&y>cam.y-200&&y<cam.y+H+200;
   // crachats des gargouilles n°1
-  for(const o of S.g1){if(!vis(o.x,o.y))continue;
+  for(const o of S.g1){if(!vis(o.x,o.y))continue;fcGargoyle(g,o.gx,o.gy,o.f,o.s,o.st==='spit'?1:o.st==='warn'?.3:0);
     if(o.st==='warn'){const k=(G.lt*3)%1;g.fillStyle='rgba(170,210,250,.85)';g.beginPath();g.ellipse(o.x,o.y+4+k*20,2.2,3.4,0,0,7);g.fill()}
-    if(o.st==='spit'){g.strokeStyle='rgba(160,205,255,.8)';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(o.x,o.y+2);g.lineTo(o.x+Math.sin(G.lt*20)*1.5,o.y+o.len);g.stroke();g.strokeStyle='rgba(240,248,255,.7)';g.lineWidth=2;g.stroke();g.lineCap='butt';
+    if(o.st==='spit'){g.strokeStyle='rgba(160,205,255,.8)';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(o.x,o.y);g.quadraticCurveTo(o.x+o.f*6,o.y+4,o.x+o.f*4+Math.sin(G.lt*20)*1.5,o.y+Math.min(o.len,14));g.lineTo(o.x+o.f*3+Math.sin(G.lt*20)*1.5,o.y+o.len);g.stroke();g.strokeStyle='rgba(240,248,255,.7)';g.lineWidth=2;g.stroke();g.lineCap='butt';
       if(o.len>=o.yb-o.y-1){g.fillStyle='rgba(200,225,255,.6)';for(let k=0;k<5;k++){g.beginPath();g.arc(o.x+(k-2)*6+Math.sin(G.lt*30+k)*2,o.yb-4-Math.abs(Math.sin(G.lt*25+k))*8,2,0,7);g.fill()}}}}
   // jets des gargouilles n°2
-  for(const o of S.g2){const[gx,gy,f]=o.g;if(!vis(gx,gy)&&!(o.pts&&vis(o.pts[16][0],o.pts[16][1])))continue;
-    if(o.warn){g.fillStyle='rgba(170,210,250,.8)';const k=(G.lt*3)%1;g.beginPath();g.ellipse(gx+f*44,gy+6+k*16,2.4,3.6,0,0,7);g.fill()}
+  // la gargouille de la rose : deux bêtes au pied de la rose, un crachat à la fois
+  {const Ro=S.rose;for(const[gi,[gx,gy,f]]of[[0,FC_G2[0]],[1,FC_G2[1]]]){if(!vis(gx,gy))continue;const jaw=(Ro.warn===gi||(Ro.blob&&Ro.blob[2]===gi))?Ro.jaw||0:0;fcGargoyle(g,gx,gy,f,1.7,jaw);
+     if(Ro.warn===gi){const[mx,my]=fcMouth(gx,gy,f,1.7),k=(G.lt*3)%1;g.fillStyle='rgba(170,210,250,.85)';g.beginPath();g.ellipse(mx,my+4+k*14,2.4,3.6,0,0,7);g.fill()}}
+   if(Ro.blob){const[x,y]=Ro.blob;g.fillStyle='rgba(150,200,255,.85)';g.beginPath();g.ellipse(x,y,9,7,0,0,7);g.fill();g.fillStyle='rgba(245,250,255,.85)';g.beginPath();g.arc(x-2,y-2,3,0,7);g.fill();
+     g.fillStyle='rgba(170,210,250,.5)';for(let k=1;k<4;k++){g.beginPath();g.arc(x-k*6*(Ro.blob[2]?1:-1)*-1,y-k*3,4-k,0,7);g.fill()}}
+   if(Ro.splash){const[ex,ey]=Ro.splash;g.fillStyle='rgba(200,225,255,.7)';for(let k=0;k<8;k++){g.beginPath();g.arc(ex+(k-3.5)*6,ey+6-Math.abs(Math.sin(G.lt*20+k))*14,2.6,0,7);g.fill()}}}
+  for(const o of S.g2){const[gx,gy,f]=o.g;if(vis(gx,gy))fcGargoyle(g,gx,gy,f,1.7,o.on?1:o.warn?.3:0);if(!vis(gx,gy)&&!(o.pts&&vis(o.pts[16][0],o.pts[16][1])))continue;
+    if(o.warn){const[mx,my]=fcMouth(gx,gy,f,1.7);g.fillStyle='rgba(170,210,250,.8)';const k=(G.lt*3)%1;g.beginPath();g.ellipse(mx,my+4+k*16,2.4,3.6,0,0,7);g.fill()}
     if(o.on&&o.pts){g.strokeStyle='rgba(150,200,255,.75)';g.lineWidth=9;g.lineCap='round';g.beginPath();g.moveTo(o.pts[0][0],o.pts[0][1]);for(const[x,y]of o.pts)g.lineTo(x+Math.sin(G.lt*18+y*.05)*1.2,y);g.stroke();
       g.strokeStyle='rgba(245,250,255,.75)';g.lineWidth=3;g.stroke();g.lineCap='butt';const[ex,ey]=o.pts[16];g.fillStyle='rgba(210,230,255,.6)';for(let k=0;k<6;k++){g.beginPath();g.arc(ex+(k-2.5)*5,ey+8-Math.abs(Math.sin(G.lt*22+k))*10,2.2,0,7);g.fill()}}}
   // pigeons

@@ -191,18 +191,20 @@ LEVELS.push((()=>{
   for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
   const put=(c,r,ch)=>{g[r][c]=ch};
   // [c0,c1,ligne] : la ligne est celle de la planche (on se pose à son sommet)
-  const PL=[[9,10,53],[17,18,53],[28,29,53],[28,29,51],[36,37,51],[39,39,49],[38,38,47],          // portails, consoles, contrefort d'angle
-    [20,21,44],[22,24,43],[25,26,44],                                                               // le gâble du portail central
+  const PL=[[9,10,53],[17,18,53],[28,29,54],[28,29,52],[36,37,51],[39,39,49],[38,38,47],          // portails, consoles, contrefort d'angle
+    [22,24,43],                                                                                     // le replat du gâble central (ses rampants sont des pentes : 11l_facade.js)
     [9,10,43],[17,18,43],[28,29,43],[36,38,43],[8,8,40],                                            // la coursière au-dessus des portails
     [8,10,36],[17,18,36],[28,29,36],[36,37,36],[37,38,32],                                          // les dais des grandes statues
     [12,13,28],[18,28,29],[33,34,29],[11,12,24],                                                    // la galerie des rois
     [10,11,20],[13,13,21],[15,15,21],[17,17,20],[20,20,21],[23,23,21],[26,26,21],[29,29,21],[31,31,21],[32,32,20],[33,33,21],[35,36,20]]; // les dais des tours
   for(const[c0,c1,r]of PL)for(let c=c0;c<=c1;c++)put(c,r,'t');
+  // pics anti-pigeons sur le groupe sculpté du gâble, au pied de la rose
+  for(let c=22;c<=24;c++)put(c,40,'^');
   // rats : sur le faîte du gâble, sur la galerie des rois
   put(23,42,'k');put(21,42,'|');put(25,42,'|');put(23,28,'k');put(20,28,'|');put(26,28,'|');
   // cartels, paille, médaille, départ, fenêtre de la tour sud
   for(const[c,r]of[[4,55],[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
-  for(const[c,r]of[[17,52],[29,50],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55]])put(c,r,'o');
+  for(const[c,r]of[[17,52],[29,51],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55]])put(c,r,'o');
   put(10,52,'*');put(6,55,'S');put(32,19,'E');
   return {w:2,name:"La cathédrale",theme:'facade',exit:'window',exitLabel:"TOUR SUD",seed:101,rows:RR,camY:.55,
     facade:{G0},
