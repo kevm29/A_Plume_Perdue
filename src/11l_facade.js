@@ -231,8 +231,10 @@ function facadeBuild(Lv){
       g.strokeStyle='rgba(90,64,48,.45)';g.lineWidth=1.2;for(let k=1;k<6;k++){g.beginPath();g.moveTo(AX-185+k*8,yb);g.lineTo(AX-60+k*3,yt+k*7);g.stroke();g.beginPath();g.moveTo(AX+185-k*8,yb);g.lineTo(AX+60-k*3,yt+k*7);g.stroke()}
       fcCrockets(g,AX-185,yb-4,AX-60,yt-4,13,1);fcCrockets(g,AX+185,yb-4,AX+60,yt-4,13,-1);
       // le groupe sculpté du couronnement, sur le replat du sommet
-      for(const[dx,h,o]of[[-30,58,{crown:1,attr:'sceptre'}],[0,70,{halo:1,crown:1,attr:'book'}],[30,58,{halo:1,attr:'book'}]])fcStatue(g,AX+dx,yt-4,h,Object.assign({niche:false,canopy:false},o),R);
-      fcCross(g,AX,yt-80,1.2)}
+      for(const[dx,h,o]of[[-32,96,{crown:1,attr:'sceptre'}],[0,108,{halo:1,crown:1,attr:'book'}],[32,96,{halo:1,attr:'book'}]])fcStatue(g,AX+dx,yt-4,h,Object.assign({niche:false,canopy:false},o),R);
+      // les pics anti-pigeons, posés sur les têtes : une réglette de métal hérissée de fines aiguilles
+      for(const[dx,hy]of[[-32,FC_SPK.y+25],[0,FC_SPK.y+13],[32,FC_SPK.y+25]]){const x=AX+dx;g.fillStyle='#3a3c42';g.fillRect(x-15,hy,30,3);g.strokeStyle='#aeb4bc';g.lineWidth=1;
+        for(let k=0;k<9;k++){const bx=x-13+k*3.2,a=(k-4)*.13;g.beginPath();g.moveTo(bx,hy);g.lineTo(bx+Math.sin(a)*14,hy-Math.cos(a)*14);g.stroke()}g.fillStyle='rgba(255,220,180,.5)';g.fillRect(x-15,hy,30,1)}}
     fcArchivolts(g,px,yb,pw,ah,4,R);
     // le tympan ajouré d'une rose (comme à Reims), la porte
     g.fillStyle=FCC.mid;fcOgivePath(g,px,yb,pw,ah);g.fill();fcRose(g,px,yb-ah*.62,pw*.3,side?8:10);
@@ -313,6 +315,8 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
        if(!P.dead&&Math.hypot(x-pcx,y-pcy)<15)hit='jetPierre'}else Ro.splash=tgt;Ro.jaw=Math.max(0,1-w*3)}}else Ro.jaw=0;
    // le crachat éclabousse sa cible un court instant
    if(Ro.splash&&!P.dead&&Math.abs(Ro.splash[0]-pcx)<28&&Math.abs(Ro.splash[1]-pcy)<20)hit='jetPierre'}
+  // les pics anti-pigeons du groupe sculpté
+  if(!P.dead&&overlap(hb,{x:FC_SPK.x0,y:FC_SPK.y-2,w:FC_SPK.x1-FC_SPK.x0,h:30}))hit='spikes';
   // pigeons chieurs : chacun lâche sa fiente à son tour ; elle tombe jusqu'à ce qu'elle touche quelque chose
   for(const o of S.shit){o.t+=dt;const u=o.t%4.2;o.lift=u>3.4&&u<3.8?1:0;if(u>=3.6&&u-dt<3.6)S.drops.push({x:o.x+6,y:o.y-6,vy:60})}
   for(const d of S.drops){d.vy=Math.min(700,d.vy+1400*dt);d.y+=d.vy*dt;const c=Math.floor(d.x/T),r=Math.floor(d.y/T);if(r>=ROWS||'t#'.includes(tile(c,r))&&d.y>r*T&&d.y<r*T+10){d.dead=1;d.splat=.6}
@@ -330,6 +334,7 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
 }
 /* les rampants du gâble central : on s'y pose, mais on glisse doucement vers le vide ; en marchant vers le haut on résiste à peine
    (on recule encore un peu) : il faut sautiller pour monter */
+const FC_SPK={x0:FC.AX-48,x1:FC.AX+48,y:fcY(43)-128};   // les aiguilles au-dessus du replat du gâble : un petit saut passe dessous, un grand saut s'y pique
 const FC_SLOPES=[{xa:FC.AX-185,ya:fcY(44)+62,xb:FC.AX-60,yb:fcY(43)},{xa:FC.AX+60,ya:fcY(43),xb:FC.AX+185,yb:fcY(44)+62}];
 function fcSlope(dt){const S=L.fc;if(!S)return;const cx=P.x+P.w/2,feet=P.y+P.h,pf=S.pf==null?feet:S.pf;S.onSlope=null;
   if(!P.dead&&P.vy>=0&&!P.onMover)for(const sl of FC_SLOPES){if(cx<sl.xa||cx>sl.xb)continue;const ys=sl.ya+(sl.yb-sl.ya)*(cx-sl.xa)/(sl.xb-sl.xa);

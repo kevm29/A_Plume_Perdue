@@ -198,8 +198,6 @@ LEVELS.push((()=>{
     [12,13,28],[18,28,29],[33,34,29],[11,12,24],                                                    // la galerie des rois
     [10,11,20],[13,13,21],[15,15,21],[17,17,20],[20,20,21],[23,23,21],[26,26,21],[29,29,21],[31,31,21],[32,32,20],[33,33,21],[35,36,20]]; // les dais des tours
   for(const[c0,c1,r]of PL)for(let c=c0;c<=c1;c++)put(c,r,'t');
-  // pics anti-pigeons sur le groupe sculpté du gâble, au pied de la rose
-  for(let c=22;c<=24;c++)put(c,40,'^');
   // rats : sur le faîte du gâble, sur la galerie des rois
   put(23,42,'k');put(21,42,'|');put(25,42,'|');put(23,28,'k');put(20,28,'|');put(26,28,'|');
   // cartels, paille, médaille, départ, fenêtre de la tour sud
