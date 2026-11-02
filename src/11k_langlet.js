@@ -96,7 +96,8 @@ function lgImm(g,o,R){// immeuble générique : pierre, brique, pilastres, balco
     for(let k=1;k<=n;k++){const y=b-LG.GF-(k-1)*LG.FH;lgWin(g,(bx0+bx1)/2-14,y-68,28,50,{frame:'#efe8d8'});lgWin(g,bx0+4,y-64,8,44,{frame:'#efe8d8',sill:false});lgWin(g,bx1-12,y-64,8,44,{frame:'#efe8d8',sill:false})}
     if(o.bayDome){g.fillStyle=LGC.slate;g.beginPath();g.moveTo(bx0-6,top+20);g.quadraticCurveTo((bx0+bx1)/2,top-60,bx1+6,top+20);g.closePath();g.fill();g.fillStyle='#e2d8c2';g.beginPath();g.ellipse((bx0+bx1)/2,top-6,10,13,0,0,7);g.fill();g.fillStyle='#4e5c6c';g.beginPath();g.ellipse((bx0+bx1)/2,top-6,6,8,0,0,7);g.fill()}}
   g.fillStyle=o.cornice||'#cfc3aa';g.fillRect(x0-4,top-8,x1-x0+8,10);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x0-4,top+2,x1-x0+8,3);
-  if(o.mans!==false)lgMansard(g,x0,x1,top-8,o.mansH||64,{dormers:o.dormers||Math.max(1,wn-1),style:o.dstyle||'pediment',chim:(o.chim||[]).map(c=>x0+c),dcol:o.dcol});
+  if(o.roof==='tile'){g.fillStyle='#a8502e';poly(g,[x0-6,top-8,x0+30,top-60,x1-30,top-60,x1+6,top-8]);g.fill();g.fillStyle='rgba(0,0,0,.12)';for(let y=top-14;y>top-60;y-=6)g.fillRect(x0+(top-8-y)*.7,y,x1-x0-(top-8-y)*1.4,1)}
+  else if(o.mans!==false)lgMansard(g,x0,x1,top-8,o.mansH||64,{dormers:o.dormers||Math.max(1,wn-1),style:o.dstyle||'pediment',chim:(o.chim||[]).map(c=>x0+c),dcol:o.dcol});
   else if(o.flatRoof){g.fillStyle='#8a8478';g.fillRect(x0,top-14,x1-x0,6)}
   // rez-de-chaussée
   const gf=o.gf||[];for(const s of gf){const a=x0+s.x,e=x0+s.x+s.w;
@@ -109,19 +110,19 @@ function lgImm(g,o,R){// immeuble générique : pierre, brique, pilastres, balco
   if(o.sign){g.fillStyle='#2a4a8a';rr(g,x0+o.sign[0],b-LG.GF-26,96,18,3);g.fill();g.fillStyle='#f0f2f6';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText(o.sign[1],x0+o.sign[0]+48,b-LG.GF-14)}
 }
 function lgHotelBrique(g,c0,c1,R){// l'hôtel en brique et pierre, en retrait derrière sa petite place : toit Mansart, lucarnes à fronton
-  const x0=c0*T+10,x1=c1*T-10,b=LG.BASE-22,s=.86,H=LG.GF+2*LG.FH,top=b-H*s;
+  const x0=c0*T+56,x1=c1*T-10,b=LG.BASE-22,s=.86,H=LG.GF+LG.FH,top=b-H*s;
   // retours des murs voisins et sol de la place
-  g.fillStyle='#b8ae98';poly(g,[c0*T,LG.BASE-LG.GF-3*LG.FH,x0,top-40,x0,b,c0*T,LG.BASE]);g.fill();g.fillStyle='rgba(0,0,0,.18)';poly(g,[c0*T,LG.BASE-LG.GF-3*LG.FH,x0,top-40,x0,b,c0*T,LG.BASE]);g.fill();
-  g.fillStyle='#c8bea8';poly(g,[c1*T,LG.BASE-LG.GF-4*LG.FH,x1,top-40,x1,b,c1*T,LG.BASE]);g.fill();g.fillStyle='rgba(0,0,0,.1)';poly(g,[c1*T,LG.BASE-LG.GF-4*LG.FH,x1,top-40,x1,b,c1*T,LG.BASE]);g.fill();
+  {const nt=LG.BASE-LG.GF-4*LG.FH,ft=b-(LG.BASE-nt)*s;g.fillStyle='#a9b0a4';poly(g,[c0*T,nt,x0,ft,x0,b,c0*T,LG.BASE]);g.fill();g.fillStyle='rgba(0,0,0,.2)';poly(g,[c0*T,nt,x0,ft,x0,b,c0*T,LG.BASE]);g.fill();
+   g.fillStyle=LGC.slate2;poly(g,[c0*T,nt,c0*T,nt-62,x0,ft-62*s,x0,ft]);g.fill();g.fillStyle='rgba(60,72,86,.7)';for(let k=0;k<4;k++){const y0=LG.BASE-LG.GF-k*LG.FH,y1=b-(LG.GF+k*LG.FH)*s;poly(g,[c0*T+6,y0-60,x0-4,y1-52*s,x0-4,y1-14*s,c0*T+6,y0-16]);g.fill()}}
   g.fillStyle='#d6cebd';poly(g,[c0*T,LG.BASE,x0,b,x1,b,c1*T,LG.BASE]);g.fill();g.strokeStyle='rgba(0,0,0,.06)';for(let k=1;k<6;k++){const u=k/6;g.beginPath();g.moveTo(c0*T+(x0-c0*T)*u,LG.BASE-(LG.BASE-b)*u);g.lineTo(c1*T+(x1-c1*T)*u,LG.BASE-(LG.BASE-b)*u);g.stroke()}
   // la façade : brique rouge, chaînes d'angle et encadrements de pierre
   lgBrick(g,x0,top,x1,b,R);g.fillStyle='#d8ccb0';g.fillRect(x0,b-28,x1-x0,28);
   const pw=(x1-x0);for(const fx of[0,.2,.4,.6,.8,1]){const px=x0+pw*fx-8;g.fillStyle='#ddd0b4';for(let y=top;y<b;y+=14){g.fillRect(px,y,16,7);g.fillRect(px-4,y+7,24,7)}}
-  g.fillStyle='#d8ccb0';g.fillRect(x0,top+H*s*.45,x1-x0,8);g.fillRect(x0-6,top-8,x1-x0+12,10);
+  g.fillStyle='#d8ccb0';g.fillRect(x0,b-LG.GF*s-4,x1-x0,8);g.fillRect(x0-6,top-8,x1-x0+12,10);
   // l'avant-corps à gauche, plus haut, avec son balcon de pierre
   const ax1=x0+pw*.22;g.fillStyle='rgba(0,0,0,.1)';g.fillRect(ax1,top-14,6,b-top+14);
-  for(let i=0;i<8;i++){const fx=x0+pw*(i+.5)/8-11;for(const fy of[top+20,top+H*s*.5+16]){g.fillStyle='#ddd0b4';g.fillRect(fx-5,fy-5,32,60);lgWin(g,fx,fy,22,48,{frame:'#e8e2d4',glass:'#4a5868',blind:(i+fy|0)%3===0?.4:0,sill:false})}}
-  lgBalcony(g,x0+8,ax1-8,top+H*s*.5+70,'stone');
+  for(let i=0;i<8;i++){const fx=x0+pw*(i+.5)/8-11,fy=top+12;g.fillStyle='#ddd0b4';g.fillRect(fx-5,fy-5,32,60);lgWin(g,fx,fy,22,48,{frame:'#e8e2d4',glass:'#4a5868',blind:i%3===0?.4:0,sill:false})}
+  lgBalcony(g,x0+8,ax1-8,top+62,'stone');
   // rez-de-chaussée : deux grandes portes cochères en arc à gauche, fenêtres à barreaux, porte à fronton à droite
   for(const ax of[x0+20,x0+78]){g.fillStyle='#d8ccb0';g.beginPath();g.moveTo(ax-6,b);g.lineTo(ax-6,b-64);g.arc(ax+24,b-64,30,Math.PI,0);g.lineTo(ax+54,b);g.closePath();g.fill();g.fillStyle='#1e1e22';g.beginPath();g.moveTo(ax,b);g.lineTo(ax,b-64);g.arc(ax+24,b-64,24,Math.PI,0);g.lineTo(ax+48,b);g.closePath();g.fill()}
   for(let i=0;i<5;i++){const wx=x0+pw*.32+i*pw*.1;lgWin(g,wx,b-80,22,50,{frame:'#ddd0b4',glass:'#3a4654'});g.strokeStyle='#18191c';g.lineWidth=1.4;for(let x=wx+3;x<wx+22;x+=4){g.beginPath();g.moveTo(x,b-80);g.lineTo(x,b-30);g.stroke()}}
@@ -143,7 +144,7 @@ function lgGothique(g,c0,c1,R){// la maison étroite néo-gothique au pignon poi
   lgWin(g,x1-80,b-90,46,60,{arch:true,frame:'#d8ccb0'});
 }
 function lgVerre(g,c0,c1){// l'immeuble vitré entre deux façades anciennes
-  const x0=c0*T,x1=c1*T,b=LG.BASE,top=b-LG.GF-3*LG.FH;g.fillStyle='#5a6a7a';g.fillRect(x0,top,x1-x0,b-top);g.fillStyle='rgba(200,215,230,.35)';for(let y=top+4;y<b-LG.GF;y+=26)for(let x=x0+4;x<x1-4;x+=30)g.fillRect(x,y,26,22);
+  const x0=c0*T,x1=c1*T,b=LG.BASE,top=b-LG.GF-2*LG.FH;g.fillStyle='#5a6a7a';g.fillRect(x0,top,x1-x0,b-top);g.fillStyle='rgba(200,215,230,.35)';for(let y=top+4;y<b-LG.GF;y+=26)for(let x=x0+4;x<x1-4;x+=30)g.fillRect(x,y,26,22);
   g.fillStyle='rgba(255,255,255,.2)';poly(g,[x0+10,top,x0+40,top,x0+10,b-LG.GF,x0-10,b-LG.GF]);g.fill();g.fillStyle='#2a3a4a';g.fillRect(x0,b-LG.GF,x1-x0,6);
   lgShop(g,x0+4,x1-4,'#2a3a4a','AGENCE',{door:(x0+x1)/2})}
 function lgModerne(g,c0,c1){// l'immeuble moderne aux balcons filants vitrés
@@ -154,7 +155,7 @@ function lgModerne(g,c0,c1){// l'immeuble moderne aux balcons filants vitrés
   g.fillStyle='rgba(70,90,110,.85)';g.fillRect(x0+4,b-LG.GF+6,x1-x0-8,LG.GF-8);g.fillStyle='rgba(220,230,240,.3)';for(let x=x0+10;x<x1-10;x+=40)g.fillRect(x,b-LG.GF+12,32,LG.GF-20);
   g.fillStyle='#2a4a8a';g.fillRect(x0+(x1-x0)/2-50,b-LG.GF+10,100,12);g.fillStyle='#fff';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('BANQUE',x0+(x1-x0)/2,b-LG.GF+19)}
 function lgBanqueBlanche(g,c0,c1,R){// le grand immeuble blanc à l'angle arrondi et au fronton cintré, colonnes au rez-de-chaussée
-  const x0=c0*T,x1=c1*T,b=LG.BASE,n=4,top=b-LG.GF-n*LG.FH;lgAshlar(g,x0,top,x1,b,'#efebe0',R);
+  const x0=c0*T,x1=c1*T,b=LG.BASE,n=3,top=b-LG.GF-n*LG.FH;lgAshlar(g,x0,top,x1,b,'#efebe0',R);
   const cx=x0+80;g.fillStyle='rgba(0,0,0,.1)';const gr=g.createLinearGradient(x0,0,cx,0);gr.addColorStop(0,'rgba(0,0,0,.16)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x0,top,cx-x0,b-top);
   g.fillStyle='#efebe0';g.beginPath();g.moveTo(x0+10,top);g.lineTo(x0+10,top-40);g.quadraticCurveTo(x0+30,top-80,x0+80,top-62);g.quadraticCurveTo(x0+60,top-40,x0+70,top);g.closePath();g.fill();
   for(let k=1;k<=n;k++){const y=b-LG.GF-(k-1)*LG.FH;for(let wx=x0+30;wx<x1-30;wx+=56)lgWin(g,wx,y-66,22,48,{frame:'#f4f0e6',glass:'#4a5868'});g.fillStyle='rgba(0,0,0,.06)';g.fillRect(x0,y-3,x1-x0,3)}
@@ -176,7 +177,7 @@ function lgArtNouveau(g,c0,c1,R){// l'immeuble Art nouveau à l'angle : balcons 
   g.fillStyle='#c8bca2';g.beginPath();g.moveTo(x1-190,b);g.lineTo(x1-190,b-60);g.arc(x1-110,b-60,80,Math.PI,0);g.lineTo(x1-30,b);g.closePath();g.fill();g.fillStyle='rgba(60,70,80,.9)';g.beginPath();g.moveTo(x1-182,b);g.lineTo(x1-182,b-60);g.arc(x1-110,b-60,72,Math.PI,0);g.lineTo(x1-38,b);g.closePath();g.fill();
   lgShop(g,x0+10,x0+100,'#2a4a3a','LIBRAIRIE',{door:x0+55})}
 function lgCreditLyonnais(g,c0,c1,R){// l'ancienne banque : rotonde d'angle à dôme, façade classique, inscription gravée, colonnes, balustres
-  const x0=c0*T,x1=c1*T,b=LG.BASE,n=3,top=b-LG.GF-n*LG.FH-20,xr=x0+5*T;lgAshlar(g,x0,top,x1,b,'#e2d6be',R);
+  const x0=c0*T,x1=c1*T,b=LG.BASE,n=2,top=b-LG.GF-n*LG.FH-20,xr=x0+5*T;lgAshlar(g,x0,top,x1,b,'#e2d6be',R);
   // bossages du rez-de-chaussée
   g.strokeStyle='rgba(0,0,0,.12)';g.lineWidth=2;for(let y=b-LG.GF+10;y<b;y+=14){g.beginPath();g.moveTo(x0,y);g.lineTo(x1,y);g.stroke()}
   // la rotonde et son dôme à écailles
@@ -219,20 +220,31 @@ function lgCathedrale(g,c0,c1,R){// le flanc nord de la cathédrale : bas-côté
   for(let i=0;i<5;i++){const ax=wx0+30+i*64;g.fillStyle='#5a5444';g.beginPath();g.moveTo(ax,b-20);g.lineTo(ax,b-90);g.arc(ax+24,b-90,24,Math.PI,0);g.lineTo(ax+48,b-20);g.closePath();g.fill()}
   g.fillStyle='#7a6a4c';g.fillRect(wx0-4,b-166,wx1-wx0+8,8);g.fillStyle=LGC.slate2;poly(g,[wx0-4,b-166,wx0+20,b-190,wx1-20,b-190,wx1+4,b-166]);g.fill();
 }
-/* une rue transversale qui s'enfonce entre deux immeubles */
-function lgRue(g,c0,c1,o){
-  const a=c0*T,e=c1*T,b=LG.BASE,vx=(a+e)/2,HZ=b-70,top=b-LG.GF-4*LG.FH;
-  const sk=g.createLinearGradient(0,top,0,HZ);sk.addColorStop(0,'#a8b6c4');sk.addColorStop(1,'#dad8d0');g.fillStyle=sk;g.fillRect(a,top-60,e-a,HZ-top+62);
+/* hauteur, toit et matière d'une façade (pour les murs en fuite des rues transversales) */
+function lgInfo(f){const B=LG.BASE,G=LG.GF,H=LG.FH;
+  switch(f.k){case'rotonde':return{top:B-G-4*H,mh:62,col:'#a9b0a4'};case'hotel':return{top:B-22-(G+H)*.86,mh:52,col:'#b85a3e',brick:1};case'gothique':return{top:B-G-2*H,mh:0,col:'#e2d9c6'};
+    case'verre':return{top:B-G-2*H,mh:0,col:'#5a6a7a'};case'moderne':return{top:B-G-4*H-30,mh:0,col:'#e2dccc'};case'blanc':return{top:B-G-3*H,mh:60,col:'#efebe0'};
+    case'nouveau':return{top:B-G-4*H,mh:20,col:'#ddd2bc'};case'cl':return{top:B-G-2*H-20,mh:40,col:'#e2d6be'};}
+  return{top:B-G-(f.n||4)*H,mh:f.mans===false?(f.roof==='tile'?52:0):(f.mansH||64),col:f.mat==='brick'?'#b85a3e':f.mat==='orange'?'#d98a4a':(f.col||LGC.stone),brick:f.mat==='brick'||f.mat==='orange'}}
+/* une rue transversale qui s'enfonce entre deux immeubles : chaque côté prolonge l'immeuble voisin (même hauteur, même matière) */
+function lgRue(g,c0,c1,o,Lf,Rf){
+  const a=c0*T,e=c1*T,b=LG.BASE,vx=(a+e)/2,HZ=b-70,sF=.24;
   // au bout de la rue
-  g.fillStyle=o.endCol||'#cfc3aa';g.fillRect(vx-40,HZ-90,80,92);g.fillStyle=LGC.slate;poly(g,[vx-44,HZ-90,vx-36,HZ-106,vx+36,HZ-106,vx+44,HZ-90]);g.fill();
-  if(o.dome){g.fillStyle='#7a8a96';g.beginPath();g.arc(vx+20,HZ-106,16,Math.PI,0);g.fill()}
-  for(let r=0;r<3;r++)for(let k=0;k<4;k++){g.fillStyle='#5a6878';g.fillRect(vx-34+k*18,HZ-80+r*24,8,14)}
-  for(const sd of[-1,1]){const xn=sd<0?a:e,xf=vx+sd*44;const yt=u=>top-40+(HZ-130-(top-40))*u,yb=u=>b+(HZ-b)*u;
-    g.fillStyle=sd<0?(o.lcol||'#d8ccb4'):(o.rcol||'#c8b89c');poly(g,[xn,top-40,xf,HZ-130,xf,HZ,xn,b]);g.fill();g.fillStyle='rgba(0,0,0,.12)';poly(g,[xn,top-40,xf,HZ-130,xf,HZ,xn,b]);g.fill();
-    for(let k=0;k<7;k++){const u0=1-1/(1+k*.5),u1=1-1/(1+(k+.55)*.5),x0=xn+(xf-xn)*u0,x1=xn+(xf-xn)*u1;for(let f=0;f<5;f++){const v0=.1+f*.16,v1=v0+.09;g.fillStyle='rgba(70,82,98,.8)';poly(g,[x0,yt(u0)+(yb(u0)-yt(u0))*v0,x1,yt(u1)+(yb(u1)-yt(u1))*v0,x1,yt(u1)+(yb(u1)-yt(u1))*v1,x0,yt(u0)+(yb(u0)-yt(u0))*v1]);g.fill()}}
+  const eh=Math.min(130,(b-Math.min(Lf.top,Rf.top))*sF+20);g.fillStyle=o.endCol||'#cfc3aa';g.fillRect(vx-46,HZ-eh,92,eh+2);g.fillStyle=LGC.slate;poly(g,[vx-50,HZ-eh,vx-40,HZ-eh-16,vx+40,HZ-eh-16,vx+50,HZ-eh]);g.fill();
+  if(o.dome){g.fillStyle='#7a8a96';g.beginPath();g.arc(vx+20,HZ-eh-16,16,Math.PI,0);g.fill()}
+  for(let r=0;r<Math.floor((eh-14)/24);r++)for(let k=0;k<4;k++){g.fillStyle='#5a6878';g.fillRect(vx-36+k*20,HZ-eh+10+r*24,8,14)}
+  for(const[sd,F0]of[[-1,Lf],[1,Rf]]){const xn=sd<0?a:e,xf=vx+sd*46,nt=F0.top,ft=HZ-(b-nt)*sF,mh=F0.mh;
+    const wall=[xn,nt,xf,ft,xf,HZ,xn,b];g.fillStyle=F0.col;poly(g,wall);g.fill();
+    if(F0.brick){g.save();poly(g,wall);g.clip();g.fillStyle='rgba(120,40,24,.18)';for(let y=nt;y<b;y+=6)g.fillRect(Math.min(xn,xf),y,Math.abs(xf-xn),2);g.restore()}
+    g.fillStyle='rgba(0,0,0,'+(sd<0?.16:.24)+')';poly(g,wall);g.fill();
+    if(mh>0){g.fillStyle=LGC.slate2;poly(g,[xn,nt,xn+sd*4,nt-mh,xf,ft-mh*sF,xf,ft]);g.fill()}
+    // fenêtres en perspective, étage par étage
+    const nf=Math.max(1,Math.round((b-nt-LG.GF)/LG.FH)),yt=u=>nt+(ft-nt)*u,yb=u=>b+(HZ-b)*u;
+    for(let k=0;k<7;k++){const u0=1-1/(1+k*.5),u1=1-1/(1+(k+.55)*.5),x0=xn+(xf-xn)*u0,x1=xn+(xf-xn)*u1;
+      for(let f=0;f<nf;f++){const v0=(LG.FH*f+12)/(b-nt),v1=v0+50/(b-nt);g.fillStyle='rgba(60,72,86,.85)';poly(g,[x0,yt(u0)+(yb(u0)-yt(u0))*v0,x1,yt(u1)+(yb(u1)-yt(u1))*v0,x1,yt(u1)+(yb(u1)-yt(u1))*v1,x0,yt(u0)+(yb(u0)-yt(u0))*v1]);g.fill()}}
     g.fillStyle='#c8c2b4';poly(g,[xn,b,xf,HZ,xf-sd*8,HZ,xn-sd*30,b]);g.fill()}
-  g.fillStyle=o.cobble?'#8a8478':'#6e7076';poly(g,[a+30,b,vx-36,HZ,vx+36,HZ,e-30,b]);g.fill();
-  if(o.cobble){g.strokeStyle='rgba(0,0,0,.12)';g.lineWidth=1;for(let k=1;k<10;k++){const u=1-1/(1+k*.4),y=b+(HZ-b)*u,hw=(e-a-60)/2*(1-u)+36*u;g.beginPath();g.moveTo(vx-hw,y);g.lineTo(vx+hw,y);g.stroke()}}
+  g.fillStyle=o.cobble?'#8a8478':'#6e7076';poly(g,[a+30,b,vx-38,HZ,vx+38,HZ,e-30,b]);g.fill();
+  if(o.cobble){g.strokeStyle='rgba(0,0,0,.12)';g.lineWidth=1;for(let k=1;k<10;k++){const u=1-1/(1+k*.4),y=b+(HZ-b)*u,hw=(e-a-60)/2*(1-u)+38*u;g.beginPath();g.moveTo(vx-hw,y);g.lineTo(vx+hw,y);g.stroke()}}
   for(let k=0;k<3;k++){const u=1-1/(1+(k+1)*.6),y=b+(HZ-b)*u,s=1-u;g.fillStyle=['#e8e8e8','#5a6a7a','#a8302a'][k];rr(g,vx-10+(k-1)*14*s,y-18*s,26*s,16*s,3*s);g.fill()}
   if(o.stop){g.fillStyle='#c8302a';g.beginPath();for(let k=0;k<8;k++){const an=k/8*Math.PI*2+Math.PI/8;g.lineTo(e-24+Math.cos(an)*14,b-104+Math.sin(an)*14)}g.fill();g.fillStyle='#fff';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText('STOP',e-24,b-101);g.fillStyle='#5a5e66';g.fillRect(e-25,b-90,3,90)}
 }
@@ -240,8 +252,10 @@ function lgRue(g,c0,c1,o){
 /* ---------- la couche des façades (en cache) ---------- */
 function langletBuild(Lv){
   const wpx=Lv.wpx+40,hpx=ROWS*T+PAD,TR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);const R=mulberry(Lv.def.seed+21);
-  const D=Lv.def.langlet;for(const f of D.facades){g.save();
-    if(f.k==='rotonde')lgRotonde(g,f.c0,f.c1,R);else if(f.k==='hotel')lgHotelBrique(g,f.c0,f.c1,R);else if(f.k==='rue')lgRue(g,f.c0,f.c1,f);else if(f.k==='gothique')lgGothique(g,f.c0,f.c1,R);
+  const D=Lv.def.langlet;
+  // les rues transversales d'abord : les façades voisines se posent par-dessus leurs bords
+  const order=D.facades.filter(f=>f.k==='rue').concat(D.facades.filter(f=>f.k!=='rue'));for(const f of order){g.save();
+    if(f.k==='rotonde')lgRotonde(g,f.c0,f.c1,R);else if(f.k==='hotel')lgHotelBrique(g,f.c0,f.c1,R);else if(f.k==='rue'){const i=D.facades.indexOf(f);lgRue(g,f.c0,f.c1,f,lgInfo(D.facades[i-1]),lgInfo(D.facades[i+1]))}else if(f.k==='gothique')lgGothique(g,f.c0,f.c1,R);
     else if(f.k==='verre')lgVerre(g,f.c0,f.c1);else if(f.k==='moderne')lgModerne(g,f.c0,f.c1);else if(f.k==='blanc')lgBanqueBlanche(g,f.c0,f.c1,R);else if(f.k==='nouveau')lgArtNouveau(g,f.c0,f.c1,R);
     else if(f.k==='cl')lgCreditLyonnais(g,f.c0,f.c1,R);else if(f.k==='cathedrale')lgCathedrale(g,f.c0,f.c1,R);else lgImm(g,f,R);g.restore()}
   // mobilier du trottoir : arbres en grille, lampadaires, potelets, l'arrêt du tram
