@@ -37,14 +37,14 @@ const SONGS={
   orage:{tempo:116,bpb:4,lead:['pizz','harpsi'],bass:'pulse',gap:1,
     prog:'Em Em C B B C G G Em B B Em',
     mel:'E5:1 r:1 E5:.5 F5:.5 E5:1 B4:2 C5:1 B4:1 r:1 E5:.5 F5:.5 G5:2 F#5:1 E5:1 r:1 B4:.5 C5:.5 D#5:2 E5:2 r:2 G5:1 r:1 G5:.5 A5:.5 G5:1 D5:2 E5:1 D5:1 r:1 G5:.5 A5:.5 B5:2 A5:1 G5:1 F#5:1 E5:1 D#5:2 B4:2 r:2 E5:4'},
-  // mission 2 — le sentier : pastorale à 3 temps, flûte et clarinette, un peu mélancolique
-  sentier:{tempo:84,bpb:3,lead:['pipe','clar'],bass:'soft',gap:2,
-    prog:'F C Dm Am Bb F C C F C Dm Am Bb C F F',
-    mel:'A4:1.5 C5:.5 A4:1 G4:2 E4:1 F4:1 A4:1 D5:1 C5:2 A4:1 D5:1.5 C5:.5 Bb4:1 A4:2 F4:1 G4:1 A4:1 Bb4:1 C5:3 F5:1.5 E5:.5 D5:1 E5:2 C5:1 D5:1 F5:1 A5:1 E5:2 C5:1 D5:1.5 C5:.5 Bb4:1 A4:1 G4:1 E4:1 A4:1 G4:1 F4:1 F4:3'},
-  // mission 2 — les éoliennes : arpèges qui tournent comme des pales, longues notes aériennes
-  eoliennes:{tempo:104,bpb:4,lead:['pipe','harpsi'],bass:'arpwind',gap:2,
-    prog:'C G Am F C G F G C Em Am F Dm G C C',
-    mel:'E5:2 G5:2 D5:2 B4:2 C5:2 E5:2 A5:4 G5:2 E5:1 C5:1 D5:2 G5:2 F5:2 E5:1 D5:1 D5:4 E5:2 G5:2 B5:3 G5:1 A5:2 E5:2 F5:2 C5:2 D5:2 F5:1 A5:1 G5:2 F5:1 D5:1 E5:4 C5:4'},
+  // mission 2 — le sentier : une marche de randonnée en ré mineur, boîte à musique et pizzicati sur une basse qui avance pas à pas
+  sentier:{tempo:92,bpb:4,lead:['box','pizz'],bass:'walk',gap:2,
+    prog:'Dm Dm C Dm Bb F C A Dm Dm C F Bb Gm A Dm',
+    mel:'D5:1 E5:1 F5:1 D5:1 A5:2 F5:1 D5:1 E5:1 G5:1 E5:1 C5:1 D5:3 r:1 F5:1 D5:1 Bb4:1 D5:1 C5:1 A4:1 F4:1 A4:1 G4:1 C5:1 E5:1 G5:1 E5:2 C#5:2 F5:1.5 E5:.5 D5:1 A4:1 D5:1 F5:1 A5:2 G5:1.5 F5:.5 E5:1 C5:1 F5:2 A5:2 Bb5:1 A5:1 G5:1 F5:1 G5:1 D5:1 Bb4:1 G4:1 A4:1 C#5:1 E5:1 G5:1 F5:1 E5:1 D5:2'},
+  // mission 2 — les éoliennes : rapide et entraînant, arpèges qui tournent sans arrêt, basse qui pousse, caisse claire à contretemps
+  eoliennes:{tempo:136,bpb:4,lead:['harpsi','clar'],bass:'turbine',gap:1,
+    prog:'Am F C G Am F E E Am F C G F G Am Am',
+    mel:'A5:1 E5:.5 A5:.5 C6:1 B5:1 A5:1 F5:.5 A5:.5 C6:2 G5:1 E5:.5 G5:.5 C6:1 G5:1 B5:1 G5:.5 D5:.5 G5:2 A5:.5 B5:.5 C6:1 B5:.5 A5:.5 E5:1 F5:.5 G5:.5 A5:1 C6:2 B5:1 G#5:1 E5:1 B4:1 E5:2 G#5:2 C6:1 B5:.5 A5:.5 E5:1 A5:1 F5:1 A5:1 C6:1 A5:1 E5:.5 G5:.5 C6:1 G5:1 E5:1 D5:.5 G5:.5 B5:1 D6:2 C6:1 A5:1 F5:1 A5:1 B5:1 G5:1 D5:1 G5:1 A5:1 E5:1 C5:1 E5:1 A5:3 r:1'},
   // mission 2 — la zone rouge : mode phrygien, battement de cœur sourd, clarinette inquiète
   zonerouge:{tempo:88,bpb:4,lead:['clar','pizz'],bass:'heart',gap:2,
     prog:'Em Em F Em Am Em B B Em Em F Em C B Em Em',
@@ -137,6 +137,7 @@ function playTick(s,tk,t,spb){
     case'tango':if(bt===0||bt===3||bt===4||bt===6)INST.tuba(t,bt===3?ch[2]-12:root-12,spb*.4,.26);if(bt===2||bt===6)accordion(t,v,spb*.3,.035);break;
     case'pulse':INST.pizz(t,(bt%4===2?ch[2]:root)-12,spb*.3,.16);if(bt===0)INST.organ(t,v,spb*1.6,.03);break;
     case'arpwind':{const p=[v[0],v[1],v[2],v[0]+12,v[2],v[1]];INST.harpsi(t,p[bt%6],spb*.5,.07);if(bt===0)INST.box(t,root-12,spb*3,.18);break}
+    case'turbine':{const p=[v[0],v[1],v[2],v[0]+12];INST.harpsi(t,p[bt%4]+12,spb*.4,.06);if(bt===0||bt===4)INST.tuba(t,root-12,spb*.4,.28);if(bt===3||bt===7)INST.tuba(t,ch[2]-12,spb*.25,.18);if(bt===2||bt===6)INST.snare(t,.16);break}
     case'heart':if(bt===0)INST.tuba(t,root-12,spb*.3,.32);if(bt===1)INST.tuba(t,root-12,spb*.25,.2);if(bar%4===3&&bt>=5)INST.snare(t,.05);if(bt===4&&bar%2)INST.organ(t,v,spb*1.6,.025);break;
     case'train':if(bt===0||bt===4)INST.tuba(t,root-12,spb*.35,.26);if(bt===2||bt===6)INST.tuba(t,ch[2]-12,spb*.3,.2);INST.snare(t,bt%2?.09:.04);break;
     case'stride':if(bt===0)INST.harpsi(t,root-24,spb*.4,.22);if(bt===4)INST.harpsi(t,ch[2]-24,spb*.4,.2);if(bt===2||bt===6)for(const m of v)INST.harpsi(t,m,spb*.3,.07);break;
