@@ -173,7 +173,7 @@ LEVELS.push((()=>{
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,
     vaneAt:[7,4],lingeAt:[129,9],
     bigRat:{x:24.5*T,trig:25*T},chaseEnd:303*T,
-    chaseQuip:"Un rat blanc, gros comme un chat, les yeux rouges… et il me fixe. Règlement, article 3 : en cas de rat géant, courir.",
+    chaseQuip:"Un rat blanc, gros comme un chat, les yeux rouges… et il me fixe. Règlement, article 192 bis : en cas de rat géant, courir.",
     chaseEndQuip:"Il s'arrête net au coin de la rue. Devant la cathédrale, même les rats ont leurs limites.",
     awnSpans:AWN,awnBounce:1.1,
     langlet:{facades:F,trees:[50,68,100,136,186,214,232,262,288],lamps:[30,92,150,200,256,296],bollards:[270,302],shelter:131,

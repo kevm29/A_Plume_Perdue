@@ -312,7 +312,7 @@ function stepChaser(K,dt,pcx,pcy){
     if(K.state==='wake'){K.wakeT-=dt;if(K.wakeT<=0)K.state='chase'}
     if(K.state!=='chase')return;
     const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
-    const sp=K.type==='bigrat'?clamp(230+(Math.abs(dist)-160)*.3,230,310):clamp(205+(Math.abs(dist)-160)*.25,205,300);
+    const sp=K.type==='bigrat'?clamp(272+(Math.abs(dist)-260)*.35,272,340):clamp(205+(Math.abs(dist)-160)*.25,205,300);
     K.leapT=(K.leapT||0)-dt;if(!(K.leapT>0&&!K.onGround))K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*6));K.f=dir;
     K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
     moveX(K,K.vx*dt);K.onGround=false;moveY(K,K.vy*dt);
@@ -320,7 +320,7 @@ function stepChaser(K,dt,pcx,pcy){
       const fx=dir>0?K.x+K.w+6:K.x-6,cf=Math.floor(fx/T),rf=Math.floor((K.y+K.h-2)/T);
       const la=dir>0?K.x+K.w+34:K.x-34,cl=Math.floor(la/T);
       const blocked=isSolid(cf,rf)||isSolid(cf,rf-1),gap=!groundAt(cl,rf+1)&&!isSolid(cl,rf),pins=tile(cl,rf)==='^'||tile(cf,rf)==='^',above=P.y+P.h<K.y-20&&Math.abs(dist)<110;
-      if(blocked||gap||pins||above)chaserLeap(K,dir,rf);
+      if(blocked||gap||pins||above)chaserLeap(K,dir,rf,K.type==='bigrat'?(above?960:880):undefined);
     }
     if(K.y>ROWS*T+60)chaserReenter(K);
     return;
