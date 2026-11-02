@@ -7720,7 +7720,7 @@ function langletBuild(Lv){
 /* ---------- après lecture : le tramway, les touristes ---------- */
 function langletPost(Lv){
   const D=Lv.def.langlet;if(!D)return;
-  const tram={axis:'g',kind:'tram3',x:-9999,y:99999,w:520,h:14,vh:132,dx:0,dy:0,t:0,speed:0,a0:0,a1:0,on:false,dir:-1,col:'#c8302a'};Lv.movers.push(tram);
+  const tram={axis:'g',kind:'tram3',x:-9999,y:99999,w:520,h:14,vh:118,dx:0,dy:0,t:0,speed:0,a0:0,a1:0,on:false,dir:-1,col:'#c8302a'};Lv.movers.push(tram);
   const S3={tram,tramT:6,warn:0,groups:[],said:{}};Lv.lg=S3;
   for(const gr of D.groups){const n=gr.n||5;const m=[];for(let i=0;i<n;i++)m.push({dx:i*30-(n-1)*15,k:i===0?'guide':['photo','sac','chapeau','enfant','photo'][i%5],ph:i*1.3});S3.groups.push({x:gr.c*T,a:gr.a*T,b:gr.b*T,dir:1,st:'walk',t:0,m})}
 }
