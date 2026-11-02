@@ -125,7 +125,7 @@ function lgHotelBrique(g,c0,c1,R){// l'hôtel en brique et pierre, en retrait de
   const x0=c0*T+56,x1=c1*T-10,b=LG.BASE-22,s=.86,H=LG.GF+LG.FH,top=b-H*s;
   // retours des murs voisins et sol de la place
   {const nt=LG.BASE-LG.GF-4*LG.FH,ft=b-(LG.BASE-nt)*s;g.fillStyle='#a9b0a4';poly(g,[c0*T,nt,x0,ft,x0,b,c0*T,LG.BASE]);g.fill();g.fillStyle='rgba(0,0,0,.2)';poly(g,[c0*T,nt,x0,ft,x0,b,c0*T,LG.BASE]);g.fill();
-   g.fillStyle=LGC.slate2;poly(g,[c0*T,nt,c0*T,nt-62,x0,ft-62*s,x0,ft]);g.fill();g.fillStyle='rgba(60,72,86,.7)';for(let k=0;k<4;k++){const y0=LG.BASE-LG.GF-k*LG.FH,y1=b-(LG.GF+k*LG.FH)*s;poly(g,[c0*T+6,y0-60,x0-4,y1-52*s,x0-4,y1-14*s,c0*T+6,y0-16]);g.fill()}}
+   g.fillStyle=LGC.slate2;poly(g,[c0*T+7,nt+2,c0*T-11,nt-62,x0,ft-62*s,x0,ft]);g.fill();g.fillStyle='rgba(60,72,86,.7)';for(let k=0;k<4;k++){const y0=LG.BASE-LG.GF-k*LG.FH,y1=b-(LG.GF+k*LG.FH)*s;poly(g,[c0*T+6,y0-60,x0-4,y1-52*s,x0-4,y1-14*s,c0*T+6,y0-16]);g.fill()}}
   g.fillStyle='#d6cebd';poly(g,[c0*T,LG.BASE,x0,b,x1,b,c1*T,LG.BASE]);g.fill();g.strokeStyle='rgba(0,0,0,.06)';for(let k=1;k<6;k++){const u=k/6;g.beginPath();g.moveTo(c0*T+(x0-c0*T)*u,LG.BASE-(LG.BASE-b)*u);g.lineTo(c1*T+(x1-c1*T)*u,LG.BASE-(LG.BASE-b)*u);g.stroke()}
   // la façade : brique rouge, chaînes d'angle et encadrements de pierre
   lgBrick(g,x0,top,x1,b,R);g.fillStyle='#d8ccb0';g.fillRect(x0,b-28,x1-x0,28);
@@ -351,7 +351,7 @@ function lgRue(g,c0,c1,o,Lf,Rf){
     if(F0.rubble){g.save();poly(g,wall);g.clip();for(let k=0;k<90;k++){g.fillStyle=k%2?'rgba(60,50,36,.18)':'rgba(255,240,210,.12)';g.fillRect(Math.min(xn,xf)+((k*53)%Math.max(1,Math.abs(xf-xn))),nt+((k*37)%Math.max(1,b-nt)),7,4)}g.restore()}
     if(F0.brick){g.save();poly(g,wall);g.clip();g.fillStyle='rgba(120,40,24,.18)';for(let y=nt;y<b;y+=6)g.fillRect(Math.min(xn,xf),y,Math.abs(xf-xn),2);g.restore()}
     g.fillStyle='rgba(0,0,0,'+(sd<0?.16:.24)+')';poly(g,wall);g.fill();
-    if(mh>0){g.fillStyle=LGC.slate2;poly(g,[xn,nt,xn+sd*4,nt-mh,xf,ft-mh*sF,xf,ft]);g.fill()}
+    if(mh>0){g.fillStyle=LGC.slate2;poly(g,[xn-sd*7,nt+2,xn+sd*11,nt-mh,xf,ft-mh*sF,xf,ft]);g.fill()}   // la pente du toit part du bord du brisis voisin : pas de jour entre les deux
     // un toit de tuiles en croupe : vu de la rue, on ne voit que le bord de l'égout, en tuiles
     if(F0.tile){g.fillStyle='#8e4426';poly(g,[xn-sd*6,nt-8,xf,ft-8*sF,xf,ft+2*sF,xn,nt+2]);g.fill()}
     // fenêtres en perspective, étage par étage
