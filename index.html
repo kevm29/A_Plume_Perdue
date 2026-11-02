@@ -8227,7 +8227,7 @@ function towerStep(dt,S,hb,pcx,pcy,setHit){if(!S.bells)return;
   const t=G.lt;
   // les cloches : elles tournent ; arrivées en bas, BAM (grande onde) ; arrivées en haut, bam (petite onde)
   for(const b of S.bells){const th=ftBellAngle(b,t),prev=b.th;b.th=th;
-    const hitBottom=prev>.05&&th<=.001,hitTop=prev<Math.PI-.05&&th>=Math.PI-.001;
+    const hitBottom=prev>1e-4&&th===0,hitTop=prev<Math.PI-1e-4&&th===Math.PI;b.ring=hitBottom||hitTop?.25:Math.max(0,(b.ring||0)-dt);
     if(hitBottom||hitTop){const cy=FT.BEAM+(hitBottom?44:-44);S.waves.push({x:b.x,y:cy,r:10,max:hitBottom?210:120,big:hitBottom});
       if(!G.sim&&S.inTower&&P.x>FT.CAM){if(hitBottom){tone(98,1.6,'sine',.18);tone(196,1.2,'triangle',.06);tone(147,1.4,'sine',.08)}else{tone(220,.9,'sine',.1);tone(330,.7,'triangle',.04)}}}}
   for(const w of S.waves){w.r+=(w.big?230:190)*dt;w.dead=w.r>w.max;
@@ -8266,7 +8266,6 @@ function towerBuild(g,R){const X0=FT.X0,X1=FT.X1,F=FT.FLOOR,RO=FT.ROOF,TU=FT.TUR
    g.fillStyle='#4a3020';g.fillRect(a-30,F-8,b-a+60,8)}
   // le plancher, les consoles de pierre (leur dessus = la planche) et les pics anti-pigeons
   g.fillStyle='#5a4030';g.fillRect(X0,F-4,X1-X0,4);for(let x=X0;x<X1;x+=34){g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x,F-4,1,4)}
-  for(const[x0,x1,y,d]of FT_SPK)ftNeedles(g,x0,x1,y,d);
   // le toit : parapets ajourés, tourelles d'angle à pinacles ; la lanterne qui attend Raymond
   fcBalustrade(g,X0,X1,RO,26);fcLedge(g,X0,X1,RO);
   for(const[a,b]of[[62*T,X0],[X1,80*T]]){fcStone(g,a,TU,b,TU+70,R);fcLedge(g,a,b,TU);for(const px of[a+8,b-8])fcPinnacle(g,px,TU-14,22,110,R)}
@@ -8274,19 +8273,27 @@ function towerBuild(g,R){const X0=FT.X0,X1=FT.X1,F=FT.FLOOR,RO=FT.ROOF,TU=FT.TUR
    g.fillStyle='#2a2420';poly(g,[lx-12,ly-34,lx+12,ly-34,lx+9,ly-6,lx-9,ly-6]);g.fill();g.fillStyle='rgba(255,200,110,.95)';poly(g,[lx-8,ly-31,lx+8,ly-31,lx+6,ly-9,lx-6,ly-9]);g.fill();
    g.fillStyle='#2a2420';g.fillRect(lx-12,ly-6,24,6);poly(g,[lx-14,ly-34,lx,ly-44,lx+14,ly-34]);g.fill();g.fillStyle='#ffe7a8';g.beginPath();g.ellipse(lx,ly-20,2.5,5,0,0,7);g.fill()}
 }
-function ftNeedles(g,x0,x1,y,d){g.fillStyle='#3a3c42';g.fillRect(x0+2,d>0?y+5:y-3,x1-x0-4,3);g.strokeStyle='#aeb4bc';g.lineWidth=1;
+function ftNeedles(g,x0,x1,y,d){g.fillStyle='#2a2c32';g.fillRect(x0+2,d>0?y+5:y-4,x1-x0-4,4);g.strokeStyle='#c8ced6';g.lineWidth=1.4;
   for(let x=x0+5;x<x1-4;x+=4){const a=((x/4|0)%5-2)*.12;g.beginPath();if(d>0){g.moveTo(x,y+8);g.lineTo(x+Math.sin(a)*13,y+8+Math.cos(a)*13)}else{g.moveTo(x,y-3);g.lineTo(x+Math.sin(a)*13,y-3-Math.cos(a)*13)}g.stroke()}}
 /* ---------- la tour, en direct : cloches, ondes, lueur de la lanterne ---------- */
 function drawTowerMid(g,S,t){if(!S.bells||cam.x<FT.CAM-400)return;
-  for(const b of S.bells){g.save();g.translate(b.x,FT.BEAM);g.rotate(b.th);
+  for(const b of S.bells){// le battant : pendu au cerveau de la cloche, il reste presque vertical (il est en retard sur la cloche) ; caché par le bronze
+    g.save();g.translate(b.x,FT.BEAM);g.rotate(b.th);
     // le joug de bois au-dessus de l'axe, la cloche de bronze en dessous (elle passe au-dessus en tournant)
     g.fillStyle='#6a4428';g.fillRect(-34,-26,68,20);g.fillRect(-18,-40,36,16);g.fillStyle='rgba(255,190,120,.25)';g.fillRect(-34,-26,68,3);
     g.fillStyle='#3a3a3e';g.beginPath();g.arc(0,0,6,0,7);g.fill();
+    // le battant, à l'intérieur : on le dessine avant le bronze, qui le cache ; il oscille un peu après chaque coup
+    {const ca=(b.ring?Math.sin(G.lt*30)*.2:0)+Math.sin(b.th)*.18;g.save();g.rotate(ca);g.strokeStyle='#3a2810';g.lineWidth=4;g.beginPath();g.moveTo(0,6);g.lineTo(0,62);g.stroke();g.fillStyle='#3a2810';g.beginPath();g.arc(0,64,7,0,7);g.fill();g.restore()}
     const gr=g.createLinearGradient(-36,0,36,0);gr.addColorStop(0,'#8a6420');gr.addColorStop(.35,'#e8b848');gr.addColorStop(.6,'#c8922c');gr.addColorStop(1,'#6a4818');g.fillStyle=gr;
     g.beginPath();g.moveTo(-16,0);g.quadraticCurveTo(-22,30,-30,62);g.quadraticCurveTo(-38,74,-40,80);g.lineTo(40,80);g.quadraticCurveTo(38,74,30,62);g.quadraticCurveTo(22,30,16,0);g.closePath();g.fill();
     g.fillStyle='#b8862a';g.fillRect(-40,76,80,6);g.fillStyle='#7a5418';g.fillRect(-24,30,48,3);g.fillRect(-30,54,60,3);
-    g.fillStyle='#4a3010';g.beginPath();g.arc(0,74,7,0,7);g.fill();g.strokeStyle='#4a3010';g.lineWidth=3;g.beginPath();g.moveTo(0,4);g.lineTo(Math.sin(t*3)*3,70);g.stroke();g.restore()}
-  for(const w of S.waves){const a=1-w.r/w.max;g.strokeStyle='rgba(255,230,140,'+(.65*a)+')';g.lineWidth=w.big?8:5;g.beginPath();g.arc(w.x,w.y,w.r,0,7);g.stroke();g.strokeStyle='rgba(255,250,220,'+(.4*a)+')';g.lineWidth=2;g.beginPath();g.arc(w.x,w.y,w.r-6,0,7);g.stroke()}
+    if(b.ring){g.strokeStyle='rgba(255,240,180,'+(b.ring*3)+')';g.lineWidth=3;g.beginPath();g.moveTo(-44,84);g.lineTo(44,84);g.stroke()}g.restore()}
+  // les pics de la tour, par-dessus le décor : on les voit toujours
+  for(const[x0,x1,y,d]of FT_SPK)ftNeedles(g,x0,x1,y,d);
+  // les ondes des cloches : un anneau d'air qui vibre, bien visible
+  for(const w of S.waves){const a=Math.max(0,1-w.r/w.max),gr=g.createRadialGradient(w.x,w.y,Math.max(0,w.r-16),w.x,w.y,w.r+6);gr.addColorStop(0,'rgba(255,220,120,0)');gr.addColorStop(.7,'rgba(255,225,130,'+(.55*a)+')');gr.addColorStop(1,'rgba(255,240,190,0)');
+    g.fillStyle=gr;g.beginPath();g.arc(w.x,w.y,w.r+6,0,7);g.fill();g.strokeStyle='rgba(255,236,160,'+(.95*a)+')';g.lineWidth=w.big?6:4;g.beginPath();g.arc(w.x,w.y,w.r,0,7);g.stroke();
+    g.strokeStyle='rgba(255,255,235,'+(.7*a)+')';g.lineWidth=1.5;g.setLineDash([10,8]);g.beginPath();g.arc(w.x,w.y,w.r-8,0,7);g.stroke();g.setLineDash([])}
   if(S.stun>0){const x=P.x+P.w/2,y=P.y-6;for(let k=0;k<3;k++){const an=t*8+k*2.1;g.fillStyle='#ffe070';g.beginPath();g.arc(x+Math.cos(an)*12,y+Math.sin(an)*4,2.4,0,7);g.fill()}}
   const lx=63*T+20,ly=FT.TUR-20,gl=g.createRadialGradient(lx,ly,2,lx,ly,60);gl.addColorStop(0,'rgba(255,210,120,'+(.35+.08*Math.sin(t*5))+')');gl.addColorStop(1,'rgba(255,210,120,0)');g.fillStyle=gl;g.beginPath();g.arc(lx,ly,60,0,7);g.fill()}
 
