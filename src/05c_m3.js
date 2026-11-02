@@ -121,7 +121,7 @@ LEVELS.push((()=>{
     {k:'hotel',c0:22,c1:46},
     {k:'rue',c0:46,c1:52,dome:true,stop:true,endCol:'#cfc3aa',lcol:'#c8a890',rcol:'#b85a3e'},
     {c0:52,c1:62,mat:'brick',n:3,wn:3,bal:[2],dormers:3,chim:[30,330],gf:[{t:'door',x:20,w:44,col:'#3a4a5a'},{t:'win',x:90,w:60},{t:'win',x:200,w:60},{t:'win',x:300,w:60}]},
-    {c0:62,c1:78,col:'#e6dcc4',n:4,wn:5,bal:[2,4],bay:[260,380],bayDome:true,dormers:3,chim:[40,110,520,590],dstyle:'pediment',lintel:'#d8ccb0',key:1,gf:[{t:'arch',x:20,w:60,col:'#5a3a22'},{t:'win',x:120,w:60},{t:'win',x:440,w:60},{t:'arch',x:540,w:60,col:'#3a2a1a'}]},
+    {k:'coupole',c0:62,c1:78},
     {c0:78,c1:89,col:'#ddd0b4',n:4,wn:4,bal:[2,4],dormers:3,chim:[80,360],rails:1,lintel:'#cfc3aa',gf:[{t:'arch',x:20,w:56,col:'#2a2c30',glass:1},{t:'win',x:120,w:60},{t:'win',x:220,w:60},{t:'door',x:330,w:50}]},
     {k:'gothique',c0:89,c1:95},
     {c0:95,c1:106,col:'#ece6d6',n:3,wn:3,pil:[110,290],bal:[2,3],dormers:3,dstyle:'oeil',chim:[200],gf:[{t:'door',x:60,w:46,col:'#7a3a22',ped:1},{t:'win',x:160,w:60},{t:'shop',x:250,w:180,col:'#2a2a2e',label:'CAFÉ DU COURS'}]},
@@ -144,15 +144,22 @@ LEVELS.push((()=>{
     {c0:277,c1:284,col:'#9a9282',n:1,wn:3,dormers:3,chim:[220],gf:[{t:'door',x:10,w:110,col:'#e8e4da'},{t:'door',x:140,w:40,col:'#c8c0a8'},{t:'win',x:200,w:60}]},
     {c0:284,c1:291,col:'#e2d8c2',n:1,wn:3,dormers:2,dstyle:'oeil',gf:[{t:'win',x:30,w:56},{t:'win',x:170,w:56}]},
     {c0:291,c1:303,col:'#d8ccb0',n:2,wn:4,bal:[1],dormers:4,dstyle:'round',chim:[60,260,420],sign:[150,'R. G.-DE-MACHAULT'],gf:[{t:'win',x:30,w:56},{t:'win',x:130,w:56},{t:'door',x:240,w:46,col:'#e8e4da'},{t:'win',x:340,w:56}]},
-    {k:'cathedrale',c0:303,c1:RW}];
+    {k:'rue',c0:303,c1:309,cobble:true,endCol:'#ddd2b8',endH:3},
+    {k:'cathedrale',c0:309,c1:RW}];
   // balcons de la rotonde (trois étages), balcons filants, balcons de l'angle Art nouveau
   for(const k of[1,2,3])run(4,11,BR(k),'t');
   for(const f of F)if(f.bal)for(const k of f.bal)run(f.c0,f.c1-1,BR(k),'t');
   run(223,226,BR(2),'t');for(const k of[1,2,3,4])run(234,235,BR(k),'t');
+  // l'immeuble à coupole : balconnets du deuxième étage, corniche entre les lucarnes
+  for(const c of[64,67,70,73,76])put(c,BR(2),'t');run(66,77,BR(4),'t');
+  // l'aile de la rotonde : trois balconnets au pied des lucarnes ; le lanterneau du dôme et sa girouette
+  for(const c of[12,16,20])put(c,8,'t');put(12,10,'t');run(6,8,5,'t');
+  // le balcon de pierre de l'hôtel en brique, la maison à pignon
+  run(24,27,BR(1),'t');run(91,92,BR(1),'t');
   // pics anti-pigeons sur quelques balcons
   for(const[c,r]of[[81,BR(4)-1],[82,BR(4)-1],[140,BR(4)-1],[141,BR(4)-1],[146,BR(1)-1],[66,BR(4)-1]])put(c,r,'^');
   // bannes des boutiques (auvents qui font rebondir)
-  for(const[c0,c1]of[[18,21],[102,105],[117,120],[147,150],[164,168],[218,221]])for(let c=c0;c<=c1;c++)put(c,15,'A');
+  const AW=[[18,21],[102,105],[117,120],[144,146],[164,168],[218,221]];for(const[c0,c1]of AW)for(let c=c0;c<=c1;c++)put(c,17,'A');
   // rats, cartels, paille, répliques
   for(const[c,a,b]of[[38,30,44],[138,133,148],[298,294,302]]){put(c,G0-1,'k');put(a,G0-1,'|');put(b,G0-1,'|')}
   for(const c of[48,124,172,238,292])put(c,G0-1,'C');
@@ -160,8 +167,8 @@ LEVELS.push((()=>{
   put(2,G0-1,'S');put(322,G0-1,'E');
   for(const c of[14,244,300])put(c,G0-1,'q');
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,
-    nestAt:[6,11],
-    awningCol:c=>['#2a5a8a','#8a2a2a','#2a6a4a','#c8a030','#5a3a6a','#2a4a3a'][Math.floor(c/30)%6],
+    vaneAt:[7,4],
+    awningCol:c=>{const i=AW.findIndex(([a,b])=>c>=a&&c<=b);return['#2a5a8a','#8a2a2a','#2a6a4a','#2a7a5a','#5a3a6a','#c8a030'][Math.max(0,i)]},
     langlet:{facades:F,trees:[50,68,100,136,186,214,232,262,288],lamps:[30,92,150,200,256,296],bollards:[270,302],shelter:131,
       groups:[{c:72,a:64,b:100,n:6},{c:252,a:244,b:290,n:5}]},
     start:"Une grande rue toute droite, avec des rails. Je ne la reconnais pas : ici, il n'y avait que des ruelles et des chantiers.",

@@ -5,7 +5,8 @@
 function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
   if(st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips')return;
-  if(st==='stump'){drawOldStump(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
+  if(st==='stump'){drawOldStump(g,a,t);return}
+  if(st==='vane'){drawVane(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
   if(st!=='nest'){g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,22,4,0,0,7);g.fill();}
   const inner=()=>{g.fillStyle='#16110c'};
@@ -249,3 +250,14 @@ function drawAdrian(g,hx,hy,rot){
 }
 /* piquet de tranchée coiffé d'un casque */
 function drawHelmetPost(g,x,b){g.save();g.translate(x,b);g.fillStyle='#4a3a28';g.fillRect(-3,-86,6,86);g.fillStyle='#3a2c1e';g.fillRect(-3,-86,2,86);g.strokeStyle='#5a5a52';g.lineWidth=1;for(let k=0;k<3;k++){g.beginPath();g.moveTo(-3,-40+k*12);g.lineTo(-14,-34+k*12);g.lineTo(-3,-30+k*12);g.stroke()}drawAdrian(g,0,-88,0);g.restore()}
+
+/* la girouette du dôme : un coq de tôle sur sa flèche, les quatre points cardinaux ; elle tourne (vue de face, on l'aplatit) */
+function drawVane(g,a,t){const x=a.x+14,y=a.y,c=Math.cos(a.ang),sn=Math.sin(a.ang);g.save();
+  g.strokeStyle='#2c2e32';g.lineWidth=3;g.beginPath();g.moveTo(x,y);g.lineTo(x,y-64);g.stroke();
+  g.lineWidth=1.6;g.beginPath();g.moveTo(x-16,y-26);g.lineTo(x+16,y-26);g.moveTo(x-5,y-23);g.lineTo(x+5,y-29);g.stroke();
+  g.fillStyle='#2c2e32';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('O',x-21,y-23);g.fillText('E',x+21,y-23);g.fillText('N',x-8,y-31);g.fillText('S',x+8,y-17);
+  g.fillStyle='#b8862a';g.beginPath();g.arc(x,y-40,3,0,7);g.fill();
+  // la flèche et le coq tournent autour du mât
+  g.translate(x,y-58);g.scale(c,1);g.fillStyle='#2c2e32';g.fillRect(-20,-1,40,2);poly(g,[20,-5,28,0,20,5]);g.fill();poly(g,[-20,-6,-26,-6,-22,0,-26,6,-20,6]);g.fill();
+  g.fillStyle=sn>0?'#c8963a':'#9a6e22';g.beginPath();g.moveTo(-12,0);g.quadraticCurveTo(-16,-14,-6,-12);g.quadraticCurveTo(-2,-22,4,-16);g.lineTo(10,-20);g.lineTo(8,-14);g.quadraticCurveTo(12,-8,6,-2);g.lineTo(2,0);g.closePath();g.fill();
+  g.fillStyle='#a83a2a';poly(g,[4,-17,7,-23,9,-18]);g.fill();g.restore()}

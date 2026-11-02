@@ -66,7 +66,7 @@ Chaque mission a ses propres mécaniques et sa propre faune. Le niveau 3 est tou
 |---|---|
 | 1 · Vittoncourt, le musée | La vitrine · La galerie des insectes · L'étage du mammouth · La loge du gardien |
 | 2 · Retour à la case départ | Le sentier (champs, bois, terrain miné, tranchée, monument aux enfants de Verdun) · Les éoliennes (champ éolien de Bras, la Meuse sur trois péniches, saules et ronces, meules à rats, tourbillon de foin au-dessus du chaume) · La zone rouge (forêt de Verdun au début du soir, trous d'obus pleins d'eau, obus non explosés derrière les barbelés, arbres tombés, restes de tranchée, le drone, l'abri allemand du Mort-Homme) · L'abri du Mort-Homme (l'abri allemand — devenu musée, mais Raymond ne le sait pas — la nuit : gardiens, draps, placards, automates de soldats, tranchées, sortie en vol par une meurtrière) |
-| 3 · Le cap céleste | Le train (toits, voiture de voyageurs en coupe, voiture-bar, arrivée en gare) · La gare (le quai sous la verrière, le parvis, le cours de la Gare, le square Colbert) · Le cours Langlet (de l'immeuble à rotonde au flanc de la cathédrale, façade après façade, le tramway, les touristes) · La place d'Erlon · La cathédrale |
+| 3 · Le cap céleste | Le train (toits, voiture de voyageurs en coupe, voiture-bar, arrivée en gare) · La gare (le quai sous la verrière, le parvis, le cours de la Gare, le square Colbert) · Le cours Langlet (de l'immeuble à rotonde aux ruines devant la cathédrale, façade après façade, le tramway, les touristes, la girouette du dôme) · La place d'Erlon · La cathédrale |
 | 4 · L'A4 sous l'orage | L'aire de repos · Les camions · L'orage · Le pont |
 | 5 · Villemareuil | La route du village · Le clocher · La fête foraine · Le cimetière |
 
