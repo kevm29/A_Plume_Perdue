@@ -186,9 +186,12 @@ LEVELS.push((()=>{
    Plateformes : corniches, consoles, dais des statues, la galerie des rois ; les hauteurs sont réglées sur le saut de Raymond :
    les sauts prévus font au plus 4 cases, ceux qui doivent être impossibles au moins 7. */
 LEVELS.push((()=>{
-  const RW=46,RR=58,G0=56;
+  const RW=82,RR=58,G0=56;
   const g=Array.from({length:RR},()=>Array(RW).fill('.'));
   for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
+  // la façade s'arrête à la colonne 46 ; la tour sud (l'intérieur du beffroi) est à part, à droite : murs et tourelles pleins
+  for(let r=0;r<G0;r++)g[r][46]='X';
+  for(let r=24;r<G0;r++){for(let c=62;c<=65;c++)g[r][c]='X';for(let c=76;c<=79;c++)g[r][c]='X'}
   const put=(c,r,ch)=>{g[r][c]=ch};
   // [c0,c1,ligne] : la ligne est celle de la planche (on se pose à son sommet)
   const PL=[[9,10,53],[17,18,53],[28,29,54],[28,29,52],[36,37,51],[39,39,49],[38,38,47],          // portails, consoles, contrefort d'angle
@@ -197,15 +200,17 @@ LEVELS.push((()=>{
     [8,10,36],[17,18,36],[28,29,36],[36,37,36],[37,38,32],                                          // les dais des grandes statues
     [12,13,28],[18,28,29],[33,34,29],[11,12,24],                                                    // la galerie des rois
     [10,11,20],[13,13,21],[15,15,21],[17,17,20],[20,20,21],[23,23,21],[26,26,21],[29,29,21],[31,31,21],[32,32,20],[33,33,21],[35,36,20]]; // les dais des tours
+  // dans la tour : en bas à droite, puis de mur en mur jusqu'au toit (les consoles marquées ont des pics dessous)
+  PL.push([72,75,54],[74,75,51],[74,75,47],[66,67,44],[74,75,41],[66,67,38],[74,75,35],[66,67,32],[74,75,29],[66,75,26]);
   for(const[c0,c1,r]of PL)for(let c=c0;c<=c1;c++)put(c,r,'t');
   // rat : sur la galerie des rois
   put(23,28,'k');put(20,28,'|');put(26,28,'|');
   // cartels, paille, médaille, départ, fenêtre de la tour sud
-  for(const[c,r]of[[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
-  for(const[c,r]of[[17,52],[29,51],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55]])put(c,r,'o');
-  put(10,52,'*');put(6,55,'S');put(32,19,'E');
-  return {w:2,name:"La cathédrale",theme:'facade',exit:'window',exitLabel:"TOUR SUD",seed:101,rows:RR,camY:.55,
-    facade:{G0},
+  for(const[c,r]of[[68,55],[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
+  for(const[c,r]of[[17,52],[29,51],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55],[75,53],[74,50],[66,43],[75,40],[67,37],[74,34],[67,31],[68,25],[73,25]])put(c,r,'o');
+  put(10,52,'*');put(6,55,'S');put(63,23,'E');
+  return {w:2,name:"La cathédrale",theme:'facade',exit:'window',exitLabel:"LA LANTERNE",seed:101,rows:RR,camY:.55,
+    facade:{G0},poopAt:[70,25],
     start:"Notre-Dame de Reims. Toute une journée de route, et j'arrive juste quand le soleil se couche sur elle.",
     hints:[],quips:[],
     segs:[{z:'facade',s:'\n'+g.map(r=>r.join('')).join('\n')}]};

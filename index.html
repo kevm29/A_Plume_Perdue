@@ -1445,9 +1445,12 @@ LEVELS.push((()=>{
    Plateformes : corniches, consoles, dais des statues, la galerie des rois ; les hauteurs sont réglées sur le saut de Raymond :
    les sauts prévus font au plus 4 cases, ceux qui doivent être impossibles au moins 7. */
 LEVELS.push((()=>{
-  const RW=46,RR=58,G0=56;
+  const RW=82,RR=58,G0=56;
   const g=Array.from({length:RR},()=>Array(RW).fill('.'));
   for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
+  // la façade s'arrête à la colonne 46 ; la tour sud (l'intérieur du beffroi) est à part, à droite : murs et tourelles pleins
+  for(let r=0;r<G0;r++)g[r][46]='X';
+  for(let r=24;r<G0;r++){for(let c=62;c<=65;c++)g[r][c]='X';for(let c=76;c<=79;c++)g[r][c]='X'}
   const put=(c,r,ch)=>{g[r][c]=ch};
   // [c0,c1,ligne] : la ligne est celle de la planche (on se pose à son sommet)
   const PL=[[9,10,53],[17,18,53],[28,29,54],[28,29,52],[36,37,51],[39,39,49],[38,38,47],          // portails, consoles, contrefort d'angle
@@ -1456,15 +1459,17 @@ LEVELS.push((()=>{
     [8,10,36],[17,18,36],[28,29,36],[36,37,36],[37,38,32],                                          // les dais des grandes statues
     [12,13,28],[18,28,29],[33,34,29],[11,12,24],                                                    // la galerie des rois
     [10,11,20],[13,13,21],[15,15,21],[17,17,20],[20,20,21],[23,23,21],[26,26,21],[29,29,21],[31,31,21],[32,32,20],[33,33,21],[35,36,20]]; // les dais des tours
+  // dans la tour : en bas à droite, puis de mur en mur jusqu'au toit (les consoles marquées ont des pics dessous)
+  PL.push([72,75,54],[74,75,51],[74,75,47],[66,67,44],[74,75,41],[66,67,38],[74,75,35],[66,67,32],[74,75,29],[66,75,26]);
   for(const[c0,c1,r]of PL)for(let c=c0;c<=c1;c++)put(c,r,'t');
   // rat : sur la galerie des rois
   put(23,28,'k');put(20,28,'|');put(26,28,'|');
   // cartels, paille, médaille, départ, fenêtre de la tour sud
-  for(const[c,r]of[[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
-  for(const[c,r]of[[17,52],[29,51],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55]])put(c,r,'o');
-  put(10,52,'*');put(6,55,'S');put(32,19,'E');
-  return {w:2,name:"La cathédrale",theme:'facade',exit:'window',exitLabel:"TOUR SUD",seed:101,rows:RR,camY:.55,
-    facade:{G0},
+  for(const[c,r]of[[68,55],[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
+  for(const[c,r]of[[17,52],[29,51],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55],[75,53],[74,50],[66,43],[75,40],[67,37],[74,34],[67,31],[68,25],[73,25]])put(c,r,'o');
+  put(10,52,'*');put(6,55,'S');put(63,23,'E');
+  return {w:2,name:"La cathédrale",theme:'facade',exit:'window',exitLabel:"LA LANTERNE",seed:101,rows:RR,camY:.55,
+    facade:{G0},poopAt:[70,25],
     start:"Notre-Dame de Reims. Toute une journée de route, et j'arrive juste quand le soleil se couche sur elle.",
     hints:[],quips:[],
     segs:[{z:'facade',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
@@ -3728,7 +3733,7 @@ function drawHouse(g,e,t){
    ========================================================= */
 function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
-  if(st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips')return;
+  if(st==='poop'||st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips')return;
   if(st==='stump'){drawOldStump(g,a,t);return}
   if(st==='vane'){drawVane(g,a,t);return}
   if(st==='linge'){drawLinge(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
@@ -4420,6 +4425,7 @@ function updateCamera(dt){
   // vertical : la caméra suit le dernier sol touché, pas les sauts (on ne voit pas ce qui est au-dessus en sautant)
   if(P.onGround||P.lastGY==null)P.lastGY=P.y;
   if(L.auto&&L.auto.on){tx=Math.max(L.auto.x,Math.min(tx,L.auto.x+120));cam.x=Math.max(cam.x,L.auto.x)}
+  if(L.camZone){const z=L.camZone(P.x+P.w/2);if(z)tx=clamp(tx,z[0],z[1]-W)}
   let ty=P.lastGY-H*(L.def.camYAt?L.def.camYAt(P.x):(L.def.camY||.5));
   if(P.y-ty<40)ty=P.y-40;if(P.y+P.h-ty>H-50)ty=P.y+P.h-H+50;
   if(P.ride)ty=P.y-H*.42;
@@ -4691,6 +4697,7 @@ function actPost(L){
     q:["La girouette grince, tourne… et du pigeon d'or tombe une touffe de paille. Un collègue en métal précieux. Lui, au moins, on l'a mis sur un piédestal."]})}
   if(L.def.lingeAt){const[c,r]=L.def.lingeAt;L.acts.push({kind:'secret',style:'linge',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
     q:["Un drap qui sèche au balcon. Et dans le pli, de la paille. Quelqu'un secoue ses draps sur la rue depuis cent ans."]})}
+  if(L.def.poopAt){const[c,r]=L.def.poopAt;L.acts.push({kind:'secret',style:'poop',x:c*T+T/2,y:(r+1)*T,rx:200,open:0,t:0,used:false,noStraw:true,q:["Copains de toit. On ne se refait pas."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -4710,6 +4717,7 @@ function nearAct(){
   if(hiddenNow()&&!P.hideIn)for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
   for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.when&&!a.when())continue;
     if(a.style==='helmet'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<36&&Math.abs(P.y+P.h/2-(a.y-92))<52)return{type:'secret',o:a};continue}
+    if(a.style==='poop'){if(!a.used&&P.onGround&&Math.abs(a.x-pcx)<a.rx&&Math.abs(a.y-pb)<20)return{type:'secret',o:a};continue}
     if(a.style==='lamp'){if(!P.onGround&&Math.abs(a.x-pcx)<34&&Math.abs(P.y+P.h/2-a.ly)<40)return{type:'secret',o:a};continue}if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }
@@ -4736,6 +4744,7 @@ function tryAct(){
   if(a.kind==='hide'){museeHide(a);return}
   if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
   if(a.kind==='secret'){
+    if(a.style==='poop'){if(!a.used)towerPoop(a);return}
     if(a.style==='vane'){a.av=(a.av>0?a.av:0)+9;if(!G.sim)noise(.3,1800,.08,'bandpass');if(a.used){if(!G.sim)say(pick(["Nord, sud, est, ouest. Il tourne, le pigeon d'or, mais il ne va nulle part. Je connais ça.","Le vent n'y est pour rien. C'est moi qui décide, ici."]),3);return}grantSecret(a,a.y-30);return}
     if(a.used){a.t=0;a.anim=1;if(!G.sim)say(pick(["Vide. J'ai déjà tout pris.","Plus rien là-dedans. Je repasserai à la prochaine guerre."]),2.6);return}
     if(a.locked&&!G.key){if(!G.sim){tone(220,.12,'square',.05);say(a.lockQ||"Fermé à clef. Le gardien a les clefs. Le gardien a toujours les clefs.",3.4)}return}
@@ -4974,13 +4983,14 @@ const ACH=[
  ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
  ['c1','E','Instinct de pie',"Chiper dix clefs aux gardiens."],
  ['a70','S','Terminus, tout le monde descend',"Au cours Langlet, monter sur un tramway après la rue Guillaume-de-Machault et rester sur son toit jusqu'au tout début de la rue."],
+ ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
  ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond et l'entendre roucouler."],
  ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."]
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=31;
+const SECRET_TOTAL=32;
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -8064,6 +8074,7 @@ function facadeBuild(Lv){
       if(r===20||r===21){if(!(c===32&&r===20))fcStatue(g,mx,y+131*.9+2,90,{halo:(c%3)===0,crown:(c%3)===1,mitre:(c%3)===2,beard:c%2===0,attr:['book','sceptre','staff'][c%3],flat:1},R)}
       else if(r===43&&x1-x0<=80)fcBalustrade(g,x0-6,x1+6,y,22);
       c=e+1}else c++}}
+  if(Lv.w>46)towerBuild(g,R);
   /* --- les corniches : une par planche (sa tablette = l'endroit où l'on se pose) --- */
   for(let r=0;r<ROWS;r++){let c=0;while(c<Lv.w){if(Lv.g[r][c]==='t'){let e=c;while(e+1<Lv.w&&Lv.g[r][e+1]==='t')e++;fcLedge(g,c*T,(e+1)*T,r*T,{leaf:(c+r)%2===0});c=e+1}else c++}}
   // la fenêtre de la tour sud, entrouverte et dorée : c'est par là qu'on entre
@@ -8095,7 +8106,11 @@ function facadePost(Lv){if(!Lv.def.facade)return;
   S.rose={seq:[[1,tg(28.5,36)],[1,tg(23,43)],[0,tg(17.5,36)]],t:0,i:-1,blob:null,warn:-1,splash:null};
   S.g2.push({g:FC_G2[2],tg:[tg(10.5,20),tg(13,21),tg(15,21),tg(17,20)],ph:1});S.g2.push({g:FC_G2[3],tg:[tg(29,21),tg(31,21),tg(33,21),tg(35.5,20)],ph:3});
   // les pigeons chieurs : sur les plateformes du haut ; chacun à son rythme
-  for(const[x,r,ph]of[[505,28,0],[760,29,1.3],[1120,29,2.6],[1385,29,.7]])S.shit.push({x,y:fcY(r),ph,t:ph,lift:0});
+  for(const[x,r,ph]of[[505,28,0],[760,29,1.3],[1120,29,2.6],[1385,29,.7]])S.shit.push({x,y:fcY(r),ph,t:ph,lift:0,per:4.2});
+  // la tour sud : la caméra reste dans la tour une fois qu'on y est ; deux cloches ; quatre pigeons sur le parapet du toit, chacun son rythme
+  Lv.camZone=cx=>cx<FT.X0-200?[0,46*T]:[FT.CAM,Lv.wpx];
+  S.bells=[{x:FT.B1,tDown:0,tUp:2.35,th:0},{x:FT.B2,tDown:2.0,tUp:.35,th:Math.PI}];S.waves=[];
+  for(const[c,ph,per]of[[67,.3,2.7],[69,1.1,3.6],[72,2.0,2.3],[74,.6,4.7]])S.shit.push({x:c*T+T/2,y:FT.ROOF,ph,t:ph,lift:0,per,roof:1});
 }
 function fcJetPts(o,ang){const[gx,gy,f]=o.g,[mx,my]=fcMouth(gx,gy,f,1.7);const tgs=o.tg,n=tgs.length;
   // position de la cible le long du parcours (aller-retour entre les cibles, avec un temps d'arrêt sur chacune)
@@ -8118,20 +8133,24 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
   for(const o of S.g2){const n=o.tg.length,per=(n-1)*1.3,cyc=per*2+2.4,u=(G.lt+o.ph)%cyc;
     if(u<per*2){o.on=true;const p=u<per?u/1.3:(per*2-u)/1.3;o.pts=fcJetPts(o,Math.min(n-1-1e-3,p))}else{o.on=false;o.pts=null;o.warn=u>cyc-.8}
     if(o.on&&!P.dead)for(const[x,y]of o.pts)if(Math.abs(x-pcx)<12+P.w/2-4&&Math.abs(y-pcy)<12+P.h/2-6){hit='jetPierre';break}}
-  // la gargouille de la rose : un crachat à la fois, sur la plateforme de droite, puis le haut du gâble, puis celle de gauche ; puis une pause
-  {const Ro=S.rose,FL=1.25,GAP=.75,PAUSE=1.8,cyc=3*(FL+GAP)+PAUSE,u=(G.lt+.5)%cyc,i=Math.floor(u/(FL+GAP)),v=u-i*(FL+GAP);Ro.blob=null;Ro.warn=-1;Ro.splash=null;
-   if(i<3){const[gi,tgt]=Ro.seq[i],[gx,gy,f]=FC_G2[gi],[mx,my]=fcMouth(gx,gy,f,1.7);
-     if(v<GAP){Ro.warn=gi;Ro.jaw=v/GAP}else{const w=(v-GAP)/FL;if(w<.92){const cx2=(mx+tgt[0])/2,cy2=Math.min(my,tgt[1])-110,x=(1-w)*(1-w)*mx+2*(1-w)*w*cx2+w*w*tgt[0],y=(1-w)*(1-w)*my+2*(1-w)*w*cy2+w*w*tgt[1];Ro.blob=[x,y,gi];
-       if(!P.dead&&Math.hypot(x-pcx,y-pcy)<15)hit='jetPierre'}else Ro.splash=tgt;Ro.jaw=Math.max(0,1-w*3)}}else Ro.jaw=0;
-   // le crachat éclabousse sa cible un court instant
-   if(Ro.splash&&!P.dead&&Math.abs(Ro.splash[0]-pcx)<28&&Math.abs(Ro.splash[1]-pcy)<20)hit='jetPierre'}
+  // la gargouille de la rose : un jet d'eau à la fois, comme les autres gargouilles : plateforme de droite, haut du gâble, plateforme de gauche ;
+  // un temps de repos entre deux jets, puis une pause après les trois
+  {const Ro=S.rose,ON=1.0,GAP=1.7,PAUSE=2.2,cyc=3*(ON+GAP)+PAUSE,u=(G.lt+.5)%cyc,i=Math.floor(u/(ON+GAP)),v=u-i*(ON+GAP);Ro.pts=null;Ro.warn=-1;Ro.jaw=0;Ro.gi=-1;
+   if(i<3){const[gi,tgt]=Ro.seq[i],[gx,gy,f]=FC_G2[gi];Ro.gi=gi;
+     if(v<ON){const[mx,my]=fcMouth(gx,gy,f,1.7),grow=Math.min(1,v/.25),pts=[];const cx2=mx+f*50,cy2=my-50;
+       for(let k=0;k<=16;k++){const w=k/16*grow;pts.push([(1-w)*(1-w)*mx+2*(1-w)*w*cx2+w*w*tgt[0],(1-w)*(1-w)*my+2*(1-w)*w*cy2+w*w*tgt[1]])}
+       Ro.pts=pts;Ro.reach=grow>=1;Ro.jaw=1;
+       if(!P.dead)for(const[x,y]of pts)if(Math.abs(x-pcx)<12+P.w/2-4&&Math.abs(y-pcy)<12+P.h/2-6){hit='jetPierre';break}}
+     else if(v>ON+GAP-.7){const n=Ro.seq[(i+1)%3];if(i<2){Ro.warn=n[0];Ro.jaw=.3}}}
+   else if(u>cyc-.7){Ro.warn=Ro.seq[0][0];Ro.jaw=.3}}
   // les pics anti-pigeons du groupe sculpté
   if(!P.dead&&overlap(hb,{x:FC_SPK.x0,y:FC_SPK.y-2,w:FC_SPK.x1-FC_SPK.x0,h:30}))hit='spikes';
   // pigeons chieurs : chacun lâche sa fiente à son tour ; elle tombe jusqu'à ce qu'elle touche quelque chose
-  for(const o of S.shit){o.t+=dt;const u=o.t%4.2;o.lift=u>3.4&&u<3.8?1:0;if(u>=3.6&&u-dt<3.6)S.drops.push({x:o.x+6,y:o.y-6,vy:60})}
+  for(const o of S.shit){o.t+=dt;const P2=o.per,u=o.t%P2;o.lift=u>P2-.8&&u<P2-.4?1:0;if(u>=P2-.6&&u-dt<P2-.6)S.drops.push({x:o.x+(o.roof?-8:6),y:o.roof?o.y+14:o.y-6,vy:60})}
   for(const d of S.drops){d.vy=Math.min(700,d.vy+1400*dt);d.y+=d.vy*dt;const c=Math.floor(d.x/T),r=Math.floor(d.y/T);if(r>=ROWS||'t#'.includes(tile(c,r))&&d.y>r*T&&d.y<r*T+10){d.dead=1;d.splat=.6}
-    if(!d.dead&&!P.dead&&Math.abs(d.x-pcx)<10&&d.y>P.y&&d.y<P.y+P.h)hit='fiente'}
+    if(!d.dead&&!d.own&&!P.dead&&Math.abs(d.x-pcx)<10&&d.y>P.y&&d.y<P.y+P.h)hit='fiente'}
   S.drops=S.drops.filter(d=>!d.dead||((d.splat-=dt)>0));
+  towerStep(dt,S,hb,pcx,pcy,h=>{hit=h});
   if(S.grace>0){S.grace-=dt;hit=null}
   if(hit)G.fcHit=hit;
   // répliques
@@ -8154,7 +8173,7 @@ function fcSlope(dt){const S=L.fc;if(!S)return;const cx=P.x+P.w/2,feet=P.y+P.h,p
       const c2=P.x+P.w/2;if(c2>=sl.xa&&c2<=sl.xb){P.y=sl.ya+(sl.yb-sl.ya)*(c2-sl.xa)/(sl.xb-sl.xa)-P.h;P.vy=0;P.onGround=true;S.onSlope=sl}break}}
   S.pf=P.y+P.h}
 function facadeAfterMove(dt){if(L.fc)fcSlope(dt||1/60);if(G.fcHit){const k=G.fcHit;G.fcHit=null;return k}return null}
-function facadeRespawn(){const S=L.fc;if(!S)return;S.grace=1.2;S.drops=[];G.fcHit=null}
+function facadeRespawn(){const S=L.fc;if(!S)return;S.grace=1.2;S.drops=[];S.waves=[];S.stun=0;G.fcHit=null}
 
 /* ---------- dessin ---------- */
 function drawFacadeBack(t,cx,cy){const Lv=L;if(!Lv.fcLayer)return;const ly=Lv.fcLayer,tr=ly.rs||1,sx=Math.max(0,cx-30),sw=Math.min(W+80,ly.width/tr-sx),sy=Math.max(0,cy+PAD-30),sh=Math.min(H+80,ly.height/tr-sy);
@@ -8166,16 +8185,16 @@ function drawFacadeMid(t){const S=L.fc;if(!S)return;const g=ctx,vis=(x,y)=>x>cam
     if(o.st==='spit'){g.strokeStyle='rgba(160,205,255,.8)';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(o.x,o.y);g.quadraticCurveTo(o.x+o.f*6,o.y+4,o.x+o.f*4+Math.sin(G.lt*20)*1.5,o.y+Math.min(o.len,14));g.lineTo(o.x+o.f*3+Math.sin(G.lt*20)*1.5,o.y+o.len);g.stroke();g.strokeStyle='rgba(240,248,255,.7)';g.lineWidth=2;g.stroke();g.lineCap='butt';
       if(o.len>=o.yb-o.y-1){g.fillStyle='rgba(200,225,255,.6)';for(let k=0;k<5;k++){g.beginPath();g.arc(o.x+(k-2)*6+Math.sin(G.lt*30+k)*2,o.yb-4-Math.abs(Math.sin(G.lt*25+k))*8,2,0,7);g.fill()}}}}
   // jets des gargouilles n°2
-  // la gargouille de la rose : deux bêtes au pied de la rose, un crachat à la fois
-  {const Ro=S.rose;for(const[gi,[gx,gy,f]]of[[0,FC_G2[0]],[1,FC_G2[1]]]){if(!vis(gx,gy))continue;const jaw=(Ro.warn===gi||(Ro.blob&&Ro.blob[2]===gi))?Ro.jaw||0:0;fcGargoyle(g,gx,gy,f,1.7,jaw);
+  // la gargouille de la rose : deux bêtes au pied de la rose, un jet à la fois
+  {const Ro=S.rose;for(const[gi,[gx,gy,f]]of[[0,FC_G2[0]],[1,FC_G2[1]]]){if(!vis(gx,gy))continue;fcGargoyle(g,gx,gy,f,1.7,(Ro.gi===gi||Ro.warn===gi)?Ro.jaw:0);
      if(Ro.warn===gi){const[mx,my]=fcMouth(gx,gy,f,1.7),k=(G.lt*3)%1;g.fillStyle='rgba(170,210,250,.85)';g.beginPath();g.ellipse(mx,my+4+k*14,2.4,3.6,0,0,7);g.fill()}}
-   if(Ro.blob){const[x,y]=Ro.blob;g.fillStyle='rgba(150,200,255,.85)';g.beginPath();g.ellipse(x,y,9,7,0,0,7);g.fill();g.fillStyle='rgba(245,250,255,.85)';g.beginPath();g.arc(x-2,y-2,3,0,7);g.fill();
-     g.fillStyle='rgba(170,210,250,.5)';for(let k=1;k<4;k++){g.beginPath();g.arc(x-k*6*(Ro.blob[2]?1:-1)*-1,y-k*3,4-k,0,7);g.fill()}}
-   if(Ro.splash){const[ex,ey]=Ro.splash;g.fillStyle='rgba(200,225,255,.7)';for(let k=0;k<8;k++){g.beginPath();g.arc(ex+(k-3.5)*6,ey+6-Math.abs(Math.sin(G.lt*20+k))*14,2.6,0,7);g.fill()}}}
+   if(Ro.pts){g.strokeStyle='rgba(150,200,255,.75)';g.lineWidth=9;g.lineCap='round';g.beginPath();g.moveTo(Ro.pts[0][0],Ro.pts[0][1]);for(const[x,y]of Ro.pts)g.lineTo(x+Math.sin(G.lt*18+y*.05)*1.2,y);g.stroke();
+     g.strokeStyle='rgba(245,250,255,.75)';g.lineWidth=3;g.stroke();g.lineCap='butt';if(Ro.reach){const[ex,ey]=Ro.pts[16];g.fillStyle='rgba(210,230,255,.6)';for(let k=0;k<6;k++){g.beginPath();g.arc(ex+(k-2.5)*5,ey+8-Math.abs(Math.sin(G.lt*22+k))*10,2.2,0,7);g.fill()}}}}
   for(const o of S.g2){const[gx,gy,f]=o.g;if(vis(gx,gy))fcGargoyle(g,gx,gy,f,1.7,o.on?1:o.warn?.3:0);if(!vis(gx,gy)&&!(o.pts&&vis(o.pts[16][0],o.pts[16][1])))continue;
     if(o.warn){const[mx,my]=fcMouth(gx,gy,f,1.7);g.fillStyle='rgba(170,210,250,.8)';const k=(G.lt*3)%1;g.beginPath();g.ellipse(mx,my+4+k*16,2.4,3.6,0,0,7);g.fill()}
     if(o.on&&o.pts){g.strokeStyle='rgba(150,200,255,.75)';g.lineWidth=9;g.lineCap='round';g.beginPath();g.moveTo(o.pts[0][0],o.pts[0][1]);for(const[x,y]of o.pts)g.lineTo(x+Math.sin(G.lt*18+y*.05)*1.2,y);g.stroke();
       g.strokeStyle='rgba(245,250,255,.75)';g.lineWidth=3;g.stroke();g.lineCap='butt';const[ex,ey]=o.pts[16];g.fillStyle='rgba(210,230,255,.6)';for(let k=0;k<6;k++){g.beginPath();g.arc(ex+(k-2.5)*5,ey+8-Math.abs(Math.sin(G.lt*22+k))*10,2.2,0,7);g.fill()}}}
+  drawTowerMid(g,S,t);
   // pigeons
   for(const o of S.pig)if(vis(o.x,o.y))drawUglyPigeon(g,o,t);
   // pigeons chieurs : assis, la queue qui se relève avant de lâcher
@@ -8186,6 +8205,90 @@ function drawFacadeMid(t){const S=L.fc;if(!S)return;const g=ctx,vis=(x,y)=>x>cam
   for(const d of S.drops){if(!vis(d.x,d.y))continue;g.fillStyle='#eeeae0';if(d.dead){g.beginPath();g.ellipse(d.x,d.y-1,7,2.5,0,0,7);g.fill();g.fillStyle='#5a5446';g.beginPath();g.arc(d.x+1,d.y-2,1.6,0,7);g.fill()}
     else{g.beginPath();g.ellipse(d.x,d.y,3,4.5,0,0,7);g.fill();g.fillStyle='#5a5446';g.beginPath();g.arc(d.x,d.y+1,1.4,0,7);g.fill()}}
 }
+
+/* =========================================================
+   LA TOUR SUD — l'intérieur du beffroi (même niveau, à droite de la façade) : on y entre par la fenêtre entrouverte
+   (écran noir), on grimpe de mur en mur en évitant les ondes des cloches qui assomment et font retomber, les pics
+   sous les consoles, les fientes des quatre pigeons du toit ; on sort sur la tourelle de gauche, où attend une lanterne.
+   ========================================================= */
+const FT={X0:66*T,X1:76*T,CAM:56*T,FLOOR:56*T,ROOF:26*T,TUR:24*T,BEAM:48*T+6,B1:69*T,B2:73*T};
+// pics anti-pigeons : sous les consoles (ils piquent par en dessous) et sur le toit [x0,x1,y,sens]
+const FT_SPK=[[66*T,68*T,44*T,1],[66*T,68*T,38*T,1],[66*T,68*T,32*T,1],[74*T,76*T,41*T,1],[74*T,76*T,35*T,1],[74*T,76*T,29*T,1],
+  [66*T,67*T,26*T,-1],[70*T,72*T,26*T,-1],[62*T,63*T,24*T,-1],[65*T,66*T,24*T,-1],[76*T,77*T,24*T,-1],[78*T,80*T,24*T,-1]];
+function ftBellAngle(b,t){const C=4,u=((t%C)+C)%C,ease=v=>.5-.5*Math.cos(Math.PI*v),inW=(a,e)=>{const d=((e-a)%C+C)%C;const k=((u-a)%C+C)%C;return k<d?k/d:-1};
+  const rU=inW(b.tUp-1,b.tUp);if(rU>=0)return Math.PI*ease(rU);const rD=inW(b.tDown-1,b.tDown);if(rD>=0)return Math.PI*(1-ease(rD));
+  const aU=((u-b.tUp)%C+C)%C,aD=((u-b.tDown)%C+C)%C;return aU<aD?Math.PI:0}
+function towerStep(dt,S,hb,pcx,pcy,setHit){if(!S.bells)return;
+  // la fenêtre entrouverte de la tour sud : on entre ; écran noir, puis l'intérieur du beffroi
+  if(!S.inTower&&!P.dead&&overlap(hb,{x:32*T,y:19*T-30,w:T,h:70})){S.inTower=1;P.x=67*T+8;P.y=FT.FLOOR-P.h;P.vx=P.vy=0;P.onGround=true;P.cp={x:P.x+P.w/2,y:FT.FLOOR};P.lastGY=P.y;
+    cam.x=FT.CAM;cam.y=clamp(P.y-H*.55,0,ROWS*T-H);G.fade=1;S.grace=1;
+    if(!G.sim)setTimeout(()=>say("Le beffroi. Ça sent le bronze, la poussière et la fiente. Il faudra monter jusqu'au toit… sans prendre une cloche sur la tête.",4.6),900)}
+  if(P.x>FT.CAM)S.inTower=1;
+  const t=G.lt;
+  // les cloches : elles tournent ; arrivées en bas, BAM (grande onde) ; arrivées en haut, bam (petite onde)
+  for(const b of S.bells){const th=ftBellAngle(b,t),prev=b.th;b.th=th;
+    const hitBottom=prev>.05&&th<=.001,hitTop=prev<Math.PI-.05&&th>=Math.PI-.001;
+    if(hitBottom||hitTop){const cy=FT.BEAM+(hitBottom?44:-44);S.waves.push({x:b.x,y:cy,r:10,max:hitBottom?210:120,big:hitBottom});
+      if(!G.sim&&S.inTower&&P.x>FT.CAM){if(hitBottom){tone(98,1.6,'sine',.18);tone(196,1.2,'triangle',.06);tone(147,1.4,'sine',.08)}else{tone(220,.9,'sine',.1);tone(330,.7,'triangle',.04)}}}}
+  for(const w of S.waves){w.r+=(w.big?230:190)*dt;w.dead=w.r>w.max;
+    if(!P.dead&&!(S.stun>0)&&Math.abs(Math.hypot(pcx-w.x,pcy-w.y)-w.r)<12){S.stun=.7;P.vx=(pcx>w.x?1:-1)*150;P.vy=Math.max(P.vy,320);P.onGround=false;P.onMover=null;P.flaps=MAXFLAPS;if(!G.sim)SFX.flap()}}
+  S.waves=S.waves.filter(w=>!w.dead);
+  // assommé : on ne contrôle plus rien, on retombe
+  if(S.stun>0){S.stun-=dt;P.jumpBuf=0;P.vy=Math.max(P.vy,120);P.flaps=MAXFLAPS}
+  // les pics
+  if(!P.dead)for(const[x0,x1,y,d]of FT_SPK){const box=d>0?{x:x0,y:y+6,w:x1-x0,h:14}:{x:x0,y:y-16,w:x1-x0,h:14};if(overlap(hb,box)){setHit('spikes');break}}
+  // en arrivant sur le toit
+  if(!S.said.toit&&!G.sim&&P.onGround&&P.x>FT.X0&&P.y+P.h<=FT.ROOF+2){S.said.toit=1;say("Vous abusez, les gars… Mais à force de vous regarder, ça donne envie. Je me soulagerais bien, moi aussi.",4.6)}
+}
+/* le secret du toit : Raymond fait comme les copains */
+function towerPoop(a){const FS=L.fc;if(!FS)return;
+  FS.drops.push({x:P.x+P.w/2-P.facing*10,y:P.y+P.h-4,vy:40,own:1});
+  grantSecret(a,a.y-30);unlock('a71');
+  const roof=FS.shit.filter(o=>o.roof);
+  roof.forEach((o,i)=>setTimeout(()=>{if(G.sim)return;bubble(o.x,o.y-30,'Copaiiiin !','#5a6a3a');parts.push({type:'tuftpop',x:o.x,y:o.y-14,life:0,max:1.3});if((S.run.wear||0)>0){S.run.wear--;P.sx=1.12;P.sy=1.12}SFX.straw()},300+i*380));
+  if(!G.sim){noise(.3,600,.12,'lowpass');setTimeout(()=>say("Ah… Ça soulage. Et voilà qu'on m'offre de la paille. Les copains de toit, il n'y a que ça de vrai.",4.4),1900)}}
+
+/* ---------- le décor de la tour (dans la couche de la façade) ---------- */
+function towerBuild(g,R){const X0=FT.X0,X1=FT.X1,F=FT.FLOOR,RO=FT.ROOF,TU=FT.TUR,L0=FT.CAM,R1=82*T;
+  // les murs épais du beffroi, en coupe ; dehors, à gauche et à droite, la pierre de la tour
+  fcStone(g,L0,TU,X0,F,R,'#9a7a5c');fcStone(g,X1,TU,R1,F,R,'#9a7a5c');g.fillStyle='rgba(40,24,30,.35)';g.fillRect(X0-60,TU,60,F-TU);g.fillRect(X1,TU,60,F-TU);
+  for(const[a,b]of[[L0,X0-60],[X1+60,R1]]){for(let y=TU+80;y<F-60;y+=260){g.fillStyle=FCC.deep;fcOgivePath(g,(a+b)/2,y+200,46,190);g.fill();g.strokeStyle=FCC.lit;g.lineWidth=2;g.beginPath();fcOgive(g,(a+b)/2,y+200,46,190);g.stroke()}}
+  // le mur du fond : pierre dans l'ombre, la grande baie à abat-sons qui laisse voir le ciel du soir
+  fcStone(g,X0,RO,X1,F,R,'#6e5648');g.fillStyle='rgba(20,10,20,.3)';g.fillRect(X0,RO,X1-X0,F-RO);
+  {const cx=(X0+X1)/2,yb=F-300,w=150,h=840;g.fillStyle='#4a3a3a';fcOgivePath(g,cx,yb,w+30,h+20);g.fill();
+   const sk=g.createLinearGradient(0,yb-h,0,yb);sk.addColorStop(0,'#3a4278');sk.addColorStop(.6,'#c07c86');sk.addColorStop(1,'#f0a878');g.fillStyle=sk;fcOgivePath(g,cx,yb,w,h);g.fill();
+   g.save();fcOgivePath(g,cx,yb,w,h);g.clip();for(let y=yb-h+60;y<yb;y+=26){g.fillStyle='#3a2a26';g.fillRect(cx-w/2,y,w,10);g.fillStyle='rgba(255,190,120,.25)';g.fillRect(cx-w/2,y+10,w,2)}g.fillStyle='#3a2a26';g.fillRect(cx-5,yb-h,10,h);g.restore();
+   g.strokeStyle='#8a6e58';g.lineWidth=4;g.beginPath();fcOgive(g,cx,yb,w,h);g.stroke()}
+  // le beffroi de charpente : poteaux, contrefiches en croix, la poutre où tournent les cloches
+  {const a=FT.B1-90,b=FT.B2+90,y=FT.BEAM;g.strokeStyle='#5a3a22';g.lineCap='round';g.lineWidth=14;g.beginPath();g.moveTo(a-20,F);g.lineTo(a,y);g.lineTo(b,y);g.lineTo(b+20,F);g.stroke();
+   g.lineWidth=8;g.beginPath();g.moveTo(a-10,F-10);g.lineTo((a+b)/2,y+30);g.lineTo(b+10,F-10);g.moveTo(a,y+30);g.lineTo((a+b)/2,F-10);g.lineTo(b,y+30);g.stroke();
+   g.strokeStyle='rgba(255,190,120,.25)';g.lineWidth=2;g.beginPath();g.moveTo(a,y-6);g.lineTo(b,y-6);g.stroke();g.lineCap='butt';
+   g.fillStyle='#4a3020';g.fillRect(a-30,F-8,b-a+60,8)}
+  // le plancher, les consoles de pierre (leur dessus = la planche) et les pics anti-pigeons
+  g.fillStyle='#5a4030';g.fillRect(X0,F-4,X1-X0,4);for(let x=X0;x<X1;x+=34){g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x,F-4,1,4)}
+  for(const[x0,x1,y,d]of FT_SPK)ftNeedles(g,x0,x1,y,d);
+  // le toit : parapets ajourés, tourelles d'angle à pinacles ; la lanterne qui attend Raymond
+  fcBalustrade(g,X0,X1,RO,26);fcLedge(g,X0,X1,RO);
+  for(const[a,b]of[[62*T,X0],[X1,80*T]]){fcStone(g,a,TU,b,TU+70,R);fcLedge(g,a,b,TU);for(const px of[a+8,b-8])fcPinnacle(g,px,TU-14,22,110,R)}
+  {const lx=63*T+20,ly=TU;g.strokeStyle='#2a2420';g.lineWidth=2;g.beginPath();g.moveTo(lx,ly-34);g.lineTo(lx,ly-46);g.stroke();g.beginPath();g.arc(lx,ly-48,4,0,7);g.stroke();
+   g.fillStyle='#2a2420';poly(g,[lx-12,ly-34,lx+12,ly-34,lx+9,ly-6,lx-9,ly-6]);g.fill();g.fillStyle='rgba(255,200,110,.95)';poly(g,[lx-8,ly-31,lx+8,ly-31,lx+6,ly-9,lx-6,ly-9]);g.fill();
+   g.fillStyle='#2a2420';g.fillRect(lx-12,ly-6,24,6);poly(g,[lx-14,ly-34,lx,ly-44,lx+14,ly-34]);g.fill();g.fillStyle='#ffe7a8';g.beginPath();g.ellipse(lx,ly-20,2.5,5,0,0,7);g.fill()}
+}
+function ftNeedles(g,x0,x1,y,d){g.fillStyle='#3a3c42';g.fillRect(x0+2,d>0?y+5:y-3,x1-x0-4,3);g.strokeStyle='#aeb4bc';g.lineWidth=1;
+  for(let x=x0+5;x<x1-4;x+=4){const a=((x/4|0)%5-2)*.12;g.beginPath();if(d>0){g.moveTo(x,y+8);g.lineTo(x+Math.sin(a)*13,y+8+Math.cos(a)*13)}else{g.moveTo(x,y-3);g.lineTo(x+Math.sin(a)*13,y-3-Math.cos(a)*13)}g.stroke()}}
+/* ---------- la tour, en direct : cloches, ondes, lueur de la lanterne ---------- */
+function drawTowerMid(g,S,t){if(!S.bells||cam.x<FT.CAM-400)return;
+  for(const b of S.bells){g.save();g.translate(b.x,FT.BEAM);g.rotate(b.th);
+    // le joug de bois au-dessus de l'axe, la cloche de bronze en dessous (elle passe au-dessus en tournant)
+    g.fillStyle='#6a4428';g.fillRect(-34,-26,68,20);g.fillRect(-18,-40,36,16);g.fillStyle='rgba(255,190,120,.25)';g.fillRect(-34,-26,68,3);
+    g.fillStyle='#3a3a3e';g.beginPath();g.arc(0,0,6,0,7);g.fill();
+    const gr=g.createLinearGradient(-36,0,36,0);gr.addColorStop(0,'#8a6420');gr.addColorStop(.35,'#e8b848');gr.addColorStop(.6,'#c8922c');gr.addColorStop(1,'#6a4818');g.fillStyle=gr;
+    g.beginPath();g.moveTo(-16,0);g.quadraticCurveTo(-22,30,-30,62);g.quadraticCurveTo(-38,74,-40,80);g.lineTo(40,80);g.quadraticCurveTo(38,74,30,62);g.quadraticCurveTo(22,30,16,0);g.closePath();g.fill();
+    g.fillStyle='#b8862a';g.fillRect(-40,76,80,6);g.fillStyle='#7a5418';g.fillRect(-24,30,48,3);g.fillRect(-30,54,60,3);
+    g.fillStyle='#4a3010';g.beginPath();g.arc(0,74,7,0,7);g.fill();g.strokeStyle='#4a3010';g.lineWidth=3;g.beginPath();g.moveTo(0,4);g.lineTo(Math.sin(t*3)*3,70);g.stroke();g.restore()}
+  for(const w of S.waves){const a=1-w.r/w.max;g.strokeStyle='rgba(255,230,140,'+(.65*a)+')';g.lineWidth=w.big?8:5;g.beginPath();g.arc(w.x,w.y,w.r,0,7);g.stroke();g.strokeStyle='rgba(255,250,220,'+(.4*a)+')';g.lineWidth=2;g.beginPath();g.arc(w.x,w.y,w.r-6,0,7);g.stroke()}
+  if(S.stun>0){const x=P.x+P.w/2,y=P.y-6;for(let k=0;k<3;k++){const an=t*8+k*2.1;g.fillStyle='#ffe070';g.beginPath();g.arc(x+Math.cos(an)*12,y+Math.sin(an)*4,2.4,0,7);g.fill()}}
+  const lx=63*T+20,ly=FT.TUR-20,gl=g.createRadialGradient(lx,ly,2,lx,ly,60);gl.addColorStop(0,'rgba(255,210,120,'+(.35+.08*Math.sin(t*5))+')');gl.addColorStop(1,'rgba(255,210,120,0)');g.fillStyle=gl;g.beginPath();g.arc(lx,ly,60,0,7);g.fill()}
 
 /* =========================================================
    RENDU EN JEU

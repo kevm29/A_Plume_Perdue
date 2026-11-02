@@ -31,6 +31,7 @@ function actPost(L){
     q:["La girouette grince, tourne… et du pigeon d'or tombe une touffe de paille. Un collègue en métal précieux. Lui, au moins, on l'a mis sur un piédestal."]})}
   if(L.def.lingeAt){const[c,r]=L.def.lingeAt;L.acts.push({kind:'secret',style:'linge',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
     q:["Un drap qui sèche au balcon. Et dans le pli, de la paille. Quelqu'un secoue ses draps sur la rue depuis cent ans."]})}
+  if(L.def.poopAt){const[c,r]=L.def.poopAt;L.acts.push({kind:'secret',style:'poop',x:c*T+T/2,y:(r+1)*T,rx:200,open:0,t:0,used:false,noStraw:true,q:["Copains de toit. On ne se refait pas."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -50,6 +51,7 @@ function nearAct(){
   if(hiddenNow()&&!P.hideIn)for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
   for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.when&&!a.when())continue;
     if(a.style==='helmet'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<36&&Math.abs(P.y+P.h/2-(a.y-92))<52)return{type:'secret',o:a};continue}
+    if(a.style==='poop'){if(!a.used&&P.onGround&&Math.abs(a.x-pcx)<a.rx&&Math.abs(a.y-pb)<20)return{type:'secret',o:a};continue}
     if(a.style==='lamp'){if(!P.onGround&&Math.abs(a.x-pcx)<34&&Math.abs(P.y+P.h/2-a.ly)<40)return{type:'secret',o:a};continue}if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }
@@ -76,6 +78,7 @@ function tryAct(){
   if(a.kind==='hide'){museeHide(a);return}
   if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
   if(a.kind==='secret'){
+    if(a.style==='poop'){if(!a.used)towerPoop(a);return}
     if(a.style==='vane'){a.av=(a.av>0?a.av:0)+9;if(!G.sim)noise(.3,1800,.08,'bandpass');if(a.used){if(!G.sim)say(pick(["Nord, sud, est, ouest. Il tourne, le pigeon d'or, mais il ne va nulle part. Je connais ça.","Le vent n'y est pour rien. C'est moi qui décide, ici."]),3);return}grantSecret(a,a.y-30);return}
     if(a.used){a.t=0;a.anim=1;if(!G.sim)say(pick(["Vide. J'ai déjà tout pris.","Plus rien là-dedans. Je repasserai à la prochaine guerre."]),2.6);return}
     if(a.locked&&!G.key){if(!G.sim){tone(220,.12,'square',.05);say(a.lockQ||"Fermé à clef. Le gardien a les clefs. Le gardien a toujours les clefs.",3.4)}return}

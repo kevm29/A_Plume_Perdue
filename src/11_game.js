@@ -398,6 +398,7 @@ function updateCamera(dt){
   // vertical : la caméra suit le dernier sol touché, pas les sauts (on ne voit pas ce qui est au-dessus en sautant)
   if(P.onGround||P.lastGY==null)P.lastGY=P.y;
   if(L.auto&&L.auto.on){tx=Math.max(L.auto.x,Math.min(tx,L.auto.x+120));cam.x=Math.max(cam.x,L.auto.x)}
+  if(L.camZone){const z=L.camZone(P.x+P.w/2);if(z)tx=clamp(tx,z[0],z[1]-W)}
   let ty=P.lastGY-H*(L.def.camYAt?L.def.camYAt(P.x):(L.def.camY||.5));
   if(P.y-ty<40)ty=P.y-40;if(P.y+P.h-ty>H-50)ty=P.y+P.h-H+50;
   if(P.ride)ty=P.y-H*.42;
