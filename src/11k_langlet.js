@@ -72,7 +72,7 @@ function lgRotonde(g,c0,c1,R){// l'immeuble vert-de-gris à rotonde : trois balc
   for(const wx of[mx-36,mx-10,mx+16]){g.fillStyle='#5a6878';g.fillRect(wx,dy-112,18,26);g.strokeStyle='#e8e4da';g.lineWidth=1;g.beginPath();g.moveTo(wx+9,dy-112);g.lineTo(wx+9,dy-86);g.stroke()}
   g.fillStyle='#9aa196';g.fillRect(mx-54,dy-124,108,8);g.fillStyle='rgba(0,0,0,.15)';g.fillRect(mx-54,dy-117,108,2);
   // l'aile : fenêtres, frise de briques orange, lucarnes
-  for(let k=1;k<=4;k++){const y=b-LG.GF-(k-1)*LG.FH;g.fillStyle='#c8673e';g.fillRect(xr+6,y-6,x1-xr-6,3);for(let wx=xr+48;wx<x1-30;wx+=58){lgWin(g,wx,y-66,24,48,{frame:'#c8cbc0',glass:'#5a6878',blind:k===2?.5:0});if(k===2||(k===4&&wx===xr+48))lgBalcony(g,wx-8,wx+32,y-14+(k===4?14:0),'iron');
+  for(let k=1;k<=4;k++){const y=b-LG.GF-(k-1)*LG.FH;g.fillStyle='#c8673e';g.fillRect(xr+6,y-6,x1-xr-6,3);for(let wx=xr+48;wx<x1-30;wx+=58){lgWin(g,wx,y-66,24,48,{frame:'#c8cbc0',glass:'#5a6878',blind:k===2?.5:0});if(k===2)lgBalcony(g,wx-8,wx+32,y-14,'iron');
       g.fillStyle='#c8673e';g.fillRect(wx+6,y-76,12,5)}}
   lgMansard(g,xr,x1,top,62,{dxs:[12.5*T,16.5*T,20.5*T],style:'pediment',dcol:'#b9beb2'});
   // trois petits balconnets de fer au pied des lucarnes

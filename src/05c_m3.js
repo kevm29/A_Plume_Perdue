@@ -153,7 +153,7 @@ LEVELS.push((()=>{
   // l'immeuble à coupole : balconnets du deuxième étage, corniche entre les lucarnes
   for(const c of[64,67,70,73,76])put(c,BR(2),'t');run(66,77,BR(4),'t');
   // l'aile de la rotonde : trois balconnets au pied des lucarnes ; le lanterneau du dôme et sa girouette
-  for(const c of[12,16,20])put(c,8,'t');put(12,10,'t');run(6,8,5,'t');
+  for(const c of[12,16,20])put(c,8,'t');run(6,8,5,'t');
   // le balcon de pierre de l'hôtel en brique, la maison à pignon
   run(24,27,BR(1),'t');run(91,92,BR(1),'t');
   // pics anti-pigeons sur quelques balcons
