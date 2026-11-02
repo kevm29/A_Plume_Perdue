@@ -285,17 +285,13 @@ function drawVane(g,a,t){const x=a.x,y=a.y,c=Math.cos(a.ang),sn=Math.sin(a.ang);
   g.fillStyle='rgba(255,250,220,'+(.35+.35*Math.abs(sn))+')';g.beginPath();g.ellipse(2,-18,3,1.6,-.4,0,7);g.fill();
   g.restore()}
 
-/* le linge qui sèche, jeté sur le bout d'une balustrade : un drap rayé qui pend devant la façade et ondule au vent ;
-   quand Raymond fouille dedans, il se gonfle un instant */
-function drawLinge(g,a,t){const x=a.x-14,y=a.y-20,o=a.open||0,sw=Math.sin(t*1.7)*3+o*8,L2=70+o*6;g.save();
-  g.fillStyle='rgba(0,0,0,.12)';poly(g,[x+4,y+4,x+40,y+4,x+42+sw*.6,y+L2+4,x+6+sw,y+L2+6]);g.fill();
-  g.fillStyle='#f2efe6';g.beginPath();g.moveTo(x-4,y-2);g.lineTo(x+40,y-2);g.quadraticCurveTo(x+44+sw*.4,y+L2*.5,x+38+sw*.7,y+L2);
-  for(let k=0;k<5;k++){const px=x+38+sw*.7-(k+1)*8.6;g.quadraticCurveTo(px+4,y+L2+5-(k%2)*6,px,y+L2+(k%2?2:-1))}
-  g.quadraticCurveTo(x-6+sw*.3,y+L2*.5,x-4,y-2);g.closePath();g.fill();
-  g.save();g.clip();g.fillStyle='rgba(60,100,170,.55)';for(const sx of[4,14,26])g.fillRect(x+sx+sw*.3,y,4,L2+8);g.fillStyle='rgba(0,0,0,.07)';g.fillRect(x+20,y,6,L2+8);g.restore();
-  // le repli sur la main courante
-  g.fillStyle='#e4dfd2';g.fillRect(x-4,y-6,46,8);g.fillStyle='rgba(60,100,170,.5)';for(const sx of[4,14,26])g.fillRect(x+sx,y-6,4,8);
-  // une pince à linge
-  g.fillStyle='#b88a52';g.fillRect(x+8,y-10,3,9);g.fillRect(x+30,y-10,3,9);
-  if(!a.used){g.fillStyle='rgba(230,190,90,.9)';for(let k=0;k<3;k++){g.save();g.translate(x+16+k*5,y+L2-6);g.rotate(-.5+k*.4);g.fillRect(-1,-8,2,10);g.restore()}}
+/* le linge : un torchon à carreaux qui dépasse d'une fenêtre entrouverte, au-dessus du balcon (pas devant la grille) ;
+   quand Raymond fouille dedans, il frémit */
+function drawLinge(g,a,t){const wx=a.x+31,y=a.y,o=a.open||0,sw=Math.sin(t*1.6)*1.5+o*3;g.save();
+  // la fenêtre entrouverte : un battant tiré vers l'intérieur, l'ombre de la pièce
+  g.fillStyle='#232a33';g.fillRect(wx-12,y-68,12,50);g.fillStyle='rgba(78,92,108,.9)';poly(g,[wx-12,y-68,wx-4,y-64,wx-4,y-22,wx-12,y-18]);g.fill();
+  // le torchon pincé sous le battant, qui pend sur l'appui
+  g.fillStyle='#f0ece2';g.beginPath();g.moveTo(wx-11,y-50);g.lineTo(wx+2,y-50);g.quadraticCurveTo(wx+3+sw,y-38,wx+1+sw,y-26);g.lineTo(wx-9+sw*.6,y-26);g.quadraticCurveTo(wx-12,y-38,wx-11,y-50);g.closePath();g.fill();
+  g.save();g.clip();g.fillStyle='rgba(176,58,46,.45)';for(let k=0;k<3;k++){g.fillRect(wx-12,y-46+k*8,16,2);g.fillRect(wx-9+k*4+sw*.4,y-52,2,28)}g.restore();
+  if(!a.used){g.fillStyle='rgba(230,190,90,.95)';for(let k=0;k<2;k++){g.save();g.translate(wx-6+k*5+sw,y-27);g.rotate(-.3+k*.5);g.fillRect(-1,-6,2,7);g.restore()}}
   g.restore()}

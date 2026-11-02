@@ -222,15 +222,24 @@ function lgModerne(g,c0,c1){// l'immeuble moderne aux balcons filants vitrés
     lgWin(g,x0+8,y-66,16,46,{frame:'#e8e2d4'})}
   g.fillStyle='rgba(70,90,110,.85)';g.fillRect(x0+4,b-LG.GF+6,x1-x0-8,LG.GF-8);g.fillStyle='rgba(220,230,240,.3)';for(let x=x0+10;x<x1-10;x+=40)g.fillRect(x,b-LG.GF+12,32,LG.GF-20);
   g.fillStyle='#2a4a8a';g.fillRect(x0+(x1-x0)/2-50,b-LG.GF+10,100,12);g.fillStyle='#fff';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('BANQUE',x0+(x1-x0)/2,b-LG.GF+19)}
-function lgBanqueBlanche(g,c0,c1,R){// le grand immeuble blanc à l'angle arrondi et au fronton cintré, colonnes au rez-de-chaussée
-  const x0=c0*T,x1=c1*T,b=LG.BASE,n=3,top=b-LG.GF-n*LG.FH;lgAshlar(g,x0,top,x1,b,'#efebe0',R);
-  const cx=x0+80;g.fillStyle='rgba(0,0,0,.1)';const gr=g.createLinearGradient(x0,0,cx,0);gr.addColorStop(0,'rgba(0,0,0,.16)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x0,top,cx-x0,b-top);
-  g.fillStyle='#efebe0';g.beginPath();g.moveTo(x0+10,top);g.lineTo(x0+10,top-40);g.quadraticCurveTo(x0+30,top-80,x0+80,top-62);g.quadraticCurveTo(x0+60,top-40,x0+70,top);g.closePath();g.fill();
-  for(let k=1;k<=n;k++){const y=b-LG.GF-(k-1)*LG.FH;for(let wx=x0+30;wx<x1-30;wx+=56)lgWin(g,wx,y-66,22,48,{frame:'#f4f0e6',glass:'#4a5868'});g.fillStyle='rgba(0,0,0,.06)';g.fillRect(x0,y-3,x1-x0,3)}
-  lgMansard(g,x0+90,x1,top-6,60,{dormers:7,style:'pediment',dcol:'#efebe0',chim:[x0+120,x1-60],chimCol:'#b0583e'});
-  g.fillStyle='#e4e0d4';g.fillRect(x0,b-LG.GF,x1-x0,LG.GF);g.fillStyle='#efebe0';g.fillRect(x0+6,b-LG.GF,26,LG.GF);g.fillStyle='rgba(0,0,0,.1)';g.fillRect(x0+26,b-LG.GF,6,LG.GF);
-  for(const[s,e]of[[x0+50,x0+200],[x0+220,x0+370]]){g.fillStyle='rgba(50,64,80,.9)';g.fillRect(s,b-LG.GF+10,e-s,LG.GF-12);g.fillStyle='rgba(220,230,240,.25)';for(let x=s+6;x<e-6;x+=30)g.fillRect(x,b-LG.GF+16,24,LG.GF-24);g.fillStyle='#2a4a8a';g.fillRect(s+20,b-62,e-s-40,12);g.fillStyle='#fff';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('BANQUE',(s+e)/2,b-53)}
-  g.fillStyle='#4a5868';g.beginPath();g.ellipse(x0+400,b-80,14,22,0,0,7);g.fill();g.fillStyle='#6a5a4a';g.fillRect(x0+440,b-90,30,90)}
+function lgBanqueBlanche(g,c0,c1,R){// le grand immeuble blanc à l'angle arrondi (d'après le cliché) : trois étages ; à l'angle, un étage d'attique de plus
+  // couronné d'un fronton cintré à médaillon ; ailleurs, toit Mansart à lucarnes ; au rez-de-chaussée, hautes vitrines entre de gros piliers
+  const x0=c0*T,x1=c1*T,b=LG.BASE,n=3,top=b-LG.GF-n*LG.FH,st='#efebe0',ax1=x0+220,at=top-LG.FH;
+  lgMansard(g,ax1,x1,top-6,60,{dormers:6,style:'pediment',dcol:st,chim:[ax1+60,x1-60],chimCol:'#b0583e'});
+  // l'attique d'angle et son fronton cintré
+  g.fillStyle=st;g.fillRect(x0,at,ax1-x0,top-at);g.beginPath();g.moveTo(x0+6,at);g.quadraticCurveTo((x0+ax1)/2,at-70,ax1-6,at);g.closePath();g.fill();
+  g.strokeStyle='#d8d2c2';g.lineWidth=5;g.beginPath();g.moveTo(x0+2,at+2);g.quadraticCurveTo((x0+ax1)/2,at-74,ax1-2,at+2);g.stroke();g.fillStyle='#e0dacb';g.fillRect(x0-2,at-2,ax1-x0+4,6);
+  g.strokeStyle='#cfc8b6';g.lineWidth=2;g.beginPath();g.arc((x0+ax1)/2,at-22,13,0,7);g.stroke();g.beginPath();g.arc((x0+ax1)/2,at-22,7,0,7);g.stroke();
+  for(const wx of[x0+40,x0+120,x0+180])lgWin(g,wx-12,at+12,24,50,{frame:'#f6f2e8',glass:'#4a5868',rail:1});
+  lgAshlar(g,x0,top,x1,b-LG.GF,st,R);
+  {const gr=g.createLinearGradient(x0,0,x0+110,0);gr.addColorStop(0,'rgba(0,0,0,.2)');gr.addColorStop(.6,'rgba(255,255,255,.06)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x0,at,110,b-at)}
+  g.fillStyle='#e0dacb';g.fillRect(x0-2,top-6,x1-x0+4,7);
+  for(let k=1;k<=n;k++){const y=b-LG.GF-(k-1)*LG.FH;g.fillStyle='rgba(0,0,0,.06)';g.fillRect(x0,y-3,x1-x0,3);for(let wx=x0+40;wx<x1-30;wx+=64)lgWin(g,wx-12,y-66,24,48,{frame:'#f6f2e8',glass:'#4a5868',rail:k===n||k===1})}
+  // le bandeau au-dessus du rez-de-chaussée, puis les vitrines et les piliers
+  g.fillStyle='#e4e0d4';g.fillRect(x0,b-LG.GF,x1-x0,LG.GF);g.fillStyle='#dcd6c6';g.fillRect(x0-2,b-LG.GF-6,x1-x0+4,8);
+  for(let x=x0+14;x<x1-20;x+=96){g.fillStyle='rgba(44,58,74,.92)';g.fillRect(x+16,b-LG.GF+8,64,LG.GF-8);g.fillStyle='rgba(220,230,240,.22)';g.fillRect(x+22,b-LG.GF+14,20,LG.GF-20);g.fillRect(x+50,b-LG.GF+14,24,LG.GF-20);
+    g.fillStyle='#ece8dc';g.fillRect(x-4,b-LG.GF,20,LG.GF);g.fillStyle='rgba(0,0,0,.08)';g.fillRect(x+12,b-LG.GF,4,LG.GF)}
+  g.fillStyle='#2a4a8a';g.fillRect(x0+120,b-LG.GF+14,90,12);g.fillStyle='#fff';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('BANQUE',x0+165,b-LG.GF+23)}
 function lgArtNouveau(g,c0,c1,R){// l'immeuble Art nouveau à l'angle (d'après le cliché) : trois étages, angle arrondi à balcons galbés, grosse corniche
   // moulurée, balustrade, et l'angle couronné d'une crête sculptée à volutes ; au rez-de-chaussée, porte sculptée et grandes arcades
   const x0=c0*T,x1=c1*T,b=LG.BASE,n=3,top=b-LG.GF-n*LG.FH,st='#ddd2bc',cx0=x1-90;
@@ -327,7 +336,7 @@ function lgCathedrale(g,c0,c1,R){// le flanc nord de la cathédrale : bas-côté
 /* hauteur, toit et matière d'une façade (pour les murs en fuite des rues transversales) */
 function lgInfo(f){const B=LG.BASE,G=LG.GF,H=LG.FH;
   switch(f.k){case'rotonde':return{top:B-G-4*H,mh:62,col:'#a9b0a4'};case'hotel':return{top:B-22-(G+H)*.86,mh:52,col:'#b85a3e',brick:1};case'gothique':return{top:B-G-H,mh:70,col:'#e4dcc8'};case'coupole':return{top:B-G-3*H,mh:74,col:'#e6dcc4'};case'cathedrale':return{top:B-176,mh:0,col:'#9a8e76',noWin:1,rubble:1};
-    case'verre':return{top:B-G-2*H,mh:0,col:'#5a6a7a'};case'moderne':return{top:B-G-4*H-30,mh:0,col:'#e2dccc'};case'blanc':return{top:B-G-3*H,mh:60,col:'#efebe0'};
+    case'verre':return{top:B-G-2*H,mh:0,col:'#5a6a7a'};case'moderne':return{top:B-G-4*H-30,mh:0,col:'#e2dccc'};case'blanc':return{top:B-G-4*H,mh:30,col:'#efebe0'};
     case'nouveau':return{top:B-G-3*H-30,mh:0,col:'#ddd2bc'};case'cl':return{top:B-G-2*H-20,mh:40,col:'#e2d6be'};}
   return{top:B-G-(f.n||4)*H,tile:f.roof==='tile',mh:f.mans===false?0:(f.mansH||64),col:f.mat==='brick'?'#b85a3e':f.mat==='orange'?'#d98a4a':(f.col||LGC.stone),brick:f.mat==='brick'||f.mat==='orange'}}
 /* une rue transversale qui s'enfonce entre deux immeubles : chaque côté prolonge l'immeuble voisin (même hauteur, même matière) */
@@ -382,7 +391,7 @@ function langletBuild(Lv){
 /* ---------- après lecture : le tramway, les touristes ---------- */
 function langletPost(Lv){
   const D=Lv.def.langlet;if(!D)return;
-  const tram={axis:'g',kind:'tram3',x:-9999,y:99999,w:520,h:14,vh:118,dx:0,dy:0,t:0,speed:0,a0:0,a1:0,on:false,dir:-1,col:'#c8302a'};Lv.movers.push(tram);
+  const tram={axis:'g',kind:'tram3',x:-9999,y:99999,w:520,h:14,vh:132,dx:0,dy:0,t:0,speed:0,a0:0,a1:0,on:false,dir:-1,col:'#c8302a'};Lv.movers.push(tram);
   const S3={tram,tramT:6,warn:0,groups:[],said:{}};Lv.lg=S3;
   for(const gr of D.groups){const n=gr.n||5;const m=[];for(let i=0;i<n;i++)m.push({dx:i*30-(n-1)*15,k:i===0?'guide':['photo','sac','chapeau','enfant','photo'][i%5],ph:i*1.3});S3.groups.push({x:gr.c*T,a:gr.a*T,b:gr.b*T,dir:1,st:'walk',t:0,m})}
 }

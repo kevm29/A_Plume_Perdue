@@ -159,7 +159,7 @@ LEVELS.push((()=>{
   // le balcon de pierre de l'hôtel en brique, la maison à pignon
   run(24,27,BR(1),'t');run(91,92,BR(1),'t');
   // pics anti-pigeons sur quelques balcons
-  for(const[c,r]of[[81,BR(4)-1],[82,BR(4)-1],[140,BR(4)-1],[141,BR(4)-1],[146,BR(1)-1],[67,BR(4)-1]])put(c,r,'^');
+  for(const[c,r]of[[81,BR(4)-1],[82,BR(4)-1],[140,BR(4)-1],[141,BR(4)-1],[147,BR(4)-1],[67,BR(4)-1]])put(c,r,'^');
   // bannes des boutiques (auvents qui font rebondir)
   // bannes : posées pile sur le haut des devantures, de toute leur longueur (x en pixels, d'après les vitrines dessinées)
   const AWN=[[630,870,'#2a5a8a'],[4050,4230,'#8a2a2a'],[4646,4874,'#2a6a4a'],[5740,5890,'#2a7a5a'],[6550,6790,'#5a3a6a'],[8726,8874,'#c8a030']];
