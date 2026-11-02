@@ -8103,7 +8103,7 @@ function facadePost(Lv){if(!Lv.def.facade)return;
   for(const[cx,r]of[[400,53],[720,53],[1160,52],[1480,51]]){const f=cx<FC.AX?1:-1,s=1.3,gx=cx-f*s*33,gy=fcY(48)+8,[mx,my]=fcMouth(gx,gy,f,s);S.g1.push({gx,gy,f,s,x:mx,y:my,yb:fcY(r),ph:(cx*.013)%3.4,st:'idle'})}
   // les gargouilles n°2 : le jet passe d'une cible à l'autre
   const tg=(c,r)=>[c*T+T/2,fcY(r)-12];
-  S.rose={seq:[[1,tg(28.5,36)],[1,tg(23,43)],[0,tg(17.5,36)]],t:0,i:-1,blob:null,warn:-1,splash:null};
+  S.rose={seq:[[1,tg(28.5,36)],[0,tg(17.5,36)]],t:0,i:-1,blob:null,warn:-1,splash:null};
   S.g2.push({g:FC_G2[2],tg:[tg(10.5,20),tg(13,21),tg(15,21),tg(17,20)],ph:1});S.g2.push({g:FC_G2[3],tg:[tg(29,21),tg(31,21),tg(33,21),tg(35.5,20)],ph:3});
   // les pigeons chieurs : sur les plateformes du haut ; chacun à son rythme
   for(const[x,r,ph]of[[505,28,0],[760,29,1.3],[1120,29,2.6],[1385,29,.7]])S.shit.push({x,y:fcY(r),ph,t:ph,lift:0,per:4.2});
@@ -8133,15 +8133,15 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
   for(const o of S.g2){const n=o.tg.length,per=(n-1)*1.3,cyc=per*2+2.4,u=(G.lt+o.ph)%cyc;
     if(u<per*2){o.on=true;const p=u<per?u/1.3:(per*2-u)/1.3;o.pts=fcJetPts(o,Math.min(n-1-1e-3,p))}else{o.on=false;o.pts=null;o.warn=u>cyc-.8}
     if(o.on&&!P.dead)for(const[x,y]of o.pts)if(Math.abs(x-pcx)<12+P.w/2-4&&Math.abs(y-pcy)<12+P.h/2-6){hit='jetPierre';break}}
-  // la gargouille de la rose : un jet d'eau à la fois, comme les autres gargouilles : plateforme de droite, haut du gâble, plateforme de gauche ;
+  // la gargouille de la rose : un jet d'eau à la fois, comme les autres gargouilles : plateforme de droite, puis plateforme de gauche ;
   // un temps de repos entre deux jets, puis une pause après les trois
-  {const Ro=S.rose,ON=1.0,GAP=1.7,PAUSE=2.2,cyc=3*(ON+GAP)+PAUSE,u=(G.lt+.5)%cyc,i=Math.floor(u/(ON+GAP)),v=u-i*(ON+GAP);Ro.pts=null;Ro.warn=-1;Ro.jaw=0;Ro.gi=-1;
-   if(i<3){const[gi,tgt]=Ro.seq[i],[gx,gy,f]=FC_G2[gi];Ro.gi=gi;
+  {const Ro=S.rose,ON=1.0,GAP=1.7,PAUSE=2.2,n=Ro.seq.length,cyc=n*(ON+GAP)+PAUSE,u=(G.lt+.5)%cyc,i=Math.floor(u/(ON+GAP)),v=u-i*(ON+GAP);Ro.pts=null;Ro.warn=-1;Ro.jaw=0;Ro.gi=-1;
+   if(i<n){const[gi,tgt]=Ro.seq[i],[gx,gy,f]=FC_G2[gi];Ro.gi=gi;
      if(v<ON){const[mx,my]=fcMouth(gx,gy,f,1.7),grow=Math.min(1,v/.25),pts=[];const cx2=mx+f*50,cy2=my-50;
        for(let k=0;k<=16;k++){const w=k/16*grow;pts.push([(1-w)*(1-w)*mx+2*(1-w)*w*cx2+w*w*tgt[0],(1-w)*(1-w)*my+2*(1-w)*w*cy2+w*w*tgt[1]])}
        Ro.pts=pts;Ro.reach=grow>=1;Ro.jaw=1;
        if(!P.dead)for(const[x,y]of pts)if(Math.abs(x-pcx)<12+P.w/2-4&&Math.abs(y-pcy)<12+P.h/2-6){hit='jetPierre';break}}
-     else if(v>ON+GAP-.7){const n=Ro.seq[(i+1)%3];if(i<2){Ro.warn=n[0];Ro.jaw=.3}}}
+     else if(v>ON+GAP-.7){if(i<n-1){Ro.warn=Ro.seq[i+1][0];Ro.jaw=.3}}}
    else if(u>cyc-.7){Ro.warn=Ro.seq[0][0];Ro.jaw=.3}}
   // les pics anti-pigeons du groupe sculpté
   if(!P.dead&&overlap(hb,{x:FC_SPK.x0,y:FC_SPK.y-2,w:FC_SPK.x1-FC_SPK.x0,h:30}))hit='spikes';
