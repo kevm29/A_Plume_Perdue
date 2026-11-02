@@ -1457,10 +1457,10 @@ LEVELS.push((()=>{
     [12,13,28],[18,28,29],[33,34,29],[11,12,24],                                                    // la galerie des rois
     [10,11,20],[13,13,21],[15,15,21],[17,17,20],[20,20,21],[23,23,21],[26,26,21],[29,29,21],[31,31,21],[32,32,20],[33,33,21],[35,36,20]]; // les dais des tours
   for(const[c0,c1,r]of PL)for(let c=c0;c<=c1;c++)put(c,r,'t');
-  // rats : sur le faîte du gâble, sur la galerie des rois
-  put(23,42,'k');put(21,42,'|');put(25,42,'|');put(23,28,'k');put(20,28,'|');put(26,28,'|');
+  // rat : sur la galerie des rois
+  put(23,28,'k');put(20,28,'|');put(26,28,'|');
   // cartels, paille, médaille, départ, fenêtre de la tour sud
-  for(const[c,r]of[[4,55],[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
+  for(const[c,r]of[[38,46],[8,39],[38,31],[12,23]])put(c,r,'C');
   for(const[c,r]of[[17,52],[29,51],[36,50],[39,48],[9,42],[17,42],[28,42],[37,42],[22,42],[10,35],[17,35],[29,35],[36,35],[13,27],[19,28],[27,28],[34,28],[13,20],[20,20],[26,20],[2,55],[44,55]])put(c,r,'o');
   put(10,52,'*');put(6,55,'S');put(32,19,'E');
   return {w:2,name:"La cathédrale",theme:'facade',exit:'window',exitLabel:"TOUR SUD",seed:101,rows:RR,camY:.55,
