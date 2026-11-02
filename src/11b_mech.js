@@ -142,7 +142,7 @@ function mechAfterMove(dt,vyBefore){
   // rebond sur les auvents et les ballons
   if(P.onGround){
     const r=Math.floor((P.y+P.h+2)/T),c0=Math.floor((P.x+4)/T),c1=Math.floor((P.x+P.w-4)/T);
-    let bounce=0;for(let c=c0;c<=c1;c++)if(tile(c,r)==='A')bounce=1020;
+    let bounce=0;for(let c=c0;c<=c1;c++)if(tile(c,r)==='A')bounce=1020*(L.def.awnBounce||1);
     if(P.onMover&&P.onMover.bouncy)bounce=940;
     if(bounce){P.vy=-bounce;P.onGround=false;P.onMover=null;P.flaps=0;P.sx=.8;P.sy=1.25;if(!G.sim)tone(240,.18,'triangle',.12,520)}
   }

@@ -159,7 +159,9 @@ LEVELS.push((()=>{
   // pics anti-pigeons sur quelques balcons
   for(const[c,r]of[[81,BR(4)-1],[82,BR(4)-1],[140,BR(4)-1],[141,BR(4)-1],[146,BR(1)-1],[66,BR(4)-1]])put(c,r,'^');
   // bannes des boutiques (auvents qui font rebondir)
-  const AW=[[18,21],[102,105],[117,120],[144,146],[164,168],[218,221]];for(const[c0,c1]of AW)for(let c=c0;c<=c1;c++)put(c,17,'A');
+  // bannes : posées pile sur le haut des devantures, de toute leur longueur (x en pixels, d'après les vitrines dessinées)
+  const AWN=[[630,870,'#2a5a8a'],[4050,4230,'#8a2a2a'],[4646,4874,'#2a6a4a'],[5740,5890,'#2a7a5a'],[6550,6790,'#5a3a6a'],[8726,8874,'#c8a030']];
+  for(const[a,b]of AWN)for(let c=Math.floor(a/T);c<=Math.floor((b-1)/T);c++)if(g[16][c]==='.')g[16][c]='A';
   // rats, cartels, paille, répliques
   for(const[c,a,b]of[[38,30,44],[138,133,148],[298,294,302]]){put(c,G0-1,'k');put(a,G0-1,'|');put(b,G0-1,'|')}
   for(const c of[48,124,172,238,292])put(c,G0-1,'C');
@@ -168,7 +170,7 @@ LEVELS.push((()=>{
   for(const c of[14,244,300])put(c,G0-1,'q');
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,
     vaneAt:[7,4],
-    awningCol:c=>{const i=AW.findIndex(([a,b])=>c>=a&&c<=b);return['#2a5a8a','#8a2a2a','#2a6a4a','#2a7a5a','#5a3a6a','#c8a030'][Math.max(0,i)]},
+    awnSpans:AWN,awnBounce:1.1,
     langlet:{facades:F,trees:[50,68,100,136,186,214,232,262,288],lamps:[30,92,150,200,256,296],bollards:[270,302],shelter:131,
       groups:[{c:72,a:64,b:100,n:6},{c:252,a:244,b:290,n:5}]},
     start:"Une grande rue toute droite, avec des rails. Je ne la reconnais pas : ici, il n'y avait que des ruelles et des chantiers.",

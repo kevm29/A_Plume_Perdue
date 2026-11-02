@@ -240,6 +240,7 @@ function drawTileFront(g,ch,x,y,cc,r,th){
     g.fillStyle='rgba(255,235,200,.16)';g.beginPath();g.ellipse(x+12+(cc%3)*6,y+15,7,1.6,0,0,7);g.fill();
     g.fillStyle='rgba(30,20,12,.5)';for(let k=0;k<3;k++){g.beginPath();g.arc(x+6+((cc*7+k*13)%28),y+22+k*5,1.8+k*.4,0,7);g.fill()}
   }else if(ch==='A'){
+    if(L.def.awnSpans)return;   // bannes peintes avec les façades
     // auvent rayé de boutique, légèrement bombé
     const L0=tile(cc-1,r)!=='A',R0=tile(cc+1,r)!=='A';
     g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x,y+14,T,4);

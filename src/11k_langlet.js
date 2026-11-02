@@ -319,6 +319,12 @@ function lgRue(g,c0,c1,o,Lf,Rf){
   if(o.stop){g.fillStyle='#c8302a';g.beginPath();for(let k=0;k<8;k++){const an=k/8*Math.PI*2+Math.PI/8;g.lineTo(e-24+Math.cos(an)*14,b-104+Math.sin(an)*14)}g.fill();g.fillStyle='#fff';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText('STOP',e-24,b-101);g.fillStyle='#5a5e66';g.fillRect(e-25,b-90,3,90)}
 }
 
+/* une banne rayée, juste au-dessus d'une devanture, de toute sa longueur */
+function lgAwning(g,a,e,col){const y=LG.BASE-LG.GF-6,n=Math.max(4,Math.round((e-a)/20)),w=(e-a)/n;
+  g.fillStyle='rgba(0,0,0,.22)';g.fillRect(a,y+18,e-a,5);
+  for(let k=0;k<n;k++){g.fillStyle=k%2?'#efe6d0':col;poly(g,[a+k*w,y,a+(k+1)*w,y,a+(k+1)*w+1,y+14,a+k*w+1,y+14]);g.fill();g.beginPath();g.arc(a+k*w+w/2,y+14,w/2,0,Math.PI);g.fill()}
+  g.fillStyle='rgba(255,255,255,.18)';g.fillRect(a,y,e-a,2);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(a-2,y-2,e-a+4,3);
+  g.strokeStyle='#3a3530';g.lineWidth=2;for(const[x,d]of[[a+2,-1],[e-2,1]]){g.beginPath();g.moveTo(x,y+2);g.lineTo(x+d*6,y+44);g.stroke()}}
 /* ---------- la couche des façades (en cache) ---------- */
 function langletBuild(Lv){
   const wpx=Lv.wpx+40,hpx=ROWS*T+PAD,TR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);const R=mulberry(Lv.def.seed+21);
@@ -328,6 +334,7 @@ function langletBuild(Lv){
     if(f.k==='rotonde')lgRotonde(g,f.c0,f.c1,R);else if(f.k==='hotel')lgHotelBrique(g,f.c0,f.c1,R);else if(f.k==='rue'){const i=D.facades.indexOf(f);lgRue(g,f.c0,f.c1,f,lgInfo(D.facades[i-1]),lgInfo(D.facades[i+1]))}else if(f.k==='gothique')lgGothique(g,f.c0,f.c1,R);else if(f.k==='coupole')lgCoupole(g,f.c0,f.c1,R);
     else if(f.k==='verre')lgVerre(g,f.c0,f.c1);else if(f.k==='moderne')lgModerne(g,f.c0,f.c1);else if(f.k==='blanc')lgBanqueBlanche(g,f.c0,f.c1,R);else if(f.k==='nouveau')lgArtNouveau(g,f.c0,f.c1,R);
     else if(f.k==='cl')lgCreditLyonnais(g,f.c0,f.c1,R);else if(f.k==='cathedrale')lgCathedrale(g,f.c0,f.c1,R);else lgImm(g,f,R);g.restore()}
+  for(const[a,e,col]of Lv.def.awnSpans||[])lgAwning(g,a,e,col);
   // mobilier du trottoir : arbres en grille, lampadaires, potelets, l'arrêt du tram
   for(const tx of D.trees){const x=tx*T;g.strokeStyle='#4a3a2c';g.lineWidth=4;g.beginPath();g.moveTo(x,LG.BASE);g.lineTo(x,LG.BASE-170);g.stroke();g.lineWidth=1.5;for(let k=0;k<9;k++){const y=LG.BASE-70-k*12;g.beginPath();g.moveTo(x,y);g.lineTo(x+(k%2?1:-1)*(16+k*3),y-26);g.stroke()}
     g.fillStyle='#3a3c40';g.fillRect(x-22,LG.BASE-4,44,4)}
