@@ -29,62 +29,45 @@ LEVELS.push((()=>{
     hints:[],quips:[],
     segs:[{z:'a4',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
-LEVELS.push({w:3,name:"L'aire de Gueux",theme:'aire',exit:'post',exitLabel:"A4 → OUEST",seed:103,
- gust:{period:6,dur:2.2,push:240,dir:-1},
- start:"Une route sans fin, toute droite vers l'ouest. Et un vent à décorner les bœufs.",
- hints:[["ARTICLE 18 — LE VENT DE FACE","Les traînées de vent annoncent la rafale. Se mettre à l'abri derrière une barrière ou un camion."],
-        ["ARTICLE 19 — LE SAC VOLANT","Il ne se pose jamais. Il suit le vent, toujours le même chemin."]],
- quips:["Des tables pour pique-niquer au bord de la route. En pleine guerre. L'arrière ne doute de rien.","Un sac qui vole. Ce n'est pas du papier. Je ne sais pas ce que c'est, et je n'aime pas ça.","Un hérisson. Je l'ai pris pour une boule de barbelés."],
- signs:["road:AIRE DE REPOS|A4"],
- segs:[SEG_START_FLAT,`
-......................
-...o......o......o....
-.h....X.....X.....X...
-######################
-######################`,`
-........................
-....o.........o.........
-|N....|.................
-.........====...........
-..q...........k.........
-########################
-########################`,`
-............
-.....o.o....
-.C......h...
-############
-############`,`
-........................
-.....m.........n........
-........................
-.......X........X.......
-#####.####....####..####
-#####.####....####..####`,`
-.........*..........
-....................
-....................
-|N....|.............
-.............====...
-.....k........q.....
-####################
-####################`,`
-............
-.....o.o....
-.C..........
-############
-############`,`
-........................
-........m...............
-...o..........o.........
-|..k..X.....|..k...X...|
-########################
-########################`,`
-..o.o.......
-............
-......E.....
-############
-############`]});
-
+/* 4-2 · L'aire de Gueux : de nuit, la station-service (chiens errants), la boutique, le couloir des machines à café,
+   le self, la salle de restaurant, les toilettes, puis le parking des camions — 11n_aire.js */
+LEVELS.push((()=>{
+  const RW=416,RR=16,G0=14,T0=40;
+  const g=Array.from({length:RR},()=>Array(RW).fill('.'));
+  for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
+  const C=x=>Math.floor(x/T0),block=(x0,x1,r0,r1)=>{for(let c=C(x0);c<=C(x1-1);c++)for(let r=r0;r<=r1;r++)g[r][c]='X'};
+  const H=(x0,x1,h)=>block(x0,x1,G0-h,G0-1);
+  // dehors : les îlots des pompes, les voitures garées
+  H(1950,2170,2);H(2260,2480,2);
+  // le bâtiment : plafond, murs et cloisons (portes : celle de la boutique est automatique)
+  block(2800,12480,3,3);block(2760,2840,4,9);block(4760,4800,4,9);block(5560,5600,4,9);block(11000,11040,4,9);
+  for(let r=4;r<=13;r++)if(r<5||r>7)g[r][C(12440)]='X';
+  // la boutique : étals, bac à glaces, présentoir à journaux, caisse (comptoir, caisse enregistreuse, présentoir)
+  H(3000,3300,3);H(3300,3420,2);H(3420,3720,3);H(3800,3880,5);H(3880,4180,3);H(4320,4640,2);H(4340,4400,3);H(4580,4640,4);
+  // le couloir : les deux machines à café
+  H(4900,4980,4);H(5300,5380,4);
+  // le self : le bar à salades (sa hotte au-dessus) ; les vitrines réfrigérées (le haut, le socle) ; la seconde caisse
+  H(5700,6100,3);block(5700,6100,7,7);block(6300,7400,5,7);H(6300,7400,1);H(7600,7920,2);H(7620,7680,3);H(7860,7920,4);
+  // la salle : tables (plateaux), un pilier ; les toilettes : lavabo, cabines
+  for(const x of[8300,8900,9500,10100,10620])for(let c=C(x);c<C(x)+3;c++)g[G0-2][c]='t';
+  H(8680,8720,5);g[G0-3][C(11300)]='t';H(11600,12400,5);
+  // dehors, derrière : les deux camions
+  H(13400,13840,3);H(15800,16240,3);
+  // rats, gardien, cartels, paille, médaille, départ, sortie (sur le dernier camion)
+  for(const[c,r,a,b]of[[77,10,75,82],[281,13,277,289],[300,8,291,309]]){g[r][c]='k';g[r][a]='|';g[r][b]='|'}
+  g[G0-1][355]='G';g[G0-1][348]='|';g[G0-1][365]='|';
+  for(const[c,r]of[[72,13],[122,13],[141,13],[200,13],[276,13],[340,10],[372,13]])g[r][c]='C';
+  for(const[c,r]of[[12,12],[30,12],[48,10],[60,12],[78,8],[90,8],[100,8],[110,10],[128,12],[135,12],[146,10],[150,10],[170,12],[176,12],[210,11],[226,11],[240,11],[262,11],[294,7],[306,7],[330,12],[345,10],[384,12],[392,12]])g[r][c]='o';
+  g[6][96]='*';g[G0-1][2]='S';g[G0-4][400]='E';
+  return {w:3,name:"L'aire de Gueux",theme:'aireNuit',exit:'none',exitLabel:"",seed:137,rows:RR,camY:.62,
+    aire:{G0,door:[2800,2840],sensor:[2790,380],dogs:[[1040,600,2700],[1380,600,2700],[12660,12480,13400],[15100,14700,15700]],
+      wake:[1,1,0,1],beggar:[2560,2760],jumpers:[[3150,3600,440,130],[6380,6700,520,110],[6650,7060,520,110]],
+      customers:[3760,4220],cashiers:[[4400,4580,480],[7680,7860,480]],tables:[8300,8900,9500,10100,10620],
+      coffee:5340,salad:5900,hood:[5700,6100],fridge:6850,window:12440},
+    start:"L'aire de Gueux. Des lumières, des odeurs de gasoil et de café. Et, sous l'auvent, deux chiens qui dorment. Marcher. Surtout, ne pas sauter.",
+    hints:[],quips:[],
+    segs:[{z:'aire',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
+})());
 LEVELS.push({w:3,name:"L'orage",theme:'storm',exit:'post',exitLabel:"OUEST →",seed:109,
  auto:{speed:118},
  start:"L'orage. Comme au fort. Je n'aime pas l'orage.",

@@ -75,6 +75,7 @@ function tryAct(){
     if(a.step===3){grantSecret(a,a.y-40);if(!G.sim)sayQueue([['RAYMOND',"De la paille de calage. Et au fond… une enclume de cordonnier.",3.6],['RAYMOND',"Étiquetée « FRAGILE ». Voilà donc ce qui m'a libéré.",3.6]])}
     return}
   if(L.a4&&(a.kind==='beacon'||a.kind==='secret')&&a4Act(a))return;
+  if(L.aire&&a.kind==='secret'&&aireAct(a))return;
   if(a.kind==='door'){winLevel();return}
   if(a.kind==='hide'){museeHide(a);return}
   if(a.kind==='lever'){a.used=true;a.t=0;unlock('a3');if(a.gate)a.gate.opening=true;if(!G.sim){SFX.check();if(L.def.leverQuip)say(L.def.leverQuip,3.6)}return}
