@@ -1,7 +1,7 @@
 /* =========================================================
    AUDIO — musiques synthétisées, bruitages, ambiances
    ========================================================= */
-let AC=null,master,mGain,sGain,noiseBuf,tick=0,nextTick=0,loopN=0,CUR=null,curName='';
+let MUS_OLD=false,AC=null,master,mGain,sGain,noiseBuf,tick=0,nextTick=0,loopN=0,CUR=null,curName='';
 const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 function midi(n){const m=/([A-G])([#b]?)(\d)/.exec(n);return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)}
 const mtof=m=>440*Math.pow(2,(m-69)/12);
@@ -128,6 +128,11 @@ function accordion(t,ms,dur,vol){
   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+.03);g.gain.setValueAtTime(vol,t+dur*.6);g.gain.linearRampToValueAtTime(.0001,t+dur*.95);
   for(const m of ms)for(const det of[-7,7]){const o=osc('sawtooth',mtof(m),t,t+dur,g);o.detune.value=det}
 }
+function musette(t,m,dur){const g=AC.createGain(),lp=AC.createBiquadFilter(),bp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2400;bp.type='peaking';bp.frequency.value=900;bp.gain.value=5;g.connect(bp);bp.connect(lp);lp.connect(mGain);
+  const v=.07,d=Math.max(.12,dur*.92);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.025);g.gain.setValueAtTime(v,t+d*.8);g.gain.linearRampToValueAtTime(.0001,t+d);
+  for(const det of[-14,0,14]){const o=osc('sawtooth',mtof(m),t,t+d+.05,g,det?.7:1);o.detune.value=det}
+  const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=5.5;lg.gain.value=.012;lf.connect(lg);lg.connect(g.gain);lf.start(t);lf.stop(t+d)}
+function crackle(t){const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=noiseBuf;f.type='highpass';f.frequency.value=2500;s.connect(f);f.connect(g);g.connect(mGain);g.gain.setValueAtTime(.05*rnd(),t);g.gain.exponentialRampToValueAtTime(.0001,t+.012);s.start(t,rnd());s.stop(t+.02)}
 const INST={
   box(t,m,dur,v){const g=AC.createGain();g.connect(mGain);env(g,t,v||.55,.006,0,Math.max(.7,dur*1.4));osc('sine',mtof(m),t,t+2.4,g);osc('sine',mtof(m)*4.007,t,t+2.4,g,.1)},
   accord(t,m,dur){accordion(t,[m-12],dur*.95,.11)},
@@ -145,8 +150,14 @@ function playTick(s,tk,t,spb){
   const tpb=s.bpb*2,bar=Math.floor(tk/tpb),bt=tk%tpb;
   if(bar>=s.prog.length)return;
   const lead=s.lead[loopN%s.lead.length],tr=s.tr;
-  const e=s.melT[tk];if(e)INST[lead](t,e.m+tr,e.d*spb,s.lv);
   const ch=CHORDS[s.prog[bar]].map(m=>m+tr),v=voice(ch),root=ch[0];
+  if(MUS_OLD){
+    // le souvenir : même air, même mesure, mais à l'accordéon musette, basses et accords en boutons, et le grésillement du phonographe
+    const e=s.melT[tk];if(e)musette(t,e.m+tr,e.d*spb);
+    if(bt===0)accordion(t,[root-24,root-12],spb*.8,.1);else if(bt===4&&s.bpb>=4)accordion(t,[ch[2]-24,ch[2]-12],spb*.8,.08);else if(bt%2===0)accordion(t,v,spb*.45,.045);
+    if(noiseBuf&&rnd()<.6)crackle(t+rnd()*spb*.5);
+    return}
+  const e=s.melT[tk];if(e)INST[lead](t,e.m+tr,e.d*spb,s.lv);
   switch(s.bass){
     case'soft':if(bt===0)INST.box(t,root-12,spb*3,.22);break;
     case'waltz':if(bt===0)accordion(t,[root-12],spb*.9,.14);else if(bt%2===0)accordion(t,v,spb*.55,.04);break;

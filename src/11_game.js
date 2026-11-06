@@ -31,7 +31,7 @@ function songKey(i){const d=LEVELS[i];return's'+(d.w+1)+'-'+(i%4+1)}
 function startLevel(i){
   computeRS();
   G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
-  if(L.ferte)ferteLayers();
+  MUS_OLD=false;if(L.ferte)ferteLayers();
   {const tb=document.getElementById('tb');if(tb)tb.classList.toggle('ferte',!!L.ferte)}
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
   setSong(songKey(i));loopsOff();

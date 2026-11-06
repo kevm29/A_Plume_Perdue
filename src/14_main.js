@@ -50,7 +50,6 @@ function update(dt){
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
-      if(L.ferte&&L.ferte.cer.on){ferteCerUpdate(dt);updateCamera(dt);updateParticles(dt);break}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
       if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn()}
