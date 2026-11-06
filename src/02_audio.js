@@ -5,7 +5,7 @@ let AC=null,master,mGain,sGain,noiseBuf,tick=0,nextTick=0,loopN=0,CUR=null,curNa
 const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 function midi(n){const m=/([A-G])([#b]?)(\d)/.exec(n);return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)}
 const mtof=m=>440*Math.pow(2,(m-69)/12);
-const CHORDS={Am:[57,60,64],Dm:[50,53,57],E:[52,56,59],F:[53,57,60],C:[48,52,55],G:[55,59,62],A:[57,61,64],Gm:[55,58,62],Bb:[58,62,65],Ab:[56,60,63],Eb:[51,55,58],Fm:[53,56,60],Em:[52,55,59],B:[59,63,66],D:[50,54,57]};
+const CHORDS={Cm:[48,51,55],Am:[57,60,64],Dm:[50,53,57],E:[52,56,59],F:[53,57,60],C:[48,52,55],G:[55,59,62],A:[57,61,64],Gm:[55,58,62],Bb:[58,62,65],Ab:[56,60,63],Eb:[51,55,58],Fm:[53,56,60],Em:[52,55,59],B:[59,63,66],D:[50,54,57]};
 const SONGS={
   title:{tempo:78,bpb:3,lead:['box'],bass:'soft',gap:3,
     prog:'Am Dm E Am Am C G C Dm Am E E Am E Am Am',
@@ -61,6 +61,26 @@ const SONGS={
   cantique:{tempo:66,bpb:4,lead:['pipe','pipe','box'],bass:'chorale',gap:2,
     prog:'Dm Dm C Dm F C Dm Am Dm Gm Dm C F C Dm Dm',
     mel:'D5:2 E5:1 F5:1 G5:2 F5:1 E5:1 E5:2 D5:1 C5:1 D5:4 F5:2 G5:1 A5:1 G5:2 F5:1 E5:1 F5:2 E5:1 D5:1 E5:4 A5:2 G5:1 F5:1 G5:2 F5:1 D5:1 F5:2 E5:1 D5:1 E5:2 D5:1 C5:1 F5:2 G5:1 A5:1 G5:2 E5:1 C5:1 D5:3 C5:1 D5:4'},
+  // 4-3 — la nuit sur l'A4 : ut mineur, clarinette seule au-dessus des essuie-glaces
+  nuitA4:{tempo:80,bpb:4,lead:['clar','box'],bass:'wipers',gap:2,
+    prog:'Cm Cm Ab G Cm Cm Fm G Ab Eb Fm Cm Ab Fm G G',
+    mel:'G4:2 C5:1 D5:1 Eb5:3 D5:1 C5:2 Ab4:2 B4:4 r:2 G4:1 C5:1 Eb5:2 G5:2 F5:3 Eb5:1 D5:4 r:4 Eb5:1 F5:1 G5:2 Ab5:2 G5:2 Eb5:2 F5:3 Eb5:1 C5:4 r:2 Ab4:1 C5:1 F5:2 Eb5:1 D5:1 B4:4 r:4'},
+  // 4-3 — la route du fort (1916) : complainte de marche en ré mineur sur le trot des chevaux
+  route1916:{tempo:100,bpb:4,lead:['clar','box'],bass:'trot',gap:2,
+    prog:'Dm Dm A Dm Gm Dm A A F C Dm A Gm Dm A Dm',
+    mel:'A4:1 D5:1 F5:1 E5:1 D5:2 A4:2 C#5:1 E5:1 G5:1 F5:1 E5:4 F5:1 E5:1 D5:1 F5:1 A5:2 G5:1 F5:1 E5:1 D5:1 C#5:1 E5:1 A4:4 C5:1 F5:1 A5:1 G5:1 F5:2 E5:2 F5:1 E5:1 D5:1 C5:1 E5:2 C#5:2 D5:1 Bb4:1 G4:1 Bb4:1 A4:2 r:2 F5:1.5 E5:.5 D5:1 C#5:1 E5:1 A5:1 G5:1 E5:1 D5:4'},
+  // 4-3 — la chambrée : berceuse pour Marguerite, boîte à musique très douce (on doit entendre le crayon)
+  chambree:{tempo:60,bpb:3,lead:['box'],bass:'soft',gap:3,lv:.26,
+    prog:'F C Dm Bb F C Bb C F Am Dm Bb Gm C F F',
+    mel:'C5:1 F5:1 A5:1 G5:2 E5:1 F5:1 D5:1 A4:1 Bb4:2 D5:1 C5:3 A4:1 C5:1 F5:1 E5:2 G5:1 F5:3 r:3 A5:1 G5:1 F5:1 E5:2 C5:1 D5:1 F5:1 A5:1 Bb5:2 G5:1 G5:1 E5:1 C5:1 F5:3 r:3'},
+  // 4-3 — l'aube au fort : le même thème, lent et grave, comme un chant au clairon sur un orgue tenu
+  aube:{tempo:58,bpb:4,lead:['clar','pipe'],bass:'chorale',gap:2,lv:.13,
+    prog:'F F Bb F Dm Gm C C F Am Bb F Gm C F F',
+    mel:'C5:2 F5:2 A5:3 G5:1 F5:2 D5:2 C5:4 A4:2 C5:1 D5:1 F5:3 E5:1 G5:4 r:4 A5:2 G5:1 F5:1 E5:2 C5:2 D5:2 F5:2 A5:4 G5:2 F5:1 E5:1 D5:2 E5:2 F5:4 r:4'},
+  // 4-3 — le vol au-dessus des lignes : mi phrygien, galop de caisse claire, le thème de la chambrée qui revient à la fin
+  vol1916:{tempo:150,bpb:4,lead:['clar','pizz','harpsi'],bass:'barrage',gap:1,
+    prog:'Em Em F Em Em Am B B Em Em F Em C Am B Em',
+    mel:'E5:.5 F5:.5 E5:1 B4:1 E5:.5 G5:.5 F5:1 E5:1 r:1 F5:.5 G5:.5 A5:1 G5:.5 F5:.5 E5:2 r:1 B4:.5 C5:.5 D#5:1 E5:1 F#5:1 B4:1 G5:.5 F#5:.5 E5:.5 D#5:.5 E5:2 B5:1 A5:.5 G5:.5 F5:1 E5:1 C5:1 E5:1 A5:2 G5:1 F#5:1 D#5:1 B4:1 E5:.5 G5:.5 B5:1 A5:.5 G5:.5 F#5:2 E5:4 r:2 E5:1 G5:1 B5:2 A5:1 G5:1 F5:2 E5:2 C5:1 E5:1 A5:3 G5:1 F#5:2 D#5:2 E5:4'},
   // polka de la fête
   polka:{tempo:128,bpb:4,lead:['accord','box'],bass:'polka',gap:1,
     prog:'C G C G C F G C',
@@ -74,6 +94,7 @@ const LEVEL_SONGS={
   's3-1':{base:'train'},'s3-2':{base:'gare'},'s3-3':{base:'tango'},'s3-4':{base:'cantique'},
   's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'orage',tempo:136,bass:'gallop'},'s4-3':{base:'orage',tr:-2,lead:['clar','pizz']},'s4-4':{base:'orage',tr:3,lead:['harpsi','box']},
   's5-1':{base:'polka'},'s5-2':{base:'polka',tr:-5,tempo:100,lead:['box','harpsi'],bass:'soft'},'s5-3':{base:'galop',tr:2},'s5-4':{base:'title',tempo:64},
+  'vx-nuit':{base:'nuitA4'},'vx-route':{base:'route1916'},'vx-chambree':{base:'chambree'},'vx-aube':{base:'aube'},'vx-vol':{base:'vol1916'},'vx-reveil':{base:'nuitA4',tempo:66,tr:-3,lead:['box'],bass:'soft'},
   'chase':{base:'galop'},'title':{base:'title'}
 };
 const COMPILED={};
@@ -124,7 +145,7 @@ function playTick(s,tk,t,spb){
   const tpb=s.bpb*2,bar=Math.floor(tk/tpb),bt=tk%tpb;
   if(bar>=s.prog.length)return;
   const lead=s.lead[loopN%s.lead.length],tr=s.tr;
-  const e=s.melT[tk];if(e)INST[lead](t,e.m+tr,e.d*spb);
+  const e=s.melT[tk];if(e)INST[lead](t,e.m+tr,e.d*spb,s.lv);
   const ch=CHORDS[s.prog[bar]].map(m=>m+tr),v=voice(ch),root=ch[0];
   switch(s.bass){
     case'soft':if(bt===0)INST.box(t,root-12,spb*3,.22);break;
@@ -142,6 +163,9 @@ function playTick(s,tk,t,spb){
     case'train':if(bt===0||bt===4)INST.tuba(t,root-12,spb*.35,.26);if(bt===2||bt===6)INST.tuba(t,ch[2]-12,spb*.3,.2);INST.snare(t,bt%2?.09:.04);break;
     case'stride':if(bt===0)INST.harpsi(t,root-24,spb*.4,.22);if(bt===4)INST.harpsi(t,ch[2]-24,spb*.4,.2);if(bt===2||bt===6)for(const m of v)INST.harpsi(t,m,spb*.3,.07);break;
     case'chorale':if(bt===0){INST.organ(t,v,spb*s.bpb*2*.48,.04);INST.organ(t,[root-12,root-24],spb*s.bpb*2*.48,.035)}break;
+    case'wipers':if(bt===0)INST.organ(t,v,spb*3.6,.028);if(bt===0||bt===4)INST.tuba(t,root-12,spb*.5,.18);if(bt===2||bt===6)INST.pizz(t,ch[2]-12,spb*.3,.14);break;
+    case'trot':INST.pizz(t,(bt%4===2?ch[2]:root)-12,spb*.3,bt%2?.12:.26);if(bt%2)INST.snare(t,.035);if(bt===0&&bar%2===0)INST.box(t,root-12,spb*3,.16);break;
+    case'barrage':if(bt%2===0)INST.tuba(t,(bt===4?ch[2]:root)-12,spb*.3,.24);INST.snare(t,bt%2?.07:.03);if(bt===3||bt===7)INST.snare(t,.14);if(bt===0&&bar%2===0)INST.organ(t,v,spb*3,.025);break;
     case'polka':if(bt===0||bt===4)INST.tuba(t,bt===0?root-12:ch[2]-12,spb*.45,.3);else if(bt===2||bt===6)accordion(t,v,spb*.35,.05);break;
   }
 }

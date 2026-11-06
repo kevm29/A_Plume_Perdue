@@ -10,7 +10,7 @@
      4 · les tranchées françaises : « un pigeon, avec un message ! »… « il ne se pose pas… »… « un leurre boche ! Feu ! »
          La troisième balle touche, forcément. Raymond tombe dans un buisson.
    ========================================================= */
-const VF={BX:640,X0:300,END:-12300,STEP:8,XMIN:-13400,XMAX:1100,G:428,
+const VF={BX:640,CAMV:225,X0:300,END:-12300,STEP:8,XMIN:-13400,XMAX:1100,G:428,
   A:[-3500,-420],B:[-6900,-3700],C:[-9950,-7050],D:[-12300,-10050],bush:-11930,hitX:-11620};
 const VF_TR=[// tranchées : [x0,x1,profondeur,camp]
   [-4330,-4010,66,'de'],[-5330,-5060,66,'de'],[-6440,-6160,66,'de'],[-10690,-10370,66,'fr'],[-11420,-11170,64,'fr']];
@@ -40,7 +40,7 @@ function vfBuildTerrain(){
 function vfPeople(){
   const P2=[],R=mulberry(1606),sk=()=>VX_SKIN[(R()*VX_SKIN.length)|0],hr=()=>VX_HAIR[(R()*VX_HAIR.length)|0];
   const add=(o)=>{o.seed=R()*100;o.face=Object.assign({skin:sk(),hair:hr(),stubble:R()*.8,helmet:o.side==='fr'?'adrian':(R()<.75?'stahl':'pickel'),side:o.side==='fr'?'fr':'de'},o.face||{});
-    if(o.side!=='fr'&&R()<.45)o.face.stache=R()<.5?'up':'walrus';if(o.side==='fr'){if(R()<.35)o.face.beard=1;else if(R()<.6)o.face.stache='walrus'}P2.push(o);return o};
+    if(o.side!=='fr'&&R()<.45)o.face.stache=R()<.5?'up':'walrus';if(o.side==='fr'){if(R()<.3)o.face.beard=1;else if(R()<.75)o.face.stache=R()<.6?'1914':'walrus'}P2.push(o);return o};
   for(const[a,b,d,side]of VF_TR){const s0=vfSurface((a+b)/2),step=s0+d-26,floor=s0+d,de=side==='de';
     const n=Math.floor((b-a)/38);
     for(let k=0;k<n;k++){const X=a+20+k*((b-a-40)/(n-1||1));const nearFront=de?b-X<44:X-a<44;
@@ -65,13 +65,13 @@ function vfInit(first){
   if(!VF.hm0){vfBuildTerrain()}
   VF.guns=VF_GUNS.map(([X,k,el],i)=>({X,k,el,y:vfSurface(X)+14,per:k==='sfh'?4.6:3.4,tm:1.2+i*.55,recoil:0,flash:0,warn:0}));
   VF.hm=new Float32Array(VF.hm0);vfPeople();
-  const s=V.s;Object.assign(s,{x:VF.X0,y:330,sp:200,vy:-260,fph:0,dead:0,grace:1.1,shells:[],booms:[],bullets:[],gshells:[],poops:[],splats:[],shellT:1.2,said:{},trig:{},fr:{shots:0,t:-1},fall:null,wound:0,heart:0,cosT:.4});
+  const s=V.s;Object.assign(s,{x:VF.X0,cx:VF.X0-VF.BX,bx:VF.BX,bxv:0,y:330,sp:225,vy:-260,fph:0,dead:0,grace:1.1,shells:[],booms:[],bullets:[],gshells:[],poops:[],splats:[],shellT:1.2,said:{},trig:{},fr:{shots:0,t:-1},fall:null,wound:0,heart:0,cosT:.4});
   V.sc='flight';V.t=0;V.parts=[];V.bub=[];
   if(first){say("Libre ! L'ouest, c'est par là. Le pigeonnier Vasseur, c'est par là.",3.6)}
 }
 function vfCrash(why){const s=V.s;if(s.dead>0||s.fall||VF.god)return;s.why=why;s.dead=1.25;s.dvy=-120;s.drot=0;G.levelDeaths++;gotOf(G.li).d++;save();
   if(!G.sim){noise(.4,900,.5,'bandpass');tone(700,.3,'sine',.08,200)}V.shake=Math.max(V.shake,8);
-  for(let k=0;k<16;k++)V.parts.push({k:'feather',x:VF.BX,y:s.y,vx:(rnd()-.5)*260,vy:-rnd()*220,g:160,drag:2.2,life:0,max:1.8,rot:rnd()*6,vr:(rnd()-.5)*10})}
+  for(let k=0;k<16;k++)V.parts.push({k:'feather',wx:1,x:s.x,y:s.y,vx:(rnd()-.5)*260,vy:-rnd()*220,g:160,drag:2.2,life:0,max:1.8,rot:rnd()*6,vr:(rnd()-.5)*10})}
 function vfExplode(X,big){const s=V.s,gy=vfGround(X),r=big?66:52,d=big?30:24;
   s.booms.push({X,y:gy,t:0,h:220+rnd()*60,big});
   for(let x=X-r*1.3;x<=X+r*1.3;x+=VF.STEP){const i=vfIdx(x),u=(x-X)/r;if(Math.abs(u)<1)VF.hm[i]=Math.min(VF.G+90,VF.hm[i]+d*(1-u*u));else VF.hm[i]-=d*.25*(1-(Math.abs(u)-1)/.3)}
@@ -93,9 +93,11 @@ function vfUpdate(dt){
   if(pressed.has('restart')&&!V.out){vfCrash('r');return}
   // les commandes : ← plus vite (vers l'ouest), → plus lent ; haut et bas
   const L2=keys.has('left'),Rt=keys.has('right'),up=keys.has('up')||keys.has('jump'),dn=keys.has('down');
-  const tsp=L2?330:Rt?135:225;s.sp+=(tsp-s.sp)*Math.min(1,dt*3.2);
+  // la caméra avance seule vers l'ouest ; Raymond, lui, se déplace dans le cadre : ← il file devant, → il se laisse distancer
+  const tbv=L2?-230:Rt?170:0;s.bxv+=(tbv-s.bxv)*Math.min(1,dt*6);s.bx+=s.bxv*dt;if(s.bx<120){s.bx=120;s.bxv=Math.max(0,s.bxv)}if(s.bx>880){s.bx=880;s.bxv=Math.min(0,s.bxv)}
+  s.cx-=VF.CAMV*dt;s.sp=VF.CAMV-s.bxv;
   const tvy=up?-270:dn?310:26;s.vy+=(tvy-s.vy)*Math.min(1,dt*(up||dn?7:3));
-  s.x-=s.sp*dt;s.y+=s.vy*dt;s.fph+=dt*(up?22:dn?6:14);if(s.grace>0)s.grace-=dt;
+  s.x=s.cx+s.bx;s.y+=s.vy*dt;s.fph+=dt*(up?22:dn?6:14);if(s.grace>0)s.grace-=dt;
   if(s.y<58){s.y=58;if(s.vy<0)s.vy=0}
   if(Math.floor(s.fph/6.28)!==Math.floor((s.fph-dt*(up?22:14))/6.28)&&!G.sim&&rnd()<.35)SFX.flutter();
   if(s.grace<=0&&s.y+8>vfGround(s.x))return vfCrash('sol');
@@ -113,7 +115,7 @@ function vfUpdate(dt){
 }
 /* ---------- le monde qui vit : obus, mitrailleuses, canons, soldats ---------- */
 function vfWorld(dt){
-  const s=V.s,X=s.x,cam=X-VF.BX;
+  const s=V.s,X=s.x,cam=s.cx;
   for(const p of V.parts)if(p.wx&&p.k==='clod'&&p.vy>0&&p.y>vfGround(p.x)){p.y=vfGround(p.x);p.vy*=-.2;p.vx*=.4}
   // la friche : les obus tombent du ciel, devant Raymond
   if(s.x<VF.A[1]&&s.x>VF.A[0]&&!s.dead){s.shellT-=dt;if(s.shellT<=0){const prog=clamp((VF.A[1]-s.x)/(VF.A[1]-VF.A[0]),0,1),r=rnd();
@@ -199,9 +201,9 @@ function vfShot(){const s=V.s;if(s.fall)return;V.sc='shot';vxSongOff();G.quip=nu
 
 /* ---------- le dessin ---------- */
 function vfRender(t){
-  const s=V.s,camX=s.x-VF.BX;
+  const s=V.s,camX=s.cx;
   let z=1,fx=0,fy=0;
-  if(V.sc==='wound'){const u=Math.min(1,s.wound/1.8),e=u*u*(3-2*u);z=1+e*3.4;fx=lerp(VF.BX,VF.bush-camX-12,e);fy=lerp(H/2,vfGround(VF.bush)-44,e)}
+  if(V.sc==='wound'){const u=Math.min(1,s.wound/1.8),e=u*u*(3-2*u);z=1+e*3.4;fx=lerp(s.bx,VF.bush-camX-12,e);fy=lerp(H/2,vfGround(VF.bush)-44,e)}
   // le ciel du 3 juin, à l'aube : l'est (à droite, derrière) s'éclaire
   const sk=ctx.createLinearGradient(0,0,0,H);sk.addColorStop(0,'#1a2038');sk.addColorStop(.45,'#4a4660');sk.addColorStop(.75,'#9a7a7a');sk.addColorStop(1,'#d09a74');ctx.fillStyle=sk;ctx.fillRect(0,0,W,H);
   const east=ctx.createRadialGradient(W+120,430,20,W+120,430,700);east.addColorStop(0,'rgba(255,200,140,.55)');east.addColorStop(1,'rgba(255,200,140,0)');ctx.fillStyle=east;ctx.fillRect(0,0,W,H);
@@ -274,8 +276,8 @@ function vfGroundDraw(t,camX){
     ctx.strokeStyle=de?'#3a2c1c':'#6a5236';ctx.lineWidth=1.4;for(let y=s0+6;y<s0+d-20;y+=6){ctx.beginPath();ctx.moveTo(a,y);for(let x=a;x<=b;x+=16)ctx.lineTo(x,y+((x/16|0)%2?2:-2));ctx.stroke()}
     ctx.fillStyle='#5a4630';for(let x=a+4;x<b-4;x+=26){ctx.fillRect(x,s0+d-6,22,4);ctx.fillStyle='#3a2a1a';ctx.fillRect(x,s0+d-3,22,2);ctx.fillStyle='#5a4630'}
     const pf=de?b:a-34,pd=de?a-26:b;
-    for(let r=0;r<2;r++)for(let k=0;k<3;k++){ctx.fillStyle=mix('#8a7a5a','#5a4a34',(k*3+r)%4/4);rr(ctx,pf+k*11-(r%2)*5,s0-14+r*7-7,13,8,3);ctx.fill()}
-    for(let k=0;k<2;k++){ctx.fillStyle='#6a5a40';rr(ctx,pd+k*12,s0-14,13,7,3);ctx.fill()}
+    for(let r=0;r<2;r++)for(let k=0;k<3-r;k++)vxSandbag(ctx,pf+k*11+r*5,s0-8-r*7,13,8,.1);
+    for(let k=0;k<2;k++)vxSandbag(ctx,pd+k*12,s0-9,13,7,.2);
     // les barbelés devant la tranchée
     const wx=de?b+60:a-150;ctx.strokeStyle='#2a2420';ctx.lineWidth=1.5;for(let k=0;k<5;k++){const x=wx+k*24;ctx.beginPath();ctx.moveTo(x,vfGround(x));ctx.lineTo(x+3,vfGround(x)-22);ctx.stroke()}
     ctx.lineWidth=.8;for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(wx,vfGround(wx)-18+k*4);for(let x=wx;x<=wx+96;x+=6)ctx.lineTo(x,vfGround(x)-18+k*4+Math.sin(x*.7+k)*2);ctx.stroke()}}
@@ -284,14 +286,14 @@ function vfGroundDraw(t,camX){
     ctx.fillStyle='#2a221a';ctx.fillRect(40,410,60,60);
     ctx.fillStyle='#6e6656';ctx.fillRect(100,330,900,110);for(let y=330;y<440;y+=11){let x=100+((y/11|0)%2?0:12);while(x<1000){const w=18+R()*14;ctx.fillStyle=mix('#7e7464','#5a5242',R());ctx.fillRect(x+1,y+1,w-2,9);x+=w}}
     for(const x of[180,300,420,540,660,780]){ctx.fillStyle='#bab09c';ctx.beginPath();ctx.moveTo(x-28,440);ctx.lineTo(x-28,384);ctx.arc(x,384,28,Math.PI,0);ctx.lineTo(x+28,440);ctx.fill();ctx.fillStyle='#0c0a0a';ctx.beginPath();ctx.moveTo(x-22,440);ctx.lineTo(x-22,384);ctx.arc(x,384,22,Math.PI,0);ctx.lineTo(x+22,440);ctx.fill();
-      for(let r=0;r<4;r++)for(let j=0;j<2;j++){ctx.fillStyle=mix('#8a7a5a','#6a5a40',R());rr(ctx,x-20+j*20+(r%2)*6,428-r*11,18,10,4);ctx.fill()}}
+      ctx.save();ctx.beginPath();ctx.rect(x-22,384,44,56);ctx.clip();for(let r=0;r<5;r++)for(let j=-1;j<2;j++)vxSandbag(ctx,x-22+j*20+(r%2)*10,428-r*10,22,11,.15);ctx.restore()}
     ctx.fillStyle='#8a8478';ctx.fillRect(90,300,920,32);ctx.strokeStyle='rgba(30,26,22,.5)';ctx.lineWidth=1.2;for(let k=0;k<14;k++){const x=100+R()*880;ctx.beginPath();ctx.moveTo(x,300);ctx.lineTo(x+(R()-.5)*20,320);ctx.lineTo(x+(R()-.5)*30,332);ctx.stroke()}
     ctx.fillStyle='#5a5042';ctx.beginPath();ctx.moveTo(80,302);for(let X=80;X<=1020;X+=16)ctx.lineTo(X,286-Math.sin(X*.05)*6-((X*7)%11));ctx.lineTo(1020,302);ctx.fill();
     ctx.fillStyle='#3a3c40';ctx.beginPath();ctx.ellipse(620,288,44,13,0,Math.PI,0);ctx.fill();ctx.fillStyle='#4a4e54';ctx.beginPath();ctx.ellipse(620,286,32,9,0,Math.PI,0);ctx.fill();
     ctx.fillStyle='#34363a';ctx.beginPath();ctx.ellipse(380,288,14,12,0,Math.PI,0);ctx.fill();ctx.fillStyle='#0a0a0c';ctx.fillRect(373,282,14,3)}
   // les fosses des canons : sacs de terre, filet de camouflage
   for(const g of VF.guns){if(g.X<camX-200||g.X>camX+W+200)continue;const s0=vfSurface(g.X);
-    for(const e of[g.X-100,g.X+90])for(let r=0;r<2;r++)for(let k=0;k<2;k++){ctx.fillStyle=mix('#8a7a5a','#5a4a34',(k+r)%2*.5);rr(ctx,e+k*8-(r%2)*4,s0-10-r*7,12,7,3);ctx.fill()}}
+    for(const e of[g.X-100,g.X+90])for(let r=0;r<2;r++)for(let k=0;k<2-r;k++)vxSandbag(ctx,e+k*10+r*5,s0-9-r*7,12,8,.1)}
   // les fientes au sol
   for(const q of V.s.splats){ctx.fillStyle='rgba(244,242,234,'+Math.min(1,(8-q.t))+')';ctx.beginPath();ctx.ellipse(q.x,q.y-1,4,1.6,0,0,7);ctx.fill()}
 }
@@ -335,7 +337,7 @@ function vfMan(p,X,t){
       if(p.aimT>0){p.aimT-=1/120;pose=vfAimPose(p,X,f=dxB<0?-1:1);rifle={from:'far',bayo:1,flash:p.flash>0?1:0,a:pose.ra};face.ex='angry'}break;
     case'rifleFR':pose=Object.assign({},VX_P.stand,{nT:{x:1.2,y:-7},fT:{x:.6,y:-4.6}});rifle={from:'near',a:-1.5,back:3};if(near){look(true);f=dxB<0?-1:1}
       if(p.aimT>0||V.s.fr.t>=0){if(p.aimT>0)p.aimT-=1/120;pose=vfAimPose(p,X,f=dxB<0?-1:1);rifle={from:'far',bayo:1,flash:p.flash>0?1:0,a:pose.ra};face.ex='angry'}break;
-    case'sarge':pose=near?Object.assign({},VX_P.point):Object.assign({},VX_P.stand,{nT:{x:2.4,y:-5.4},fT:{x:2,y:-5.6}});face.stache='walrus';face.ex=near?'shout':'neutral';if(near)f=dxB<0?-1:1;
+    case'sarge':pose=near?Object.assign({},VX_P.point):Object.assign({},VX_P.stand,{nT:{x:2.4,y:-5.4},fT:{x:2,y:-5.6}});face.stache='1914';face.ex=near?'shout':'neutral';if(near)f=dxB<0?-1:1;
       if(p.aimT>0){p.aimT-=1/120;pose=vfAimPose(p,X,f);rifle={from:'far',bayo:1,flash:p.flash>0?1:0,a:pose.ra}}break;
     case'sit':pose=Object.assign({},VX_P.sit);break;
     case'cook':pose=Object.assign({},VX_P.kneel,{nT:{x:4.4,y:-2.6+Math.sin(p.t*3)*.4},fT:{x:3.8,y:-3}});break;
