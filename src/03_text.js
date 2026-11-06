@@ -120,7 +120,7 @@ const ENDING=[
 const DATE_CARDS=[
   {pic:'banner'},
   {t:"Raymond fait le calcul. Deux fois.\n« 2026. »"},
-  {t:"Cent dix ans. La guerre est finie depuis longtemps.\nLucien, le capitaine, les gars du 151e : tout le monde."},
+  {t:"Cent dix ans. La guerre est finie depuis longtemps.\nLucien, le capitaine, les gars du 142e : tout le monde."},
   {t:"Au milieu des flonflons, Raymond s'effondre.\nPersonne ne remarque un pigeon par terre."}
 ];
 /* intertitres muets avant les morceaux de lettre d'une mission (la mission 1 a TUBE) */

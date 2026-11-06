@@ -5,7 +5,7 @@
      van    : la nuit, sur l'A4, sous l'orage : Raymond dans la remorque d'une camionnette d'espaces verts, au milieu
               des outils. Un seul petit saut, l'aile tire, on ne peut pas sortir. Au 3e éclair, le brouillard ;
               au 5e, un grand éclair blanc… et le souvenir.
-     cart   : juin 1916 : une voiture militaire tirée par deux chevaux, dans une forêt dense, sur une piste cahotante.
+     cart   : fin mai 1916 : une voiture militaire tirée par deux chevaux, dans une forêt dense, sur une piste cahotante.
               Raymond est dans son panier, sur les genoux de Lucien. E : il lui pince le doigt.
      room   : fort de Vaux, nuit du 2 juin : la chambrée voûtée, les lits de fer à deux étages, la petite fenêtre
               où passent les éclairs des obus ; Lucien écrit à la bougie. E : Raymond roucoule qu'il veut sortir.
@@ -19,7 +19,7 @@ THEMES.vaux={outdoor:true,far:'train',horizon:'road',sky:['#04060d','#0c1222','#
 let V=null;
 function vxSongOff(){curName='__off';CUR=null}
 const VX_CARDS={
-  cart:["SUR LA ROUTE DU FORT DE VAUX · JUIN 1916","Le cinquième éclair est tombé tout près. Raymond a fermé les yeux. Quand il les a rouverts, il n'y avait plus d'autoroute : il y avait des arbres, des chevaux, et les genoux de Lucien."],
+  cart:["SUR LA ROUTE DU FORT DE VAUX · FIN MAI 1916","Le cinquième éclair est tombé tout près. Raymond a fermé les yeux. Quand il les a rouverts, il n'y avait plus d'autoroute : il y avait des arbres, des chevaux, et les genoux de Lucien."],
   room:["FORT DE VAUX · NUIT DU 2 JUIN 1916","Dehors, les obus tombaient sans arrêt. Dans la chambrée, ceux qui pouvaient dormir dormaient. Lucien, lui, écrivait."],
   yard:["3 JUIN 1916 · AVANT L'AUBE","Au petit jour, Lucien a sorti Raymond du panier. Raymond se souvient de ses mains : elles tremblaient un peu."],
   van2:["","Raymond s'est réveillé dans la remorque, trempé jusqu'aux os. Du bout de l'aile, il a cherché sa blessure. Il ne l'a pas trouvée. Il en a conclu qu'il avait rêvé, ce que le règlement interdit en service."]
@@ -282,14 +282,14 @@ function vanSign(g,x,t){const b=VAN.road;
 }
 
 /* =========================================================
-   LA VOITURE MILITAIRE DANS LA FORÊT (juin 1916)
+   LA VOITURE MILITAIRE DANS LA FORÊT (fin mai 1916)
    ========================================================= */
 const CART={y:356,x0:96,x1:486,wb:300};
 const CART_MEN=[// x (hanche), sens, visage, posture
   {x:146,f:1,face:{skin:VX_SKIN[3],hair:VX_HAIR[2],stache:'1914',helmet:'adrian',ex:'neutral',stubble:.6,look:[.6,.1]},pose:'smoke',kit:{musette:1}},
   {x:200,f:-1,face:{skin:VX_SKIN[1],hair:VX_HAIR[1],stache:'1914',helmet:'adrian',ex:'sleep',stubble:.8,beard:0},pose:'sleep',kit:{bidon:1}},
   {x:252,f:-1,face:{skin:VX_SKIN[4],hair:VX_HAIR[6],beard:1,helmet:'adrian',ex:'worry',look:[.8,0]},pose:'bread',kit:{musette:1}},
-  {x:332,f:1,lucien:1,face:{skin:'#ecc8a6',hair:'#cfae6a',stache:'1914',beardCol:'#b8954e',helmet:'adrian',ex:'sad',young:1,stubble:.35,eye:'#3f78b8',tired:1,look:[.75,.3]},pose:'basket',kit:{}},
+  {x:332,f:1,lucien:1,face:{skin:'#ecc8a6',hair:'#cfae6a',stache:'croc',beardCol:'#b8954e',helmet:'adrian',ex:'sad',young:1,stubble:.35,eye:'#3f78b8',tired:1,look:[.75,.3]},pose:'basket',kit:{}},
   {x:432,f:-1,face:{skin:VX_SKIN[0],hair:VX_HAIR[3],stache:'1914',helmet:'adrian',ex:'neutral',young:1,look:[.9,.2]},pose:'hum',kit:{bidon:1}}
 ];
 function cartInit(){Object.assign(V.s,{u:0,zoom:1,pinch:-1,said:{},hoof:0,peck:0,wince:0,gaze:0})}
@@ -375,7 +375,7 @@ function cartBody(g,t,s,cy,hz){
   const pg=g.createLinearGradient(0,y-40,0,y+8);pg.addColorStop(0,'#6a4a2a');pg.addColorStop(1,'#4a3218');g.fillStyle=pg;g.fillRect(x0,y-38,x1-x0,46);
   g.fillStyle='rgba(0,0,0,.22)';for(let yy=y-26;yy<y+8;yy+=12)g.fillRect(x0,yy,x1-x0,2);
   g.fillStyle='#2a2420';for(const x of[x0+6,x0+140,x0+270,x1-10]){g.fillRect(x,y-40,6,50);g.beginPath();g.arc(x+3,y-30,2,0,7);g.arc(x+3,y,2,0,7);g.fillStyle='#8a8a7a';g.fill();g.fillStyle='#2a2420'}
-  g.fillStyle='rgba(230,220,190,.55)';g.font='bold 16px '+F_DISP;g.textAlign='left';g.fillText('151e R.I. · 3e Cie',x0+156,y-8);
+  g.fillStyle='rgba(230,220,190,.55)';g.font='bold 16px '+F_DISP;g.textAlign='left';g.fillText('142e R.I. · 6e Cie',x0+156,y-8);
   // le timon, les palonniers vers les chevaux
   g.fillStyle='#4a3218';g.fillRect(x1,y+16,170,7);
   wheel(x0+60,44);wheel(x1-40,36);
@@ -399,7 +399,7 @@ function cartMan(g,t,s,m,y){
     if(s.wince>0){face.ex='wince'}else if(s.pinch>=0){face.ex='sad';face.look=[.5,.6]}
     else face.look=[.8,.4+Math.sin(t*.7)*.2]}
   const kit=m.kit;
-  const j=vxSoldier(g,{hip,s:sc,f:m.f,side:'fr',t,pose:p,face,kit,held,regt:'151'});if(m.lucien)s.lucHead=j.head;
+  const j=vxSoldier(g,{hip,s:sc,f:m.f,side:'fr',t,pose:p,face,kit,held,regt:'142'});if(m.lucien)s.lucHead=j.head;
   if(m.lucien){// le panier sur les genoux, Raymond dans la lucarne, l'index de Lucien posé sur le bord
     const bx=hip.x+24,by=hip.y-6;s.keyP={x:bx+8,y:by-30};
     vxBasket(g,bx,by,40,28,{win:6,big:1,inside:(g2,lx,ly)=>{g2.save();g2.beginPath();g2.rect(lx-10,ly-14,20,17);g2.clip();
@@ -415,17 +415,21 @@ function cartMan(g,t,s,m,y){
 const RM={F:430,cx:480,cy:250,camX:.25,camY:1.72,R:2.8,spring:1.75,z0:2.05,z1:13.5};
 function rmP(x,y,z){return[RM.cx+(x-RM.camX)*RM.F/z,RM.cy-(y-RM.camY)*RM.F/z]}
 let roomCache=null;
-function roomInit(){Object.assign(V.s,{zoom:1,boomT:2.2,win:0,chirp:-1,said:{},pen:0,write:0,lineN:0,dust:[],turn:0,snore:3,rat:-1})}
+function roomInit(){Object.assign(V.s,{lampA:0,lampV:0,smoke:[{x:.3,y:.2,t:2,r:.4,v:.06},{x:.7,y:.4,t:3,r:.3,v:.05}],hit:0,flinch:0,zoom:1,boomT:2.2,win:0,chirp:-1,said:{},pen:0,write:0,lineN:0,dust:[],turn:0,snore:3,rat:-1})}
 function roomUpdate(dt){const s=V.s;
   s.zoom=Math.min(s.chirp>=0?1.85:1.4,s.zoom+dt*(s.chirp>=0?.18:.05));
-  s.boomT-=dt;if(s.boomT<=0){s.boomT=2.4+rnd()*3.2;s.win=1;V.shake=Math.max(V.shake,5);if(!G.sim){noise(1.6,110,.75,'lowpass');noise(.4,500,.2,'lowpass',.05);tone(40,1.2,'triangle',.25,28)}
-    for(let k=0;k<18;k++)s.dust.push({x:200+rnd()*560,y:-10-rnd()*40,vy:30+rnd()*60,vx:(rnd()-.5)*10,life:0,max:2+rnd()*2,r:.8+rnd()*1.6});
+  s.boomT-=dt;if(s.boomT<=0){const near=rnd()<.4,pw=near?1:.55;s.boomT=(near?3.4:2)+rnd()*2.6;s.win=1;s.winX=rnd();s.hit=pw;s.flinch=near?1.1:.5;s.lampV+=(rnd()<.5?-1:1)*(near?2.4:1.2);if(near)s.haze=1;
+    V.shake=Math.max(V.shake,near?13:6);if(!G.sim){noise(near?2.2:1.6,near?90:120,near?1:.6,'lowpass');noise(.5,500,near?.35:.18,'lowpass',.04);tone(36,1.4,'triangle',near?.4:.22,24);if(near)noise(1.2,2600,.06,'highpass',.15)}
+    for(let k=0;k<(near?46:18);k++)s.dust.push({x:120+rnd()*720,y:-10-rnd()*60,vy:30+rnd()*70,vx:(rnd()-.5)*14,life:0,max:2+rnd()*2.4,r:.8+rnd()*(near?2.4:1.6)});
+    for(let k=0;k<5;k++)s.smoke.push({x:rnd(),y:0,t:0,r:.2+rnd()*.3,v:.08+rnd()*.12});
     if(rnd()<.4)vxBubble(rmP(-2.3,1.1,6.3)[0],rmP(-2.3,1.1,6.3)[1],'Mmh…','#4a4a4a',1.6)}
-  s.win=Math.max(0,s.win-dt*1.6);
+  s.win=Math.max(0,s.win-dt*1.6);s.hit=Math.max(0,(s.hit||0)-dt*2.2);s.haze=Math.max(0,(s.haze||0)-dt*.3);s.flinch=Math.max(0,(s.flinch||0)-dt);
+  s.lampV+=(-s.lampA*9-s.lampV*.6)*dt;s.lampA+=s.lampV*dt;
+  for(const m of s.smoke){m.t+=dt;m.y+=m.v*dt}s.smoke=s.smoke.filter(m=>m.t<6);if(rnd()<dt*.8)s.smoke.push({x:rnd(),y:0,t:0,r:.2+rnd()*.3,v:.05+rnd()*.08});
   for(const d of s.dust){d.life+=dt;d.y+=d.vy*dt;d.x+=d.vx*dt}s.dust=s.dust.filter(d=>d.life<d.max);
   // le crayon : des mots, des pauses
   const writing=s.chirp<0||s.chirp>5.4;
-  if(writing){s.write+=dt;if(s.pen&&!G.sim&&rnd()<dt*14)noise(.04+rnd()*.05,3800+rnd()*1500,.05,'highpass',0,1.2)}
+  if(writing&&s.flinch<=0){s.write+=dt;if(s.pen&&!G.sim&&rnd()<dt*14)noise(.04+rnd()*.05,3800+rnd()*1500,.05,'highpass',0,1.2)}
   s.snore-=dt;if(s.snore<=0){s.snore=3.5+rnd()*3;const p=rmP(-2.25,.62,3.6);vxBubble(p[0]+30,p[1]-30,'Rrrr…','#5a5a5a',1.8);if(!G.sim)noise(.6,180,.06,'lowpass')}
   if(pressed.has('act')&&s.chirp<0&&V.t>1){s.chirp=0;if(!G.sim){SFX.coo();setTimeout(()=>SFX.coo(),380)}const p=rmBasketP();vxBubble(p[0],p[1]-60,'Rrrou ! Rrrou-rou !','#a8322d',2);say("Ouvrez ! Un pigeon, ça vole. Ça ne regarde pas écrire !",3.4)}
   if(s.chirp>=0){s.chirp+=dt;s.turn=s.chirp<5.2?Math.min(1,s.turn+dt*2.5):Math.max(0,s.turn-dt*2);
@@ -460,9 +464,9 @@ function roomBuild(){
     g.strokeStyle=mix('#b0a694','#2a2620',z/RM.z1*.9);g.lineWidth=.35*RM.F/z;g.beginPath();for(let k=0;k<=NA;k++){const th=k/NA*Math.PI,p=P3(Math.cos(th)*(RM.R-.12),RM.spring+Math.sin(th)*(RM.R-.12),z);k?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])}g.stroke()}
   // le mur du fond et sa petite fenêtre (en partie murée de sacs de terre)
   {const z=RM.z1;g.fillStyle='#4a443a';g.beginPath();const a=P3(-RM.R,0,z);g.moveTo(a[0],a[1]);for(let k=0;k<=NA;k++){const th=Math.PI-k/NA*Math.PI,p=P3(Math.cos(th)*RM.R,RM.spring+Math.sin(th)*RM.R,z);g.lineTo(p[0],p[1])}const b=P3(RM.R,0,z);g.lineTo(b[0],b[1]);g.closePath();g.fill();
-   const w0=P3(-.42,1.25,z),w1=P3(.42,2.35,z);g.fillStyle='#0e1018';g.fillRect(w0[0],w1[1],w1[0]-w0[0],w0[1]-w1[1]);
-   g.fillStyle='#3a3428';for(let r=0;r<3;r++)for(let k=0;k<3;k++){const p=P3(-.38+k*.28+(r%2)*.12,1.25+r*.14,z);g.beginPath();g.ellipse(p[0],p[1]-3,9,4.5,0,0,7);g.fill()}
-   g.strokeStyle='#2a2620';g.lineWidth=2;for(let k=1;k<4;k++){const p=P3(-.42+k*.21,2.35,z),q=P3(-.42+k*.21,1.62,z);g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.stroke()}
+   const w0=P3(-.66,1.1,z),w1=P3(.66,2.55,z);g.fillStyle='#0e1018';g.fillRect(w0[0],w1[1],w1[0]-w0[0],w0[1]-w1[1]);
+   for(let r=0;r<4;r++)for(let k=0;k<5;k++){const p=P3(-.62+k*.27+(r%2)*.12,1.12+r*.13,z);vxSandbag(g,p[0]-9,p[1]-8,18,8,.55)}
+   
    g.strokeStyle='#6a6254';g.lineWidth=3;g.strokeRect(w0[0],w1[1],w1[0]-w0[0],w0[1]-w1[1])}
   // les lits de fer à deux étages, le long du mur de gauche (du fond vers nous)
   const beds=[[11.0,12.9],[8.7,10.6],[6.4,8.3],[4.1,6.0]];
@@ -507,10 +511,20 @@ function rmBunk(g,z0,z1,R){const P3=rmP,x0=-RM.R+.04,x1=-RM.R+.9,lv=[.42,1.32],f
 function roomRender(t){
   const s=V.s;if(!roomCache||roomCache.rsKey!==RS){roomCache=roomBuild();roomCache.rsKey=RS}
   const z=s.zoom,e=Math.min(1,(z-1)/.4),e2=clamp((z-1.4)/.45,0,1),fx=lerp(lerp(480,600,e),660,e2),fy=lerp(lerp(270,300,e),316,e2);
-  ctx.save();ctx.translate(W/2,H/2);ctx.scale(z,z);ctx.translate(-fx,-fy);
+  const jx=(s.hit>0?(rnd()-.5)*s.hit*8:0),jy=(s.hit>0?(rnd()-.5)*s.hit*6:0);
+  ctx.save();ctx.translate(W/2+jx,H/2+jy);ctx.rotate((s.hit>0?(rnd()-.5)*s.hit*.006:0));ctx.scale(z,z);ctx.translate(-fx,-fy);
   ctx.drawImage(roomCache,0,0,W,H);
   // l'éclair des obus dans la fenêtre du fond
-  {const w0=rmP(-.42,1.25,RM.z1),w1=rmP(.42,2.35,RM.z1);if(s.win>0){const a=Math.min(1,s.win);ctx.fillStyle='rgba(255,230,180,'+a*.9+')';ctx.fillRect(w0[0],w1[1],w1[0]-w0[0],(w0[1]-w1[1])*.62);
+  {const w0=rmP(-.66,1.1,RM.z1),w1=rmP(.66,2.55,RM.z1),ww=w1[0]-w0[0],wh=w0[1]-w1[1];
+   ctx.save();ctx.beginPath();ctx.rect(w0[0],w1[1],ww,wh*.64);ctx.clip();
+   // dehors : la nuit, la crête labourée, les lueurs rouges des obus, la fumée qui monte
+   const sk=ctx.createLinearGradient(0,w1[1],0,w1[1]+wh*.64);sk.addColorStop(0,'#10141f');sk.addColorStop(1,'rgb('+(40+s.win*160|0)+','+(30+s.win*90|0)+','+(36+s.win*30|0)+')');ctx.fillStyle=sk;ctx.fillRect(w0[0],w1[1],ww,wh);
+   ctx.fillStyle='#08080c';ctx.beginPath();ctx.moveTo(w0[0],w1[1]+wh*.64);for(let k=0;k<=8;k++)ctx.lineTo(w0[0]+ww*k/8,w1[1]+wh*(.5+((k*37)%7)*.012));ctx.lineTo(w1[0],w1[1]+wh*.64);ctx.fill();
+   if(s.win>0){const gx=w0[0]+(s.winX||.5)*ww,gg=ctx.createRadialGradient(gx,w1[1]+wh*.56,1,gx,w1[1]+wh*.56,ww*.7);gg.addColorStop(0,'rgba(255,220,140,'+s.win+')');gg.addColorStop(.4,'rgba(255,120,40,'+s.win*.7+')');gg.addColorStop(1,'rgba(255,90,30,0)');ctx.fillStyle=gg;ctx.fillRect(w0[0],w1[1],ww,wh)}
+   for(const m of s.smoke){const a=Math.min(1,m.t)*Math.max(0,1-m.t/6),x=w0[0]+m.x*ww+Math.sin(m.t+m.x*9)*3,y=w1[1]+wh*.58-m.y*wh*1.6,r=(m.r*.6+m.t*.06)*ww;
+     ctx.fillStyle='rgba('+(110+s.win*130|0)+','+(100+s.win*80|0)+','+(100+s.win*30|0)+','+a*.85+')';ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
+   ctx.restore();ctx.strokeStyle='#1e1a16';ctx.lineWidth=2.4;for(let k=1;k<5;k++){const x=w0[0]+ww*k/5;ctx.beginPath();ctx.moveTo(x,w1[1]);ctx.lineTo(x,w1[1]+wh*.64);ctx.stroke()}
+   if(s.win>0){const a=Math.min(1,s.win);
     const gl=ctx.createRadialGradient((w0[0]+w1[0])/2,(w0[1]+w1[1])/2,4,(w0[0]+w1[0])/2,(w0[1]+w1[1])/2,260);gl.addColorStop(0,'rgba(255,220,170,'+a*.35+')');gl.addColorStop(1,'rgba(255,220,170,0)');ctx.fillStyle=gl;ctx.fillRect(0,0,W,H)}}
   // le dormeur du premier lit (il respire)
   {const hp=rmP(-RM.R+.46,.42+.24,4.4),hs=.12*RM.F/4.4,br=Math.sin(t*1.4)*.8;
@@ -518,7 +532,7 @@ function roomRender(t){
    vxHead(ctx,{x:hp[0],y:hp[1]-br*.4,s:hs,f:1,skin:VX_SKIN[3],hair:VX_HAIR[2],ex:'sleep',helmet:'none',stache:'walrus',stubble:.8,tilt:-1.1,lod:hs*z});
    const ah=rmP(-RM.R+.75,.6,4.6);ctx.fillStyle='#6f8399';ctx.beginPath();ctx.ellipse(ah[0],ah[1],20,8,.3,0,7);ctx.fill();ctx.fillStyle=VX_SKIN[3];ctx.beginPath();ctx.arc(ah[0]+16,ah[1]+4,6,0,7);ctx.fill()}
   // la lampe-tempête pendue à la voûte, mèche baissée
-  {const lp=rmP(-1.2,2.55,6.2),k=RM.F/6.2,top=rmP(-1.2,RM.spring+Math.sqrt(RM.R*RM.R-1.44)-.02,6.2);ctx.strokeStyle='#2a2420';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(top[0],top[1]);ctx.lineTo(lp[0],lp[1]-.2*k);ctx.stroke();
+  {const top=rmP(-1.2,RM.spring+Math.sqrt(RM.R*RM.R-1.44)-.02,6.2),k=RM.F/6.2,lp0=rmP(-1.2,2.55,6.2),L0=Math.hypot(lp0[0]-top[0],lp0[1]-top[1]),lp=[top[0]+Math.sin(s.lampA)*L0,top[1]+Math.cos(s.lampA)*L0];ctx.strokeStyle='#2a2420';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(top[0],top[1]);ctx.lineTo(lp[0],lp[1]-.2*k);ctx.stroke();
    ctx.fillStyle='#3a3630';ctx.fillRect(lp[0]-.07*k,lp[1]-.2*k,.14*k,.04*k);ctx.fillStyle='rgba(255,200,120,'+(.55+Math.sin(t*5)*.05)+')';ctx.beginPath();ctx.ellipse(lp[0],lp[1]-.08*k,.06*k,.1*k,0,0,7);ctx.fill();
    ctx.strokeStyle='#3a3630';ctx.beginPath();ctx.ellipse(lp[0],lp[1]-.08*k,.07*k,.11*k,0,0,7);ctx.stroke();ctx.fillStyle='#3a3630';ctx.fillRect(lp[0]-.08*k,lp[1]+.02*k,.16*k,.03*k);s.lamp=lp}
   // un rat, le long du mur
@@ -540,13 +554,15 @@ function roomRender(t){
   s.pen=ph<=.8&&!(s.chirp>=0&&s.chirp<=5.4)?1:0;
   {const bp=rmBasketP();vxBasket(ctx,bp[0],bp[1],60,44,{win:-10,big:1,inside:(g2,lx,ly)=>{g2.save();g2.beginPath();g2.rect(lx-16,ly-22,32,27);g2.clip();drawRaymond(g2,lx+12,ly+30,{f:-1,t,wear:0,size:1.25});g2.restore()}})}
   // Lucien, assis, tête nue, qui écrit : la main suit la pointe du crayon
-  const turn=s.turn,hip=rmP(1.0,.47,2.62),sc=.115*RM.F/2.62,hx=tip[0]-10,hy=tip[1]-5;
-  const L1=vxSoldier(ctx,{hip:{x:hip[0],y:hip[1]},s:sc,f:1,side:'fr',t,regt:'151',noPouch:1,
-    pose:Object.assign({},VX_P.sit,{lean:.3-turn*.1,head:.55-turn*.42,nT:{x:(hx-hip[0])/sc,y:(hy-hip[1])/sc},fT:{x:4.3,y:-3.1}}),
-    face:{skin:'#ecc8a6',hair:'#cfae6a',stache:'1914',beardCol:'#b8954e',helmet:'none',ex:turn>.5?'smile':'neutral',young:1,stubble:.45,eye:'#3f78b8',tired:1,look:turn>.5?[1,-.4]:[.7,1]}});
+  const turn=s.turn,flc=Math.min(1,s.flinch*1.6),hip=rmP(1.0,.47,2.62),sc=.115*RM.F/2.62,hx=tip[0]-10,hy=tip[1]-5;
+  const L1=vxSoldier(ctx,{hip:{x:hip[0],y:hip[1]},s:sc,f:1,side:'fr',t,regt:'142',noPouch:1,
+    pose:Object.assign({},VX_P.sit,{lean:.3-turn*.1-flc*.12,head:.55-turn*.42-flc*.75,nT:{x:(hx-hip[0])/sc,y:(hy-hip[1])/sc},fT:{x:4.3,y:-3.1}}),
+    face:{skin:'#ecc8a6',hair:'#cfae6a',stache:'croc',beardCol:'#b8954e',helmet:'none',ex:flc>.2?'worry':turn>.5?'smile':'neutral',young:1,stubble:.45,eye:'#3f78b8',tired:1,look:flc>.2?[-.2,-1]:turn>.5?[1,-.4]:[.7,1]}});
   // le crayon, tenu entre les doigts, la pointe sur le papier
   {const h=L1.nh;ctx.strokeStyle='#6a4a28';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(h.x-3,h.y-4);ctx.lineTo(tip[0],tip[1]);ctx.stroke();ctx.strokeStyle='#2a2a2a';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(lerp(h.x,tip[0],.85),lerp(h.y,tip[1],.85));ctx.lineTo(tip[0],tip[1]);ctx.stroke();
    ctx.fillStyle='#ecc8a6';ctx.beginPath();ctx.ellipse(h.x+2,h.y+1,4.2,3,.6,0,7);ctx.fill();ctx.strokeStyle=rgba('#7a4a3a',.5);ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(h.x,h.y-1);ctx.lineTo(h.x+5,h.y+3);ctx.stroke()}
+  // la fumée qui entre par la fenêtre après un coup proche, et roule sous la voûte
+  if(s.haze>0){const c=rmP(0,1.9,RM.z1),u=1-s.haze;for(let k=0;k<6;k++){const r=30+u*160+k*18,x=c[0]+Math.sin(k*2.1+u*2)*u*90,y=c[1]-u*60-k*6;ctx.fillStyle='rgba(120,112,104,'+(s.haze*.16)+')';ctx.beginPath();ctx.ellipse(x,y,r,r*.55,0,0,7);ctx.fill()}}
   // la poussière qui tombe de la voûte
   ctx.fillStyle='rgba(200,190,170,.5)';for(const d of s.dust){ctx.globalAlpha=1-d.life/d.max;ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,7);ctx.fill()}ctx.globalAlpha=1;
   vxDrawBubbles(ctx);
@@ -659,8 +675,8 @@ function yardRender(t){
   // Lucien, au premier plan, qui tient Raymond contre lui… puis le lance
   const th=s.throwT<0?0:clamp(s.throwT/.55,0,1),hold=Object.assign({},VX_P.stand,{nT:{x:2.5,y:-2.4},fT:{x:2.0,y:-2.7},head:.45}),up=Object.assign({},VX_P.throwUp,{nT:{x:1.6,y:-11.0},fT:{x:1.1,y:-10.8}});
   const pose=th<=0?hold:vxPoseMix(hold,up,th*th);
-  const j=vxSoldier(ctx,{x:412,y:512,s:15.5,f:-1,side:'fr',t,regt:'151',pose,kit:{musette:1,bidon:1},
-    face:{skin:'#ecc8a6',hair:'#cfae6a',stache:'1914',beardCol:'#b8954e',helmet:'adrian',ex:th>.6?'worry':'sad',young:1,stubble:.45,eye:'#3f78b8',tired:1,look:th>.3?[.6,-1]:[.8,.7],mud:1}});
+  const j=vxSoldier(ctx,{x:412,y:512,s:15.5,f:-1,side:'fr',t,regt:'142',pose,kit:{musette:1,bidon:1},
+    face:{skin:'#ecc8a6',hair:'#cfae6a',stache:'croc',beardCol:'#b8954e',helmet:'adrian',ex:th>.6?'worry':'sad',young:1,stubble:.45,eye:'#3f78b8',tired:1,look:th>.3?[.6,-1]:[.8,.7],mud:1}});
   s.hands={x:(j.nh.x+j.fh.x)/2,y:(j.nh.y+j.fh.y)/2};
   if(!s.bird){vxPigeon(ctx,s.hands.x-4,s.hands.y-2,1.15,-1,t,{fold:1,flap:-1.2});
     // les doigts de Lucien par-dessus l'aile

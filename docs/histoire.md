@@ -4,7 +4,7 @@
 
 ## Le principe
 
-Raymond, pigeon voyageur militaire, matricule 7413, est lâché du fort de Vaux en juin 1916 avec une lettre du soldat **Lucien Marchal** (151e régiment d'infanterie) pour sa fiancée **Marguerite Vasseur**, à Villemareuil. Il n'arrive jamais. On l'empaille « avec les honneurs » et il finit sous une cloche de verre au petit musée communal de **Vittoncourt** (Moselle).
+Raymond, pigeon voyageur militaire, matricule 7413, est lâché du fort de Vaux en juin 1916 avec une lettre du soldat **Lucien Marchal** (142e régiment d'infanterie, 6e compagnie, montée au fort de Vaux fin mai 1916) pour sa fiancée **Marguerite Vasseur**, à Villemareuil. Il n'arrive jamais. On l'empaille « avec les honneurs » et il finit sous une cloche de verre au petit musée communal de **Vittoncourt** (Moselle).
 
 En octobre 2026, le musée n'a plus les moyens d'ouvrir. On vend tout aux enchères et on jette le reste. Raymond, lot n° 212, est invendu.
 

@@ -214,7 +214,7 @@ function drawFinaleCard(ct){
   ctx.fillStyle='#e2d3a6';ctx.fillRect(-58,-34,70,38);
   ctx.strokeStyle='rgba(120,95,50,.35)';ctx.lineWidth=.8;ctx.strokeRect(-58,-34,70,38);
   ctx.fillStyle='rgba(110,80,40,.22)';ctx.beginPath();ctx.arc(-48,-6,7,0,7);ctx.fill();
-  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='italic 7px '+F_BODY;ctx.fillText('Au soldat',-53,-21);ctx.fillText('Lucien Marchal',-53,-12);ctx.fillText('151e R.I. — Verdun',-53,-3);
+  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='italic 7px '+F_BODY;ctx.fillText('Au soldat',-53,-21);ctx.fillText('Lucien Marchal',-53,-12);ctx.fillText('142e R.I. — Verdun',-53,-3);
   ctx.restore();
   // pétales tombés
   for(const[x,y,c]of[[px-40,pb+8,'#c8302a'],[px+28,pb+6,'#d9a441'],[px-62,pb+3,'#efe6d0']]){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,3,1.3,.4,0,7);ctx.fill()}

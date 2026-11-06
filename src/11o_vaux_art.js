@@ -59,7 +59,7 @@ function vxHead(g,o){
   if(hm==='none'&&!o.bald){g.fillStyle=hair;g.beginPath();g.moveTo(-.86,.02);g.quadraticCurveTo(-.95,-.86,-.1,-1.08);g.quadraticCurveTo(.62,-1.12,.84,-.5);
     g.quadraticCurveTo(.7,-.66,.58,-.6);g.quadraticCurveTo(.44,-.72,.3,-.6);g.quadraticCurveTo(.12,-.72,-.06,-.58);g.quadraticCurveTo(-.3,-.62,-.4,-.4);g.quadraticCurveTo(-.5,-.2,-.62,-.18);g.lineTo(-.7,.1);g.closePath();g.fill();
     // une mèche, des reflets
-    if(lod>6){g.strokeStyle=rgba(mix(hair,'#ffffff',.25),.6);g.lineWidth=.045;for(let k=0;k<5;k++){g.beginPath();g.moveTo(-.7+k*.28,-.82+Math.abs(k-2)*.06);g.quadraticCurveTo(-.5+k*.28,-1.02,-.25+k*.28,-.94);g.stroke()}}
+    if(lod>6){g.strokeStyle=rgba(mix(hair,'#ffffff',.25),.6);g.lineWidth=.045;for(let k=0;k<4;k++){g.beginPath();g.moveTo(-.7+k*.28,-.82+Math.abs(k-2)*.06);g.quadraticCurveTo(-.52+k*.28,-.98,-.32+k*.28,-.92);g.stroke()}}
     g.fillStyle=hair;g.beginPath();g.moveTo(-.5,-.3);g.lineTo(-.4,.12);g.lineTo(-.34,-.28);g.closePath();g.fill()}
   // les sourcils
   const bw={neutral:[0,0],sad:[-.12,.02],angry:[.09,-.02],shout:[.08,-.04],surprise:[-.1,-.1],wince:[.1,0],sleep:[0,.03],smile:[-.02,-.02],worry:[-.14,0]}[ex]||[0,0];
@@ -82,7 +82,11 @@ function vxHead(g,o){
     g.quadraticCurveTo(.68,.5,.62,.56);g.quadraticCurveTo(.4,.82,.2,.56);g.quadraticCurveTo(.05,.5,-.2,.4);g.quadraticCurveTo(-.4,.3,-.46,.12);g.closePath();g.fill();
     if(lod>8){g.strokeStyle=rgba('#000000',.18);g.lineWidth=.04;for(let k=0;k<9;k++){g.beginPath();g.moveTo(-.4+k*.13,.5+Math.sin(k)*.08);g.lineTo(-.36+k*.13,.82+Math.sin(k*2)*.08);g.stroke()}}}
   if(o.stache){g.fillStyle=bc;g.beginPath();
-    if(o.stache==='1914'){g.moveTo(.13,.58);g.quadraticCurveTo(.08,.46,.2,.42);g.quadraticCurveTo(.32,.36,.42,.42);g.quadraticCurveTo(.56,.36,.7,.42);g.quadraticCurveTo(.82,.46,.86,.38);
+    if(o.stache==='croc'){const half=(sx)=>{g.save();g.translate(.42,.47);g.scale(sx,1);g.beginPath();g.moveTo(0,-.04);g.quadraticCurveTo(.12,-.09,.24,-.05);g.quadraticCurveTo(.36,-.01,.42,-.08);
+        g.quadraticCurveTo(.47,-.16,.43,-.24);g.quadraticCurveTo(.5,-.17,.48,-.06);g.quadraticCurveTo(.44,.07,.3,.07);g.quadraticCurveTo(.14,.07,.04,.05);g.quadraticCurveTo(0,.05,0,.03);g.closePath();g.fill();
+        if(lod>8){g.strokeStyle=rgba(mix(bc,'#000000',.35),.5);g.lineWidth=.02;g.beginPath();for(let k=1;k<5;k++){g.moveTo(k*.07,-.04);g.lineTo(k*.07+.03,.05)}g.stroke()}g.restore()};
+      half(-.78);half(.62);g.beginPath()}
+    else if(o.stache==='1914'){g.moveTo(.13,.58);g.quadraticCurveTo(.08,.46,.2,.42);g.quadraticCurveTo(.32,.36,.42,.42);g.quadraticCurveTo(.56,.36,.7,.42);g.quadraticCurveTo(.82,.46,.86,.38);
       g.quadraticCurveTo(.88,.52,.74,.56);g.quadraticCurveTo(.6,.58,.5,.54);g.quadraticCurveTo(.42,.6,.32,.56);g.quadraticCurveTo(.2,.62,.13,.58);
       g.fill();g.beginPath();if(lod>8){g.strokeStyle=rgba(mix(bc,'#000000',.35),.55);g.lineWidth=.025;for(let k=0;k<7;k++){const x=.2+k*.09;g.moveTo(x,.43);g.lineTo(x+.03,.55)}g.stroke();g.beginPath()}}
     else if(o.stache==='walrus'){g.moveTo(.14,.56);g.quadraticCurveTo(.2,.4,.42,.42);g.quadraticCurveTo(.6,.38,.72,.52);g.quadraticCurveTo(.66,.66,.58,.6);g.quadraticCurveTo(.42,.52,.3,.58);g.quadraticCurveTo(.2,.66,.14,.56)}
@@ -140,9 +144,9 @@ function vxHelmet(g,hm,o,lod){
     // le casque Adrian (modèle 1915), d'après le vrai : une bombe haute et ronde, un cimier en crête du front à la nuque,
     // et un bord continu qui s'évase vers le bas tout autour — court devant (la visière), plus long et plus plongeant derrière (le couvre-nuque)
     // le bord, vu par-dessous puis par-dessus
-    g.fillStyle=cd;g.beginPath();g.moveTo(-.86,-.46);g.quadraticCurveTo(-1.2,-.3,-1.5,.0);g.quadraticCurveTo(-1.46,.06,-1.38,.05);
-    g.quadraticCurveTo(-.5,-.16,.3,-.2);g.quadraticCurveTo(.95,-.22,1.34,-.17);g.quadraticCurveTo(1.38,-.22,1.32,-.26);g.quadraticCurveTo(1.08,-.4,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
-    g.fillStyle=cm;g.beginPath();g.moveTo(-.86,-.46);g.quadraticCurveTo(-1.2,-.3,-1.48,-.02);g.quadraticCurveTo(-.6,-.24,.3,-.27);g.quadraticCurveTo(.95,-.28,1.32,-.25);g.quadraticCurveTo(1.08,-.4,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
+    g.fillStyle=cd;g.beginPath();g.moveTo(-.86,-.46);g.quadraticCurveTo(-1.1,-.36,-1.33,-.17);g.quadraticCurveTo(-1.37,-.12,-1.3,-.12);
+    g.quadraticCurveTo(-.5,-.18,.3,-.2);g.quadraticCurveTo(.95,-.22,1.32,-.15);g.quadraticCurveTo(1.37,-.2,1.31,-.25);g.quadraticCurveTo(1.08,-.4,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
+    g.fillStyle=cm;g.beginPath();g.moveTo(-.86,-.46);g.quadraticCurveTo(-1.1,-.36,-1.32,-.19);g.quadraticCurveTo(-.6,-.26,.3,-.27);g.quadraticCurveTo(.95,-.28,1.3,-.23);g.quadraticCurveTo(1.08,-.4,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
     g.fillStyle=rgba(cl,.35);g.beginPath();g.moveTo(.5,-.38);g.quadraticCurveTo(.95,-.36,1.26,-.26);g.quadraticCurveTo(.9,-.32,.5,-.33);g.closePath();g.fill();
     // la bombe
     g.fillStyle=c;g.beginPath();g.moveTo(-.86,-.46);g.bezierCurveTo(-.92,-1.1,-.5,-1.46,.0,-1.46);g.bezierCurveTo(.5,-1.46,.9,-1.1,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
@@ -156,6 +160,10 @@ function vxHelmet(g,hm,o,lod){
     if(lod>6){g.fillStyle=cd;g.beginPath();g.arc(.5,-.98,.035,0,7);g.arc(-.58,-1.08,.035,0,7);g.fill();
       // l'insigne : la grenade de l'infanterie, sur le devant, sous la pointe du cimier
       g.save();g.translate(.56,-.72);g.fillStyle=shade(c,.34);g.beginPath();g.arc(0,.04,.08,0,7);g.fill();g.beginPath();g.moveTo(-.035,-.03);g.quadraticCurveTo(-.06,-.14,0,-.24);g.quadraticCurveTo(.06,-.14,.035,-.03);g.fill();g.restore()}
+    // la jugulaire de cuir : du bord, devant l'oreille, le long de la joue, sous le menton
+    if(!o.noStrap){g.strokeStyle='#5a3a1e';g.lineWidth=lod>8?.075:.1;g.beginPath();g.moveTo(-.44,-.3);g.quadraticCurveTo(-.62,.66,.3,1.04);g.stroke();
+      if(lod>8){g.strokeStyle='rgba(255,220,170,.25)';g.lineWidth=.025;g.beginPath();g.moveTo(-.42,-.28);g.quadraticCurveTo(-.6,.64,.3,1.02);g.stroke();g.fillStyle='#9a8a6a';g.fillRect(-.53,.22,.1,.12)}
+      g.strokeStyle='#4a2e16';g.lineWidth=lod>8?.06:.08;g.beginPath();g.moveTo(.3,1.04);g.quadraticCurveTo(.66,.96,.75,.6);g.quadraticCurveTo(.88,.3,.84,-.24);g.stroke()}
     if(o.splat)vxSplat(g,.0,-1.42);
   }else if(hm==='stahl'){const c=o.helmCol||VXU.de.helm,cd=shade(c,-.3),cl=shade(c,.18);
     g.fillStyle=cd;g.beginPath();g.moveTo(-1.02,-.18);g.quadraticCurveTo(-1.1,.32,-.86,.42);g.lineTo(-.56,.18);g.lineTo(-.6,-.3);g.closePath();g.fill();
