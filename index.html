@@ -1935,7 +1935,7 @@ LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',seed:139,
 ######################`]});
 
 /* une cachette secrète par niveau (le 1-1 a la sienne : la porte du voleur) */
-const SECRETS={3:[116,9],11:[36,19],14:[110,9],15:[246,11],16:[100,8],17:[72,6],18:[171,7],19:[79,7]};
+const SECRETS={3:[116,9],11:[36,19],14:[110,9],15:[260,11],16:[100,8],17:[72,6],18:[171,7],19:[79,7]};
 LEVELS.forEach((l,i)=>{if(SECRETS[i])l.secretAt=SECRETS[i]});
 /* une seule médaille par mission : au 1-1 (la première vie), puis au deuxième niveau de chaque mission */
 LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=4&&i%4===1)});
@@ -3673,7 +3673,7 @@ function drawHouse(g,e,t){
    ========================================================= */
 function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
-  if(st==='tente')return;
+  if(st==='tente'||st==='seau')return;
   if(st==='poop'||st==='tyre'||st==='engine'||st==='beacon'||st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips'||st==='coffee'||st==='salad'||st==='fridge')return;
   if(st==='stump'){drawOldStump(g,a,t);return}
   if(st==='vane'){drawVane(g,a,t);return}
@@ -10268,13 +10268,13 @@ function vfFore(t,camX){
    Ce qui barre le chemin d'une époque (bâtiment, rivière trop large) n'existe pas dans l'autre :
    il faut basculer pour passer, parfois en plein saut.
    ========================================================= */
-const FW=320,FGR=12;
+const FW=334,FGR=12;
 VXU.fr14={coat:'#4e5a72',coat2:'#46516a',coatD:'#3a445a',trou:'#a8322d',putt:'#2a2420',helm:'#4e5a72',helmD:'#3a445a',leather:'#5a3a22',boot:'#2a1e14',tab:'#a8322d',btn:'#c9a24a'};
 VXU.uk={coat:'#7a6c48',coat2:'#6c5f3e',coatD:'#5a4e32',trou:'#75683f',putt:'#6a5c3a',helm:'#7a6c48',helmD:'#5a4e32',leather:'#6a4a2a',boot:'#3a2618',tab:'#2a4a8a',btn:'#b8a46a'};
 
 THEMES.ferte26={outdoor:true,far:'ferte',horizon:'bridge',era:26,sky:['#466a92','#a9c4d8','#f2e2c2'],celestial:'sun',sunY:250,fog:'#8a9cae',dark:.1,weather:'clear',
   floor:'#5a4834',floorTop:'#6c8c3c',type:'earth',x:'hedge',d:'hedge',shelf:'deck',spike:'wire',walker:'rat',flyer:'pie',noFore:false,props:['fern','stump','fern']};
-THEMES.ferte14={outdoor:true,far:'ferte',horizon:'bridge',era:14,sky:['#4e4a42','#9c927c','#d6c6a0'],celestial:'sun',sunY:270,fog:'#a89c80',dark:.2,weather:'mist',
+THEMES.ferte14={outdoor:true,far:'ferte',horizon:'bridge',era:14,sky:['#4e4a42','#9c927c','#d6c6a0'],celestial:'sun',sunY:270,fog:'#a89c80',dark:.2,weather:'clear',
   floor:'#56462f',floorTop:'#6c7a3e',type:'earth',x:'sandbag',d:'hedge',shelf:'plank',spike:'wire',walker:'none',flyer:'crow',props:['fern','stump']};
 
 /* ---------- la construction des deux grilles ---------- */
@@ -10325,22 +10325,30 @@ const FERTE={};
   for(const[c,r]of[[165,10],[180,9],[189,9],[199,10]])put(B,c,r,'o');
   for(const[c,r]of[[212,6],[221,6]])put(A,c,r,'o');
   FERTE.gerbes=[{c:179,ph:0},{c:188,ph:2.1},{c:214,ph:.8},{c:223,ph:2.9}];
-  /* l'autre rive : le camping (2026), la ferme barricadée (1914) */
-  for(let c=230;c<=233;c++)for(let r=8;r<FGR;r++)A[r][c]='#';for(let k=0;k<3;k++)for(let r=9+k;r<FGR;r++)A[r][234+k]='#';
+  /* l'autre rive : la culée du pont et sa rampe (2026), le chemin, puis le camping ; la ferme barricadée (1914) */
+  const SH=14;
+  for(let c=230;c<=232;c++)for(let r=8;r<FGR;r++)A[r][c]='#';
+  for(let k=0;k<3;k++)for(let c=233+k*3;c<=235+k*3;c++)for(let r=9+k;r<FGR;r++)A[r][c]='#';
+  FERTE.masks={26:[],14:[]};for(let c=230;c<=241;c++)for(let r=8;r<FGR;r++)if(A[r][c]==='#')FERTE.masks[26].push([c,r]);
+  for(let c=206;c<=229;c++)FERTE.masks[26].push([c,8]);
   put(A,231,7,'C');put(B,232,11,'C');
-  ents[26].push({k:'rat',c:237});
-  block(B,14,240,245,'ferme');put(A,242,10,'o');
-  water(A,250,252);ents[26].push({k:'boar',c:258});put(A,251,8,'o');
-  put(A,247,8,'m');
-  block(A,26,264,268,'sanitaires');put(B,266,10,'o');
-  for(let c=271;c<=274;c++)put(B,c,11,'^');put(B,272,8,'o');
-  ents[26].push({k:'rat',c:276});
-  FERTE.fires=[{c:279,era:26,ph:0},{c:284.35,era:14,ph:1.4}];put(A,279,8,'o');put(B,285,8,'o');
-  /* la guinguette (2026) ; en 1914, à sa place, le capitaine et sa nomination */
-  put(A,291,11,'C');put(B,291,11,'C');
-  block(A,26,298,303,'guinguette');
-  put(A,310,10,'o');put(B,307,9,'o');
-  put(A,315,11,'E');put(B,315,11,'E');
+  put(A,236,8,'o');put(B,238,10,'o');
+  ents[26].push({k:'rat',c:248});
+  block(B,14,240+SH,245+SH,'ferme');put(A,242+SH,10,'o');
+  water(A,250+SH,252+SH);ents[26].push({k:'boar',c:258+SH});put(A,251+SH,8,'o');
+  put(A,247+SH,8,'m');
+  block(A,26,264+SH,268+SH,'sanitaires');put(B,266+SH,10,'o');
+  for(let c=271+SH;c<=274+SH;c++)put(B,c,11,'^');put(B,272+SH,8,'o');
+  ents[26].push({k:'rat',c:276+SH});
+  FERTE.fires=[{c:279+SH,era:26,ph:0},{c:284.35+SH,era:14,ph:1.4}];put(A,279+SH,8,'o');put(B,285+SH,8,'o');
+  /* la guinguette (2026) ; on ne finit le niveau qu'en 2026 */
+  put(A,291+SH,11,'C');put(B,291+SH,11,'C');
+  block(A,26,298+SH,303+SH,'guinguette');
+  put(A,310+SH,10,'o');put(B,307+SH,9,'o');
+  put(A,315+SH,11,'E');
+  /* le grand marronnier de 1914, au départ : des branches où grimper, de la paille tout en haut */
+  for(const[c,r]of[[7,9],[8,9],[4,6],[5,6],[7,3],[8,3]]){B[r][c]='=';FERTE.masks[14].push([c,r])}
+  put(B,8,2,'o');
   FERTE.segs=[A.map(r=>r.join('')).join('\n')];
   FERTE.segs14=[B.map(r=>r.join('')).join('\n')];
   FERTE.blocks=blocks;FERTE.ents=ents;
@@ -10368,8 +10376,9 @@ function fertePost(Lv){
     gerbes:FERTE.gerbes.map(o=>({x:o.c*T+T/2,ph:o.ph,st:'idle',k:0,bg:!!o.bg})),
     fires:FERTE.fires.map(o=>({x:o.c*T+T/2,era:o.era,ph:o.ph,h:40})),
     cer:{on:false}};
-  F.tent={kind:'secret',style:'tente',x:272*T,y:FGR*T,open:0,t:0,used:false,zipAt:null,
+  F.tent={kind:'secret',style:'tente',x:286*T,y:FGR*T,open:0,t:0,used:false,zipAt:null,
     q:["Deux têtes rentrent, zzzip, la tente se ferme. Et devant, sur le tapis de sol, de la paille. Le camping, c'est la tranchée sans les obus."]};Lv.acts.push(F.tent);
+  F.seau={kind:'secret',style:'seau',x:27*T-26,y:FGR*T,open:0,t:0,used:false,q:["Dans le seau du pêcheur : trois gardons, et de la paille pour les garder au frais. Je prends la paille. Les gardons, ce n'est pas mon rayon."]};Lv.acts.push(F.seau);
 }
 function cornOn(k){return!(k.era&&L.ferte&&k.era!==L.ferte.era)}
 /* les calques de 1914 (fond, plan moyen, tuiles) */
@@ -10382,6 +10391,7 @@ function ferteLayers(){
 }
 /* les bâtiments sont dessinés à part : on les retire des tuiles le temps de les cuire */
 function ferteTiles(era){const sv=[];for(const b of FERTE.blocks[era])for(let c=b.c0;c<=b.c1;c++)for(let r=b.r0;r<FGR;r++){sv.push([c,r,L.g[r][c]]);L.g[r][c]='.'}
+  for(const[c,r]of FERTE.masks[era]){sv.push([c,r,L.g[r][c]]);L.g[r][c]='.'}
   const t=buildTilesF(L);for(const[c,r,ch]of sv)L.g[r][c]=ch;return t}
 function ferteSet(era){
   const F=L.ferte;if(!F||F.era===era)return;
@@ -10432,8 +10442,8 @@ function ferteStep(dt){
   // la nomination (1914, à l'emplacement de la guinguette)
   // en 1914, Raymond se souvient de sa mission
   if(F.era===14&&!P.dead){
-    if(!F.said.ordres&&P.x>150*T){F.said.ordres=1;say("Lucien m'a glissé un pli dans le tube : des ordres pour l'état-major du régiment, cantonné près de Saint-Siméon. Je dois rentrer au colombier, chez Marguerite.",5)}
-    if(!F.said.pli&&P.x>297*T){F.said.pli=1;say("Ce qu'il y a dans le pli ? Je n'en sais rien. Un pigeon ne lit pas le courrier. Il le porte.",4)}}
+    if(!F.said.ordres&&P.x>150*T){F.said.ordres=1;say("Lucien m'a glissé un pli dans le tube : des ordres pour l'état-major du régiment, sans doute, cantonné près de Saint-Siméon. Je dois rentrer au colombier, chez Marguerite.",5)}
+    if(!F.said.pli&&P.x>311*T){F.said.pli=1;say("Ce qu'il y a dans le pli ? Je n'en sais rien. Un pigeon ne lit pas le courrier. Il le porte.",4)}}
 }
 function splashF(x,y,big){for(let i=0;i<(big?26:10);i++){parts.push({type:'dust',x:x+(rnd()-.5)*(big?40:14),y,vx:(rnd()-.5)*(big?260:90),vy:-(big?260:120)-rnd()*(big?300:120),life:0,max:.6+rnd()*.5})}}
 function ferteAfterMove(){
@@ -10464,7 +10474,6 @@ function ferteFar(L,g,wpx,R){
   // La Ferté sur l'autre rive : toits, clocher, et (2026) château d'eau
   for(let x=-20;x<wpx;){const w=40+R()*50,h=26+R()*30;house(g,x,462,w,h,mix(near,'#d8c8a8',.22),mix(near,e14?'#7a4a3a':'#6a5a5a',.3),R,0);x+=w+6+R()*40}
   for(let x=300;x<wpx;x+=1500){g.save();g.translate(x,462);g.scale(.55,.55);church(g,0,0,mix(near,'#000000',.1),'rgba(0,0,0,.25)');g.restore()}
-  if(!e14){for(let x=900;x<wpx;x+=2100){g.fillStyle=near;poly(g,[x-7,462,x-4,380,x+4,380,x+7,462]);g.fill();poly(g,[x-24,382,x-16,356,x+16,356,x+24,382]);g.fill();g.fillRect(x-17,352,34,5)}}
   for(let x=0;x<wpx;x+=34+R()*30)poplar(g,x,470,60+R()*40,mix(near,'#1e3020',.2));
   // la Marne
   const wy=470;const wg=g.createLinearGradient(0,wy,0,600);wg.addColorStop(0,mix(sk[2],'#5a6a6a',.4));wg.addColorStop(1,mix(sk[1],'#1a2a2a',.6));g.fillStyle=wg;g.fillRect(0,wy,wpx,130);
@@ -10496,19 +10505,18 @@ function drawFerteBack(t,cx){
   if(!e14){for(const s of F.squirrels)if(vis(s.x-120,s.x+120))fTree(g,s.x,FGR*T,s.y0-40);
     ferteMemorial(g,146*T,FGR*T,vis);
     // le pont de 2026 : piles de béton sous le tablier, garde-corps
-    if(vis(206*T,230*T)){g.fillStyle='#8a8c88';for(const c of[206,214,222,229]){g.fillRect(c*T+6,9*T,26,FGR*T+60-9*T);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(c*T+24,9*T,8,FGR*T+60-9*T);g.fillStyle='#8a8c88'}
-      g.fillStyle='#9a9c98';g.fillRect(206*T,8*T+14,24*T,16);}
+    if(vis(206*T,230*T)){g.fillStyle='#8a8c88';for(const c of[207,214,222,229]){g.fillRect(c*T+6,8*T+40,26,FGR*T+60-8*T-40);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(c*T+24,8*T+40,8,FGR*T+60-8*T-40);g.fillStyle='#8a8c88'}
+      fDeckBack(g,t);}
     if(vis(160*T,206*T)){g.fillStyle='rgba(120,122,118,.85)';for(const c of[166,182,198]){g.fillRect(c*T,9*T+20,30,FGR*T+60-9*T-20);g.fillStyle='#6a6c68';poly(g,[c*T-6,9*T+20,c*T+36,9*T+20,c*T+30,9*T+34,c*T,9*T+34]);g.fill();g.fillStyle='rgba(120,122,118,.85)'}
       g.strokeStyle='#e8a020';g.lineWidth=2;g.beginPath();g.moveTo(166*T+15,9*T+20);g.lineTo(166*T+15,9*T-60);g.stroke();}
     // le camping
-    if(vis(229*T,262*T)){fCaravan(g,239.8*T,FGR*T,'#e8e4dc','#3a6a8a');fCaravan(g,254*T+20,FGR*T,'#ece6d6','#8a4a3a');fParasol(g,247.6*T,FGR*T,t)}
+    if(vis(255*T,275*T)){fCaravan(g,258*T,FGR*T,'#e8e4dc','#3a6a8a');fCaravan(g,268.2*T,FGR*T,'#ece6d6','#8a4a3a');fParasol(g,262.5*T,FGR*T,t)}
   }else{
     // le camp des fantassins (pantalon garance) là où sera le club d'aviron
     if(vis(28*T,46*T))fCamp14(g,t);
     // les bateaux du pont : coques sous les planches, sapeurs au travail
     if(vis(100*T,141*T)){for(const[a,b]of[[102,110],[129,140]])fPilings(g,a,b)}
     if(vis(158*T,232*T)){for(const[a,b]of[[160,171],[194,205]])fPontoons(g,a,b);fSappers(g,t)}
-    if(vis(238*T,250*T)){}
   }
 }
 /* au premier plan des tuiles : bâtiments, bêtes, gerbes */
@@ -10520,9 +10528,9 @@ function drawFerteMid(t){
     for(const s of F.squirrels)if(vis(s.x-30,s.x+30))fSquirrel(g,s,t);
     for(const f of F.fish)if(f.on&&vis(f.x-30,f.x+30))fFish(g,f);
     if(vis(156*T,160*T)){fSign(g,152*T,FGR*T,'PONT FERMÉ','travaux · déviation');}
-    if(vis(229*T,238*T))fAbutment(g);
+    if(vis(204*T,244*T)){fDeck(g,t);fRamp(g)}
     if(vis(30*T,34*T))fSign(g,31*T,FGR*T,"CLUB D'AVIRON","de la Marne");
-    if(vis(236*T,240*T))fSign(g,238*T,FGR*T,'CAMPING','municipal ★★');
+    if(vis(255*T,259*T))fSign(g,257.2*T,FGR*T,'CAMPING','municipal ★★');
   }else{
     for(const s of F.gerbes)if(!s.bg&&vis(s.x-80,s.x+80))fGerbe(g,s,t);
   }
@@ -10642,8 +10650,8 @@ function fCamp14(g,t){const b=FGR*T;
   const fs=[{x:35*T,f:1,pose:'sit',sk:0},{x:38*T,f:-1,pose:'stand',sk:2},{x:43.5*T,f:-1,pose:'sit',sk:4}];
   for(const m of fs)if(m.pose==='sit'){g.fillStyle='#5a4a30';rr(g,m.x-30,b-40,46,40,3);g.fill();g.fillStyle='rgba(0,0,0,.2)';g.fillRect(m.x-30,b-28,46,2);g.fillStyle='#e8dcc0';g.font='7px '+F_DISP;g.textAlign='center';g.fillText('8 mm Lebel',m.x-7,b-14)}
   for(const m of fs){const p=m.pose==='sit'?Object.assign({},VX_P.sit,{lean:.1}):VX_P.stand;
-    vxSoldier(g,{hip:m.pose==='sit'?{x:m.x,y:b-44}:null,x:m.x,y:b,s:9.5,f:m.f,side:'fr14',capote:true,t,pose:p,noPouch:false,kit:{musette:1},
-      face:{skin:VX_SKIN[m.sk],hair:VX_HAIR[m.sk],stache:m.sk===2?'walrus':'1914',helmet:'kepi',ex:'neutral',look:[m.f*.6,0]}})}
+    fSpr(g,'camp'+m.sk,200,230,100,215,m.x,b,g2=>vxSoldier(g2,{hip:m.pose==='sit'?{x:0,y:-44}:null,x:0,y:0,s:9.5,f:m.f,side:'fr14',capote:true,t:0,pose:p,noPouch:false,kit:{musette:1},
+      face:{skin:VX_SKIN[m.sk],hair:VX_HAIR[m.sk],stache:m.sk===2?'walrus':'1914',helmet:'kepi',ex:'neutral',look:[m.f*.6,0]}}))}
   g.fillStyle='#2a2a2a';g.beginPath();g.ellipse(36.5*T,b-6,14,6,0,0,7);g.fill();g.fillStyle='rgba(200,190,170,.25)';for(let k=0;k<5;k++){g.beginPath();g.arc(36.5*T+Math.sin(t+k)*6,b-20-k*16-((t*20)%16),5+k*2,0,7);g.fill()}
 }
 function fPilings(g,a,b){const y=FGR*T;g.fillStyle='#4a3a2a';for(let c=a;c<=b;c+=2){g.fillRect(c*T+8,y+4,7,80)}g.strokeStyle='#3a2a1e';g.lineWidth=2;g.beginPath();g.moveTo(a*T,y+30);g.lineTo((b+1)*T,y+30);g.stroke();
@@ -10655,15 +10663,15 @@ function fertePonton(g,m){const x=m.x,y=m.y;g.save();g.fillStyle='#3a3026';g.beg
   g.fillStyle='#8a6a44';g.fillRect(x-4,y,m.w+8,9);g.fillStyle='#6a4e30';for(let k=0;k<m.w;k+=12)g.fillRect(x+k,y,2,9);
   // les deux sapeurs qui le poussent à la gaffe, depuis la barque
   const dir=m.dx>=0?1:-1,bx=x+(dir>0?-46:m.w+46);g.fillStyle='#2e261e';g.beginPath();g.ellipse(bx,y+20,30,8,0,0,Math.PI);g.fill();
-  const t=G.t;vxSoldier(g,{x:bx,y:y+16,s:7.5,f:dir,side:'uk',t,pose:Object.assign({},VX_P.stand,{lean:.3,nT:{x:4.2,y:1.4},fT:{x:3.4,y:1.8}}),noPouch:true,
-    face:{skin:VX_SKIN[2],hair:VX_HAIR[3],stache:'thin',helmet:'tommy',ex:'worry'}});
+  fSpr(g,'pousse'+dir,200,230,100,215,bx,y+16,g2=>vxSoldier(g2,{x:0,y:0,s:7.5,f:dir,side:'uk',t:0,pose:Object.assign({},VX_P.stand,{lean:.3,nT:{x:4.2,y:1.4},fT:{x:3.4,y:1.8}}),noPouch:true,
+    face:{skin:VX_SKIN[2],hair:VX_HAIR[3],stache:'thin',helmet:'tommy',ex:'worry'}}));
   g.strokeStyle='#6a4a2a';g.lineWidth=2.4;g.beginPath();g.moveTo(bx+dir*10,y-20);g.lineTo(bx+dir*60,y+40);g.stroke();
   g.restore()}
 function fSappers(g,t){const y=FGR*T;
   const list=[{c:163,f:1,act:'hammer',sk:1},{c:169,f:-1,act:'rope',sk:5},{c:197,f:1,act:'hammer',sk:3},{c:203,f:-1,act:'look',sk:6}];
-  for(const s of list){const x=s.c*T,ph=Math.sin(t*(s.act==='hammer'?6:2)+s.c);
+  for(const s of list){const x=s.c*T,fr=Math.floor(((t*(s.act==='hammer'?6:2)+s.c)/(Math.PI*2))*8)%8,ph=Math.sin((fr+.5)/8*Math.PI*2);
     const pose=s.act==='hammer'?Object.assign({},VX_P.kneel,{nT:{x:3.4,y:.4-Math.max(0,ph)*3.2},fT:{x:2.6,y:1.2}}):s.act==='rope'?Object.assign({},VX_P.stand,{lean:-.12,nT:{x:3.2,y:-.8+ph*.4},fT:{x:3.6,y:-.4+ph*.4}}):VX_P.binoc||VX_P.stand;
-    vxSoldier(g,{x,y,s:8.2,f:s.f,side:'uk',t,pose,noPouch:true,face:{skin:VX_SKIN[s.sk],hair:VX_HAIR[s.sk],stache:s.sk%2?'thin':null,helmet:'tommy',ex:s.act==='look'?'worry':'neutral'}});}
+    fSpr(g,'sap'+s.c+'-'+(s.act==='look'?0:fr),200,230,100,215,x,y,g2=>vxSoldier(g2,{x:0,y:0,s:8.2,f:s.f,side:'uk',t:0,pose,noPouch:true,face:{skin:VX_SKIN[s.sk],hair:VX_HAIR[s.sk],stache:s.sk%2?'thin':null,helmet:'tommy',ex:s.act==='look'?'worry':'neutral'}}));}
   // au loin, sur la rive nord, les éclairs des fusils allemands
   for(let k=0;k<5;k++){const ph=(t*1.3+k*.77)%3;if(ph<.08){const fx=(170+k*11)*T+((k*53)%40);g.fillStyle='rgba(255,230,150,.9)';g.beginPath();g.arc(fx,7*T+((k*37)%60),3,0,7);g.fill()}}
 }
@@ -10679,33 +10687,31 @@ function fGerbe(g,s,t){const y=FGR*T+10;
 /* en surimpression : la brume de 1914, l'éclair du passage */
 function ferteOverlay(t){
   const F=L.ferte;if(!F)return;
-  if(F.era===14){
-    ctx.save();ctx.fillStyle='rgba(120,100,70,.12)';ctx.fillRect(0,0,W,H);
-    for(let k=0;k<6;k++){const x=((k*260-t*(10+k*4))%(W+700)+W+700)%(W+700)-350,y=120+k*70+Math.sin(t*.3+k)*20;const gr=ctx.createRadialGradient(x,y,10,x,y,320);gr.addColorStop(0,'rgba(232,222,198,.2)');gr.addColorStop(1,'rgba(232,222,198,0)');ctx.fillStyle=gr;ctx.fillRect(x-320,y-320,640,640)}
-    const vg=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);vg.addColorStop(0,'rgba(60,48,30,0)');vg.addColorStop(1,'rgba(60,48,30,.38)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  if(F.era===14){const fc=ferteFogTex();ctx.save();const ox=((t*14+cam.x*.15)%fc.fog.width+fc.fog.width)%fc.fog.width;
+    ctx.drawImage(fc.fog,-ox,0,fc.fog.width,H);ctx.drawImage(fc.fog,fc.fog.width-ox,0,fc.fog.width,H);ctx.drawImage(fc.vig,0,0,W,H);
     ctx.globalAlpha=.6;ctx.fillStyle='#efe5cc';ctx.font='italic 15px '+F_BODY;ctx.textAlign='left';ctx.fillText('La Marne · septembre 1914',20,H-20);ctx.restore();
   }
   if(F.flash>0){const a=Math.min(1,F.flash);ctx.save();ctx.fillStyle='rgba(236,232,222,'+(a*.85)+')';ctx.fillRect(0,0,W,H);
-    const px=P.x+P.w/2-cam.x,py=P.y+P.h/2-cam.y;for(let k=0;k<8;k++){const ang=k/8*6.28+t,r=60+(1-a)*400;const gr=ctx.createRadialGradient(px+Math.cos(ang)*r,py+Math.sin(ang)*r*.6,10,px+Math.cos(ang)*r,py+Math.sin(ang)*r*.6,180);gr.addColorStop(0,'rgba(250,248,240,'+(a*.5)+')');gr.addColorStop(1,'rgba(250,248,240,0)');ctx.fillStyle=gr;ctx.fillRect(0,0,W,H)}
+    const px=P.x+P.w/2-cam.x,py=P.y+P.h/2-cam.y;for(let k=0;k<3;k++){const ang=k/8*6.28+t,r=60+(1-a)*400;const gr=ctx.createRadialGradient(px+Math.cos(ang)*r,py+Math.sin(ang)*r*.6,10,px+Math.cos(ang)*r,py+Math.sin(ang)*r*.6,180);gr.addColorStop(0,'rgba(250,248,240,'+(a*.5)+')');gr.addColorStop(1,'rgba(250,248,240,0)');ctx.fillStyle=gr;ctx.fillRect(0,0,W,H)}
     ctx.restore()}
 }
 
 /* ---------- le décor des berges : arbres, bancs, roseaux, campements ---------- */
 const FD={26:[
-  ['platane',6],['banc',15],['saule',20],['pecheur',27],['lampe',31.6],['canoes',41],['peuplier',44],['lampe',52],['roseaux',56],['roseaux',60.4],['platane',64],
-  ['roseaux',83],['roseaux',91.2],['saule',95],['pecheur',99.4],['roseaux',100.6],['roseaux',141],['lampe',141.8],['platane',154],['roseaux',155.4],
-  ['banc',244.5],['saule',257],['roseaux',249.4],['roseaux',253.2],['peuplier',261],['terrasse',295.3],['tente',272],['velo',283],
-  ['platane',288],['lampe',292],['terrasse',305.7],['saule',312],['peuplier',318]],
+  ['grand',1.5],['saule',11],['banc',15.5],['grand',21],['pecheur',27],['lampe',31.6],['canoes',41],['grand',45],['peuplier',49.5],['lampe',52],['roseaux',56],['roseaux',60.4],
+  ['platane',64],['saule',70],['peuplier',74],['roseaux',83],['roseaux',91.2],['grand',95],['pecheur',99.4],['roseaux',100.6],['roseaux',141],['lampe',141.8],['grand',144],['platane',154],['roseaux',155.4],
+  ['grand',244],['banc',246.5],['saule',251],['platane',255],['roseaux',263.4],['roseaux',267.2],['saule',271],['peuplier',275],['grand',284],['tente',286],['velo',297],
+  ['grand',302],['lampe',306],['terrasse',309.3],['terrasse',319.7],['saule',326],['grand',331]],
  14:[
-  ['platane',6],['meule',12],['fourgon',19],['peuplier',26],['faisceau',40],['saule',53],['roseaux',54.6],['roseaux',100.4],['roseaux',141],['platane',150],['caisses',153],
-  ['roseaux',230.4],['peuplier',234],['brise',237],['meule',249],['platane',256],['faisceau',262],['bivouac',282],['peuplier',290],['brise',305],['saule',314]]};
+  ['marronnier',6],['meule',13.5],['fourgon',19],['faisceau',40],['saule',53],['roseaux',54.6],['roseaux',100.4],['roseaux',141],['grand',145],['platane',150],['caisses',153],['grand',157],
+  ['roseaux',230.4],['grand',233],['peuplier',238],['brise',244],['platane',249],['meule',263],['platane',270],['faisceau',276],['grand',283],['bivouac',296],['peuplier',304],['grand',309],['brise',319],['saule',328]]};
 function fDecor(g,t,era,vis){const b=FGR*T;
-  if(era===14&&vis(252*T-60,293*T+60))fPoleLine(g,[252,265,278,293].map(c=>c*T),b);
+  if(era===14&&vis(266*T-60,307*T+60))fPoleLine(g,[266,279,292,307].map(c=>c*T),b);
   for(const[k,c]of FD[era]){const x=c*T;if(!vis(x-160,x+160))continue;
-    if(k==='platane')fPlane(g,x,b,era===14);else if(k==='saule')fWillow(g,x,b,t);else if(k==='peuplier'){for(let i=0;i<3;i++)fPoplarN(g,x+i*34-34,b,240+((c*7+i*13)%60))}
+    if(k==='platane')fPlane(g,x,b,era===14);else if(k==='grand'){g.save();g.translate(x,b);g.scale(1.5,1.5);fPlane(g,0,0,era===14);g.restore()}else if(k==='marronnier')fChestnut(g,b,t);else if(k==='saule')fWillow(g,x,b,t);else if(k==='peuplier'){for(let i=0;i<3;i++)fPoplarN(g,x+i*34-34,b,240+((c*7+i*13)%60))}
     else if(k==='brise')fPlane(g,x,b,true,true);
     else if(k==='roseaux')fReeds(g,x,b,t);else if(k==='banc')fBench(g,x,b);else if(k==='lampe')fLamp(g,x,b);
-    else if(k==='pecheur')fFisher(g,x,b,t);else if(k==='canoes')fCanoes(g,x,b);else if(k==='tente')fTent(g,x,b,t,L.ferte&&L.ferte.tent);else if(k==='terrasse')fTerrace(g,x,b,t);else if(k==='velo')fBike(g,x,b);
+    else if(k==='pecheur')fFisher(g,x,b,t,c===27&&L.ferte?L.ferte.seau:null);else if(k==='canoes')fCanoes(g,x,b);else if(k==='tente')fTent(g,x,b,t,L.ferte&&L.ferte.tent);else if(k==='terrasse')fTerrace(g,x,b,t);else if(k==='velo')fBike(g,x,b);
     else if(k==='meule')fHay(g,x,b);else if(k==='fourgon')fWagon(g,x,b,t);else if(k==='faisceau')fRifles(g,x,b);else if(k==='caisses')fCrates(g,x,b);
     else if(k==='poteau')fPole(g,x,b);else if(k==='bivouac')fBivouac(g,x,b,t);}
 }
@@ -10726,12 +10732,15 @@ function fReeds(g,x,b,t){g.save();g.lineCap='round';for(let k=0;k<9;k++){const x
 function fBench(g,x,b){g.save();g.fillStyle='#2e4a3a';g.fillRect(x-30,b-22,60,5);g.fillRect(x-30,b-40,60,4);g.fillRect(x-30,b-32,60,4);g.fillStyle='#222';g.fillRect(x-26,b-22,4,22);g.fillRect(x+22,b-22,4,22);g.fillRect(x-26,b-42,3,20);g.fillRect(x+23,b-42,3,20);g.restore()}
 function fLamp(g,x,b){g.save();g.fillStyle='#2a3030';g.fillRect(x-2,b-150,4,150);g.fillRect(x-6,b-6,12,6);g.beginPath();g.moveTo(x,b-150);g.quadraticCurveTo(x,b-162,x+16,b-160);g.lineTo(x+16,b-156);g.quadraticCurveTo(x+4,b-158,x+2,b-150);g.fill();
   g.fillStyle='#e8e0c0';poly(g,[x+10,b-158,x+22,b-158,x+20,b-150,x+12,b-150]);g.fill();g.restore()}
-function fFisher(g,x,b,t){g.save();// pêcheur assis sur son pliant, au bord de l'eau
+function fFisher(g,x,b,t,a){g.save();// pêcheur assis sur son pliant, au bord de l'eau
   g.strokeStyle='#3a3a3a';g.lineWidth=2;g.beginPath();g.moveTo(x-12,b);g.lineTo(x+8,b-22);g.moveTo(x+8,b);g.lineTo(x-12,b-22);g.stroke();
   g.fillStyle='#4a5a3a';rr(g,x-12,b-62,22,40,8);g.fill();g.fillStyle='#2a3a5a';g.fillRect(x-4,b-26,24,8);g.fillRect(x+16,b-26,6,26);
   g.fillStyle='#e0b896';g.beginPath();g.arc(x+2,b-70,8,0,7);g.fill();g.fillStyle='#6a7a4a';g.beginPath();g.ellipse(x+2,b-76,12,4,0,0,7);g.fill();g.fillRect(x-5,b-84,14,8);
   g.strokeStyle='#2a2a2a';g.lineWidth=1.6;g.beginPath();g.moveTo(x+12,b-40);g.lineTo(x+70,b-110);g.stroke();g.strokeStyle='rgba(230,230,230,.6)';g.lineWidth=.7;const by=b+18+Math.sin(t*2)*2;g.beginPath();g.moveTo(x+70,b-110);g.lineTo(x+86,by);g.stroke();
-  g.fillStyle='#e8402a';g.beginPath();g.arc(x+86,by,2.4,0,7);g.fill();g.fillStyle='#5a7a8a';rr(g,x-36,b-16,20,16,2);g.fill();g.restore()}
+  g.fillStyle='#e8402a';g.beginPath();g.arc(x+86,by,2.4,0,7);g.fill();g.fillStyle='#5a7a8a';g.beginPath();g.moveTo(x-37,b-17);g.lineTo(x-15,b-17);g.lineTo(x-17,b);g.lineTo(x-35,b);g.closePath();g.fill();g.fillStyle=a&&a.used?'#6a8a96':'#3a5a6a';g.beginPath();g.ellipse(x-26,b-17,11,3,0,0,7);g.fill();
+  g.strokeStyle='#4a5a64';g.lineWidth=1.2;g.beginPath();g.arc(x-26,b-17,10,Math.PI,0);g.stroke();
+  if(a&&a.open>0){const u=Math.min(1,a.t/.6);for(let k=0;k<2;k++){const fx=x-26+(k?1:-1)*u*18,fy=b-17-Math.sin(u*Math.PI)*26;g.fillStyle='#9aa8a0';g.beginPath();g.ellipse(fx,fy,6,2.4,(k?1:-1)*(u-.5)*2,0,7);g.fill()}}
+  g.restore()}
 function fCanoes(g,x,b){g.save();g.fillStyle='#4a3a2a';g.fillRect(x-40,b-70,4,70);g.fillRect(x+40,b-70,4,70);g.fillRect(x-42,b-40,88,4);g.fillRect(x-42,b-70,88,4);
   for(const[y,c]of[[b-46,'#d8402a'],[b-76,'#e8c040']]){g.fillStyle=c;g.beginPath();g.ellipse(x+2,y,62,7,0,0,7);g.fill();g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x-40,y,84,2)}g.restore()}
 function fTent(g,x,b,t,a){g.save();// deux campeurs sous la tente ; un coup de bec : les têtes rentrent et la tente se ferme
@@ -10757,7 +10766,7 @@ function fTent(g,x,b,t,a){g.save();// deux campeurs sous la tente ; un coup de b
 function fBike(g,x,b){g.save();g.strokeStyle='#2a2a2a';g.lineWidth=2;g.beginPath();g.arc(x-18,b-13,13,0,7);g.arc(x+18,b-13,13,0,7);g.stroke();g.strokeStyle='#b8302a';g.lineWidth=3;g.beginPath();g.moveTo(x-18,b-13);g.lineTo(x-2,b-34);g.lineTo(x+14,b-34);g.lineTo(x+18,b-13);g.moveTo(x-2,b-34);g.lineTo(x+2,b-13);g.lineTo(x-18,b-13);g.stroke();g.fillStyle='#222';g.fillRect(x-6,b-38,10,3);g.restore()}
 function fHay(g,x,b){g.save();g.fillStyle='#b89a50';g.beginPath();g.moveTo(x-46,b);g.quadraticCurveTo(x-48,b-60,x,b-84);g.quadraticCurveTo(x+48,b-60,x+46,b);g.closePath();g.fill();g.strokeStyle='rgba(120,90,40,.4)';g.lineWidth=1;for(let k=0;k<6;k++){g.beginPath();g.moveTo(x-44+k*6,b-10-k*10);g.quadraticCurveTo(x,b-20-k*12,x+44-k*6,b-10-k*10);g.stroke()}g.fillStyle='#8a7a3a';g.beginPath();g.ellipse(x,b-84,10,6,0,0,7);g.fill();g.restore()}
 function fWagon(g,x,b,t){g.save();// fourgon du train régimentaire, attelé, au repos
-  vxHorse(g,x+120,b,1.05,1,t*.1,{col:'#6a4428',rate:.3,traceTo:-70});
+  fSpr(g,'cheval',520,380,260,350,x+120,b,g2=>vxHorse(g2,0,0,1.05,1,0,{col:'#6a4428',rate:.3,traceTo:-70}));
   g.fillStyle='#5a4a30';g.fillRect(x-80,b-90,150,56);g.fillStyle='#d8ccae';g.beginPath();g.moveTo(x-84,b-90);g.quadraticCurveTo(x-5,b-150,x+74,b-90);g.closePath();g.fill();g.strokeStyle='rgba(90,70,40,.4)';for(let k=0;k<4;k++){g.beginPath();g.moveTo(x-60+k*40,b-90);g.quadraticCurveTo(x-55+k*40,b-130,x-50+k*40,b-136+Math.abs(k-1.5)*6);g.stroke()}
   for(const wx of[x-50,x+40]){g.strokeStyle='#2e2014';g.lineWidth=4;g.beginPath();g.arc(wx,b-26,26,0,7);g.stroke();g.lineWidth=2;for(let a=0;a<6.28;a+=.63){g.beginPath();g.moveTo(wx,b-26);g.lineTo(wx+Math.cos(a)*26,b-26+Math.sin(a)*26);g.stroke()}}
   g.fillStyle='#e8dcc0';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('142e R.I. · T.R.',x-5,b-60);g.restore()}
@@ -10769,8 +10778,8 @@ function fPole(g,x,b,noWire){g.save();g.fillStyle='#4a3a2a';g.fillRect(x-3,b-200
 function fBivouac(g,x,b,t){g.save();// deux fantassins autour du feu (le feu lui-même est un danger, dessiné devant)
   g.strokeStyle='#2a2018';g.lineWidth=3;g.beginPath();g.moveTo(x+90,b);g.lineTo(x+102,b-60);g.lineTo(x+114,b);g.moveTo(x+138,b);g.lineTo(x+126,b-60);g.lineTo(x+114,b);g.moveTo(x+102,b-58);g.lineTo(x+126,b-58);g.stroke();
   for(const m of[{x:x-6,f:1,sk:1},{x:x+190,f:-1,sk:4}]){g.fillStyle='#6a5a40';rr(g,m.x-24,b-36,40,36,4);g.fill();
-    vxSoldier(g,{hip:{x:m.x,y:b-40},s:9.2,f:m.f,side:'fr14',capote:true,t,pose:Object.assign({},VX_P.sit,{lean:.18,nT:{x:3.4,y:.2},fT:{x:3.0,y:.6}}),kit:{musette:1},
-      face:{skin:VX_SKIN[m.sk],hair:VX_HAIR[m.sk],stache:'1914',helmet:'kepi',ex:'neutral',look:[.7,.3]}})}
+    fSpr(g,'biv'+m.sk,200,230,100,215,m.x,b,g2=>vxSoldier(g2,{hip:{x:0,y:-40},s:9.2,f:m.f,side:'fr14',capote:true,t:0,pose:Object.assign({},VX_P.sit,{lean:.18,nT:{x:3.4,y:.2},fT:{x:3.0,y:.6}}),kit:{musette:1},
+      face:{skin:VX_SKIN[m.sk],hair:VX_HAIR[m.sk],stache:'1914',helmet:'kepi',ex:'neutral',look:[.7,.3]}}))}
   g.restore()}
 function fFire(g,f,t){const x=f.x,b=FGR*T,h=f.h;g.save();
   if(f.era===14){g.strokeStyle='#2a2018';g.lineWidth=2;g.beginPath();g.moveTo(x,b-74);g.lineTo(x,b-46);g.stroke();g.fillStyle='#2a2a2a';g.beginPath();g.moveTo(x-14,b-46);g.lineTo(x+14,b-46);g.lineTo(x+11,b-26);g.lineTo(x-11,b-26);g.closePath();g.fill()}
@@ -10795,6 +10804,67 @@ function fTerrace(g,x,b,t){g.save();// une table nappée à carreaux, deux chais
   g.strokeStyle='#3a3a3a';g.lineWidth=2;g.beginPath();g.moveTo(x-10,b-20);g.lineTo(x-14,b);g.moveTo(x+10,b-20);g.lineTo(x+14,b);g.stroke();
   for(const d of[-1,1]){const cx=x+d*34;g.strokeStyle='#2e4a3a';g.lineWidth=2.4;g.beginPath();g.moveTo(cx-8,b);g.lineTo(cx-8,b-18);g.lineTo(cx+8,b-18);g.lineTo(cx+8,b);g.moveTo(cx+d*8,b-18);g.lineTo(cx+d*8,b-38);g.stroke()}
   g.fillStyle='rgba(200,230,240,.7)';g.fillRect(x-8,b-44,5,10);g.fillStyle='#c8a030';g.fillRect(x+4,b-42,5,8);g.restore()}
+
+/* ---------- performances : brume et vignette précalculées, personnages mis en cache ---------- */
+let FFOG=null;
+function ferteFogTex(){if(FFOG)return FFOG;
+  const fog=mk(W*2,H),g=fog.getContext('2d');g.fillStyle='rgba(120,100,70,.12)';g.fillRect(0,0,W*2,H);
+  for(let k=0;k<12;k++){for(const off of[0,W*2]){const x=k*160+40-off*0+(off?-W*2:0),y=110+(k*97)%340;const gr=g.createRadialGradient(x,y,10,x,y,300);gr.addColorStop(0,'rgba(232,222,198,.18)');gr.addColorStop(1,'rgba(232,222,198,0)');g.fillStyle=gr;g.fillRect(x-300,y-300,600,600);
+    const x2=x+W*2;const g2=g.createRadialGradient(x2,y,10,x2,y,300);g2.addColorStop(0,'rgba(232,222,198,.18)');g2.addColorStop(1,'rgba(232,222,198,0)');g.fillStyle=g2;g.fillRect(x2-300,y-300,600,600)}}
+  const vig=mk(W,H),v=vig.getContext('2d');const vg=v.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);vg.addColorStop(0,'rgba(60,48,30,0)');vg.addColorStop(1,'rgba(60,48,30,.38)');v.fillStyle=vg;v.fillRect(0,0,W,H);
+  return FFOG={fog,vig}}
+const FSPR={};
+function fSpr(g,key,w,h,ox,oy,x,y,fn){let c=FSPR[key];const rs=Math.max(1,RS);if(!c||c.rs!==rs){c=mk(Math.ceil(w*rs),Math.ceil(h*rs));const g2=c.getContext('2d');g2.scale(rs,rs);g2.translate(ox,oy);fn(g2);c.rs=rs;FSPR[key]=c}g.drawImage(c,x-ox,y-oy,w,h)}
+
+/* ---------- le tablier du pont de 2026 et son chantier ---------- */
+function fDeckBack(g,t){const x0=206*T,x1=230*T,y=8*T;g.save();// garde-corps du fond
+  g.fillStyle='#5a5c5a';for(let x=x0+60;x<x1;x+=40)g.fillRect(x,y-34,3,34);g.fillRect(x0+50,y-36,x1-x0-50,4);g.fillRect(x0+50,y-20,x1-x0-50,2);
+  // l'échafaudage contre la pile de l'extrémité ouest, et le filet orange
+  g.strokeStyle='#8a8a86';g.lineWidth=3;for(const x of[x0-10,x0+30]){g.beginPath();g.moveTo(x,FGR*T+30);g.lineTo(x,y+30);g.stroke()}
+  for(let yy=y+60;yy<FGR*T+20;yy+=50){g.beginPath();g.moveTo(x0-10,yy);g.lineTo(x0+30,yy);g.stroke();g.beginPath();g.moveTo(x0-10,yy);g.lineTo(x0+30,yy+50);g.stroke()}
+  g.fillStyle='rgba(232,110,30,.35)';g.fillRect(x0-14,y+40,48,90);g.restore()}
+function fDeck(g,t){const x0=206*T,x1=230*T,y=8*T;g.save();
+  // le tablier : chaussée, rive, poutre, joints
+  g.fillStyle='#a8a69e';g.beginPath();g.moveTo(x0+8,y);g.lineTo(x1+4,y);g.lineTo(x1+4,y+42);g.lineTo(x0+18,y+42);g.lineTo(x0+12,y+34);g.lineTo(x0+4,y+30);g.lineTo(x0+10,y+20);g.lineTo(x0,y+12);g.closePath();g.fill();
+  g.fillStyle='#c4c2ba';g.fillRect(x0+8,y,x1-x0-4,6);g.fillStyle='#8e8c84';g.fillRect(x0+18,y+26,x1-x0-14,16);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x0+18,y+40,x1-x0-14,3);
+  g.strokeStyle='rgba(60,58,52,.4)';g.lineWidth=1;for(let x=x0+160;x<x1;x+=160){g.beginPath();g.moveTo(x,y);g.lineTo(x,y+42);g.stroke()}
+  // le bout coupé : ferraillage à nu
+  g.strokeStyle='#6a4a34';g.lineWidth=2;for(let k=0;k<5;k++){g.beginPath();g.moveTo(x0+6,y+6+k*7);g.quadraticCurveTo(x0-10,y+4+k*7,x0-18-k*2,y+10+k*8);g.stroke()}
+  // le chantier sur le tablier : barrières, cônes, panneau, baraque
+  for(let k=0;k<3;k++){const bx=x0+44+k*46;g.fillStyle='#e8e4dc';rr(g,bx,y-30,40,26,3);g.fill();g.fillStyle='#d8302a';for(let j=0;j<4;j++)poly(g,[bx+j*10,y-30,bx+j*10+6,y-30,bx+j*10+2,y-4,bx+j*10-4,y-4]);g.fill();g.fillStyle='#444';g.fillRect(bx+4,y-4,6,4);g.fillRect(bx+30,y-4,6,4)}
+  for(const cx of[x0+200,x0+236]){g.fillStyle='#e86a1a';poly(g,[cx-8,y,cx,y-24,cx+8,y]);g.fill();g.fillStyle='#f2ece0';g.fillRect(cx-5,y-14,10,4)}
+  g.fillStyle='#e8c040';poly(g,[x0+262,y-6,x0+282,y-44,x0+302,y-6]);g.fill();g.fillStyle='#2a2a2a';poly(g,[x0+270,y-12,x0+282,y-34,x0+294,y-12]);g.fill();g.fillStyle='#e8c040';g.fillRect(x0+280,y-28,4,10);
+  g.fillStyle='#e0dcd2';g.fillRect(x0+330,y-60,90,60);g.fillStyle='#3a6aa0';g.fillRect(x0+330,y-60,90,8);g.fillStyle='#8aa0b0';g.fillRect(x0+344,y-44,24,16);g.fillStyle='#6a6a66';g.fillRect(x0+386,y-44,18,44);
+  g.fillStyle='#2a3a5a';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText('CHANTIER',x0+375,y-53);
+  g.fillStyle='#2a3a5a';rr(g,x0+440,y-74,74,40,3);g.fill();g.fillStyle='#ece6d2';g.font='bold 8px '+F_DISP;g.fillText('RÉFECTION',x0+477,y-58);g.fillText('DU TABLIER',x0+477,y-46);g.fillStyle='#5a5a5a';g.fillRect(x0+475,y-34,3,34);
+  g.restore()}
+/* la rampe à paliers qui descend de la culée au chemin de halage */
+function fRamp(g){const land=[[230,233,8],[233,236,9],[236,239,10],[239,242,11]];g.save();
+  const wallC='#a8a49a',capC='#c8c4b8';
+  // le mur de quai côté rivière
+  g.fillStyle=wallC;g.fillRect(230*T-6,8*T,12,ROWS*T-8*T);
+  for(const[a,b,r]of land){const x=a*T,w=(b-a)*T,y=r*T,h=(FGR-r)*T;g.fillStyle=wallC;g.fillRect(x,y,w,h+4);
+    g.strokeStyle='rgba(70,66,58,.3)';g.lineWidth=1;for(let yy=y+14;yy<FGR*T;yy+=14){g.beginPath();g.moveTo(x,yy);g.lineTo(x+w,yy);g.stroke();for(let xx=x+((yy/14|0)%2?10:30);xx<x+w;xx+=40){g.beginPath();g.moveTo(xx,yy-14);g.lineTo(xx,yy);g.stroke()}}
+    g.fillStyle=capC;g.fillRect(x,y,w,6);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x,y+6,w,2);
+    // trois petites marches au bout du palier
+  }
+  // la main courante qui suit la descente
+  g.strokeStyle='#3a3a38';g.lineWidth=3;g.beginPath();g.moveTo(230*T,8*T-30);for(const[a,b,r]of land){g.lineTo(b*T-36,r*T-30);g.lineTo(b*T,(r+1)*T-30)}g.stroke();
+  g.lineWidth=2;for(const[a,b,r]of land)for(const x of[a*T+8,b*T-40]){g.beginPath();g.moveTo(x,r*T);g.lineTo(x,r*T-30);g.stroke()}
+  // des jardinières
+  for(const[a,b,r]of land.slice(1)){g.fillStyle='#6a5a4a';g.fillRect(a*T+30,r*T-14,30,14);g.fillStyle='#4a7a3a';g.beginPath();g.arc(a*T+38,r*T-16,8,0,7);g.arc(a*T+52,r*T-18,9,0,7);g.fill();g.fillStyle='#d83a3a';g.beginPath();g.arc(a*T+44,r*T-22,2.5,0,7);g.fill()}
+  g.restore()}
+/* le grand marronnier de 1914 : ses branches portent Raymond */
+function fChestnut(g,b,t){const x=6*T+22;g.save();
+  for(const[dx,dy,r,c]of[[-80,-420,70,'#4a5a30'],[60,-440,80,'#52653a'],[0,-480,76,'#5a6c3c'],[-110,-340,56,'#46562e'],[110,-330,60,'#4e6034'],[-40,-260,50,'#4a5a30'],[90,-230,46,'#52653a']]){g.fillStyle=c;g.beginPath();g.arc(x+dx,b+dy,r,0,7);g.fill()}
+  const tg=g.createLinearGradient(x-18,0,x+18,0);tg.addColorStop(0,'#3a2e22');tg.addColorStop(.5,'#5a4a36');tg.addColorStop(1,'#33281c');g.fillStyle=tg;
+  g.beginPath();g.moveTo(x-26,b+4);g.quadraticCurveTo(x-14,b-160,x-12,b-420);g.lineTo(x+12,b-420);g.quadraticCurveTo(x+14,b-160,x+28,b+4);g.closePath();g.fill();
+  g.strokeStyle='rgba(20,14,8,.35)';g.lineWidth=1;for(let y=b-30;y>b-400;y-=26){g.beginPath();g.moveTo(x-10,y);g.quadraticCurveTo(x,y+5,x+9,y-2);g.stroke()}
+  // les branches praticables (dessus = haut de la case)
+  const br=(x1,x2,y)=>{g.fillStyle='#4e3e2c';g.beginPath();g.moveTo(x1,y+16);g.quadraticCurveTo((x1+x2)/2,y+20,x2,y+8);g.lineTo(x2+6,y+2);g.lineTo(x2,y-1);g.quadraticCurveTo((x1+x2)/2,y-2,x1,y-4);g.closePath();g.fill();
+    g.fillStyle='#6a5640';g.fillRect(Math.min(x1,x2),y-1,Math.abs(x2-x1),3);g.fillStyle='#5a6c3c';g.beginPath();g.arc(x2,y-8,14,0,7);g.arc(x2+(x2>x1?-16:16),y-12,10,0,7);g.fill()};
+  br(x+10,9*T-2,9*T);br(x-10,4*T+2,6*T);br(x+10,9*T-2,3*T);
+  g.restore()}
 
 /* =========================================================
    RENDU EN JEU
