@@ -10,7 +10,7 @@
      4 · les tranchées françaises : « un pigeon, avec un message ! »… « il ne se pose pas… »… « un leurre boche ! Feu ! »
          La troisième balle touche, forcément. Raymond tombe dans un buisson.
    ========================================================= */
-const VF={BX:640,CAMV:225,X0:300,END:-12300,STEP:8,XMIN:-13400,XMAX:1100,G:428,
+const VF={BX:640,CAMV:225,UP:50,X0:300,END:-12300,STEP:8,XMIN:-13400,XMAX:1100,G:428,
   A:[-3500,-420],B:[-6900,-3700],C:[-9950,-7050],D:[-12300,-10050],bush:-11930,hitX:-11620};
 const VF_TR=[// tranchées : [x0,x1,profondeur,camp]
   [-4330,-4010,66,'de'],[-5330,-5060,66,'de'],[-6440,-6160,66,'de'],[-10690,-10370,66,'fr'],[-11420,-11170,64,'fr']];
@@ -121,8 +121,8 @@ function vfWorld(dt){
   if(s.x<VF.A[1]&&s.x>VF.A[0]&&!s.dead){s.shellT-=dt;if(s.shellT<=0){const prog=clamp((VF.A[1]-s.x)/(VF.A[1]-VF.A[0]),0,1),r=rnd();
       const n=r<.1+prog*.28?3:r<.36+prog*.2?2:1;s.shellT=(.95+rnd()*.45)*(n>1?1.25:1);
       // la moitié des obus visent l'endroit où Raymond passera, à sa hauteur : il faut changer d'allure ou d'altitude
-      const T=1.25,aim=rnd()<.5,tc=T*Math.pow(clamp((s.y+40)/(VF.G+40),.05,1),1/1.6),xt=aim?s.x-s.sp*tc+(rnd()-.5)*30:s.x-s.sp*T-(40+rnd()*300),sp=78+rnd()*40;
-      for(let k=0;k<n;k++){const xx=xt+(k-(n-1)/2)*sp+(rnd()-.5)*20;s.shells.push({X:xx,t:-k*.06,T,big:n>1})}
+      const T=1.25,WN=.7,aim=rnd()<.5,tc=T*Math.pow(clamp((s.y+40)/(VF.G+40),.05,1),1/1.6),xt=aim?s.x-s.sp*(tc+WN)+(rnd()-.5)*30:s.x-s.sp*(T+WN)-(40+rnd()*300),sp=78+rnd()*40;
+      for(let k=0;k<n;k++){const xx=xt+(k-(n-1)/2)*sp+(rnd()-.5)*20;s.shells.push({X:xx,t:-WN-k*.06,T,big:n>1})}
       if(!G.sim){tone(1900,1.15,'sine',.05,380);if(n>1)tone(1700,1.1,'sine',.04,330,.05)}
       if(!s.said.obus){s.said.obus=1;say("Des obus ! Ils tombent de partout. Ne jamais rester sous un sifflement.",3.8)}}}
   for(const sh of s.shells){sh.t+=dt;if(sh.t>=sh.T&&!sh.done){sh.done=1;vfExplode(sh.X,sh.big)}}
@@ -163,7 +163,7 @@ function vfWorld(dt){
 function vfHazards(dt){
   const s=V.s;if(s.dead>0||s.fall)return;const bx=s.x,by=s.y;
   for(const sh of s.shells){const u=Math.max(0,sh.t/sh.T),gy=vfGround(sh.X),y=-40+(gy+40)*Math.pow(u,1.6);if(sh.t>0&&Math.abs(bx-sh.X)<11&&Math.abs(by-y)<22)return vfCrash('obus')}
-  for(const b of s.booms){if(b.t>.6)continue;const h=b.h*Math.min(1,b.t/.12)*(1-Math.max(0,(b.t-.32)/.3)),w=40+b.t*50+(b.big?10:0),cy=b.y-h/2;
+  for(const b of s.booms){if(b.t>.6)continue;const h=.8*b.h*Math.min(1,b.t/.12)*(1-Math.max(0,(b.t-.32)/.3)),w=40+b.t*50+(b.big?10:0),cy=b.y-h/2;
     if(h>10&&((bx-b.X)/w)**2+((by-cy)/(h/2+6))**2<1)return vfCrash('boom');if(b.t<.2&&Math.hypot(bx-b.X,by-b.y)<64)return vfCrash('boom')}
   for(const b of s.bullets)if(b.live&&Math.abs(b.x-bx)<12&&Math.abs(b.y-by)<9)return vfCrash('balle');
   for(const q of s.gshells)if(Math.abs(q.x-bx)<14&&Math.abs(q.y-by)<12)return vfCrash('obus');
@@ -207,7 +207,7 @@ function vfRender(t){
   // le ciel du 3 juin, à l'aube : l'est (à droite, derrière) s'éclaire
   const sk=ctx.createLinearGradient(0,0,0,H);sk.addColorStop(0,'#1a2038');sk.addColorStop(.45,'#4a4660');sk.addColorStop(.75,'#9a7a7a');sk.addColorStop(1,'#d09a74');ctx.fillStyle=sk;ctx.fillRect(0,0,W,H);
   const east=ctx.createRadialGradient(W+120,430,20,W+120,430,700);east.addColorStop(0,'rgba(255,200,140,.55)');east.addColorStop(1,'rgba(255,200,140,0)');ctx.fillStyle=east;ctx.fillRect(0,0,W,H);
-  ctx.save();if(z!==1){ctx.translate(W/2,H/2);ctx.scale(z,z);ctx.translate(-fx,-fy)}
+  ctx.save();ctx.translate(0,-VF.UP);if(z!==1){ctx.translate(W/2,H/2);ctx.scale(z,z);ctx.translate(-fx,-fy)}
   vfFar(t,camX);
   ctx.save();ctx.translate(-camX,0);
   vfGroundDraw(t,camX);
@@ -234,8 +234,15 @@ function vfRender(t){
   ctx.restore();
   vfFore(t,camX);
   ctx.restore();
+  // les repères : dès qu'un obus siffle, une flèche en haut de l'écran marque où il va tomber
+  if(V.sc==='flight')for(const sh of s.shells){const x=sh.X-camX;if(x<-20||x>W+20)continue;const warn=sh.t<0,u=warn?1+sh.t/.76:1,pul=.6+.4*Math.sin(t*18);
+    const a=warn?Math.min(1,u*1.6):Math.max(0,1-sh.t/sh.T*1.4);if(a<=0)continue;ctx.save();ctx.globalAlpha=a;
+    ctx.fillStyle='rgba(20,10,10,.5)';ctx.beginPath();ctx.moveTo(x-13,5);ctx.lineTo(x+13,5);ctx.lineTo(x,26);ctx.closePath();ctx.fill();
+    ctx.fillStyle=warn?'rgba(255,'+(120+pul*80|0)+',60,1)':'#ff5a3a';ctx.beginPath();ctx.moveTo(x-10,6);ctx.lineTo(x+10,6);ctx.lineTo(x,23);ctx.closePath();ctx.fill();
+    if(warn){ctx.strokeStyle='rgba(255,160,90,'+(.25*u)+')';ctx.setLineDash([4,6]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,28);ctx.lineTo(x,vfGround(sh.X)-VF.UP);ctx.stroke();ctx.setLineDash([])}
+    ctx.restore()}
   // la brume de l'aube au ras du sol, les fumées lointaines
-  const mg=ctx.createLinearGradient(0,380,0,H);mg.addColorStop(0,'rgba(200,180,170,0)');mg.addColorStop(1,'rgba(200,180,170,.18)');ctx.fillStyle=mg;ctx.fillRect(0,380,W,H-380);
+  const mg=ctx.createLinearGradient(0,330,0,H-64);mg.addColorStop(0,'rgba(200,180,170,0)');mg.addColorStop(1,'rgba(200,180,170,.18)');ctx.fillStyle=mg;ctx.fillRect(0,330,W,H-64-330);
   if(V.sc==='wound'){ctx.fillStyle='rgba(60,0,0,'+Math.min(.35,s.wound*.08)+')';ctx.fillRect(0,0,W,H);const vg=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,'+Math.min(.85,s.wound*.2)+')');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H)}
 }
 function vfFar(t,camX){

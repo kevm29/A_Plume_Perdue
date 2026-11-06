@@ -200,7 +200,7 @@ const VX_P={
   carry:{lean:.08,lh:.1,lk:0,rh:-.1,rk:-.04,nT:{x:1.9,y:-2.6},fT:{x:1.6,y:-2.8}},
   throwUp:{lean:-.12,lh:.04,lk:0,rh:-.1,rk:-.04,na1:2.6,na2:2.7,fa1:2.4,fa2:2.55,head:-.4}
 };
-function vxPoseMix(a,b,k){const o={};for(const n of new Set([...Object.keys(a),...Object.keys(b)]))o[n]=lerp(a[n]||0,b[n]||0,k);return o}
+function vxPoseMix(a,b,k){const o={};for(const n of new Set([...Object.keys(a),...Object.keys(b)])){const u=a[n],v=b[n];if((u&&typeof u==='object')||(v&&typeof v==='object')){const p=u||v,q=v||u;o[n]={x:lerp(p.x,q.x,k),y:lerp(p.y,q.y,k)}}else o[n]=lerp(u||0,v||0,k)}return o}
 function vxWalk(t,amp){amp=amp==null?1:amp;const s=Math.sin(t),c=Math.cos(t);
   return{lean:.06,lh:.42*s*amp,lk:.42*s*amp-Math.max(0,-c)*.7*amp,rh:-.42*s*amp,rk:-.42*s*amp-Math.max(0,c)*.7*amp,na1:-.32*s*amp+.05,na2:-.2*s*amp+.25,fa1:.32*s*amp,fa2:.3*s*amp+.2,bob:Math.abs(c)*.25*amp}}
 function vxIK(S,T,l1,l2,bend){const dx=T.x-S.x,dy=T.y-S.y,d=clamp(Math.hypot(dx,dy),.01,l1+l2-.001),a=Math.atan2(dx,dy),al=Math.acos(clamp((l1*l1+d*d-l2*l2)/(2*l1*d),-1,1)),a1=a+bend*al,ex=S.x+Math.sin(a1)*l1,ey=S.y+Math.cos(a1)*l1;return[a1,Math.atan2(T.x-ex,T.y-ey)]}

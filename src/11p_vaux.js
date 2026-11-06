@@ -73,6 +73,7 @@ function vauxRender(t){
   const cine=V.sc==='cart'||V.sc==='room'||V.sc==='yard'||V.sc==='wound'||V.sc==='shot';
   if(cine){ctx.fillStyle='rgba(0,0,0,.9)';ctx.fillRect(0,0,W,40);ctx.fillRect(0,H-40,W,40)}
   if(V.sc==='van'||V.sc==='van2')renderHUD();
+  else if(V.sc==='flight'||V.sc==='shot')vxQuipBand();
   else{G.homeBox=null;if(V.sc!=='card')drawQuip(cine?52:20)}
   const fo=V.out?Math.min(1,V.out.t/V.out.dur):0,fa=Math.max(fo,V.fade);
   if(fa>0){ctx.fillStyle='rgba(11,10,12,'+fa+')';ctx.fillRect(0,0,W,H)}
@@ -596,9 +597,9 @@ function yardUpdate(dt){const s=V.s;s.walk+=dt;
   if(!s.said.b&&V.t>5){s.said.b=1;say("Va chez Marguerite. Toi, au moins, tu sauras rentrer.",3.6,'LUCIEN')}
   if(s.throwT<0&&V.t>8.4){s.throwT=0}
   if(s.throwT>=0){s.throwT+=dt;
-    if(!s.bird&&s.throwT>.75){const h=s.hands||{x:420,y:300};s.bird={x:h.x,y:h.y,vx:-60,vy:-170,t:0};if(!G.sim){SFX.flap();setTimeout(()=>SFX.flap(),120)}for(let k=0;k<5;k++)V.parts.push({k:'feather',x:h.x,y:h.y,vx:(rnd()-.5)*120,vy:-rnd()*100,g:120,drag:2,life:0,max:1.6,rot:rnd()*6,vr:(rnd()-.5)*6})}
-    if(s.bird){const b=s.bird;b.t+=dt;// un premier battement maladroit, puis il trouve l'air et s'en va, lentement, vers l'ouest
-      const tvx=b.t<.8?-40:-120,tvy=b.t<.5?-60:b.t<1.6?-75:-40;b.vx+=(tvx-b.vx)*dt*2;b.vy+=(tvy-b.vy)*dt*2.4;b.x+=b.vx*dt;b.y+=b.vy*dt;if(b.t>4.2&&!V.out)vxFadeTo(()=>vxGo('flight'),1)}}
+    if(!s.bird&&s.throwT>1.05){const h=s.hands||{x:420,y:300};s.bird={x:h.x,y:h.y,vx:-230,vy:-250,t:0};if(!G.sim){SFX.flap();setTimeout(()=>SFX.flap(),120)}for(let k=0;k<5;k++)V.parts.push({k:'feather',x:h.x,y:h.y,vx:(rnd()-.5)*120,vy:-rnd()*100,g:120,drag:2,life:0,max:1.6,rot:rnd()*6,vr:(rnd()-.5)*6})}
+    if(s.bird){const b=s.bird;b.t+=dt;// lancé vers le ciel, il ralentit, ouvre les ailes, trouve l'air, puis file vers l'ouest au-dessus du rempart
+      const tvx=b.t<.5?-230:-170,tvy=b.t<.35?-250:b.t<1.4?-40:-25;b.vx+=(tvx-b.vx)*dt*3;b.vy+=(tvy-b.vy)*dt*(b.t<.35?0:3.2);b.x+=b.vx*dt;b.y+=b.vy*dt;if(b.t>2.9&&!V.out)vxFadeTo(()=>vxGo('flight'),.8)}}
 }
 function yardBuild(){
   const rs=Math.min(2,RS),c=mk(W*rs,H*rs),g=c.getContext('2d');g.scale(rs,rs);c.rs=rs;const R=mulberry(1916),gy=YD.g;
@@ -654,7 +655,7 @@ function yardBuild(){
 }
 function yardRender(t){
   const s=V.s;if(!yardCache||yardCache.rsKey!==RS){yardCache=yardBuild();yardCache.rsKey=RS}
-  const lift=0,zi=Math.min(1,V.t/6),zo=s.bird?clamp(s.bird.t/2.4,0,1):0,ez=zo*zo*(3-2*zo),z=lerp(lerp(1.25,1.7,zi*zi*(3-2*zi)),1.15,ez),bx=s.bird?s.bird.x:430,by=s.bird?s.bird.y:360,fx=lerp(430,lerp(430,bx,.7),ez),fy=lerp(lerp(360,372,zi),lerp(330,by,.6),ez);const hw=W/(2*z),hh=H/(2*z),cfx=clamp(fx,hw,W-hw),cfy=clamp(fy,hh,H-hh);
+  const lift=0,zi=Math.min(1,V.t/6),zo=s.throwT>0?clamp((s.throwT-.3)/1.6,0,1):0,ez=zo*zo*(3-2*zo),z=lerp(lerp(1.25,1.7,zi*zi*(3-2*zi)),1.0,ez),fx=lerp(430,480,ez),fy=lerp(lerp(360,372,zi),270,ez);const hw=W/(2*z),hh=H/(2*z),cfx=clamp(fx,hw,W-hw),cfy=clamp(fy,hh,H-hh);
   ctx.save();ctx.translate(W/2,H/2);ctx.scale(z,z);ctx.translate(-cfx,-cfy);ctx.drawImage(yardCache,0,0,W,H);
   // les fusées éclairantes, les lueurs des obus au loin
   for(const f of s.flares){const gl=ctx.createRadialGradient(f.x,f.y,1,f.x,f.y,90);gl.addColorStop(0,'rgba(255,250,220,.3)');gl.addColorStop(1,'rgba(255,250,220,0)');ctx.fillStyle=gl;ctx.fillRect(f.x-90,f.y-90,180,180);
@@ -673,19 +674,27 @@ function yardRender(t){
    ctx.fillStyle='#5a4a34';ctx.fillRect(x-20,gy-50,140,5);ctx.fillStyle='#c8bfa4';ctx.fillRect(x-6,gy-58,110,9);ctx.fillStyle='#8296ac';rr(ctx,x+20,gy-66,70,12,5);ctx.fill();
    vxHead(ctx,{x:x+8,y:gy-64,s:7.4,f:-1,skin:'#d8c0a8',hair:VX_HAIR[3],ex:'sleep',helmet:'none',tilt:1.5,stubble:.8});ctx.fillStyle='#f4f0e6';ctx.fillRect(x+2,gy-72,14,5);ctx.fillStyle='#a8322d';ctx.fillRect(x+7,gy-72,4,5)}
   // Lucien, au premier plan, qui tient Raymond contre lui… puis le lance
-  const th=s.throwT<0?0:clamp(s.throwT/.55,0,1),hold=Object.assign({},VX_P.stand,{nT:{x:2.5,y:-2.4},fT:{x:2.0,y:-2.7},head:.45}),up=Object.assign({},VX_P.throwUp,{nT:{x:1.6,y:-11.0},fT:{x:1.1,y:-10.8}});
-  const pose=th<=0?hold:vxPoseMix(hold,up,th*th);
+  const hold=Object.assign({},VX_P.stand,{nT:{x:2.5,y:-2.4},fT:{x:2.0,y:-2.7},head:.45}),crouch=Object.assign({},VX_P.stand,{lean:.22,lh:.32,lk:-.12,rh:.18,rk:-.2,nT:{x:2.2,y:-1.4},fT:{x:1.8,y:-1.6},head:.2}),
+    up=Object.assign({},VX_P.throwUp,{nT:{x:2.4,y:-10.8},fT:{x:1.9,y:-10.6}}),tt=s.throwT;
+  const pose=tt<0?hold:tt<.6?vxPoseMix(hold,crouch,Math.sin(tt/.6*Math.PI/2)):tt<1.05?vxPoseMix(crouch,up,Math.pow((tt-.6)/.45,1.5)):tt<2.4?up:vxPoseMix(up,hold,Math.min(1,(tt-2.4)/.8));const th=tt<.6?0:Math.min(1,(tt-.6)/.45);
   const j=vxSoldier(ctx,{x:412,y:512,s:15.5,f:-1,side:'fr',t,regt:'142',pose,kit:{musette:1,bidon:1},
     face:{skin:'#ecc8a6',hair:'#cfae6a',stache:'croc',beardCol:'#b8954e',helmet:'adrian',ex:th>.6?'worry':'sad',young:1,stubble:.45,eye:'#3f78b8',tired:1,look:th>.3?[.6,-1]:[.8,.7],mud:1}});
   s.hands={x:(j.nh.x+j.fh.x)/2,y:(j.nh.y+j.fh.y)/2};
   if(!s.bird){vxPigeon(ctx,s.hands.x-4,s.hands.y-2,1.15,-1,t,{fold:1,flap:-1.2});
     // les doigts de Lucien par-dessus l'aile
     ctx.fillStyle='#e8c6a4';for(let k=0;k<3;k++){rr(ctx,s.hands.x-16+k*7,s.hands.y-12+k,5,13,2.5);ctx.fill()}}
-  else{const b=s.bird;vxPigeon(ctx,b.x,b.y,1.15,-1,t,{rot:clamp(-b.vy/600,-.3,.4),flap:b.t*(b.t<.6?16:11)});if(b.t<.6&&rnd()<.3)V.parts.push({k:'feather',x:b.x,y:b.y,vx:(rnd()-.5)*60,vy:-20,g:60,drag:2,life:0,max:1.8,rot:rnd()*6,vr:(rnd()-.5)*4})}
+  else{const b=s.bird;vxPigeon(ctx,b.x,b.y,1.3,-1,t,{rot:clamp(b.vy/900,-.45,.2),flap:b.t*(b.t<.45?6:13),fold:b.t<.25?1-b.t*4:0});if(b.t<.6&&rnd()<.3)V.parts.push({k:'feather',x:b.x,y:b.y,vx:(rnd()-.5)*60,vy:-20,g:60,drag:2,life:0,max:1.8,rot:rnd()*6,vr:(rnd()-.5)*4})}
   vxParts(ctx);
   ctx.restore();
   vxDark([{x:540,y:300,r:300,i:.45},{x:480,y:330,r:420,i:.4}],.26);
 }
 
+/* en vol : les messages s'écrivent dans une bande en bas de l'écran, pour ne jamais cacher les obus qui tombent */
+function vxQuipBand(){G.homeBox=null;const by=H-64;ctx.fillStyle='#0d0b0e';ctx.fillRect(0,by,W,64);ctx.fillStyle='rgba(233,223,199,.18)';ctx.fillRect(0,by,W,1);
+  const q=G.quip;if(!q||!q.text)return;const a=Math.min(1,q.t*4,(q.dur-q.t)*3);if(a<=0)return;
+  ctx.save();ctx.globalAlpha=a;const who=q.who||'RAYMOND',wc={RAYMOND:'#c84a42',LUCIEN:'#6a8ac0'}[who]||'#9a9a9a';
+  ctx.font='italic 18px '+F_BODY;const lines=wrap(ctx,q.text,780).slice(0,2);
+  ctx.fillStyle=wc;ctx.font='11px '+F_DISP;ctx.textAlign='left';ctx.fillText(who,40,by+(lines.length>1?22:30));
+  ctx.fillStyle='#e8dec5';ctx.font='italic 18px '+F_BODY;lines.forEach((l,k)=>ctx.fillText(l,140,by+(lines.length>1?24:36)+k*22));ctx.restore()}
 /* ---------- branchements dans le jeu ---------- */
 function vauxActive(){return L&&L.def&&L.def.vaux&&V}
