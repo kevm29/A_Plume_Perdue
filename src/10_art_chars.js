@@ -170,6 +170,17 @@ function drawFlyer(g,kind,x,y,t,dir){
     g.beginPath();g.moveTo(4,-2);g.quadraticCurveTo(10,-6-fl*12,18,-2-fl*14);g.quadraticCurveTo(10,0,4,3);g.fill();
     if(kind==='bat'){g.fillStyle=col;g.beginPath();g.ellipse(0,0,5,6,0,0,7);g.fill();poly(g,[-3,-5,-4,-10,-1,-6]);g.fill();poly(g,[3,-5,4,-10,1,-6]);g.fill();g.fillStyle='#d8302a';g.fillRect(-2.5,-3,1.5,1.5);g.fillRect(1,-3,1.5,1.5)}
     else{g.fillStyle=col;g.beginPath();g.ellipse(0,1,10,5,0,0,7);g.fill();g.beginPath();g.arc(9,-1,4.5,0,7);g.fill();g.fillStyle=kind==='gull'?'#e0b030':'#2a2a2a';poly(g,[12,-2,19,0,12,1.5]);g.fill();g.fillStyle=kind==='gull'?'#111':'#e9dfc7';g.beginPath();g.arc(10,-2,1,0,7);g.fill();g.fillStyle=col;poly(g,[-9,0,-16,-3,-15,4]);g.fill()}
+  }else if(kind==='pie'){
+    // la pie : noire et blanche, longue queue à reflets verts
+    const fl=Math.sin(t*13);g.fillStyle='#14161c';g.beginPath();g.moveTo(-6,0);g.lineTo(-28,-3+fl*2);g.lineTo(-27,3+fl*2);g.closePath();g.fill();
+    g.fillStyle='rgba(60,120,110,.6)';g.beginPath();g.moveTo(-10,0);g.lineTo(-26,-1+fl*2);g.lineTo(-26,1.5+fl*2);g.closePath();g.fill();
+    g.fillStyle='#16181e';g.beginPath();g.moveTo(-3,-2);g.quadraticCurveTo(-10,-8-fl*12,-19,-4-fl*14);g.quadraticCurveTo(-10,0,-3,3);g.fill();
+    g.fillStyle='#f2f0ea';g.beginPath();g.moveTo(-5,-2);g.quadraticCurveTo(-9,-6-fl*9,-13,-4-fl*10);g.quadraticCurveTo(-9,-1,-5,1);g.fill();
+    g.fillStyle='#f2f0ea';g.beginPath();g.ellipse(0,2,8,4.4,0,0,7);g.fill();g.fillStyle='#14161c';g.beginPath();g.ellipse(2,-1,7,3.2,0,0,7);g.fill();
+    g.beginPath();g.arc(9,-2,4.2,0,7);g.fill();g.fillStyle='#2a2a2a';poly(g,[12,-3,18,-1,12,0]);g.fill();
+    g.fillStyle='#16181e';g.beginPath();g.moveTo(3,-2);g.quadraticCurveTo(10,-8-fl*12,17,-3-fl*14);g.quadraticCurveTo(10,0,3,3);g.fill();
+    g.fillStyle='#f2f0ea';g.beginPath();g.moveTo(5,-2);g.quadraticCurveTo(9,-6-fl*9,12,-3-fl*10);g.quadraticCurveTo(9,-1,5,1);g.fill();
+    g.fillStyle='#e8e0c0';g.beginPath();g.arc(10,-3,1,0,7);g.fill();
   }else if(kind==='bag'){
     const s=Math.sin(t*5);g.rotate(s*.3);g.fillStyle='rgba(230,232,236,.85)';g.beginPath();g.moveTo(-10,-12);g.quadraticCurveTo(-14+s*3,2,-8,12);g.quadraticCurveTo(0,15+s*2,9,11);g.quadraticCurveTo(13,0,9,-12);g.quadraticCurveTo(6,-6,3,-12);g.quadraticCurveTo(0,-6,-3,-12);g.quadraticCurveTo(-6,-6,-10,-12);g.fill();
     g.strokeStyle='rgba(150,155,165,.6)';g.lineWidth=.8;g.beginPath();g.moveTo(-6,-2);g.lineTo(5,3);g.moveTo(-4,6);g.lineTo(6,-4);g.stroke();
@@ -420,6 +431,7 @@ function drawExit(g,e,style,t,label){
   g.restore();
 }
 function drawMover(g,m){
+  if(m.kind==='ponton'){fertePonton(g,m);return}
   if(drawMechMover(g,m,G.t))return;
   g.save();
   if(m.kind==='truck'){

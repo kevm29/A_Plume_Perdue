@@ -75,7 +75,7 @@ const PROPS={
   lampRoad:{w:50,d(g,x,b){g.fillStyle='#5a5e66';g.fillRect(x+6,b-170,5,170);g.beginPath();g.moveTo(x+8,b-170);g.quadraticCurveTo(x+20,b-186,x+44,b-180);g.lineWidth=4;g.strokeStyle='#5a5e66';g.stroke();g.fillStyle='rgba(255,200,120,.9)';g.fillRect(x+36,b-180,14,5);g.fillStyle='rgba(255,200,120,.08)';poly(g,[x+36,b-176,x+50,b-176,x+80,b,x+6,b]);g.fill()}},
   barrierStripe:{w:90,d(g,x,b){g.fillStyle='#2a2a2a';g.fillRect(x+6,b-30,4,30);g.fillRect(x+80,b-30,4,30);for(let k=0;k<9;k++){g.fillStyle=k%2?'#efe6d0':'#c8302a';g.fillRect(x+k*10,b-32,10,10)}}},
   pylon:{w:60,d(g,x,b){g.strokeStyle='#3a3e46';g.lineWidth=2;g.beginPath();g.moveTo(x+6,b);g.lineTo(x+30,b-200);g.lineTo(x+54,b);g.moveTo(x+12,b-150);g.lineTo(x+48,b-150);g.moveTo(x+18,b-110);g.lineTo(x+42,b-60);g.moveTo(x+42,b-110);g.lineTo(x+18,b-60);g.stroke()}},
-  /* --- Villemareuil --- */
+  /* --- Saint-Siméon --- */
   barrels:{w:60,d(g,x,b){for(let k=0;k<2;k++){const bx=x+k*30;g.fillStyle='#6a4428';rr(g,bx,b-38,26,38,10);g.fill();g.fillStyle='#2a2a2a';g.fillRect(bx,b-30,26,3);g.fillRect(bx,b-10,26,3)}}},
   flagPole:{w:40,d(g,x,b,R){g.fillStyle='#4a3a2a';g.fillRect(x+4,b-130,3,130);const t=R()*.2;g.fillStyle='#2a4a8a';g.fillRect(x+7,b-128,11,22);g.fillStyle='#efe6d0';g.fillRect(x+18,b-128,11,22);g.fillStyle='#b8302a';g.fillRect(x+29,b-128,11,22)}},
   cart:{w:90,d(g,x,b){g.fillStyle='#6a4a2a';g.fillRect(x+6,b-40,70,8);g.fillRect(x,b-56,6,24);g.fillRect(x+76,b-56,6,24);g.strokeStyle='#3a2a1a';g.lineWidth=3;g.beginPath();g.arc(x+26,b-16,16,0,7);g.stroke();g.beginPath();g.moveTo(x+76,b-36);g.lineTo(x+90,b-8);g.stroke();g.fillStyle='#d9a441';g.beginPath();g.ellipse(x+40,b-48,30,10,0,Math.PI,0);g.fill()}},

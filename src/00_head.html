@@ -24,6 +24,8 @@ body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-c
 #tr{left:calc(100px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:68px;height:68px}
 #tj{right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:86px;height:86px;font-size:15px}
 #te{right:calc(124px + env(safe-area-inset-right,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:58px;height:58px;font-size:18px}
+#tb{right:calc(124px + env(safe-area-inset-right,0px));bottom:calc(98px + env(safe-area-inset-bottom,0px));width:58px;height:58px;font-size:18px;display:none}
+#tb.on.ferte{display:flex}
 #tp{right:calc(14px + env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));width:44px;height:44px;font-size:16px}
 #rot{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;
   background:var(--nuit);font:22px/1.4 var(--f-texte);font-style:italic;padding-inline:max(16px,env(safe-area-inset-left,0px))}
@@ -35,5 +37,6 @@ body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-c
 <div class="tc" id="tr" aria-label="Droite">▶</div>
 <div class="tc" id="tj" aria-label="Sauter">SAUT</div>
 <div class="tc" id="te" aria-label="Action">E</div>
+<div class="tc" id="tb" aria-label="Brumes">B</div>
 <div class="tc" id="tp" aria-label="Pause">❚❚</div>
 <div id="rot">Raymond vole mieux à l'horizontale.<br>Tourne ton téléphone.</div>

@@ -1,10 +1,10 @@
-/* ------------------------------ MISSION 5 · VILLEMAREUIL ------------------------------ */
+/* ------------------------------ MISSION 5 · SAINT-SIMÉON ------------------------------ */
 LEVELS.push({w:4,name:"La route du village",theme:'village',exit:'house',seed:127,
- start:"Villemareuil. Le chemin de la ferme Vasseur. Je le ferais les yeux fermés. D'ailleurs, je les ai fermés longtemps.",
+ start:"Saint-Siméon. Le chemin de la ferme Vasseur. Je le ferais les yeux fermés. D'ailleurs, je les ai fermés longtemps.",
  hints:[["ARTICLE 22 — L'OIE","Anser anser domesticus. Garde le village mieux qu'une sentinelle. Sauter par-dessus."]],
  quips:["Des lampions, des flonflons. La guerre est finie ? Personne ne m'a prévenu.","Une tarte aux prunes sur une fenêtre. Je pense à Marguerite. Enfin, à sa tarte.","Le clocher. D'en haut, je verrai si le pigeonnier est toujours là."],
  exitLines:[["RAYMOND","La maison Vasseur. Les volets sont neufs. Il y a une voiture devant.",4.2],["RAYMOND","Mais… où est le pigeonnier ? Un garage. On a mis un garage à la place du pigeonnier !",4.2],["RAYMOND","Bon. Le clocher. De là-haut, je trouverai bien où ils ont mis mes collègues.",4]],
- signs:["commune:VILLEMAREUIL"],
+ signs:["commune:SAINT-SIMÉON"],
  segs:[SEG_START_FLAT,`
 ......................
 .....o.......o........
@@ -65,7 +65,7 @@ LEVELS.push({w:4,name:"La route du village",theme:'village',exit:'house',seed:12
 ################`]});
 
 LEVELS.push({w:4,name:"Le clocher",theme:'belfry',exit:'door',exitLabel:"",seed:131,
- start:"Le clocher de Villemareuil. Les cloches se balancent toutes seules. Comme le jour de la mobilisation.",
+ start:"Le clocher de Saint-Siméon. Les cloches se balancent toutes seules. Comme le jour de la mobilisation.",
  hints:[["ARTICLE 23 — LA CLOCHE","Elle se balance toujours au même rythme. À chaque coup, l'onde secoue tout ce qui est trop près."]],
  quips:["Les cloches. Chaque coup me fait trembler la paille.","D'ici, je vois toute la place. Ils préparent une fête. Pour la victoire, sûrement.","Des chauves-souris. Elles dorment le jour et volent la nuit. Comme les espions."],
  signs:["info:CLOCHER|Défense de sonner"],
@@ -286,7 +286,7 @@ LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',seed:139,
 ######################`]});
 
 /* une cachette secrète par niveau (le 1-1 a la sienne : la porte du voleur) */
-const SECRETS={3:[116,9],11:[36,19],14:[110,9],15:[103,7],16:[100,8],17:[72,6],18:[171,7],19:[79,7]};
+const SECRETS={3:[116,9],11:[36,19],14:[110,9],15:[246,11],16:[100,8],17:[72,6],18:[171,7],19:[79,7]};
 LEVELS.forEach((l,i)=>{if(SECRETS[i])l.secretAt=SECRETS[i]});
 /* une seule médaille par mission : au 1-1 (la première vie), puis au deuxième niveau de chaque mission */
 LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=4&&i%4===1)});

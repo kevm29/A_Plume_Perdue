@@ -74,6 +74,10 @@ const DEATH_Q={
   serveur:["Un coup de torchon. Le serveur n'aime pas les pigeons au comptoir.","Chassé du bar comme un client sans le sou."],
   rails:["Tombé sous le train. Le règlement ne prévoit même pas ce cas.","Entre les wagons, il n'y a que les rails. Et maintenant moi."],
   elec:["Une décharge ! Ma paille fume. Ça sent le foin grillé.","Le fil de fer était chargé comme un canon. Je le saurai."],
+  ecureuil:["Un écureuil m'est tombé dessus. Il descendait chercher une noisette. Je n'étais pas une noisette.","Percuté par un écureuil pressé. Il fallait passer quand il remontait."],
+  poisson:["Un poisson m'a sauté au bec. On n'attend pas d'un poisson qu'il vole. Lui non plus, sans doute.","Fauché par une carpe en plein saut. La Marne a de l'humour."],
+  pie:["La pie. Elle vole tout ce qui brille. Visiblement, aussi les pigeons.","Bousculée par une pie. Elle jacasse encore."],
+  gerbe:["Une gerbe d'obus. La Marne s'est levée d'un coup et m'a retourné.","Un obus dans l'eau. Il fallait regarder où la rivière frémissait."],
   drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
 };
 const TUFT_Q=["De la paille. Bizarre, je me sens tout de suite plus épais.","Tiens, de la paille. Je ne sais pas pourquoi, ça me fait du bien.","Encore de la paille. Je ne comprends pas, mais je ne me plains pas."];
@@ -83,7 +87,7 @@ const INTRO=[
   {t:"Vittoncourt, Moselle. Octobre 2026.\nLe petit musée communal n'a plus les moyens d'ouvrir."},
   {t:"Liquidation : le mammouth en plâtre et les papillons partent aux enchères.\nCe qui ne se vend pas finit à la benne."},
   {t:"… comme lui.",pic:'dome'},
-  {title:"RAYMOND",t:"Pigeon voyageur, matricule 7413.\nTombé en service au fort de Vaux, juin 1916.\nEmpaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
+  {title:"RAYMOND",t:"Sergent Raymond, pigeon voyageur, matricule 7413.\nTombé en service au fort de Vaux, juin 1916.\nEmpaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
   {t:"Un message est toujours attaché à sa patte.\nPersonne ne l'a jamais ouvert."},
   {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui n'a pas acheté de billet."}
 ];
@@ -91,10 +95,10 @@ const INTRO=[
 const WORLD_CARDS=[
   null,
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
-   {t:"Direction l'ouest : le pigeonnier Vasseur, à Villemareuil.\nIl connaît le chemin. Il l'a toujours connu."},
+   {t:"Direction l'ouest : le pigeonnier Vasseur, à Saint-Siméon.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
    {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Raymond doit rentrer au pigeonnier Vasseur, à Villemareuil.\nMais il ne reconnaît plus le pays."},
+  [{t:"Raymond doit rentrer au pigeonnier Vasseur, à Saint-Siméon.\nMais il ne reconnaît plus le pays."},
    {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
    {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
@@ -103,7 +107,7 @@ const WORLD_CARDS=[
    {t:"Il décide d'y filer. Une route immense, sans chevaux ni soldats,\noù des lumières roulent toute la nuit."},
    {title:"MISSION 4 · L'A4",t:"C'est l'A4. Il fait nuit, et les camions roulent vite."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
-   {title:"MISSION 5 · VILLEMAREUIL",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
+   {title:"MISSION 5 · SAINT-SIMÉON",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
 const ENDING=[
   {t:"Cent dix ans. Aucun pigeon ne vit cent dix ans."},
@@ -144,5 +148,5 @@ const WORLDS=[
   {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
   {name:"Le cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
   {name:"L'A4 sous l'orage",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","Le pont"]},
-  {name:"Villemareuil",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
+  {name:"Saint-Siméon",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
 ];

@@ -4,7 +4,7 @@
 
 ## Le principe
 
-Raymond, pigeon voyageur militaire, matricule 7413, est lâché du fort de Vaux en juin 1916 avec une lettre du soldat **Lucien Marchal** (142e régiment d'infanterie, 6e compagnie, montée au fort de Vaux fin mai 1916) pour sa fiancée **Marguerite Vasseur**, à Villemareuil. Il n'arrive jamais. On l'empaille « avec les honneurs » et il finit sous une cloche de verre au petit musée communal de **Vittoncourt** (Moselle).
+Raymond, pigeon voyageur militaire, sergent, matricule 7413, est lâché du fort de Vaux en juin 1916 avec une lettre du soldat **Lucien Marchal** (142e régiment d'infanterie, 6e compagnie, montée au fort de Vaux fin mai 1916) pour sa fiancée **Marguerite Vasseur**, à Saint-Siméon. Il n'arrive jamais. On l'empaille « avec les honneurs » et il finit sous une cloche de verre au petit musée communal de **Vittoncourt** (Moselle).
 
 En octobre 2026, le musée n'a plus les moyens d'ouvrir. On vend tout aux enchères et on jette le reste. Raymond, lot n° 212, est invendu.
 
@@ -20,14 +20,14 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 | 2 | Verdun, les champs de l'ancien front | Retour à la case départ : Le sentier · Les éoliennes · La zone rouge · L'abri du Mort-Homme |
 | 3 | Le cap céleste : le train, Reims, la cathédrale | Le train · La gare · La place d'Erlon · La cathédrale |
 | 4 | L'A4 sous l'orage, vers l'ouest | L'aire de repos · Les camions · L'orage · Le pont (sur la Marne) |
-| 5 | Villemareuil, le village de Marguerite | La route du village · Le clocher · La fête foraine · Le cimetière |
+| 5 | Saint-Siméon, le village de Marguerite | La route du village · Le clocher · La fête foraine · Le cimetière |
 
 ## Introduction (cartes)
 
 1. Vittoncourt, Moselle. Octobre 2026. Le petit musée communal n'a plus les moyens d'ouvrir.
 2. Liquidation : le mammouth en plâtre et les papillons partent aux enchères. Ce qui ne se vend pas finit à la benne.
 3. … comme lui. *(la cloche, l'œil fermé)*
-4. **RAYMOND.** Pigeon voyageur, matricule 7413. Tombé en service au fort de Vaux, juin 1916. Empaillé avec les honneurs. Lot n° 212 : invendu.
+4. **RAYMOND.** Sergent Raymond, pigeon voyageur, matricule 7413. Tombé en service au fort de Vaux, juin 1916. Empaillé avec les honneurs. Lot n° 212 : invendu.
 5. Un message est toujours attaché à sa patte. Personne ne l'a jamais ouvert.
 6. Cette nuit-là, il y a de l'orage. Et un visiteur qui n'a pas acheté de billet.
 
@@ -45,7 +45,7 @@ Chaque niveau terminé révèle un fragment, mais Raymond ne lit les quatre morc
 
 | # | Fragment | Commentaire de Raymond |
 |---|---|---|
-| 1 | *Verdun, le 2 juin 1916.* Marguerite, je t'écris pour te dire que c'est fini entre nous. Je ne reviendrai pas à Villemareuil. | Par pigeon. Il rompt par pigeon. Moi qui croyais transporter des plans de bataille. |
+| 1 | *Verdun, le 2 juin 1916.* Marguerite, je t'écris pour te dire que c'est fini entre nous. Je ne reviendrai pas à Saint-Siméon. | Par pigeon. Il rompt par pigeon. Moi qui croyais transporter des plans de bataille. |
 | 2 | Épouse plutôt le fils Garnier. Il a deux vaches, une charrette, et il a été réformé. Lui, au moins, il sera là. | Il la quitte, et il lui choisit le remplaçant. Un réformé, en plus. |
 | 3 | Je ne t'ai jamais aimée. Ni ton rire au bal du 14 Juillet, ni ta robe bleue, ni ta façon de dire mon nom. | Il ne l'a jamais aimée, mais il se souvient de la couleur de la robe. |
 | 4 | Brûle mes lettres. Oublie mon nom. Et ne porte jamais le noir pour moi, ça ne te va pas. | Je ne livre pas une lettre, je livre une gifle. |
@@ -68,7 +68,7 @@ Chaque niveau terminé révèle un fragment, mais Raymond ne lit les quatre morc
 
 ## Transitions entre les missions
 
-- **1 → 2.** Raymond s'échappe par la fenêtre de la loge. Il vole mal. Il vole quand même. Direction l'ouest : le pigeonnier Vasseur, à Villemareuil. Il a décidé de livrer la gifle.
+- **1 → 2.** Raymond s'échappe par la fenêtre de la loge. Il vole mal. Il vole quand même. Direction l'ouest : le pigeonnier Vasseur, à Saint-Siméon. Il a décidé de livrer la gifle.
 - **Fin de la mission 2, avant la lettre.** Raymond n'a pas croisé Lucien. Hormis l'abri, les Allemands semblent avoir été repoussés plus loin : Lucien doit y être, en héros — Raymond l'a vu à l'œuvre, il est courageux. Mais si goujat… L'article 4 interdit de lire le courrier ; Raymond ne comprend pas cet homme-là et déplie la suite.
 - **2 → 3.** Il faut rentrer au pigeonnier, mais le pays a changé : des forêts sur le front, des moulins géants, plus un repère. Au loin, le plus haut clocher de la région, déjà croisé en 1915. Il met le cap dessus sans savoir où c'est. C'est Reims (mission 3, « Le cap céleste »).
 - **3-1, le train** : trop las pour voler jusque-là, Raymond se pose sur le toit d'un train qui file vers le clocher. Quatre toits sous les pylônes, les rafales et les corbeaux, puis « Je n'en peux plus » : il descend entre les wagons. Voyageurs pendus à leur « petite plaque lumineuse », qui hurlent et jettent journaux et canettes quand ils le voient sauter ; un sac à dos rouge (paille) ; la voiture-bar et ses prix (un jambon-beurre à 23,60 €), des voyageurs qui mangent debout, « Interdit aux animaux », un serveur au torchon qui ne le voit qu'une fois sur le comptoir, un paquet de chips confisqué (un secret sans paille). Remonté par l'échelle, quatre toits encore : des rats clandestins, des corbeaux, et des pylônes et des passerelles qu'on ne distingue qu'au dernier moment. Sur la motrice, un carillon, une annonce dont le vent mange le nom de la gare, et le train s'arrête : c'est écrit REIMS sur le quai, mais Raymond ne lit pas les panneaux.
@@ -87,6 +87,7 @@ Règles : aucune vie au départ, une de plus par médaille. Raymond a 5 états ;
 - **2-4, l'abri du Mort-Homme** : « Ce satané oiseau mécanique m'a forcé à rentrer chez l'ennemi. » L'abri est devenu un musée franco-allemand, mais rien ne le dit et Raymond n'en sait rien ; la nuit, des gardiens font leur ronde entre des automates de cire qui rejouent la guerre. Raymond les prend pour de vrais soldats : il crie aux Français de partir, mais personne ne comprend ses roucoulements. Au-dessus d'un officier allemand : « Il mériterait que je lui chie dessus. » Il le fait — la seule fois du jeu. « Je mériterais une promotion ! Mais ? J'ai enfin réussi à le faire ! » Il fouille la musette d'un poilu qui écrit à la bougie (de la paille, et la photo d'une fiancée). Après les tranchées, il s'envole par une meurtrière ouverte dans le mur du fond.
 - **3-3, la balayeuse municipale** : elle aspire tout ce qui traîne par terre ; on lui échappe en restant en hauteur.
 - **4-3, l'orage** : le souvenir. Dans la remorque d'une camionnette, au cinquième éclair, Raymond revit juin 1916 : la voiture militaire dans la forêt (il pince le doigt de Lucien), la chambrée du fort de Vaux la nuit du 2 juin (Lucien écrit la lettre), la cour à l'aube du 3 juin, puis le vol vers l'ouest au-dessus des obus, des tranchées allemandes et de leurs mitrailleuses, du champ de canons, jusqu'aux tranchées françaises, qui le prennent pour un leurre et l'abattent. Retour dans la remorque ; il en sort et prend la sortie d'autoroute.
+- **4-4, le pont** : La Ferté-sous-Jouarre, le chemin de halage de la Marne. Un cartel (article 25) apprend que B fait passer dans les brumes de souvenirs que l'éclair semble avoir rendues possibles : septembre 1914 (légère brume sépia). Chaque époque a ses obstacles (club d'aviron, pont fermé pour travaux, camping, guinguette en 2026 ; maison du passeur, estacade rompue, pont de bateaux des sapeurs britanniques sous les obus, ferme barricadée en 1914) ; on ne passe qu'en basculant, parfois en plein saut. Bêtes de 2026 : rats, sangliers (qui chargent sans voir les trous), pies, écureuil qui descend et remonte son tronc, poissons qui sautent d'une rive à l'autre. Mémorial britannique de 1914 sur la rive. En 1914, à l'emplacement de la guinguette, le capitaine nomme le pigeon 7413 soldat de 1re classe (deux grades sous celui de sergent, son grade final). Le niveau s'achève au bout du chemin de halage, sans indication de direction.
 - **5-1, la maison Vasseur** : au bout de la route, la maison est là, mais le pigeonnier a laissé place à un garage.
 - **5-3, la buse** : elle se présente : « Te voilà enfin, le pigeon. Je te suis depuis le musée. » Raymond : « Quel musée ? » (il ne s'en souvient pas). « Cent kilomètres que je rêve d'un pigeon rôti. Empaillée ou pas, j'ai faim. » Elle plonge dans le braséro d'un stand de churros et s'enflamme comme une botte de foin. Raymond ne comprend pas pourquoi.
 - **5-3, la date** : sous la banderole « 110e anniversaire de la bataille de Verdun · 1916 – 2026 », Raymond fait le calcul, deux fois, et s'effondre au milieu des flonflons.

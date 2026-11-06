@@ -4,7 +4,7 @@
 
 Jeu de plateforme 2D en diorama de papier découpé, avec de l'humour noir et absurde.
 
-Raymond, pigeon voyageur tombé en mission le 3 juin 1916 puis empaillé, dort sous une cloche dans le petit musée communal de Vittoncourt, qui ferme faute de moyens. Une nuit d'orage, un voleur fait tomber un carton sur sa cloche, et un éclair le réveille. Raymond croit qu'on bombarde et qu'on est toujours en 1916. Une lettre de poilu est encore attachée à sa patte, et le règlement est formel : un pigeon ne quitte pas le service avant d'avoir remis son message. Il traverse Verdun, Reims et l'A4 jusqu'à Villemareuil, le village de Marguerite. Il ne comprendra qu'à la fête du village qu'il a cent dix ans de retard, et devant la tombe de Marguerite ce qu'il est devenu.
+Raymond, pigeon voyageur tombé en mission le 3 juin 1916 puis empaillé, dort sous une cloche dans le petit musée communal de Vittoncourt, qui ferme faute de moyens. Une nuit d'orage, un voleur fait tomber un carton sur sa cloche, et un éclair le réveille. Raymond croit qu'on bombarde et qu'on est toujours en 1916. Une lettre de poilu est encore attachée à sa patte, et le règlement est formel : un pigeon ne quitte pas le service avant d'avoir remis son message. Il traverse Verdun, Reims et l'A4 jusqu'à Saint-Siméon, le village de Marguerite. Il ne comprendra qu'à la fête du village qu'il a cent dix ans de retard, et devant la tombe de Marguerite ce qu'il est devenu.
 
 ## Jouer
 
@@ -21,6 +21,7 @@ Pour le jouer en ligne, active GitHub Pages (Settings → Pages → branche `mai
 | Battre des ailes (2 fois max, selon la robustesse) | Rappuyer en l'air | SAUT en l'air |
 | Planer | Maintenir le saut en tombant | Maintenir SAUT |
 | Attraper, tirer, ouvrir (le bec) | E ou F | E |
+| Changer d'époque (4-4 seulement) | B | B |
 | Pause | Échap ou P | ❚❚ |
 | Retour à l'accueil (perd l'avancement de la mission) | icône maison en haut à gauche, ou menu Pause | icône maison |
 | Revenir au dernier cartel | R | menu Pause |
@@ -57,8 +58,8 @@ Chaque mission a ses propres mécaniques et sa propre faune. Le niveau 3 est tou
 | 1 · Vittoncourt | Gardien de nuit et sa lampe (se cacher sous les draps), étage plongé dans le noir où seuls les éclairs montrent le chemin, chat aux yeux brillants (ne plus bouger quand ils s'allument, sinon il bondit et poursuit), gardien sous le mammouth (passer par-dessus) | Le gardien au filet à papillons, endormi sur sa chaise jusqu'à ce qu'on passe devant lui |
 | 2 · Retour à la case départ | Chasseurs cachés dans les buissons qui tirent sur tout ce qui vole (traverser à pied), sangliers et marcassins (quand il charge, le sanglier ne voit pas les trous : un creux près de chacun), branches d'arbres, terrain miné où l'on se pose sur les panneaux DANGER, boue qui enlise si on s'arrête, brouillard où seuls les coquelicots marquent le sol ferme, trous d'obus qui s'effondrent, rafales qui repoussent (s'abriter derrière une meule, un tronc ou une cargaison), péniches qui descendent la Meuse dans la profondeur de l'écran, meules d'où sortent des rats, tourbillon de foin qui emporte Raymond entre les pales des éoliennes, obus non explosés derrière les barbelés, trous d'obus pleins d'eau où les sangliers qui chargent finissent leur course, feuillage qui cache du drone, placards où se cacher des gardiens, automates de soldats dans des scènes reconstituées, chariot suspendu sous les barbelés | Le drone, au-dessus de la zone rouge |
 | 3 · Le cap céleste | Le train : pylônes caténaires à sauter, passerelle sous laquelle rester à plat, bouteilles qui roulent au gré des secousses, voyageurs qui jettent ce qu'ils ont sous la main s'ils voient Raymond sauter devant eux, serveur de la voiture-bar ; à la gare, fourgonnette lancée sur le quai (chariots à bagages pour s'abriter), toits de la sandwicherie, du kiosque et du buffet, voyageurs qui battent des bras si on les survole, circulation qui arrive du fond de la rue (un camion vient vers nous, une voiture s'éloigne ; on peut monter sur le camion), pigeons de ville (les gros qui volent d'un point à l'autre, les déplumés qui foncent, les éclopés qui boitillent en demandant l'aumône) ; puis auvents qui font rebondir, tramway dont le toit sert de perchoir, puis escalade de la cathédrale : volets qui s'ouvrent et se ferment, gargouilles qui crachent | La balayeuse municipale |
-| 4 · L'A4 | Rafales de face (s'abriter derrière barrières et camions), toits des camions, foudre annoncée au sol | L'orage : le souvenir du 3 juin 1916, en vol au-dessus des lignes (monter, descendre, accélérer, ralentir) |
-| 5 · Villemareuil | Cloches qui se balancent (leur onde étourdit), chevaux de bois et ballons de la fête foraine | La buse empaillée, qui finit par prendre feu |
+| 4 · L'A4 | Rafales de face (s'abriter derrière barrières et camions), toits des camions, foudre annoncée au sol | L'orage : le souvenir du 3 juin 1916, en vol au-dessus des lignes (monter, descendre, accélérer, ralentir) · Le pont : la Marne à La Ferté-sous-Jouarre en 2026 et en septembre 1914, B pour passer d'une époque à l'autre (obligatoire, parfois en plein saut) |
+| 5 · Saint-Siméon | Cloches qui se balancent (leur onde étourdit), chevaux de bois et ballons de la fête foraine | La buse empaillée, qui finit par prendre feu |
 
 ## Les 20 niveaux
 
@@ -68,7 +69,7 @@ Chaque mission a ses propres mécaniques et sa propre faune. Le niveau 3 est tou
 | 2 · Retour à la case départ | Le sentier (champs, bois, terrain miné, tranchée, monument aux enfants de Verdun) · Les éoliennes (champ éolien de Bras, la Meuse sur trois péniches, saules et ronces, meules à rats, tourbillon de foin au-dessus du chaume) · La zone rouge (forêt de Verdun au début du soir, trous d'obus pleins d'eau, obus non explosés derrière les barbelés, arbres tombés, restes de tranchée, le drone, l'abri allemand du Mort-Homme) · L'abri du Mort-Homme (l'abri allemand — devenu musée, mais Raymond ne le sait pas — la nuit : gardiens, draps, placards, automates de soldats, tranchées, sortie en vol par une meurtrière) |
 | 3 · Le cap céleste | Le train (toits, voiture de voyageurs en coupe, voiture-bar, arrivée en gare) · La gare (le quai sous la verrière, le parvis, le cours de la Gare, le square Colbert) · Le cours Langlet (de l'immeuble à rotonde aux ruines devant la cathédrale, façade après façade, le tramway, les touristes, la girouette du dôme) · La cathédrale (l'escalade de la façade au soleil couchant : portails, rose, galerie des rois, tours ; gargouilles, pigeons sauteurs, mendiants et chieurs ; puis l'intérieur de la tour sud : cloches à la volée et leurs ondes, pics sous les consoles, pigeons du toit, la lanterne) |
 | 4 · L'A4 | L'autoroute de l'Est (de nuit, à dos de camion sous trois ponts, l'embouteillage et l'accident du péage de Thillois, les travaux : camion-benne, rouleau compresseur, cantonniers) · L'aire de Gueux · L'orage · Le pont |
-| 5 · Villemareuil | La route du village · Le clocher · La fête foraine · Le cimetière |
+| 5 · Saint-Siméon | La route du village · Le clocher · La fête foraine · Le cimetière |
 
 Le scénario complet, y compris la fin, est dans [`docs/histoire.md`](docs/histoire.md). **Attention, ce fichier divulgue toute l'histoire.**
 

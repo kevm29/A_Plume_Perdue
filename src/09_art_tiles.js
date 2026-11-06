@@ -6,7 +6,7 @@ const MAT={
      bench:['#2f4a3a','#456a52','#1e3226'],barrier:['#9a968e','#b8b4ac','#78746c'],hay:['#c9a24a','#e0bc6a','#a8823a'],crate:['#6a4a2a','#8a6a44','#4a321a'],tomb:['#85857f','#a5a59f','#65655f'],hedge:['#3a5a2e','#4e7a3a','#2a4220'],none:['#000','#000','#000']},
   D:{drape:['#d3cab5','#ebe4d2','#aaa18c'],hedge:['#3a5a2e','#4e7a3a','#2a4220'],stall:['#8a5a3a','#c8302a','#6a4028'],vault:['#7a7670','#9a968e','#5a5650']},
   '=':{shelf:['#7a5332','#9a6d44','#5a3c24'],duck:['#6a5236','#8a6e4a','#4a3a26'],gutter:['#5a6470','#7a8692','#3e4650'],girder:['#7a4a32','#9a6a4a','#5a3424'],
-     table:['#6a5a44','#8a7a5a','#4a3e2e'],branch:['#5a4330','#7a5c40','#3e2e20'],plank:['#7a5a3a','#9a7a52','#5a4028'],beam:['#5a3e26','#7a5a3a','#3e2a18']}
+     table:['#6a5a44','#8a7a5a','#4a3e2e'],deck:['#8a8c88','#a8aaa4','#6a6c68'],branch:['#5a4330','#7a5c40','#3e2e20'],plank:['#7a5a3a','#9a7a52','#5a4028'],beam:['#5a3e26','#7a5a3a','#3e2a18']}
 };
 function faceTop(g,x,y,col){g.fillStyle=col;poly(g,[x,y,x+T,y,x+T+DX,y+DY,x+DX,y+DY]);g.fill()}
 function faceSide(g,x,y,h,col){g.fillStyle=col;poly(g,[x+T,y,x+T+DX,y+DY,x+T+DX,y+h+DY,x+T,y+h]);g.fill()}

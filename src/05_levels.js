@@ -17,7 +17,7 @@ const SEG_START_FLAT=`
 ##########`;
 const LEVELS=[];
 const LETTERS_SRC=[
- {date:"Verdun, le 2 juin 1916.",text:"Marguerite, je t'écris pour te dire que c'est fini entre nous. Je ne reviendrai pas à Villemareuil.",comment:"Par pigeon. Il rompt par pigeon. Moi qui croyais transporter des plans de bataille."},
+ {date:"Verdun, le 2 juin 1916.",text:"Marguerite, je t'écris pour te dire que c'est fini entre nous. Je ne reviendrai pas à Saint-Siméon.",comment:"Par pigeon. Il rompt par pigeon. Moi qui croyais transporter des plans de bataille."},
  {text:"Épouse plutôt le fils Garnier. Il a deux vaches, une charrette, et il a été réformé. Lui, au moins, il sera là.",comment:"Il la quitte, et il lui choisit le remplaçant. Un réformé, en plus."},
  {text:"Je ne t'ai jamais aimée. Ni ton rire au bal du 14 Juillet, ni ta robe bleue, ni ta façon de dire mon nom.",comment:"Il ne l'a jamais aimée, mais il se souvient de la couleur de la robe. Les hommes sont compliqués. Les pigeons, non."},
  {text:"Brûle mes lettres. Oublie mon nom. Et ne porte jamais le noir pour moi, ça ne te va pas.",comment:"Il critique même ses toilettes. Je ne livre pas une lettre, je livre une gifle."},
@@ -45,7 +45,7 @@ function full(lines){return '\n'+lines.join('\n')}
 LEVELS.push({w:0,name:"La vitrine",theme:'vitrine',exit:'door',seed:11,
  stashQuips:["Un passage dans les cartons. Quelqu'un s'est creusé une cachette. Un rat, sûrement. Un rat qui aime la paille."],rows:20,deep:3,camY:.62,
  leverQuip:"Le portillon remonte. Le bec : l'outil le plus sous-estimé de l'armée française.",
- start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Vasseur, à Villemareuil : je connais le chemin.",
+ start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Vasseur, à Saint-Siméon : je connais le chemin.",
  hints:[["FIG. 1 — LA MARCHE","← → (ou Q / D). Le pigeon avance. Sans grâce, mais il avance."],
         ["FIG. 2 — LE SAUT","Espace, Z ou ↑. Le saut, inventé par les puces, perfectionné par personne."],
         ["FIG. 3 — LE BATTEMENT D'AILES","Rappuyer en l'air. Deux battements maximum : les ailes sont cousues. Chaque battement use l'aile ; posé, il lui faut une seconde par battement pour s'en remettre."],

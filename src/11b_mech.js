@@ -161,6 +161,7 @@ function mechAfterMove(dt,vyBefore){
   {const k=facadeAfterMove(dt);if(k)return k}
   {const k=a4AfterMove();if(k)return k}
   {const k=aireAfterMove();if(k)return k}
+  {const k=ferteAfterMove();if(k)return k}
   return null;
 }
 /* ---------- collisions mortelles ---------- */

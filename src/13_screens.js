@@ -87,7 +87,7 @@ function renderSelect(t){
   ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
   ctx.fillStyle='rgba(12,10,16,.84)';ctx.fillRect(0,0,W,H);
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Itinéraire de Raymond',W/2,46);
-  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → les coquelicots → Reims → A4 → Villemareuil',W/2,67);
+  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → les coquelicots → Reims → A4 → Saint-Siméon',W/2,67);
   G.boxes=[];
   const tile=(i,x,yy,w,h,top,bottom)=>{const sel=i===G.sel,open=selectOpen(i);
     ctx.save();if(!open)ctx.globalAlpha=.35;ctx.fillStyle=sel?'#efe5cc':'#d8cdb2';rr(ctx,x,yy,w,h,6);ctx.fill();
@@ -299,7 +299,7 @@ function drawBannerCard(t){
   ctx.save();ctx.translate(W/2,H/2);
   const sw=Math.sin(t*1.5)*3;
   ctx.fillStyle='#2a4a8a';ctx.fillRect(-380,-70+sw,760,10);ctx.fillStyle='#efe6d0';ctx.fillRect(-380,-60+sw,760,110);ctx.fillStyle='#b8302a';ctx.fillRect(-380,50+sw,760,10);
-  ctx.fillStyle='#2a2420';ctx.textAlign='center';ctx.font='18px '+F_DISP;ctx.fillText('COMMUNE DE VILLEMAREUIL',0,-26+sw);
+  ctx.fillStyle='#2a2420';ctx.textAlign='center';ctx.font='18px '+F_DISP;ctx.fillText('COMMUNE DE SAINT-SIMÉON',0,-26+sw);
   ctx.font='30px '+F_DISP;ctx.fillText('110e ANNIVERSAIRE DE LA BATAILLE DE VERDUN',0,12+sw);
   ctx.font='24px '+F_DISP;ctx.fillStyle='#a8322d';ctx.fillText('1916 – 2026',0,42+sw);
   ctx.strokeStyle='#4a3a2a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-380,-70+sw);ctx.lineTo(-420,-200);ctx.moveTo(380,-70+sw);ctx.lineTo(420,-200);ctx.stroke();

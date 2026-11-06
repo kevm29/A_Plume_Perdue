@@ -2,7 +2,7 @@
    ENTRÉES ET BOUCLE PRINCIPALE
    ========================================================= */
 const keys=new Set(),pressed=new Set();
-const KMAP={ArrowLeft:['left'],KeyA:['left'],ArrowRight:['right'],KeyD:['right'],ArrowUp:['jump','up'],KeyW:['jump','up'],KeyZ:['jump','up'],Space:['jump','ok'],ArrowDown:['down'],KeyS:['down'],KeyE:['act'],KeyF:['act'],Enter:['ok'],NumpadEnter:['ok'],Escape:['esc'],KeyP:['esc'],Backspace:['back']};
+const KMAP={ArrowLeft:['left'],KeyA:['left'],ArrowRight:['right'],KeyD:['right'],ArrowUp:['jump','up'],KeyW:['jump','up'],KeyZ:['jump','up'],Space:['jump','ok'],ArrowDown:['down'],KeyS:['down'],KeyE:['act'],KeyB:['era'],KeyF:['act'],Enter:['ok'],NumpadEnter:['ok'],Escape:['esc'],KeyP:['esc'],Backspace:['back']};
 addEventListener('keydown',e=>{
   ensureAudio();
   const a=KMAP[e.code];
@@ -23,10 +23,10 @@ function bindTouch(id,act){
   const off=e=>{e.preventDefault();keys.delete(act);el.classList.remove('down')};
   el.addEventListener('pointerdown',on);el.addEventListener('pointerup',off);el.addEventListener('pointercancel',off);el.addEventListener('pointerleave',off);
 }
-bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch('te','act');
+bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch('te','act');bindTouch('tb','era');
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
 let touchUI=false;
-function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on')}
+function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te','tb'])document.getElementById(id).classList.add('on')}
 if(matchMedia('(pointer: coarse)').matches)showTouch();
 addEventListener('touchstart',showTouch,{passive:true});
 
@@ -50,8 +50,10 @@ function update(dt){
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
+      if(L.ferte&&L.ferte.cer.on){ferteCerUpdate(dt);updateCamera(dt);updateParticles(dt);break}
+      if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
-      if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly()}
+      if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn()}
       if(pressed.has('jump')&&!G.cut)P.jumpBuf=.12;
       if(pressed.has('act')&&!G.cut)tryAct();
       acc+=dt;let n=0;while(acc>=STEP&&n<12){stepPlay(STEP);acc-=STEP;n++;if(G.state!=='play')break}
@@ -103,6 +105,7 @@ function render(){
       renderLighting(L,cx,cy,t,extra);
       renderWeather(L.th,cx,t);
       drawForeground(cx,L.def.seed,L.th);
+      if(L.ferte)ferteOverlay(t);
       renderGrain();
       if(!G.cut)renderHUD();else drawQuip(66);
       if(G.cut){ctx.fillStyle='rgba(0,0,0,.88)';ctx.fillRect(0,0,W,46);ctx.fillRect(0,H-46,W,46);if(G.cut.t>1){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('appuyer pour passer',W-20,H-18)}}
