@@ -219,7 +219,7 @@ function drawQuip(qy){
   const bw=lw+70,bh=26+lines.length*25,bx=W/2-bw/2,by=qy;
   ctx.fillStyle='rgba(0,0,0,.3)';rr(ctx,bx+5,by+6,bw,bh,6);ctx.fill();
   ctx.fillStyle='#e8dec5';rr(ctx,bx,by,bw,bh,6);ctx.fill();
-  const who=q.who||'RAYMOND',wc={RAYMOND:'#a8322d','LA BUSE':'#7a5a2a','LE GARDIEN':'#2a3a5a'}[who]||'#4a4a4a';
+  const who=q.who||'RAYMOND',wc={RAYMOND:'#a8322d','LA BUSE':'#7a5a2a','LE GARDIEN':'#2a3a5a',LUCIEN:'#3a5a8a'}[who]||'#4a4a4a';
   ctx.fillStyle=wc;ctx.fillRect(bx,by+10,4,bh-20);
   ctx.font='12px '+F_DISP;ctx.textAlign='left';ctx.fillText(who,bx+20,by+18);
   ctx.fillStyle='#2a2420';ctx.font='italic 20px '+F_BODY;lines.forEach((l,k)=>ctx.fillText(l,bx+35,by+40+k*25));

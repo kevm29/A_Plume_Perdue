@@ -49,6 +49,7 @@ function update(dt){
     case'play':{
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
+      if(vauxActive()){vauxUpdate(dt);break}
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
       if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly()}
       if(pressed.has('jump')&&!G.cut)P.jumpBuf=.12;
@@ -87,6 +88,7 @@ function render(){
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;
     case'play':case'pause':case'exiting':case'confirm':{
+      if(vauxActive()){vauxRender(t);vauxOverlays();break}
       const sx=(rnd()-.5)*G.shake,sy=(rnd()-.5)*G.shake;
       const cx=Math.round(cam.x+sx),cy=Math.round(cam.y+sy);
       renderWorld(L,cx,cy,t);
@@ -104,14 +106,17 @@ function render(){
       renderGrain();
       if(!G.cut)renderHUD();else drawQuip(66);
       if(G.cut){ctx.fillStyle='rgba(0,0,0,.88)';ctx.fillRect(0,0,W,46);ctx.fillRect(0,H-46,W,46);if(G.cut.t>1){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('appuyer pour passer',W-20,H-18)}}
-      if(G.state==='pause'){ctx.fillStyle='rgba(10,8,14,.74)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#efe5cc';ctx.font='44px '+F_DISP;ctx.textAlign='center';ctx.fillText('Pause',W/2,140);ctx.font='italic 17px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Raymond en profite pour se gratter. Il ne sent rien.',W/2,172);drawMenu(W/2,236,48)}
-      if(G.state==='confirm')renderConfirm();
-      if(G.state==='exiting'){ctx.fillStyle='rgba(11,10,12,'+Math.min(1,G.exitT/1.1)+')';ctx.fillRect(0,0,W,H)}
+      vauxOverlays();
       break}
   }
   if(G.fade>0){ctx.fillStyle='rgba(11,10,12,'+G.fade+')';ctx.fillRect(0,0,W,H)}
   renderToasts(G.dtLast||1/60);
   ctx.restore();
+}
+function vauxOverlays(){
+  if(G.state==='pause'){ctx.fillStyle='rgba(10,8,14,.74)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#efe5cc';ctx.font='44px '+F_DISP;ctx.textAlign='center';ctx.fillText('Pause',W/2,140);ctx.font='italic 17px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Raymond en profite pour se gratter. Il ne sent rien.',W/2,172);drawMenu(W/2,236,48)}
+  if(G.state==='confirm')renderConfirm();
+  if(G.state==='exiting'){ctx.fillStyle='rgba(11,10,12,'+Math.min(1,G.exitT/1.1)+')';ctx.fillRect(0,0,W,H)}
 }
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
