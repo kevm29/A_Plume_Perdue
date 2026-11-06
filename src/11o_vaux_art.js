@@ -136,22 +136,27 @@ function vxMouth(g,ex,o,lod){
 function vxHelmet(g,hm,o,lod){
   if(hm==='none')return;
   const U=o.side==='de'?VXU.de:VXU.fr;
-  if(hm==='adrian'){const c=o.helmCol||U.helm,cd=shade(c,-.28),cl=shade(c,.22),cm=shade(c,-.12);
-    // le casque Adrian (modèle 1915) : une bombe ronde, un cimier en crête du front à la nuque,
-    // une visière qui avance et plonge un peu devant, un couvre-nuque plus long qui descend derrière, un jonc qui les relie
-    g.fillStyle=cd;g.beginPath();g.moveTo(-.74,-.5);g.quadraticCurveTo(-1.18,-.42,-1.46,-.12);g.quadraticCurveTo(-1.44,-.04,-1.36,-.06);g.quadraticCurveTo(-1.05,-.28,-.7,-.36);g.closePath();g.fill();
-    g.fillStyle=cm;g.beginPath();g.moveTo(.62,-.52);g.quadraticCurveTo(1.12,-.5,1.44,-.3);g.quadraticCurveTo(1.46,-.22,1.38,-.2);g.quadraticCurveTo(1.04,-.34,.6,-.38);g.closePath();g.fill();
-    g.fillStyle=c;g.beginPath();g.moveTo(-.8,-.46);g.bezierCurveTo(-.86,-1.0,-.42,-1.3,.02,-1.3);g.bezierCurveTo(.48,-1.3,.84,-1.0,.78,-.48);g.quadraticCurveTo(0,-.36,-.8,-.46);g.fill();
-    const hg=g.createRadialGradient(-.15,-1.05,.05,0,-.8,.95);hg.addColorStop(0,'rgba(255,255,255,.24)');hg.addColorStop(1,'rgba(0,0,0,.14)');g.fillStyle=hg;g.fill();
-    // le jonc
-    g.strokeStyle=cd;g.lineWidth=.07;g.beginPath();g.moveTo(-.8,-.46);g.quadraticCurveTo(0,-.34,.78,-.48);g.stroke();
-    // le cimier : une crête rapportée, plus claire, rivetée
-    g.fillStyle=cl;g.beginPath();g.moveTo(-.62,-1.0);g.bezierCurveTo(-.4,-1.46,.42,-1.48,.66,-.98);g.lineTo(.6,-.94);g.bezierCurveTo(.38,-1.36,-.36,-1.34,-.56,-.96);g.closePath();g.fill();
-    g.strokeStyle=cd;g.lineWidth=.035;g.beginPath();g.moveTo(-.56,-.96);g.bezierCurveTo(-.36,-1.34,.38,-1.36,.6,-.94);g.stroke();
-    if(lod>6){g.fillStyle=cd;for(const u of[-.5,.52]){g.beginPath();g.arc(u,-.99,.035,0,7);g.fill()}
-      // l'insigne : la grenade de l'infanterie
-      g.save();g.translate(.4,-.74);g.fillStyle=shade(c,.32);g.beginPath();g.arc(0,.05,.085,0,7);g.fill();g.beginPath();g.moveTo(-.04,-.03);g.quadraticCurveTo(-.06,-.16,0,-.27);g.quadraticCurveTo(.06,-.16,.04,-.03);g.fill();g.restore()}
-    if(o.splat)vxSplat(g,.0,-1.28);
+  if(hm==='adrian'){const c=o.helmCol||U.helm,cd=shade(c,-.3),cl=shade(c,.24),cm=shade(c,-.14);
+    // le casque Adrian (modèle 1915), d'après le vrai : une bombe haute et ronde, un cimier en crête du front à la nuque,
+    // et un bord continu qui s'évase vers le bas tout autour — court devant (la visière), plus long et plus plongeant derrière (le couvre-nuque)
+    // le bord, vu par-dessous puis par-dessus
+    g.fillStyle=cd;g.beginPath();g.moveTo(-.86,-.46);g.quadraticCurveTo(-1.2,-.3,-1.5,.0);g.quadraticCurveTo(-1.46,.06,-1.38,.05);
+    g.quadraticCurveTo(-.5,-.16,.3,-.2);g.quadraticCurveTo(.95,-.22,1.34,-.17);g.quadraticCurveTo(1.38,-.22,1.32,-.26);g.quadraticCurveTo(1.08,-.4,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
+    g.fillStyle=cm;g.beginPath();g.moveTo(-.86,-.46);g.quadraticCurveTo(-1.2,-.3,-1.48,-.02);g.quadraticCurveTo(-.6,-.24,.3,-.27);g.quadraticCurveTo(.95,-.28,1.32,-.25);g.quadraticCurveTo(1.08,-.4,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
+    g.fillStyle=rgba(cl,.35);g.beginPath();g.moveTo(.5,-.38);g.quadraticCurveTo(.95,-.36,1.26,-.26);g.quadraticCurveTo(.9,-.32,.5,-.33);g.closePath();g.fill();
+    // la bombe
+    g.fillStyle=c;g.beginPath();g.moveTo(-.86,-.46);g.bezierCurveTo(-.92,-1.1,-.5,-1.46,.0,-1.46);g.bezierCurveTo(.5,-1.46,.9,-1.1,.84,-.46);g.quadraticCurveTo(0,-.36,-.86,-.46);g.fill();
+    const hg=g.createRadialGradient(-.2,-1.15,.05,0,-.85,1.05);hg.addColorStop(0,'rgba(255,255,255,.26)');hg.addColorStop(1,'rgba(0,0,0,.16)');g.fillStyle=hg;g.fill();
+    // le jonc qui ceinture la bombe
+    g.strokeStyle=cd;g.lineWidth=.08;g.beginPath();g.moveTo(-.86,-.47);g.quadraticCurveTo(0,-.37,.84,-.47);g.stroke();g.strokeStyle=rgba(cl,.4);g.lineWidth=.03;g.beginPath();g.moveTo(-.84,-.52);g.quadraticCurveTo(0,-.42,.82,-.52);g.stroke();
+    // le cimier : une crête rapportée, posée sur le dessus de la bombe, qui dépasse de sa silhouette, du front à la nuque
+    g.fillStyle=c;g.beginPath();g.moveTo(.56,-.98);g.bezierCurveTo(.46,-1.6,-.36,-1.72,-.64,-1.14);g.quadraticCurveTo(-.66,-1.06,-.58,-1.06);g.bezierCurveTo(-.32,-1.5,.36,-1.46,.44,-.98);g.quadraticCurveTo(.5,-.9,.56,-.98);g.fill();
+    g.fillStyle=cl;g.beginPath();g.moveTo(.53,-1.0);g.bezierCurveTo(.44,-1.56,-.34,-1.66,-.6,-1.12);g.lineTo(-.55,-1.1);g.bezierCurveTo(-.3,-1.56,.4,-1.5,.48,-1.0);g.closePath();g.fill();
+    g.strokeStyle=cd;g.lineWidth=.03;g.beginPath();g.moveTo(.44,-.98);g.bezierCurveTo(.36,-1.46,-.32,-1.5,-.58,-1.06);g.stroke();
+    if(lod>6){g.fillStyle=cd;g.beginPath();g.arc(.5,-.98,.035,0,7);g.arc(-.58,-1.08,.035,0,7);g.fill();
+      // l'insigne : la grenade de l'infanterie, sur le devant, sous la pointe du cimier
+      g.save();g.translate(.56,-.72);g.fillStyle=shade(c,.34);g.beginPath();g.arc(0,.04,.08,0,7);g.fill();g.beginPath();g.moveTo(-.035,-.03);g.quadraticCurveTo(-.06,-.14,0,-.24);g.quadraticCurveTo(.06,-.14,.035,-.03);g.fill();g.restore()}
+    if(o.splat)vxSplat(g,.0,-1.42);
   }else if(hm==='stahl'){const c=o.helmCol||VXU.de.helm,cd=shade(c,-.3),cl=shade(c,.18);
     g.fillStyle=cd;g.beginPath();g.moveTo(-1.02,-.18);g.quadraticCurveTo(-1.1,.32,-.86,.42);g.lineTo(-.56,.18);g.lineTo(-.6,-.3);g.closePath();g.fill();
     g.fillStyle=c;g.beginPath();g.moveTo(-.98,-.12);g.bezierCurveTo(-1.08,-1.34,1.0,-1.36,.98,-.4);g.quadraticCurveTo(1.12,-.32,1.18,-.22);g.quadraticCurveTo(.7,-.3,.4,-.3);g.quadraticCurveTo(-.2,-.28,-.56,-.18);g.quadraticCurveTo(-.7,0,-.98,-.12);g.fill();
