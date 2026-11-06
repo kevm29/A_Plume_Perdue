@@ -1632,7 +1632,7 @@ LEVELS.push({w:3,name:"Le pont",theme:'ferte26',exit:'none',exitLabel:"",seed:11
  start:"La Marne, au petit matin. Un chemin de halage. Je connais cet endroit, et je ne sais pas d'où.",
  quips:["La Ferté-sous-Jouarre, dit un panneau. Le nom me chatouille quelque part sous les plumes."],
  signs:[],
- hints:[["ARTICLE 25 — LES BRUMES","En appuyant sur B, on peut partir dans des brumes de souvenirs que l'éclair semble avoir rendues possibles. Ce qui barre le chemin d'une époque n'existe pas forcément dans l'autre. On peut basculer en plein saut."]],
+ hints:[["ARTICLE 25 — LES BRUMES","En appuyant sur B, on peut partir dans des brumes de souvenirs."]],
  segs:[],segs14:[]  // construits par 11r_ferte.js
 });
 
@@ -10312,17 +10312,17 @@ const FERTE={};
   plat(A,206,229,8,'=');
   for(const[c,r]of[[165,10],[180,9],[189,9],[199,10]])put(B,c,r,'o');
   for(const[c,r]of[[212,6],[221,6]])put(A,c,r,'o');
-  FERTE.gerbes=[{c:166,ph:0},{c:184,ph:1.6},{c:200,ph:.8},{c:214,ph:2.3}];
+  FERTE.gerbes=[{c:179,ph:0},{c:188,ph:2.1},{c:214,ph:.8},{c:223,ph:2.9},{c:165,ph:1.3,bg:1},{c:199,ph:3.4,bg:1},{c:176,ph:.4,bg:1}];
   /* l'autre rive : le camping (2026), la ferme barricadée (1914) */
   put(A,232,11,'C');put(B,232,11,'C');
   ents[26].push({k:'rat',c:237});
-  block(B,14,240,244,'ferme');put(A,242,10,'o');
+  block(B,14,240,245,'ferme');put(A,242,10,'o');
   water(A,250,252);ents[26].push({k:'boar',c:258});put(A,251,8,'o');
   put(A,247,8,'m');
   block(A,26,264,268,'sanitaires');put(B,266,10,'o');
   for(let c=271;c<=274;c++)put(B,c,11,'^');put(B,272,8,'o');
   ents[26].push({k:'rat',c:276});
-  block(A,26,280,282,'kiosque');block(B,14,285,287,'charrette');put(A,286,10,'o');put(B,281,10,'o');
+  FERTE.fires=[{c:279,era:26,ph:0},{c:284.35,era:14,ph:1.4}];put(A,279,8,'o');put(B,285,8,'o');
   /* la guinguette (2026) ; en 1914, à sa place, le capitaine et sa nomination */
   put(A,291,11,'C');put(B,291,11,'C');
   block(A,26,298,303,'guinguette');
@@ -10353,7 +10353,8 @@ function fertePost(Lv){
   const F=Lv.ferte={era:26,E,t:0,flash:0,flashC:0,cool:0,said:{},fogT:0,
     squirrels:FERTE.trees.map((tr,i)=>({x:tr.c*T+T/2,y0:tr.top*T+30,y1:FGR*T-8,y:tr.top*T+30,t:i*1.7,st:'top'})),
     fish:FERTE.fish.map(f=>({xa:f.a*T,xb:f.b*T,ph:f.ph,x:0,y:0,on:false})),
-    gerbes:FERTE.gerbes.map(o=>({x:o.c*T+T/2,ph:o.ph,st:'idle',k:0})),
+    gerbes:FERTE.gerbes.map(o=>({x:o.c*T+T/2,ph:o.ph,st:'idle',k:0,bg:!!o.bg})),
+    fires:FERTE.fires.map(o=>({x:o.c*T+T/2,era:o.era,ph:o.ph,h:40})),
     cer:{x:FERTE.cer.c*T,on:false,done:false,t:0,ev:{}}};
 }
 function cornOn(k){return!(k.era&&L.ferte&&k.era!==L.ferte.era)}
@@ -10406,9 +10407,13 @@ function ferteStep(dt){
   for(const f of F.fish){const cyc=(F.t+f.ph)%2.7,u=cyc/1.15;f.on=u<1;if(f.on){f.x=lerp(f.xa,f.xb,u);f.y=FGR*T+18-Math.sin(u*Math.PI)*150;f.u=u;if(u<.05&&!f.sp){f.sp=1;if(!G.sim&&F.era===26&&Math.abs(f.x-P.x)<700)splashF(f.xa,FGR*T+18)}}else{if(f.sp){f.sp=0;if(!G.sim&&F.era===26&&Math.abs(f.x-P.x)<700)splashF(f.xb,FGR*T+18)}}}
   // les gerbes d'obus allemands sur le pont de bateaux (1914)
   for(const s of F.gerbes){const cyc=(F.t+s.ph)%4.2;const st=cyc<1.1?'warn':cyc<1.7?'boom':'idle';
-    if(st==='boom'&&s.st!=='boom'&&F.era===14&&!G.sim&&Math.abs(s.x-P.x)<900){noise(.6,320,.35,'lowpass');G.shake=Math.max(G.shake,Math.abs(s.x-P.x)<300?9:4);splashF(s.x,FGR*T+12,true)}
-    if(st==='warn'&&s.st==='idle'&&F.era===14&&!G.sim&&Math.abs(s.x-P.x)<700)tone(1400,.9,'sine',.025,500);
+    if(st==='boom'&&s.st!=='boom'&&F.era===14&&!G.sim&&Math.abs(s.x-P.x)<900){noise(.6,320,s.bg?.18:.35,'lowpass');if(!s.bg){G.shake=Math.max(G.shake,Math.abs(s.x-P.x)<300?9:4);splashF(s.x,FGR*T+12,true)}}
+    if(!s.bg&&st==='warn'&&s.st==='idle'&&F.era===14&&!G.sim&&Math.abs(s.x-P.x)<700)tone(1400,.9,'sine',.025,500);
     s.st=st;s.k=cyc}
+  // les feux de camp : ils couvent, puis une flambée monte (une bûche s'effondre)
+  for(const f of F.fires){const cyc=(F.t+f.ph)%3.4;f.h=cyc<2.2?38+Math.sin(F.t*9+f.ph)*5:38+Math.sin(Math.min(1,(cyc-2.2)/1.2)*Math.PI)*90;f.flare=cyc>=2.2}
+  // le mémorial : Raymond n'y comprend rien
+  if(F.era===26&&!F.said.memo&&P.x>148*T){F.said.memo=1;say("« To the glory of God… » Je n'ai jamais compris d'autre langue que le français. Et encore.",4.2)}
   // la nomination (1914, à l'emplacement de la guinguette)
   const C=F.cer;
   if(!C.done&&!C.on&&F.era===14&&P.x+P.w/2>C.x-40&&!P.dead){C.on=true;C.t=0;C.ev={};P.vx=0;keys.delete('left');keys.delete('right')}
@@ -10417,11 +10422,12 @@ function splashF(x,y,big){for(let i=0;i<(big?26:10);i++){parts.push({type:'dust'
 function ferteAfterMove(){
   const F=L.ferte;if(!F||F.grace>0)return null;
   const hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6};
+  for(const f of F.fires)if(f.era===F.era&&overlap(hb,{x:f.x-16,y:FGR*T-f.h,w:32,h:f.h}))return'fire';
   if(F.era===26){
     for(const s of F.squirrels)if(overlap(hb,{x:s.x-11,y:s.y-10,w:22,h:22}))return'ecureuil';
     for(const f of F.fish)if(f.on&&f.y<FGR*T+4&&overlap(hb,{x:f.x-12,y:f.y-7,w:24,h:14}))return'poisson';
   }else{
-    for(const s of F.gerbes)if(s.st==='boom'){const k=(s.k-1.1)/.6,h=150*Math.sin(Math.min(1,k*1.6)*Math.PI/2);if(Math.abs(P.x+P.w/2-s.x)<30&&P.y+P.h>FGR*T-h+10)return'gerbe'}
+    for(const s of F.gerbes)if(s.st==='boom'&&!s.bg){const k=(s.k-1.1)/.6,h=150*Math.sin(Math.min(1,k*1.6)*Math.PI/2);if(Math.abs(P.x+P.w/2-s.x)<30&&P.y+P.h>FGR*T-h+10)return'gerbe'}
   }
   return null;
 }
@@ -10482,6 +10488,7 @@ function drawFerteBack(t,cx){
   g.strokeStyle=e14?'rgba(230,220,190,.25)':'rgba(230,245,250,.28)';g.lineWidth=1.2;
   for(let k=0;k<26;k++){const xx=x0+((k*137+t*14*(k%3+1))%(x1-x0)),yy=y0+6+(k*23)%60;g.beginPath();g.moveTo(xx,yy);g.lineTo(xx+18+(k%5)*6,yy);g.stroke()}
   const vis=(a,b)=>b>cx-200&&a<cx+W+200;
+  fDecor(g,t,F.era,vis);
   // les arbres (tronc de l'écureuil) et les bâtiments du fond
   if(!e14){for(const s of F.squirrels)if(vis(s.x-120,s.x+120))fTree(g,s.x,FGR*T,s.y0-40);
     ferteMemorial(g,146*T,FGR*T,vis);
@@ -10497,6 +10504,7 @@ function drawFerteBack(t,cx){
     if(vis(28*T,46*T))fCamp14(g,t);
     // les bateaux du pont : coques sous les planches, sapeurs au travail
     if(vis(100*T,141*T)){for(const[a,b]of[[102,110],[129,140]])fPilings(g,a,b)}
+    for(const s of F.gerbes)if(s.bg&&vis(s.x-80,s.x+80)){g.save();g.translate(s.x,FGR*T-26);g.scale(.5,.5);g.translate(-s.x,-(FGR*T+10));g.globalAlpha=.75;fGerbe(g,s,t);g.restore()}
     if(vis(158*T,232*T)){for(const[a,b]of[[160,171],[194,205]])fPontoons(g,a,b);fSappers(g,t)}
     if(vis(238*T,250*T)){}
     if(vis(292*T,312*T))fCerGroup(g,t,F.cer);
@@ -10506,17 +10514,18 @@ function drawFerteBack(t,cx){
 function drawFerteMid(t){
   const F=L.ferte;if(!F)return;const g=ctx,vis=(a,b)=>b>cam.x-220&&a<cam.x+W+220;
   for(const b of FERTE.blocks[F.era])if(vis(b.c0*T,(b.c1+1)*T))fBlock(g,b,t,F.era);
+  for(const f of F.fires)if(f.era===F.era&&vis(f.x-60,f.x+60))fFire(g,f,t);
   if(F.era===26){
     for(const s of F.squirrels)if(vis(s.x-30,s.x+30))fSquirrel(g,s,t);
     for(const f of F.fish)if(f.on&&vis(f.x-30,f.x+30))fFish(g,f);
     if(vis(156*T,160*T)){fSign(g,152*T,FGR*T,'PONT FERMÉ','travaux · déviation');}
     if(vis(30*T,34*T))fSign(g,31*T,FGR*T,"CLUB D'AVIRON","de la Marne");
-    if(vis(228*T,232*T))fSign(g,229*T,FGR*T,'CAMPING','municipal ★★');
+    if(vis(231*T,236*T))fSign(g,233*T+10,FGR*T,'CAMPING','municipal ★★');
   }else{
-    for(const s of F.gerbes)if(vis(s.x-80,s.x+80))fGerbe(g,s,t);
+    for(const s of F.gerbes)if(!s.bg&&vis(s.x-80,s.x+80))fGerbe(g,s,t);
   }
 }
-function fSign(g,x,y,a,b){g.save();g.fillStyle='#4a3a2a';g.fillRect(x-2,y-62,4,62);g.fillStyle='#ece6d2';rr(g,x-40,y-86,80,30,3);g.fill();g.strokeStyle='#2a3a5a';g.lineWidth=1.5;rr(g,x-37,y-83,74,24,2);g.stroke();
+function fSign(g,x,y,a,b){g.save();g.font='bold 10px '+F_DISP;const hw=Math.max(40,g.measureText(a).width/2+12);g.fillStyle='#4a3a2a';g.fillRect(x-2,y-62,4,62);g.fillStyle='#ece6d2';rr(g,x-hw,y-86,hw*2,30,3);g.fill();g.strokeStyle='#2a3a5a';g.lineWidth=1.5;rr(g,x-hw+3,y-83,hw*2-6,24,2);g.stroke();
   g.fillStyle='#2a3a5a';g.textAlign='center';g.font='bold 10px '+F_DISP;g.fillText(a,x,y-71);g.font='italic 8px '+F_BODY;g.fillText(b,x,y-62);g.restore()}
 function fTree(g,x,b,top){g.save();const tg=g.createLinearGradient(x-14,0,x+14,0);tg.addColorStop(0,'#3e3022');tg.addColorStop(.5,'#5e4a34');tg.addColorStop(1,'#3a2c1e');g.fillStyle=tg;
   g.beginPath();g.moveTo(x-16,b+4);g.quadraticCurveTo(x-10,b-40,x-11,top+40);g.lineTo(x+11,top+40);g.quadraticCurveTo(x+10,b-40,x+18,b+4);g.closePath();g.fill();
@@ -10566,13 +10575,20 @@ function fBlock(g,b,t,era){const x0=b.c0*T,x1=(b.c1+1)*T,top=b.r0*T,base=FGR*T,w
     g.strokeStyle='#e8a020';g.lineWidth=4;g.beginPath();g.moveTo(x0+w/2,top+60);g.lineTo(x0+w/2,top-80);g.lineTo(x0+w/2+320,top-80);g.moveTo(x0+w/2-60,top-80);g.lineTo(x0+w/2,top-80);g.stroke();
     g.lineWidth=1.4;for(let k=0;k<10;k++){g.beginPath();g.moveTo(x0+w/2+k*32,top-80);g.lineTo(x0+w/2+k*32+16,top-66);g.lineTo(x0+w/2+k*32+32,top-80);g.stroke()}
     g.strokeStyle='#333';g.lineWidth=1;const hx=x0+w/2+220+Math.sin(t*.4)*30;g.beginPath();g.moveTo(hx,top-80);g.lineTo(hx,top+10);g.stroke();g.fillStyle='#e8a020';g.fillRect(hx-6,top+10,12,8);
-  }else if(b.kind==='sanitaires'){ // le bloc sanitaire du camping
-    g.fillStyle='#d8d2c0';g.fillRect(x0,top+50,w,base-top-50);g.fillStyle='#6a7a7a';g.fillRect(x0-8,top+40,w+16,14);
-    g.fillStyle='#3a6a8a';g.fillRect(x0+18,base-110,40,110);g.fillRect(x1-58,base-110,40,110);g.fillStyle='#ece6d2';g.font='bold 14px '+F_DISP;g.textAlign='center';g.fillText('WC',x0+38,base-80);g.fillText('DOUCHES',x1-38,base-120);
-    g.fillStyle='rgba(120,160,180,.6)';for(let x=x0+16;x<x1-20;x+=34)g.fillRect(x,top+70,22,14);
-  }else if(b.kind==='kiosque'){ // le kiosque à glaces
-    g.fillStyle='#e8dcc0';g.fillRect(x0,top+90,w,base-top-90);g.fillStyle='#e05a7a';for(let k=0;k<6;k++){g.fillStyle=k%2?'#f2ece0':'#e05a7a';g.fillRect(x0-10+k*(w+20)/6,top+70,(w+20)/6,26)}
-    g.fillStyle='#3a3a3a';g.fillRect(x0+10,top+120,w-20,70);g.fillStyle='#f2ece0';g.font='bold 12px '+F_DISP;g.textAlign='center';g.fillText('GLACES',x0+w/2,top+108);
+  }else if(b.kind==='sanitaires'){ // le bloc sanitaire du camping : bardage bois, toit à un pan, plaques émaillées
+    const wt=top+80;g.fillStyle='#a8865a';g.fillRect(x0,wt,w,base-wt);
+    g.strokeStyle='rgba(70,48,24,.35)';g.lineWidth=1;for(let y=wt+12;y<base;y+=12){g.beginPath();g.moveTo(x0,y);g.lineTo(x1,y);g.stroke()}
+    g.fillStyle='#c8b896';g.fillRect(x0,base-34,w,34);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x0,base-34,w,3);
+    g.fillStyle='#4a5a52';poly(g,[x0-14,wt+6,x1+14,wt-34,x1+14,wt-22,x0-14,wt+18]);g.fill();
+    const door=(dx,lbl,ico)=>{g.fillStyle='#3e5a4e';g.fillRect(dx,base-112,44,112);g.strokeStyle='#2e443a';g.lineWidth=2;g.strokeRect(dx+4,base-106,36,46);g.strokeRect(dx+4,base-54,36,46);
+      g.fillStyle='#d8c890';g.beginPath();g.arc(dx+36,base-56,2.2,0,7);g.fill();
+      g.fillStyle='#1e3a6a';rr(g,dx-6,base-142,56,22,3);g.fill();g.strokeStyle='#e8e2d0';g.lineWidth=1;rr(g,dx-4,base-140,52,18,2);g.stroke();
+      g.fillStyle='#e8e2d0';g.font='bold 9px '+F_DISP;g.textAlign='center';g.fillText(lbl,dx+22,base-127);ico(dx+22,base-84)};
+    door(x0+20,'WC',(cx,cy)=>{g.fillStyle='rgba(232,226,208,.8)';g.beginPath();g.arc(cx-6,cy-12,3,0,7);g.arc(cx+6,cy-12,3,0,7);g.fill();g.fillRect(cx-8,cy-8,5,12);poly(g,[cx+3,cy+4,cx+6,cy-8,cx+9,cy+4]);g.fill()});
+    door(x1-64,'DOUCHES',(cx,cy)=>{g.strokeStyle='rgba(232,226,208,.8)';g.lineWidth=2;g.beginPath();g.moveTo(cx-8,cy+6);g.lineTo(cx-8,cy-14);g.lineTo(cx+2,cy-14);g.stroke();g.fillStyle='rgba(232,226,208,.8)';for(let k=0;k<4;k++)g.fillRect(cx-1+k*3,cy-9+k*2,1.5,4)});
+    g.strokeStyle='#6a4a2a';g.lineWidth=1;for(let x=x0+76;x<x1-70;x+=30){g.fillStyle='rgba(170,200,210,.7)';g.fillRect(x,wt+30,20,12);g.strokeRect(x,wt+30,20,12)}
+    g.fillStyle='#4a7a3a';for(const px of[x0+4,x1-4]){g.beginPath();g.arc(px,base-14,14,0,7);g.arc(px+8,base-22,10,0,7);g.fill()}
+    g.fillStyle='#e8402a';for(const px of[x0+2,x0+10,x1-6]){g.beginPath();g.arc(px,base-24,2.4,0,7);g.fill()}
   }else if(b.kind==='guinguette'){ // la guinguette, lampions
     g.fillStyle='#b89a6a';g.fillRect(x0,top+60,w,base-top-60);g.fillStyle='#5a7a4a';poly(g,[x0-16,top+64,x0+w/2,top+10,x1+16,top+64]);g.fill();
     g.fillStyle='#2a1e14';g.fillRect(x0+20,base-130,60,130);g.fillStyle='rgba(255,210,130,.8)';g.fillRect(x0+110,base-140,w-140,60);
@@ -10583,15 +10599,16 @@ function fBlock(g,b,t,era){const x0=b.c0*T,x1=(b.c1+1)*T,top=b.r0*T,base=FGR*T,w
     g.strokeStyle='rgba(60,40,20,.25)';g.lineWidth=1;for(let y=top+60;y<base;y+=14){g.beginPath();g.moveTo(x0,y);g.lineTo(x1,y);g.stroke()}
     g.fillStyle='#5a6a4a';for(const[wx,wy]of[[x0+30,top+90],[x1-70,top+90],[x0+30,top+200],[x1-70,top+200]])g.fillRect(wx,wy,40,52);
     g.fillStyle='#3a2a1e';g.fillRect(x0+w/2-24,base-100,48,100);g.fillStyle='#e8dcc0';g.font='italic 10px '+F_BODY;g.textAlign='center';g.fillText('Passeur · Bac',x0+w/2,top+76);
-  }else if(b.kind==='ferme'){ // la ferme barricadée : charrettes, sacs, matelas aux fenêtres
-    g.fillStyle='#9a8a6a';g.fillRect(x0,top+40,w,base-top-40);g.fillStyle='#5a3a2a';poly(g,[x0-10,top+44,x0+w/2,top,x1+10,top+44]);g.fill();
-    g.fillStyle='#d8ccb0';for(const wy of[top+80,top+180])g.fillRect(x0+20,wy,w-40,40);g.strokeStyle='#8a7a5a';g.lineWidth=2;for(const wy of[top+80,top+180]){g.beginPath();g.moveTo(x0+20,wy+20);g.lineTo(x1-20,wy+20);g.stroke()}
-    for(let k=0;k<6;k++){g.fillStyle=k%2?'#8a7a5a':'#7a6a4a';rr(g,x0-6+(k%3)*w/3,base-30-Math.floor(k/3)*24,w/3+4,26,8);g.fill()}
-    g.strokeStyle='#4a3020';g.lineWidth=5;g.beginPath();g.arc(x0+w/2,base-80,30,0,7);g.stroke();for(let a=0;a<6.28;a+=.8){g.beginPath();g.moveTo(x0+w/2,base-80);g.lineTo(x0+w/2+Math.cos(a)*30,base-80+Math.sin(a)*30);g.stroke()}
-  }else if(b.kind==='charrette'){ // la charrette de munitions renversée et son chargement
-    g.fillStyle='#6a4a2a';g.save();g.translate(x0+w/2,base-140);g.rotate(-1.2);g.fillRect(-80,-30,160,60);g.restore();
-    g.strokeStyle='#3a2414';g.lineWidth=6;g.beginPath();g.arc(x0+w/2,top+80,40,0,7);g.stroke();for(let a=0;a<6.28;a+=.63){g.beginPath();g.moveTo(x0+w/2,top+80);g.lineTo(x0+w/2+Math.cos(a)*40,top+80+Math.sin(a)*40);g.stroke()}
-    for(let k=0;k<10;k++){g.fillStyle=k%2?'#7a6a3a':'#5a5a3a';rr(g,x0-8+(k%2)*w/2,base-26-Math.floor(k/2)*30,w/2+8,28,4);g.fill();g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x0-4+(k%2)*w/2,base-14-Math.floor(k/2)*30,w/2,2)}
+  }else if(b.kind==='ferme'){ // la ferme de bord de Marne, mise en défense : fenêtres condamnées, créneaux, sacs à terre
+    const wt=top+70;g.fillStyle='#a8977a';g.fillRect(x0,wt,w,base-wt);
+    g.fillStyle='rgba(80,64,44,.25)';for(let y=wt+6;y<base;y+=16)for(let x=x0+((y/16|0)%2)*14;x<x1-20;x+=28){rr(g,x+1,y,24,13,4);g.fill()}
+    g.fillStyle='#6a3a2a';poly(g,[x0-16,wt+4,x0+w*.5,wt-70,x1+16,wt+4]);g.fill();g.strokeStyle='rgba(40,20,10,.35)';g.lineWidth=1;for(let k=1;k<9;k++){const y=wt+4-k*8;g.beginPath();g.moveTo(x0-16+k*11,y);g.lineTo(x1+16-k*11,y);g.stroke()}
+    g.fillStyle='#8a7a62';g.fillRect(x0+w*.68,wt-80,18,46);g.fillStyle='rgba(200,190,170,.25)';g.beginPath();g.arc(x0+w*.68+9,wt-96,10,0,7);g.fill();
+    for(const[wx,wy]of[[x0+26,wt+40],[x1-66,wt+40],[x0+26,wt+150],[x1-66,wt+150]]){g.fillStyle='#2a2018';g.fillRect(wx,wy,40,54);g.fillStyle='#7a5a36';for(let k=0;k<3;k++){g.save();g.translate(wx+20,wy+10+k*17);g.rotate((k%2?-1:1)*.12);g.fillRect(-24,-4,48,8);g.restore()}
+      g.fillStyle='#120c08';g.fillRect(wx+16,wy+22,8,4)}
+    g.fillStyle='#4a3424';g.fillRect(x0+w/2-26,base-96,52,96);g.fillStyle='#3a2818';for(let k=0;k<4;k++)g.fillRect(x0+w/2-26+k*13,base-96,2,96);
+    for(let k=0;k<11;k++){const row=Math.floor(k/4),cx=x0-10+(k%4)*(w+20)/4+(row%2)*20;g.fillStyle=k%2?'#8a7a5a':'#7a6a4a';rr(g,cx,base-24-row*20,(w+20)/4+2,22,8);g.fill();g.fillStyle='rgba(0,0,0,.18)';g.fillRect(cx+4,base-10-row*20,(w+20)/4-6,2)}
+    g.fillStyle='#e8dcc0';g.font='italic 10px '+F_BODY;g.textAlign='center';g.fillText('Ferme du Bac',x0+w/2,wt+24);
   }
   g.restore()}
 /* 1914 */
@@ -10656,6 +10673,85 @@ function ferteOverlay(t){
     ctx.restore()}
   if(F.cer.on){ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(0,0,W,40);ctx.fillRect(0,H-40,W,40)}
 }
+
+/* ---------- le décor des berges : arbres, bancs, roseaux, campements ---------- */
+const FD={26:[
+  ['platane',6],['banc',15],['saule',20],['pecheur',27],['lampe',31.6],['canoes',41],['peuplier',44],['lampe',52],['roseaux',56],['roseaux',60.4],['platane',64],
+  ['roseaux',83],['roseaux',91.2],['saule',95],['pecheur',99.4],['roseaux',100.6],['roseaux',141],['lampe',141.8],['platane',154],['roseaux',155.4],
+  ['roseaux',230.4],['platane',236],['banc',239],['saule',246.5],['roseaux',249.4],['roseaux',253.2],['peuplier',261],['tente',272],['velo',283],
+  ['platane',288],['lampe',292],['banc',306],['saule',312],['peuplier',318]],
+ 14:[
+  ['platane',6],['meule',12],['fourgon',19],['peuplier',26],['faisceau',40],['saule',53],['roseaux',54.6],['roseaux',100.4],['roseaux',141],['platane',150],['caisses',153],
+  ['roseaux',230.4],['peuplier',234],['brise',237],['meule',249],['platane',256],['faisceau',262],['poteau',268],['bivouac',282],['peuplier',290],['brise',305],['saule',314]]};
+function fDecor(g,t,era,vis){const b=FGR*T;
+  for(const[k,c]of FD[era]){const x=c*T;if(!vis(x-160,x+160))continue;
+    if(k==='platane')fPlane(g,x,b,era===14);else if(k==='saule')fWillow(g,x,b,t);else if(k==='peuplier'){for(let i=0;i<3;i++)fPoplarN(g,x+i*34-34,b,240+((c*7+i*13)%60))}
+    else if(k==='brise')fPlane(g,x,b,true,true);
+    else if(k==='roseaux')fReeds(g,x,b,t);else if(k==='banc')fBench(g,x,b);else if(k==='lampe')fLamp(g,x,b);
+    else if(k==='pecheur')fFisher(g,x,b,t);else if(k==='canoes')fCanoes(g,x,b);else if(k==='tente')fTent(g,x,b,t);else if(k==='velo')fBike(g,x,b);
+    else if(k==='meule')fHay(g,x,b);else if(k==='fourgon')fWagon(g,x,b,t);else if(k==='faisceau')fRifles(g,x,b);else if(k==='caisses')fCrates(g,x,b);
+    else if(k==='poteau')fPole(g,x,b);else if(k==='bivouac')fBivouac(g,x,b,t);}
+}
+function fPlane(g,x,b,old,broken){g.save();g.fillStyle='#6a6450';g.beginPath();g.moveTo(x-14,b+4);g.quadraticCurveTo(x-9,b-80,x-8,b-170);g.lineTo(x+8,b-170);g.quadraticCurveTo(x+9,b-80,x+15,b+4);g.closePath();g.fill();
+  g.fillStyle='rgba(220,210,180,.35)';for(let k=0;k<7;k++){g.beginPath();g.ellipse(x-4+(k%3)*4,b-20-k*22,4,6,0,0,7);g.fill()}
+  g.strokeStyle='#5a5444';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(x,b-150);g.lineTo(x-46,b-200);g.moveTo(x,b-160);g.lineTo(x+40,b-214);g.stroke();
+  if(broken){g.lineWidth=3;g.beginPath();g.moveTo(x-46,b-200);g.lineTo(x-60,b-196);g.moveTo(x+40,b-214);g.lineTo(x+52,b-226);g.stroke();g.fillStyle='#4a5a34';g.beginPath();g.arc(x+30,b-214,20,0,7);g.arc(x-34,b-206,16,0,7);g.fill();g.restore();return}
+  const cs=old?['#56663a','#62723f','#4a5a34']:['#3e6a34','#4c7a3a','#36602e'];
+  for(const[dx,dy,r,i]of[[-50,-210,46,0],[44,-224,50,1],[0,-250,58,2],[-14,-196,40,1],[30,-190,36,0],[-70,-232,32,2],[70,-236,30,2]]){g.fillStyle=cs[i];g.beginPath();g.arc(x+dx,b+dy,r,0,7);g.fill()}
+  g.fillStyle='rgba(255,245,200,.12)';g.beginPath();g.arc(x+12,b-268,34,0,7);g.fill();g.restore()}
+function fWillow(g,x,b,t){g.save();g.fillStyle='#5a4a36';g.beginPath();g.moveTo(x-12,b+4);g.quadraticCurveTo(x-6,b-60,x-18,b-120);g.lineTo(x+6,b-126);g.quadraticCurveTo(x+6,b-60,x+14,b+4);g.closePath();g.fill();
+  g.fillStyle='#6a8a44';g.beginPath();g.arc(x-6,b-140,56,Math.PI,0);g.fill();
+  g.strokeStyle='#7a9a4a';g.lineWidth=2.4;g.lineCap='round';for(let k=0;k<26;k++){const a=-Math.PI+k/25*Math.PI,sx=x-6+Math.cos(a)*54,sy=b-140+Math.sin(a)*40,sw=Math.sin(t*1.1+k)*4;g.beginPath();g.moveTo(sx,sy);g.quadraticCurveTo(sx+sw+Math.cos(a)*10,sy+50,sx+sw*2+Math.cos(a)*14,b-20-(k%5)*14);g.stroke()}
+  g.restore()}
+function fPoplarN(g,x,b,h){g.save();g.fillStyle='#5a4a36';g.fillRect(x-3,b-h*.3,6,h*.3);g.fillStyle='#3e6234';g.beginPath();g.ellipse(x,b-h*.6,h*.12,h*.42,0,0,7);g.fill();g.fillStyle='rgba(120,160,80,.25)';g.beginPath();g.ellipse(x+5,b-h*.65,h*.05,h*.3,0,0,7);g.fill();g.restore()}
+function fReeds(g,x,b,t){g.save();g.lineCap='round';for(let k=0;k<9;k++){const xx=x-16+k*4,h=34+((k*37)%30),sw=Math.sin(t*1.6+k)*3;g.strokeStyle=k%3?'#6a7a3a':'#7a8a44';g.lineWidth=2;g.beginPath();g.moveTo(xx,b+6);g.quadraticCurveTo(xx+sw,b-h/2,xx+sw*2,b-h);g.stroke();
+  if(k%3===0){g.fillStyle='#5a3a22';g.beginPath();g.ellipse(xx+sw*2,b-h-4,2.4,7,0,0,7);g.fill()}}g.restore()}
+function fBench(g,x,b){g.save();g.fillStyle='#2e4a3a';g.fillRect(x-30,b-22,60,5);g.fillRect(x-30,b-40,60,4);g.fillRect(x-30,b-32,60,4);g.fillStyle='#222';g.fillRect(x-26,b-22,4,22);g.fillRect(x+22,b-22,4,22);g.fillRect(x-26,b-42,3,20);g.fillRect(x+23,b-42,3,20);g.restore()}
+function fLamp(g,x,b){g.save();g.fillStyle='#2a3030';g.fillRect(x-2,b-150,4,150);g.fillRect(x-6,b-6,12,6);g.beginPath();g.moveTo(x,b-150);g.quadraticCurveTo(x,b-162,x+16,b-160);g.lineTo(x+16,b-156);g.quadraticCurveTo(x+4,b-158,x+2,b-150);g.fill();
+  g.fillStyle='#e8e0c0';poly(g,[x+10,b-158,x+22,b-158,x+20,b-150,x+12,b-150]);g.fill();g.restore()}
+function fFisher(g,x,b,t){g.save();// pêcheur assis sur son pliant, au bord de l'eau
+  g.strokeStyle='#3a3a3a';g.lineWidth=2;g.beginPath();g.moveTo(x-12,b);g.lineTo(x+8,b-22);g.moveTo(x+8,b);g.lineTo(x-12,b-22);g.stroke();
+  g.fillStyle='#4a5a3a';rr(g,x-12,b-62,22,40,8);g.fill();g.fillStyle='#2a3a5a';g.fillRect(x-4,b-26,24,8);g.fillRect(x+16,b-26,6,26);
+  g.fillStyle='#e0b896';g.beginPath();g.arc(x+2,b-70,8,0,7);g.fill();g.fillStyle='#6a7a4a';g.beginPath();g.ellipse(x+2,b-76,12,4,0,0,7);g.fill();g.fillRect(x-5,b-84,14,8);
+  g.strokeStyle='#2a2a2a';g.lineWidth=1.6;g.beginPath();g.moveTo(x+12,b-40);g.lineTo(x+70,b-110);g.stroke();g.strokeStyle='rgba(230,230,230,.6)';g.lineWidth=.7;const by=b+18+Math.sin(t*2)*2;g.beginPath();g.moveTo(x+70,b-110);g.lineTo(x+86,by);g.stroke();
+  g.fillStyle='#e8402a';g.beginPath();g.arc(x+86,by,2.4,0,7);g.fill();g.fillStyle='#5a7a8a';rr(g,x-36,b-16,20,16,2);g.fill();g.restore()}
+function fCanoes(g,x,b){g.save();g.fillStyle='#4a3a2a';g.fillRect(x-40,b-70,4,70);g.fillRect(x+40,b-70,4,70);g.fillRect(x-42,b-40,88,4);g.fillRect(x-42,b-70,88,4);
+  for(const[y,c]of[[b-46,'#d8402a'],[b-76,'#e8c040']]){g.fillStyle=c;g.beginPath();g.ellipse(x+2,y,62,7,0,0,7);g.fill();g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x-40,y,84,2)}g.restore()}
+function fTent(g,x,b,t){g.save();// deux touristes sous la tente, une lampe frontale, une guitare
+  g.fillStyle='#3a7a6a';poly(g,[x-70,b,x,b-70,x+70,b]);g.fill();g.fillStyle='#2e6a5a';poly(g,[x,b-70,x+70,b,x+24,b]);g.fill();
+  g.fillStyle='#1e2a26';poly(g,[x-26,b,x,b-56,x+24,b]);g.fill();
+  g.fillStyle='#e8c09a';g.beginPath();g.arc(x-8,b-20,7,0,7);g.arc(x+9,b-18,7,0,7);g.fill();g.fillStyle='#6a3a2a';g.beginPath();g.arc(x-8,b-25,7,Math.PI,0);g.fill();g.fillStyle='#d8b060';g.beginPath();g.arc(x+9,b-23,7,Math.PI,0);g.fill();
+  g.fillStyle='#111';g.fillRect(x-11,b-21,2,2);g.fillRect(x-6,b-21,2,2);g.fillRect(x+6,b-19,2,2);g.fillRect(x+11,b-19,2,2);
+  g.fillStyle='rgba(255,250,200,.7)';g.beginPath();g.arc(x-8,b-27,2,0,7);g.fill();g.fillStyle='rgba(255,250,200,.12)';poly(g,[x-8,b-27,x+60,b-40,x+60,b-10]);g.fill();
+  g.fillStyle='#8a5a2a';g.beginPath();g.ellipse(x+40,b-14,10,8,0,0,7);g.fill();g.fillRect(x+44,b-40,4,26);
+  g.strokeStyle='#5a5a5a';g.lineWidth=1;g.beginPath();g.moveTo(x-70,b);g.lineTo(x-90,b-6);g.moveTo(x+70,b);g.lineTo(x+92,b-6);g.stroke();
+  g.fillStyle='#d8d0b8';rr(g,x-120,b-24,26,24,3);g.fill();g.fillStyle='#3a6aa0';g.fillRect(x-120,b-24,26,6);g.restore()}
+function fBike(g,x,b){g.save();g.strokeStyle='#2a2a2a';g.lineWidth=2;g.beginPath();g.arc(x-18,b-13,13,0,7);g.arc(x+18,b-13,13,0,7);g.stroke();g.strokeStyle='#b8302a';g.lineWidth=3;g.beginPath();g.moveTo(x-18,b-13);g.lineTo(x-2,b-34);g.lineTo(x+14,b-34);g.lineTo(x+18,b-13);g.moveTo(x-2,b-34);g.lineTo(x+2,b-13);g.lineTo(x-18,b-13);g.stroke();g.fillStyle='#222';g.fillRect(x-6,b-38,10,3);g.restore()}
+function fHay(g,x,b){g.save();g.fillStyle='#b89a50';g.beginPath();g.moveTo(x-46,b);g.quadraticCurveTo(x-48,b-60,x,b-84);g.quadraticCurveTo(x+48,b-60,x+46,b);g.closePath();g.fill();g.strokeStyle='rgba(120,90,40,.4)';g.lineWidth=1;for(let k=0;k<6;k++){g.beginPath();g.moveTo(x-44+k*6,b-10-k*10);g.quadraticCurveTo(x,b-20-k*12,x+44-k*6,b-10-k*10);g.stroke()}g.fillStyle='#8a7a3a';g.beginPath();g.ellipse(x,b-84,10,6,0,0,7);g.fill();g.restore()}
+function fWagon(g,x,b,t){g.save();// fourgon du train régimentaire, attelé, au repos
+  vxHorse(g,x+120,b,1.05,1,t*.1,{col:'#6a4428',rate:.3,traceTo:-70});
+  g.fillStyle='#5a4a30';g.fillRect(x-80,b-90,150,56);g.fillStyle='#d8ccae';g.beginPath();g.moveTo(x-84,b-90);g.quadraticCurveTo(x-5,b-150,x+74,b-90);g.closePath();g.fill();g.strokeStyle='rgba(90,70,40,.4)';for(let k=0;k<4;k++){g.beginPath();g.moveTo(x-60+k*40,b-90);g.quadraticCurveTo(x-55+k*40,b-130,x-50+k*40,b-136+Math.abs(k-1.5)*6);g.stroke()}
+  for(const wx of[x-50,x+40]){g.strokeStyle='#2e2014';g.lineWidth=4;g.beginPath();g.arc(wx,b-26,26,0,7);g.stroke();g.lineWidth=2;for(let a=0;a<6.28;a+=.63){g.beginPath();g.moveTo(wx,b-26);g.lineTo(wx+Math.cos(a)*26,b-26+Math.sin(a)*26);g.stroke()}}
+  g.fillStyle='#e8dcc0';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('142e R.I. · T.R.',x-5,b-60);g.restore()}
+function fRifles(g,x,b){g.save();g.strokeStyle='#5a3a22';g.lineWidth=3;for(const a of[-.32,0,.32]){g.beginPath();g.moveTo(x+Math.sin(a)*70,b);g.lineTo(x-Math.sin(a)*8,b-74);g.stroke()}g.strokeStyle='#b8bcc0';g.lineWidth=1.2;for(const a of[-.32,0,.32]){g.beginPath();g.moveTo(x-Math.sin(a)*8,b-74);g.lineTo(x-Math.sin(a)*14,b-96);g.stroke()}
+  g.fillStyle='#6a5a40';rr(g,x-30,b-18,24,18,4);g.fill();rr(g,x+8,b-16,22,16,4);g.fill();g.restore()}
+function fCrates(g,x,b){g.save();for(const[dx,dy]of[[-30,0],[10,0],[-10,-30]]){g.fillStyle='#6a5a36';g.fillRect(x+dx,b-30+dy,40,30);g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x+dx+6,b-30+dy,3,30);g.fillRect(x+dx+31,b-30+dy,3,30);g.fillStyle='#e8dcc0';g.font='6px '+F_DISP;g.textAlign='center';g.fillText('R.E.',x+dx+20,b-12+dy)}g.restore()}
+function fPole(g,x,b){g.save();g.fillStyle='#4a3a2a';g.fillRect(x-3,b-200,6,200);g.fillRect(x-24,b-190,48,4);g.fillStyle='#d8d8d0';for(const dx of[-20,-8,8,20]){g.beginPath();g.arc(x+dx,b-193,2.5,0,7);g.fill()}g.strokeStyle='rgba(30,30,30,.6)';g.lineWidth=1;g.beginPath();g.moveTo(x-20,b-193);g.quadraticCurveTo(x-300,b-150,x-640,b-193);g.moveTo(x+20,b-193);g.quadraticCurveTo(x+300,b-150,x+640,b-193);g.stroke();g.restore()}
+function fBivouac(g,x,b,t){g.save();// deux fantassins autour du feu (le feu lui-même est un danger, dessiné devant)
+  g.strokeStyle='#2a2018';g.lineWidth=3;g.beginPath();g.moveTo(x+90,b);g.lineTo(x+102,b-60);g.lineTo(x+114,b);g.moveTo(x+138,b);g.lineTo(x+126,b-60);g.lineTo(x+114,b);g.moveTo(x+102,b-58);g.lineTo(x+126,b-58);g.stroke();
+  for(const m of[{x:x-6,f:1,sk:1},{x:x+190,f:-1,sk:4}]){g.fillStyle='#6a5a40';rr(g,m.x-24,b-36,40,36,4);g.fill();
+    vxSoldier(g,{hip:{x:m.x,y:b-40},s:9.2,f:m.f,side:'fr14',capote:true,t,pose:Object.assign({},VX_P.sit,{lean:.18,nT:{x:3.4,y:.2},fT:{x:3.0,y:.6}}),kit:{musette:1},
+      face:{skin:VX_SKIN[m.sk],hair:VX_HAIR[m.sk],stache:'1914',helmet:'kepi',ex:'neutral',look:[.7,.3]}})}
+  g.restore()}
+function fFire(g,f,t){const x=f.x,b=FGR*T,h=f.h;g.save();
+  if(f.era===14){g.strokeStyle='#2a2018';g.lineWidth=2;g.beginPath();g.moveTo(x,b-74);g.lineTo(x,b-46);g.stroke();g.fillStyle='#2a2a2a';g.beginPath();g.moveTo(x-14,b-46);g.lineTo(x+14,b-46);g.lineTo(x+11,b-26);g.lineTo(x-11,b-26);g.closePath();g.fill()}
+  else{g.fillStyle='#7a7a74';for(let k=0;k<7;k++){g.beginPath();g.arc(x-24+k*8,b-3,5,0,7);g.fill()}}
+  g.strokeStyle='#3a2414';g.lineWidth=5;g.beginPath();g.moveTo(x-18,b-2);g.lineTo(x+16,b-10);g.moveTo(x+18,b-2);g.lineTo(x-14,b-10);g.stroke();
+  const gl=g.createRadialGradient(x,b-20,4,x,b-20,90+h);gl.addColorStop(0,'rgba(255,180,80,.35)');gl.addColorStop(1,'rgba(255,140,40,0)');g.fillStyle=gl;g.fillRect(x-160,b-200,320,210);
+  for(let k=0;k<5;k++){const w=14-k*2,hh=h*(1-k*.13)*(.85+.15*Math.sin(t*14+k*2)),ox=Math.sin(t*7+k)*3;g.fillStyle=['#c83a1a','#e8601e','#f08a2a','#f8b840','#fde08a'][k];
+    g.beginPath();g.moveTo(x-w+ox*.3,b-4);g.quadraticCurveTo(x-w*1.2,b-hh*.5,x+ox,b-hh);g.quadraticCurveTo(x+w*1.2,b-hh*.5,x+w+ox*.3,b-4);g.closePath();g.fill()}
+  if(f.flare)for(let k=0;k<4;k++){g.fillStyle='rgba(255,200,90,.8)';g.beginPath();g.arc(x+Math.sin(t*5+k*3)*14,b-h-10-((t*90+k*30)%60),1.8,0,7);g.fill()}
+  g.restore()}
 
 /* =========================================================
    RENDU EN JEU

@@ -82,6 +82,6 @@ LEVELS.push({w:3,name:"Le pont",theme:'ferte26',exit:'none',exitLabel:"",seed:11
  start:"La Marne, au petit matin. Un chemin de halage. Je connais cet endroit, et je ne sais pas d'où.",
  quips:["La Ferté-sous-Jouarre, dit un panneau. Le nom me chatouille quelque part sous les plumes."],
  signs:[],
- hints:[["ARTICLE 25 — LES BRUMES","En appuyant sur B, on peut partir dans des brumes de souvenirs que l'éclair semble avoir rendues possibles. Ce qui barre le chemin d'une époque n'existe pas forcément dans l'autre. On peut basculer en plein saut."]],
+ hints:[["ARTICLE 25 — LES BRUMES","En appuyant sur B, on peut partir dans des brumes de souvenirs."]],
  segs:[],segs14:[]  // construits par 11r_ferte.js
 });
