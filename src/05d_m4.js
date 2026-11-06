@@ -78,7 +78,7 @@ LEVELS.push({w:3,name:"L'orage",theme:'vaux',exit:'none',exitLabel:"",seed:109,v
 ############
 ############`]});
 
-LEVELS.push({w:3,name:"Le pont",theme:'ferte26',exit:'none',exitLabel:"",seed:113,ferte:true,
+LEVELS.push({w:3,name:"La Marne",theme:'ferte26',exit:'none',exitLabel:"",seed:113,ferte:true,
  start:"La Marne, au petit matin. Un chemin de halage. Je connais cet endroit, et je ne sais pas d'où.",
  quips:["La Ferté-sous-Jouarre, dit un panneau. Le nom me chatouille quelque part sous les plumes."],
  signs:[],
