@@ -496,9 +496,29 @@ function fPlane(g,x,b,old,broken){g.save();g.fillStyle='#6a6450';g.beginPath();g
   const cs=old?['#56663a','#62723f','#4a5a34']:['#3e6a34','#4c7a3a','#36602e'];
   for(const[dx,dy,r,i]of[[-50,-210,46,0],[44,-224,50,1],[0,-250,58,2],[-14,-196,40,1],[30,-190,36,0],[-70,-232,32,2],[70,-236,30,2]]){g.fillStyle=cs[i];g.beginPath();g.arc(x+dx,b+dy,r,0,7);g.fill()}
   g.fillStyle='rgba(255,245,200,.12)';g.beginPath();g.arc(x+12,b-268,34,0,7);g.fill();g.restore()}
-function fWillow(g,x,b,t){g.save();g.fillStyle='#5a4a36';g.beginPath();g.moveTo(x-12,b+4);g.quadraticCurveTo(x-6,b-60,x-18,b-120);g.lineTo(x+6,b-126);g.quadraticCurveTo(x+6,b-60,x+14,b+4);g.closePath();g.fill();
-  g.fillStyle='#6a8a44';g.beginPath();g.arc(x-6,b-140,56,Math.PI,0);g.fill();
-  g.strokeStyle='#7a9a4a';g.lineWidth=2.4;g.lineCap='round';for(let k=0;k<26;k++){const a=-Math.PI+k/25*Math.PI,sx=x-6+Math.cos(a)*54,sy=b-140+Math.sin(a)*40,sw=Math.sin(t*1.1+k)*4;g.beginPath();g.moveTo(sx,sy);g.quadraticCurveTo(sx+sw+Math.cos(a)*10,sy+50,sx+sw*2+Math.cos(a)*14,b-20-(k%5)*14);g.stroke()}
+function fWillow(g,x,b,t){// saule pleureur : tronc noueux qui se divise, branches en arc, rideaux de rameaux feuillus
+  const R=mulberry(4242);g.save();g.translate(x,b);g.lineCap='round';
+  const limbs=[[-88,-196,-40,-170],[-30,-226,-14,-180],[34,-222,18,-178],[92,-190,46,-162]];   // [bout x, bout y, contrôle x, contrôle y] depuis la fourche
+  const FX=4,FY=-112;
+  const strands=[];for(let i=0;i<78;i++){const L0=limbs[i%4],u=.35+R()*.65,ex=FX+(L0[0]-FX)*u,ey=FY+(L0[1]-FY)*u-Math.sin(u*Math.PI)*16;const out=Math.sign(ex-FX)||1;
+    strands.push({x0:ex+(R()-.5)*20,y0:ey+(R()-.5)*14,dx:out*(10+R()*26),y1:-18-R()*70,w:2+R()*1.6,col:R(),back:i%3===0,ph:R()*6})}
+  const strand=(s,dark)=>{const sw=Math.sin((t||0)*1.1+s.ph)*3,ex=s.x0+s.dx+sw*2;
+    g.strokeStyle=mix(dark?'#4e6a34':'#7a9c4a',dark?'#3a5428':'#9ab65a',s.col);g.lineWidth=s.w;g.beginPath();g.moveTo(s.x0,s.y0);g.quadraticCurveTo(s.x0+s.dx*.9,s.y0+10,ex,s.y1);g.stroke();
+    g.lineWidth=s.w+2.4;g.setLineDash([3,4]);g.strokeStyle=mix(dark?'#45602e':'#86a852',dark?'#344c24':'#a8c46a',1-s.col);g.beginPath();g.moveTo(s.x0,s.y0+6);g.quadraticCurveTo(s.x0+s.dx*.9,s.y0+16,ex,s.y1);g.stroke();g.setLineDash([])};
+  // rideau du fond (plus sombre)
+  for(const s of strands)if(s.back)strand(s,1);
+  // le tronc, l'écorce, la fourche
+  g.fillStyle='#5a4a36';g.beginPath();g.moveTo(-20,4);g.quadraticCurveTo(-10,-50,-14,-100);g.quadraticCurveTo(-4,-118,FX,FY);g.quadraticCurveTo(14,-118,20,-100);g.quadraticCurveTo(12,-50,22,4);g.closePath();g.fill();
+  g.fillStyle='#4a3c2c';g.beginPath();g.ellipse(0,2,28,6,0,0,7);g.fill();
+  g.strokeStyle='rgba(30,22,14,.45)';g.lineWidth=1.4;for(let k=0;k<7;k++){const xx=-12+k*4;g.beginPath();g.moveTo(xx,0);g.quadraticCurveTo(xx+(R()-.5)*6,-50,xx*.5+2,-104);g.stroke()}
+  g.strokeStyle='rgba(255,240,210,.12)';g.lineWidth=3;g.beginPath();g.moveTo(-14,-4);g.quadraticCurveTo(-8,-50,-10,-98);g.stroke();
+  for(const L0 of limbs){g.strokeStyle='#5a4a36';g.lineWidth=9;g.beginPath();g.moveTo(FX,FY+6);g.quadraticCurveTo(L0[2],L0[3],L0[0],L0[1]);g.stroke();g.strokeStyle='#4a3c2c';g.lineWidth=4;g.beginPath();g.moveTo(L0[2]*.7,L0[3]*.95);g.quadraticCurveTo(L0[0]*.9,L0[1]-4,L0[0]*1.1,L0[1]+8);g.stroke()}
+  // le houppier : des touffes de feuilles le long des branches, sans contour net
+  for(let k=0;k<46;k++){const L0=limbs[k%4],u=.4+R()*.7,cx=FX+(L0[0]-FX)*u+(R()-.5)*30,cy=FY+(L0[1]-FY)*u-Math.sin(Math.min(1,u)*Math.PI)*16+(R()-.5)*22;
+    g.fillStyle=mix('#5e7e3a','#8aac54',R());g.beginPath();g.ellipse(cx,cy,10+R()*12,6+R()*6,(R()-.5)*.8,0,7);g.fill()}
+  // rideau de devant
+  for(const s of strands)if(!s.back)strand(s,0);
+  g.fillStyle='rgba(255,250,210,.1)';g.beginPath();g.ellipse(-20,-200,50,18,-.2,0,7);g.fill();
   g.restore()}
 function fPoplarN(g,x,b,h){g.save();g.fillStyle='#5a4a36';g.fillRect(x-3,b-h*.3,6,h*.3);g.fillStyle='#3e6234';g.beginPath();g.ellipse(x,b-h*.6,h*.12,h*.42,0,0,7);g.fill();g.fillStyle='rgba(120,160,80,.25)';g.beginPath();g.ellipse(x+5,b-h*.65,h*.05,h*.3,0,0,7);g.fill();g.restore()}
 function fReeds(g,x,b,t){g.save();g.lineCap='round';for(let k=0;k<9;k++){const xx=x-16+k*4,h=34+((k*37)%30),sw=Math.sin(t*1.6+k)*3;g.strokeStyle=k%3?'#6a7a3a':'#7a8a44';g.lineWidth=2;g.beginPath();g.moveTo(xx,b+6);g.quadraticCurveTo(xx+sw,b-h/2,xx+sw*2,b-h);g.stroke();
@@ -649,8 +669,8 @@ function forestList(era){if(FFOREST[era])return FFOREST[era];const R=mulberry(er
   out.sort((a,b)=>a.row-b.row);return FFOREST[era]=out}
 function fForest(g,era,vis,b){const list=forestList(era),e14=era===14;let veiled=false;
   for(const tr of list){if(tr.row===1&&!veiled){veiled=true;g.fillStyle=rgba(L.th.fog,e14?.45:.4);g.fillRect(cam.x-60,cam.y-60,W+120,b-cam.y+60+2)}
-    if(!vis(tr.x-170,tr.x+170))continue;
-    fSpr(g,'arbre'+era+tr.v,340,520,170,505,tr.x,b+tr.dy,g2=>{
+    if(!vis(tr.x-230,tr.x+230))continue;
+    fSpr(g,'arbreB'+era+tr.v,460,520,230,505,tr.x,b+tr.dy,g2=>{
       if(tr.v==='grand'){g2.scale(1.5,1.5);fPlane(g2,0,0,e14)}else if(tr.v==='grand2'){g2.scale(1.25,1.3);fPlane(g2,0,0,e14)}else if(tr.v==='platane')fPlane(g2,0,0,e14);
       else if(tr.v==='peuplier'){fPoplarN(g2,-30,0,330);fPoplarN(g2,4,0,380);fPoplarN(g2,36,0,300)}else{g2.scale(1.3,1.3);fWillow(g2,0,0,0)}})}
   if(!veiled){}}

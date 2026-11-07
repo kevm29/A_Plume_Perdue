@@ -4,7 +4,7 @@
    ========================================================= */
 function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
-  if(st==='tente'||st==='seau'||st==='nain'||st==='linge'||st==='grain'||st==='bague'||st==='graffiti')return;
+  if(st==='tente'||st==='seau'||st==='nain'||st==='linge'||st==='grain'||st==='niche'||st==='bague'||st==='graffiti')return;
   if(st==='bal'){cMailbox(g,a.x,a.y,'BLANC');return}
   if(st==='poop'||st==='tyre'||st==='engine'||st==='beacon'||st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips'||st==='coffee'||st==='salad'||st==='fridge')return;
   if(st==='stump'){drawOldStump(g,a,t);return}

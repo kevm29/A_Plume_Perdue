@@ -52,6 +52,7 @@ function nearAct(){
   for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.when&&!a.when())continue;
     if(a.style==='helmet'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<36&&Math.abs(P.y+P.h/2-(a.y-92))<52)return{type:'secret',o:a};continue}
     if(a.style==='poop'){if(!a.used&&P.onGround&&Math.abs(a.x-pcx)<a.rx&&Math.abs(a.y-pb)<20)return{type:'secret',o:a};continue}
+    if(a.style==='linge'){if(!a.used&&Math.abs(a.x-pcx)<a.rx&&Math.abs(a.y-pb)<24)return{type:'secret',o:a};continue}
     if(a.style==='lamp'){if(!P.onGround&&Math.abs(a.x-pcx)<34&&Math.abs(P.y+P.h/2-a.ly)<40)return{type:'secret',o:a};continue}if(a.kind==='carton'&&L.carton){a.x=L.carton.x}if(Math.abs(a.x-pcx)<36&&Math.abs(a.y-pb)<40)return{type:a.kind,o:a}}
   return null;
 }

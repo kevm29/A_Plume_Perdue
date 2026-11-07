@@ -38,7 +38,7 @@ LEVELS.push((()=>{
   const C=x=>Math.floor(x/T0),block=(x0,x1,r0,r1)=>{for(let c=C(x0);c<=C(x1-1);c++)for(let r=r0;r<=r1;r++)g[r][c]='X'};
   const H=(x0,x1,h)=>block(x0,x1,G0-h,G0-1);
   // dehors : les îlots des pompes, les voitures garées
-  H(1950,2170,2);H(2260,2480,2);
+  H(1920,2200,1);H(2000,2120,2);H(2240,2480,1);H(2320,2400,2);   // capot et coffre : une case ; habitacle : deux
   // le bâtiment : plafond, murs et cloisons (portes : celle de la boutique est automatique)
   block(2800,12480,3,3);block(2760,2840,4,9);block(4760,4800,4,9);block(5560,5600,4,9);block(11000,11040,4,9);
   for(let r=4;r<=13;r++)if(r<5||r>7)g[r][C(12440)]='X';

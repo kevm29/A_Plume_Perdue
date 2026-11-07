@@ -24,8 +24,14 @@ function aireBuild(Lv){
      g.fillStyle='#1a1a1a';g.fillRect(p0+10,GY-74,22,12);g.fillRect(p0+44,GY-74,22,12);g.strokeStyle='#1a1a1a';g.lineWidth=3;g.beginPath();g.moveTo(p0+36,GY-60);g.quadraticCurveTo(p0+50,GY-30,p0+38,GY-20);g.stroke()}
    g.fillStyle='#2a2a2e';g.fillRect(1560,GY-180,4,180);g.fillStyle='#3a3020';poly(g,[1564,GY-178,1600,GY-160,1600,GY-90,1564,GY-80]);g.fill();g.fillStyle='#c8a050';g.beginPath();g.arc(1582,GY-128,10,0,7);g.fill()}
   // le parking : voitures garées, marquages
-  for(const[x0,x1,col]of[[1950,2170,'#3a5a8a'],[2260,2480,'#8a2a2a']]){const top=GY-80;g.fillStyle=col;rr(g,x0,top+30,x1-x0,36,10);g.fill();poly(g,[x0+30,top+32,x0+60,top,x1-60,top,x1-24,top+32]);g.fill();g.fillStyle='#1c2430';poly(g,[x0+40,top+30,x0+64,top+6,x1-64,top+6,x1-34,top+30]);g.fill();
-    for(const wx of[x0+40,x1-46]){g.fillStyle='#121214';g.beginPath();g.arc(wx,GY-14,16,0,7);g.fill()}}
+  for(const[x0,x1,c0,c1,col]of[[1920,2200,2000,2120,'#3a5a8a'],[2240,2480,2320,2400,'#8a2a2a']]){const hood=GY-40,roof=GY-80;
+    g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse((x0+x1)/2,GY+2,(x1-x0)/2+4,6,0,0,7);g.fill();
+    g.fillStyle=col;g.beginPath();g.moveTo(x0+4,GY-14);g.lineTo(x0,hood+12);g.quadraticCurveTo(x0,hood,x0+14,hood);g.lineTo(x1-14,hood);g.quadraticCurveTo(x1,hood,x1,hood+12);g.lineTo(x1-4,GY-14);g.closePath();g.fill();
+    poly(g,[c0-26,hood+1,c0,roof,c1,roof,c1+22,hood+1]);g.fill();
+    g.fillStyle='#1c2430';poly(g,[c0-16,hood,c0+4,roof+6,(c0+c1)/2-3,roof+6,(c0+c1)/2-3,hood]);g.fill();poly(g,[(c0+c1)/2+3,hood,(c0+c1)/2+3,roof+6,c1-4,roof+6,c1+12,hood]);g.fill();
+    g.fillStyle='rgba(255,255,255,.25)';g.fillRect(x0+8,hood+2,x1-x0-16,2);g.fillStyle=shade(col,-.3);g.fillRect(x0,hood+18,x1-x0,3);
+    g.fillStyle='#f2eec8';g.fillRect(x1-6,hood+6,6,7);g.fillStyle='#c83020';g.fillRect(x0,hood+6,5,7);
+    for(const wx of[x0+40,x1-40]){g.fillStyle='#121214';g.beginPath();g.arc(wx,GY-14,16,0,7);g.fill();g.fillStyle='#8a8e94';g.beginPath();g.arc(wx,GY-14,6,0,7);g.fill()}}
   // le bâtiment : façade, enseigne, intérieur (mur du fond éclairé), plafond, cloisons
   g.fillStyle='#d8d0c0';g.fillRect(AIN.IN0-60,CEIL-60,AIN.IN1-AIN.IN0+80,GY-CEIL+60);
   g.fillStyle='#2a2e36';g.fillRect(AIN.IN0-60,CEIL-70,AIN.IN1-AIN.IN0+80,80);g.fillStyle='#e0c040';g.fillRect(AIN.IN0-60,CEIL-6,AIN.IN1-AIN.IN0+80,10);
