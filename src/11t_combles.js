@@ -206,7 +206,7 @@ function cbViewBuild(){
     for(let k=0;k<6;k++){g.fillStyle=mix('#4e6e48','#3a5a38',R());g.beginPath();g.arc(x-30+k*52+R()*20,b+2,12+R()*8,0,7);g.fill()}}
   // les toits du village
   const rowY=[316,336,358,384,408];
-  rowY.forEach((y,i)=>{const s=.5+i*.2;for(let x=-20;x<W+20;){const w=(40+R()*50)*s,h=(18+R()*12)*s;
+  const drawRow=(y,i)=>{const s=.5+i*.2;for(let x=-20;x<W+20;){const w=(40+R()*50)*s,h=(18+R()*12)*s;
     if(y<330&&x>90&&x<330){x+=w;continue}
     if(i>=2&&x>CBV.mairie[0]-30&&x<CBV.mairie[1]+20){x+=w*.6;continue}
     if(i>=3&&x>CBV.place[0]&&x<CBV.place[1]){x+=w*.6;continue}
@@ -215,11 +215,13 @@ function cbViewBuild(){
     g.fillStyle='rgba(40,30,30,.35)';for(let k=0;k<2;k++)g.fillRect(x+w*(.2+k*.4),y,w*.14,h*.35);
     if(R()<.3){g.fillStyle='#8a6a5a';g.fillRect(x+w*.7,y-h*1.2,4*s,10*s)}
     x+=w+(2+R()*10)*s}
-    for(let k=0;k<4;k++){const x=R()*W;if(x>CBV.place[0]-20&&x<CBV.mairie[1]+20&&i>=2)continue;g.fillStyle=mix('#3e6a3a','#2a4a2a',R());g.beginPath();g.arc(x,y-10*s,12*s+R()*8*s,0,7);g.fill()}});
+    for(let k=0;k<4;k++){const x=R()*W;if(x>CBV.place[0]-20&&x<CBV.mairie[1]+20&&i>=2)continue;g.fillStyle=mix('#3e6a3a','#2a4a2a',R());g.beginPath();g.arc(x,y-10*s,12*s+R()*8*s,0,7);g.fill()}};
+  rowY.forEach((y,i)=>{if(i<3)drawRow(y,i)});
   // le seul bras du Grand Morin, avec son lavoir
   {const y=372;g.fillStyle='rgba(118,158,186,.95)';g.beginPath();g.moveTo(0,y);g.bezierCurveTo(240,y-6,420,y+8,W,y-2);g.lineTo(W,y+9);g.bezierCurveTo(420,y+17,240,y+3,0,y+9);g.closePath();g.fill();
     g.fillStyle='rgba(255,255,255,.4)';for(let x=10;x<W;x+=36)g.fillRect(x+R()*20,y+3,10,1.4);
     g.fillStyle='#7a5a3a';g.fillRect(250,y-6,64,8);g.fillStyle='#9a4a32';poly(g,[244,y-6,282,y-20,320,y-6]);g.fill()}
+  rowY.forEach((y,i)=>{if(i>=3)drawRow(y,i)});
   // la mairie : grande façade claire, avant-corps à fronton et horloge, toit d'ardoise à lucarnes, drapeau
   {const[x0,x1,b]=CBV.mairie,w=x1-x0,h=70;g.fillStyle='#e6dcc6';g.fillRect(x0,b-h,w,h);g.fillStyle='#b85a3a';for(let k=0;k<3;k++)g.fillRect(x0,b-h+k*24,w,3);
     g.fillStyle='#5a6070';poly(g,[x0-6,b-h,x0+16,b-h-28,x1-16,b-h-28,x1+6,b-h]);g.fill();

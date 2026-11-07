@@ -20,7 +20,7 @@ function menuItems(){
   if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:"Retour à l'accueil",act:askHome},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
   return[];
 }
-function selectOpen(i){if(S.infinite)return true;if(i===20)return true;if(i===21)return !!S.finished;return i<=S.unlocked}
+function selectOpen(i){if(S.infinite)return true;if(i===100)return true;if(i===101)return !!S.finished;if(LEVELS[i]&&LEVELS[i].provisoire)return true;return i<=S.unlocked}
 /* retour à l'accueil en pleine mission : l'avancement et les scores de la mission sont perdus */
 function abandonMission(){const w=LEVELS[G.li].w;for(let k=w*4;k<w*4+4;k++){delete S.run.stats[k];if(S.run.got)delete S.run.got[k]}S.resume=w*4;save();G.chase=false;goTitle()}
 function askHome(){G.confirm={prev:G.state,text:"Retourner à l'accueil ?",sub:"L'avancement et les points de cette mission seront perdus. Raymond reprendra au début de la mission."};G.state='confirm';G.confirmSel=0}
@@ -97,29 +97,30 @@ function renderSelect(t){
     else{ctx.font='italic 15px '+F_BODY;ctx.textAlign='center';ctx.fillText(top,x+w/2,yy+h/2+5)}
     ctx.restore();G.boxes.push({x,y:yy,w,h,i})};
   WORLDS.forEach((wd,wi)=>{
-    const y=86+wi*76;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`MISSION ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
+    const y=82+wi*64;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`MISSION ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
     wd.levels.forEach((ln,lj)=>{
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
       tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,ln);
       const b=S.best[li];if(b){ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';ctx.fillText((b.medal?'✠ ':'')+`paille ${b.corn}`,x+188,yy+16)}
     });
   });
-  tile(20,70,474,406,30,"Revoir l'introduction");
-  tile(21,484,474,406,30,'Revoir la fin');
+  tile(100,70,480,406,28,"Revoir l'introduction");
+  tile(101,484,480,406,28,'Revoir la fin');
   ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText((S.infinite?'Tous les niveaux sont ouverts · vies illimitées':'Les niveaux s\'ouvrent à mesure que Raymond avance')+' · Entrée pour partir · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){
   if(pressed.has('esc')||pressed.has('back')){goTitle();return}
   const s=G.sel;
-  if(pressed.has('left'))G.sel=s===21?20:s<20?Math.max(0,s-1):s;
-  if(pressed.has('right'))G.sel=s===20?21:s<20?Math.min(19,s+1):s;
-  if(pressed.has('up'))G.sel=s>=20?(s===20?16:19):Math.max(0,s-4);
-  if(pressed.has('down'))G.sel=s>=16&&s<20?(s%4<2?20:21):s<16?s+4:s;
+  const NL=LEVELS.length;
+  if(pressed.has('left'))G.sel=s===101?100:s<100?Math.max(0,s-1):s;
+  if(pressed.has('right'))G.sel=s===100?101:s<100?Math.min(NL-1,s+1):s;
+  if(pressed.has('up'))G.sel=s>=100?NL-1-((NL-1)%4)+(s===101?Math.min(3,(NL-1)%4):0):(s-4>=0?s-4:s);
+  if(pressed.has('down'))G.sel=s<100?(s+4<NL?s+4:(s%4<2?100:101)):s;
   const go=li=>{
     if(!selectOpen(li)){tone(200,.1,'square',.04);return}
-    if(li===20){startIntro();return}
-    if(li===21){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
+    if(li===100){startIntro();return}
+    if(li===101){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
     G.cutSeen=li>0;newRun();startLevel(li)};
   if(G.click)for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){go(b.i);return}
   if(pressed.has('ok'))go(G.sel);

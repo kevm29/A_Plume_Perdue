@@ -93,7 +93,7 @@ const LEVEL_SONGS={
   's2-3':{base:'zonerouge'},'s2-4':{base:'complainte',tr:-2,tempo:70,lead:['box'],bass:'soft'},
   's3-1':{base:'train'},'s3-2':{base:'gare'},'s3-3':{base:'tango'},'s3-4':{base:'cantique'},
   's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'orage',tempo:136,bass:'gallop'},'s4-3':{base:'orage',tr:-2,lead:['clar','pizz']},'s4-4':{base:'orage',tr:3,lead:['harpsi','box']},
-  's5-1':{base:'polka'},'s5-2':{base:'cantique',tr:-3,tempo:74,lead:['pipe','harpsi'],bass:'chorale'},'bal':{base:'valse',tempo:132,lead:['accord','box'],bass:'waltz'},'s5-3':{base:'galop',tr:2},'s5-4':{base:'title',tempo:64},
+  's5-1':{base:'polka'},'s5-2':{base:'cantique',tr:-3,tempo:74,lead:['pipe','harpsi'],bass:'chorale'},'bal':{base:'valse',tempo:132,lead:['accord','box'],bass:'waltz'},'s6-1':{base:'galop',tempo:168,lead:['accord','box'],bass:'soft'},'s5-3':{base:'galop',tr:2},'s5-4':{base:'title',tempo:64},
   'vx-nuit':{base:'nuitA4'},'vx-route':{base:'route1916'},'vx-chambree':{base:'chambree'},'vx-aube':{base:'aube'},'vx-vol':{base:'vol1916'},'vx-reveil':{base:'nuitA4',tempo:66,tr:-3,lead:['box'],bass:'soft'},
   'chase':{base:'galop'},'title':{base:'title'}
 };

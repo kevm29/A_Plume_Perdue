@@ -49,7 +49,7 @@ function startLevel(i){
   }else say(L.def.start,5);
   applyGot(i);if(S.infinite)S.run.usedInf=true;
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
-  V=null;if(L.def.vaux)vauxStart();
+  V=null;if(L.def.vaux)vauxStart();RN=null;if(L.def.runner)runnerStart();
 }
 function resetPlayer(){
   P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;P.ride=null;P.lift=0;P.hideIn=null;P.carried=null;

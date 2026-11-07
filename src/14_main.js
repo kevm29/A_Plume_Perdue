@@ -50,6 +50,7 @@ function update(dt){
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
+      if(runnerActive()){runnerUpdate(dt);break}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
@@ -93,6 +94,7 @@ function render(){
     case'levelend':renderLetter(t);renderGrain();break;
     case'play':case'pause':case'exiting':case'confirm':{
       if(vauxActive()){vauxRender(t);vauxOverlays();break}
+      if(runnerActive()){runnerRender(t);vauxOverlays();break}
       const sx=(rnd()-.5)*G.shake,sy=(rnd()-.5)*G.shake;
       const cx=Math.round(cam.x+sx),cy=Math.round(cam.y+sy);
       renderWorld(L,cx,cy,t);

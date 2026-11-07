@@ -117,3 +117,7 @@ Vient alors la dernière lecture, les quatre derniers morceaux, jusqu'à « Je t
 ## À retravailler (prévu)
 
 Les fragments de la lettre reprennent la première version. Il faudra les réécrire pour que l'on ressente davantage la peur de Lucien, sa tristesse, et son geste : il protège Marguerite en la poussant vers un autre.
+
+## Mission 6 (provisoire)
+
+- **6-1, le marché** (niveau d'essai, rangé à part pour ne rien déranger) : un niveau vu de face. Une caméra « go-pro » posée devant Raymond, à hauteur de pigeon, filme en selfie ; il court vers nous, le décor défile, sa tête va et vient comme celle d'un pigeon. Gauche/droite pour se placer, saut et un battement d'ailes. Le marché : chalets (churros, charcuterie, bijoux, fromages…), jambes des passants entre lesquelles on se faufile, gens qui traversent ou viennent en face, le chien qui aboie et passe d'un côté à l'autre, un landau. Les caisses bouchent la rue : on saute sur le comptoir de la charcuterie, la main du charcutier le balaie d'avant en arrière. Le manège tourne à l'envers : on avance moins vite, entre les poteaux et les chevaux qui montent et descendent. Les bancs, les pieds des gens assis, un gamin qui court. La fontaine : la caméra s'arrête et prend de la hauteur ; la margelle, la vasque, et tout en haut, en sécurité.
