@@ -141,7 +141,7 @@ function drawMechBack(t){
   const vis=x=>x>cam.x-160&&x<cam.x+W+160;
   // sol qui s'effondre
   for(const k of L.crumbles){if(k.state==='gone'||!vis(k.c*T))continue;const x=k.c*T+(k.state==='shake'?Math.sin(t*70)*2:0),y=k.r*T;
-    g0crumble(ctx,x,y,k.state==='shake'?k.t:0)}
+    if(L.cb)cbCrumble(ctx,x,y,k.state==='shake'?k.t:0);else g0crumble(ctx,x,y,k.state==='shake'?k.t:0)}
   // volets
   for(const s of L.shutters){const x=s.c*T,y=s.r*T;if(!vis(x))continue;const open=shutterOpen(s.c),soon=shutterSoon(s.c);
     ctx.save();if(open){ctx.fillStyle=soon?'#4f6a5a':'#3a6a5a';rr(ctx,x,y,T,10,2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(x,y,T,2);ctx.fillStyle='rgba(0,0,0,.3)';for(let k=6;k<T;k+=8)ctx.fillRect(x+k,y+2,1.5,7);

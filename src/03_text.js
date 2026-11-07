@@ -83,6 +83,8 @@ const DEATH_Q={
   tondeuse:["La tondeuse toute seule. Une machine qui tond sans personne. Tout fout le camp.","Happé par la tondeuse automatique. Je n'ai pas compris qui la conduisait."],
   ecureuil:["Un écureuil m'est tombé dessus. Il descendait chercher une noisette. Je n'étais pas une noisette.","Percuté par un écureuil pressé. Il fallait passer quand il remontait."],
   poisson:["Un poisson m'a sauté au bec. On n'attend pas d'un poisson qu'il vole. Lui non plus, sans doute.","Fauché par une carpe en plein saut. La Marne a de l'humour."],
+  hibou:["Un hibou. Il fond sans un bruit sur tout ce qui bouge. J'ai bougé.","Emporté par un hibou. Il m'a pris pour un mulot. C'est vexant, pour un sergent."],
+  voute:["Passé par un trou de la voûte. En bas, la nef, et des bancs très durs.","Tombé dans la nef. Pendant la messe, peut-être. Quelle tenue !"],
   pie:["La pie. Elle vole tout ce qui brille. Visiblement, aussi les pigeons.","Bousculée par une pie. Elle jacasse encore."],
   gerbe:["Une gerbe d'obus. La Marne s'est levée d'un coup et m'a retourné.","Un obus dans l'eau. Il fallait regarder où la rivière frémissait."],
   drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
@@ -155,5 +157,5 @@ const WORLDS=[
   {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
   {name:"Le cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
   {name:"L'A4 sous l'orage",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","La Marne"]},
-  {name:"Crécy-la-Chapelle",levels:["Le pigeonnier","Le clocher","La buse","Le cimetière"]}
+  {name:"Crécy-la-Chapelle",levels:["Le pigeonnier","Les combles","La buse","Le cimetière"]}
 ];

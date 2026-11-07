@@ -162,7 +162,7 @@ function mechAfterMove(dt,vyBefore){
   {const k=a4AfterMove();if(k)return k}
   {const k=aireAfterMove();if(k)return k}
   {const k=ferteAfterMove();if(k)return k}
-  {const k=crecyAfterMove();if(k)return k}
+  {const k=crecyAfterMove();if(k)return k}{const k=comblesAfterMove();if(k)return k}
   return null;
 }
 /* ---------- collisions mortelles ---------- */
