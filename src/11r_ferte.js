@@ -182,7 +182,7 @@ function ferteStep(dt){
   // la nomination (1914, à l'emplacement de la guinguette)
   // en 1914, Raymond se souvient de sa mission
   if(F.era===14&&!P.dead){
-    if(!F.said.ordres&&P.x>150*T){F.said.ordres=1;say("Lucien m'a glissé un pli dans le tube : des ordres pour l'état-major du régiment, sans doute, cantonné près de Saint-Siméon. Je dois rentrer au colombier, chez Marguerite.",5)}
+    if(!F.said.ordres&&P.x>150*T){F.said.ordres=1;say("Lucien m'a glissé un pli dans le tube : des ordres pour l'état-major du régiment, sans doute, cantonné près de Crécy-la-Chapelle. Je dois rentrer au colombier, chez Marguerite.",5)}
     if(!F.said.pli&&P.x>311*T){F.said.pli=1;say("Ce qu'il y a dans le pli ? Je n'en sais rien. Un pigeon ne lit pas le courrier. Il le porte.",4)}}
 }
 function splashF(x,y,big){for(let i=0;i<(big?26:10);i++){parts.push({type:'dust',x:x+(rnd()-.5)*(big?40:14),y,vx:(rnd()-.5)*(big?260:90),vy:-(big?260:120)-rnd()*(big?300:120),life:0,max:.6+rnd()*.5})}}

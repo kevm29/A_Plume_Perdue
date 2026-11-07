@@ -31,7 +31,7 @@ function songKey(i){const d=LEVELS[i];return's'+(d.w+1)+'-'+(i%4+1)}
 function startLevel(i){
   computeRS();
   G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
-  MUS_OLD=false;if(L.ferte)ferteLayers();
+  MUS_OLD=false;if(L.ferte)ferteLayers();if(L.crecy)L.tiles=crecyTiles();
   {const tb=document.getElementById('tb');if(tb)tb.classList.toggle('ferte',!!L.ferte)}
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
   setSong(songKey(i));loopsOff();
@@ -73,7 +73,7 @@ function die(kind,tiles){
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
   puff(cx,cy,30,true);puff(cx,cy,10,false);parts.push({type:'ring',x:cx,y:cy,life:0,max:.45});
   if(kind==='cat'){meow(.9,true);}
-  if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=L.ferte?ferteTiles(L.ferte.era):buildTilesF(L)}
+  if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=L.ferte?ferteTiles(L.ferte.era):L.crecy?crecyTiles():buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
 const TORN_Q=["Mon aile gauche vient de déposer un préavis de grève.","Ça craque aux coutures. Des coutures ? Depuis quand j'ai des coutures, moi ?","Elle se décroche ! Non. Si. Presque. Ne plus bouger d'une plume.",
@@ -223,7 +223,7 @@ function stepPlay(dt){
   for(const c of L.rats){if(c.dead||c.runner)continue;const ch=tile(Math.floor((c.x+c.w/2)/T),Math.floor((c.y+c.h-2)/T));if(c.y>ROWS*T+40||ch==='^'){c.dead=true;if(!G.sim&&ch==='^'){puff(c.x+c.w/2,c.y,8,false);if(L.th.spike==='obus')obusBoom(c.x+c.w/2,c.y+c.h)}}}
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);trainStep(dt);gareStep(dt);langletStep(dt);facadeStep(dt);a4Step(dt);aireStep(dt);ferteStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
+  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);trainStep(dt);gareStep(dt);langletStep(dt);facadeStep(dt);a4Step(dt);aireStep(dt);ferteStep(dt);crecyStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}

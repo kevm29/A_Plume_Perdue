@@ -232,7 +232,7 @@ function buildFar(L){
   if(yOff>0){const sk=g.createLinearGradient(0,0,0,yOff+60);const top=L.th.outdoor?L.th.sky[0]:shade(L.th.fog,-.1);sk.addColorStop(0,mix(top,'#000000',.25));sk.addColorStop(1,top);g.fillStyle=sk;g.fillRect(0,0,wpx,yOff+60);
     if(L.th.outdoor&&L.th.stars){const R2=mulberry(L.def.seed+77);g.fillStyle='rgba(255,255,255,.55)';for(let k=0;k<wpx*yOff/2500;k++)g.fillRect(R2()*wpx,R2()*yOff,1.2,1.2)}}
   g.translate(0,Math.max(0,yOff));
-  if(L.th.far==='gareReims')gareFar(L,g,wpx,R);else if(L.th.far==='langlet')langletFar(L,g,wpx,R);else if(L.th.far==='facade')facadeFar(L,g,wpx,R);else if(L.th.far==='ferte')ferteFar(L,g,wpx,R);else if(L.th.outdoor)buildOutdoorFar(L,g,wpx,600,R);else buildInteriorFar(L,g,wpx,600,R);
+  if(L.th.far==='gareReims')gareFar(L,g,wpx,R);else if(L.th.far==='langlet')langletFar(L,g,wpx,R);else if(L.th.far==='facade')facadeFar(L,g,wpx,R);else if(L.th.far==='ferte')ferteFar(L,g,wpx,R);else if(L.th.far==='crecy')crecyFar(L,g,wpx,R);else if(L.th.outdoor)buildOutdoorFar(L,g,wpx,600,R);else buildInteriorFar(L,g,wpx,600,R);
   for(const tb of L.turbines)tb.y+=Math.max(0,yOff);
   bakeFog(g,L.th,wpx,'source-over');
   return c;
@@ -250,6 +250,7 @@ function buildMid(L){
   if(th.far==='gareReims'){gareMid(L,g,wpx,R);x=wpx}
   if(th.far==='langlet'||th.far==='facade')x=wpx;
   if(th.far==='ferte'){ferteMidLayer(L,g,wpx,R);x=wpx}
+  if(th.far==='crecy'){crecyMidLayer(L,g,wpx,R);x=wpx}
   while(x<wpx){
     const k=R();
     g.fillStyle=base;g.strokeStyle=rim;g.lineWidth=2;

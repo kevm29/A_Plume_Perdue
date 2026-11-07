@@ -74,6 +74,13 @@ const DEATH_Q={
   serveur:["Un coup de torchon. Le serveur n'aime pas les pigeons au comptoir.","Chassé du bar comme un client sans le sou."],
   rails:["Tombé sous le train. Le règlement ne prévoit même pas ce cas.","Entre les wagons, il n'y a que les rails. Et maintenant moi."],
   elec:["Une décharge ! Ma paille fume. Ça sent le foin grillé.","Le fil de fer était chargé comme un canon. Je le saurai."],
+  chien:["Le chien. La chaîne était plus longue que je ne pensais. Ou c'est moi qui suis plus court.","Mordu. Il fallait regarder où l'herbe est usée : c'est là qu'il peut aller."],
+  chat:["Un coup de patte. Le chat ne bouge pas de son mur ; il attend les pigeons qui passent trop près.","Le chat m'a fauché. Il n'a même pas ouvert les deux yeux."],
+  heron:["Le héron. Il m'a pris pour un gardon. Vexant.","Un coup de bec de héron. Il frappe à intervalles réguliers, comme un mortier."],
+  ballon:["Un ballon en pleine tête. Lucarne. But.","Le ballon. Ils ont tiré au ras du sol, cette fois."],
+  enfant:["Bousculé par un gamin. Il ne m'a même pas vu.","Un enfant m'a percuté. Ils courent partout, ces petits."],
+  velo:["Le vélo. Il avait sonné, pourtant. Deux fois.","Écrasé par un vélo. Le casque, c'était pour lui, pas pour moi."],
+  tondeuse:["La tondeuse toute seule. Une machine qui tond sans personne. Tout fout le camp.","Happé par la tondeuse automatique. Je n'ai pas compris qui la conduisait."],
   ecureuil:["Un écureuil m'est tombé dessus. Il descendait chercher une noisette. Je n'étais pas une noisette.","Percuté par un écureuil pressé. Il fallait passer quand il remontait."],
   poisson:["Un poisson m'a sauté au bec. On n'attend pas d'un poisson qu'il vole. Lui non plus, sans doute.","Fauché par une carpe en plein saut. La Marne a de l'humour."],
   pie:["La pie. Elle vole tout ce qui brille. Visiblement, aussi les pigeons.","Bousculée par une pie. Elle jacasse encore."],
@@ -95,10 +102,10 @@ const INTRO=[
 const WORLD_CARDS=[
   null,
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
-   {t:"Direction l'ouest : le pigeonnier Vasseur, à Saint-Siméon.\nIl connaît le chemin. Il l'a toujours connu."},
+   {t:"Direction l'ouest : le pigeonnier Vasseur, à Crécy-la-Chapelle.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
    {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Raymond doit rentrer au pigeonnier Vasseur, à Saint-Siméon.\nMais il ne reconnaît plus le pays."},
+  [{t:"Raymond doit rentrer au pigeonnier Vasseur, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
    {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
    {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
@@ -107,7 +114,7 @@ const WORLD_CARDS=[
    {t:"Il décide d'y filer. Une route immense, sans chevaux ni soldats,\noù des lumières roulent toute la nuit."},
    {title:"MISSION 4 · L'A4",t:"C'est l'A4. Il fait nuit, et les camions roulent vite."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
-   {title:"MISSION 5 · SAINT-SIMÉON",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
+   {title:"MISSION 5 · CRÉCY-LA-CHAPELLE",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
 const ENDING=[
   {t:"Cent dix ans. Aucun pigeon ne vit cent dix ans."},
@@ -148,5 +155,5 @@ const WORLDS=[
   {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
   {name:"Le cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
   {name:"L'A4 sous l'orage",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","La Marne"]},
-  {name:"Saint-Siméon",levels:["La fête du village","Le clocher","La buse","Le cimetière"]}
+  {name:"Crécy-la-Chapelle",levels:["Le pigeonnier","Le clocher","La buse","Le cimetière"]}
 ];
