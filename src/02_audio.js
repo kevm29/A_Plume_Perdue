@@ -266,7 +266,7 @@ const SFX={
   screech(){formantCry({d:.75,v:.5,f:[[0,2300],[.2,2600],[1,1300]],vib:[22,40],formants:[[[[0,2600],[1,1600]],4,1]]})},
   buzz(){formantCry({d:.3,v:.18,f:[[0,230],[1,250]],vib:[60,30],formants:[[[[0,900],[1,900]],2,1]]})},
   bag(){noise(.14,3200,.12,'highpass',0,.5)},
-  bell(){if(!AC||S.muted)return;const t=AC.currentTime,f=196;[[1,.4],[2.0,.25],[2.76,.18],[5.4,.08],[.5,.2]].forEach(([k,v])=>{const g=AC.createGain();g.connect(sGain);env(g,t,v,.005,0,3.2);osc('sine',f*k,t,t+3.4,g)})},
+  bell(){if(!AC||S.muted)return;const t=AC.currentTime,f=196;[[1,.2],[2.0,.125],[2.76,.09],[5.4,.04],[.5,.1]].forEach(([k,v])=>{const g=AC.createGain();g.connect(sGain);env(g,t,v,.005,0,3.2);osc('sine',f*k,t,t+3.4,g)})},
   flutter(){noise(.1,2400,.05,'bandpass',0,2);noise(.08,2000,.04,'bandpass',.06,2)},
   page(){noise(.25,3200,.18,'highpass')},
   tick(){tone(1200,.04,'square',.03)},

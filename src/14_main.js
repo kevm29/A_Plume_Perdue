@@ -52,6 +52,7 @@ function update(dt){
       if(vauxActive()){vauxUpdate(dt);break}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
+      if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
       if(L.cb&&L.cb.end&&(pressed.has('act')||pressed.has('jump')))comblesSkip();
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
       if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn()}

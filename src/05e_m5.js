@@ -8,7 +8,7 @@ LEVELS.push({w:4,name:"Le pigeonnier",theme:'crecy',exit:'none',exitLabel:"",see
 });
 LEVELS.push({w:4,name:"Les combles",theme:'combles',exit:'none',exitLabel:"",seed:131,rows:24,camY:.55,combles:true,
  start:"Les combles de l'église. Tout en haut, il y aura bien un trou dans le toit. De là, je verrai toute la commune.",
- hints:[["ARTICLE 23 — LA CLOCHE","Elle se balance toujours au même rythme. À chaque coup, l'onde repousse tout ce qui est trop près."]],
+ hints:[["LES COMBLES","B : septembre 1914. La charpente n'était pas tout à fait la même."],["ARTICLE 23 — LA CLOCHE","Elle se balance toujours au même rythme. À chaque coup, l'onde repousse tout ce qui est trop près."]],
  quips:[],signs:[],
  segs:[]  // construits par 11t_combles.js
 });
@@ -144,7 +144,7 @@ LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',seed:139,
 ######################`]});
 
 /* une cachette secrète par niveau (le 1-1 a la sienne : la porte du voleur) */
-const SECRETS={3:[116,9],11:[36,19],14:[110,9],15:[260,11],16:[229,11],17:[29,13],18:[171,7],19:[79,7]};
+const SECRETS={3:[116,9],11:[36,19],14:[110,9],15:[260,11],16:[229,11],18:[171,7],19:[79,7]};
 LEVELS.forEach((l,i)=>{if(SECRETS[i])l.secretAt=SECRETS[i]});
 /* une seule médaille par mission : au 1-1 (la première vie), puis au deuxième niveau de chaque mission */
 LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=4&&i%4===1)});

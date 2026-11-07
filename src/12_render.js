@@ -140,7 +140,7 @@ function renderWeather(th,cx,t){
   if(G.flash>0){ctx.fillStyle='rgba(225,235,255,'+(G.flash*.45)+')';ctx.fillRect(0,0,W,H)}
 }
 function drawForeground(cx,seed,th){
-  if(th.far==='train'||th.far==='gareReims'||th.far==='langlet'||th.far==='facade'||th.noFore)return;
+  if(th.far==='train'||th.far==='gareReims'||th.far==='langlet'||th.far==='facade'||th.far==='combles'||th.noFore)return;
   const R=mulberry(seed);const pf=1.35;
   ctx.save();ctx.fillStyle=th.outdoor?mix(th.sky[0],'#000000',.75):'#07060a';
   for(let i=0;i<14;i++){
