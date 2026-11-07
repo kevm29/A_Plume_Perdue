@@ -51,6 +51,7 @@ function update(dt){
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
+      if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
       if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn()}
       if(pressed.has('jump')&&!G.cut)P.jumpBuf=.12;
@@ -104,7 +105,7 @@ function render(){
       renderLighting(L,cx,cy,t,extra);
       renderWeather(L.th,cx,t);
       drawForeground(cx,L.def.seed,L.th);
-      if(L.ferte)ferteOverlay(t);
+      if(L.ferte)ferteOverlay(t);if(L.crecy)crecyOverlay(t);
       renderGrain();
       if(!G.cut)renderHUD();else drawQuip(66);
       if(G.cut){ctx.fillStyle='rgba(0,0,0,.88)';ctx.fillRect(0,0,W,46);ctx.fillRect(0,H-46,W,46);if(G.cut.t>1){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('appuyer pour passer',W-20,H-18)}}

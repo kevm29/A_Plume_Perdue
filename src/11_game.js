@@ -299,7 +299,7 @@ function stepPlay(dt){
 }
 function wakeChaser(K){
   G.chase=true;setSong('chase');
-  if(K.type==='cat'){K.state='wake';K.wakeT=.9;K.meowT=2.4;if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),250)}say("Bijou est réveillé. Règlement, article 3 : en cas de chat, courir.",3.4)}
+  if(K.type==='cat'){K.state='wake';K.wakeT=.9;K.meowT=2.4;if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),250)}say(L.def.catWake||"Bijou est réveillé. Règlement, article 3 : en cas de chat, courir.",3.4)}
   else if(K.type==='guardnet'){K.state='wake';K.wakeT=1.1;if(!G.sim)SFX.whistle();bubble(K.x+K.w/2,K.y-16,'Un papillon ! Un gros !','#2a3a5a');say(L.def.chaseQuip||'',3.6)}
   else if(K.type==='sweeper'){K.state='wake';K.wakeT=.8;if(!G.sim)SFX.honk();say(L.def.chaseQuip||'',3.6)}
   else if(K.type==='bigrat'){K.state='wake';K.wakeT=.8;if(!G.sim){noise(.35,1400,.18,'bandpass');tone(180,.25,'sawtooth',.05)}say(L.def.chaseQuip||'',3.8)}
@@ -309,8 +309,9 @@ function wakeChaser(K){
 function stepChaser(K,dt,pcx,pcy){
   K.t+=dt;
   if(K.type==='guardnet'||K.type==='sweeper'){stepGroundChaser(K,dt,pcx,pcy);return}
+  if(K.type==='cat'&&K.state==='gone'){K.vx=0;K.f=pcx>K.x?1:-1;return}
   if(K.type==='bigrat'&&(K.state==='gone'||K.state==='dead')){if(K.state==='gone'){K.x-=380*dt;K.f=-1;if(K.x<cam.x-200)K.state='dead'}return}
-  if(K.type==='bigrat'&&K.state==='chase'&&L.def.chaseEnd&&pcx>L.def.chaseEnd){K.state='gone';G.chase=false;setSong(songKey(G.li));if(!G.sim)say(L.def.chaseEndQuip||'',3.8);return}
+  if((K.type==='bigrat'||K.type==='cat')&&K.state==='chase'&&L.def.chaseEnd&&pcx>L.def.chaseEnd){K.state='gone';G.chase=false;setSong(songKey(G.li));if(!G.sim)say(L.def.chaseEndQuip||'',3.8);return}
   if(K.type==='cat'||K.type==='bigrat'){
     if(K.state==='wake'){K.wakeT-=dt;if(K.wakeT<=0)K.state='chase'}
     if(K.state!=='chase')return;

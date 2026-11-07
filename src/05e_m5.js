@@ -2,6 +2,7 @@
 LEVELS.push({w:4,name:"Le pigeonnier",theme:'crecy',exit:'none',exitLabel:"",seed:127,crecy:true,
  start:"Crécy-la-Chapelle. Enfin dans la commune ! Des canaux partout, des lavoirs, des passerelles. Le pigeonnier Vasseur est par là, quelque part.",
  hints:[],quips:[],signs:[],
+ catWake:"Un chat. Un vrai, un chasseur. Il m'a vu. Règlement, article 3 : en cas de chat, courir.",chaseEnd:139*T,chaseEndQuip:"Il s'arrête net devant la pancarte « Attention au chien ». Lui aussi sait lire.",
  exitLines:[["RAYMOND","La maison Vasseur. Les volets sont neufs. Il y a une voiture devant.",4.2],["RAYMOND","Mais… où est le pigeonnier ? Un garage. On a mis un garage à la place du pigeonnier !",4.2],["RAYMOND","Bon. Le clocher. De là-haut, je trouverai bien où ils ont mis mes collègues.",4]],
  segs:[]  // construits par 11s_crecy.js
 });
