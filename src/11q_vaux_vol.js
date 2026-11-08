@@ -67,7 +67,7 @@ function vfInit(first){
   VF.hm=new Float32Array(VF.hm0);vfPeople();
   const s=V.s;Object.assign(s,{x:VF.X0,cx:VF.X0-VF.BX,bx:VF.BX,bxv:0,y:330,sp:225,vy:-260,fph:0,dead:0,grace:1.1,shells:[],booms:[],bullets:[],gshells:[],poops:[],splats:[],shellT:1.2,said:{},trig:{},fr:{shots:0,t:-1},fall:null,wound:0,heart:0,cosT:.4});
   V.sc='flight';V.t=0;V.parts=[];V.bub=[];
-  if(first){say("Libre ! L'ouest, c'est par là. Le pigeonnier Fontaine, c'est par là.",3.6)}
+  if(first){say("Libre ! L'ouest, c'est par là. Le pigeonnier Vasseur, c'est par là.",3.6)}
 }
 function vfCrash(why){const s=V.s;if(s.dead>0||s.fall||VF.god)return;s.why=why;s.dead=1.25;s.dvy=-120;s.drot=0;G.levelDeaths++;gotOf(G.li).d++;save();
   if(!G.sim){noise(.4,900,.5,'bandpass');tone(700,.3,'sine',.08,200)}V.shake=Math.max(V.shake,8);

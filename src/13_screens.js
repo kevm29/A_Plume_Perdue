@@ -133,7 +133,7 @@ function drawTombCard(t){
   ctx.fillStyle='rgba(30,30,34,.85)';ctx.textAlign='center';ctx.font='26px '+F_DISP;ctx.fillText('FAMILLE GARNIER',0,-104);
   ctx.fillRect(-60,-92,120,1.5);
   ctx.font='22px '+F_DISP;ctx.fillText('Joseph GARNIER',0,-60);ctx.font='18px '+F_DISP;ctx.fillText('1893 – 1958',0,-36);
-  ctx.font='22px '+F_DISP;ctx.fillText('Marguerite GARNIER',0,6);ctx.font='italic 17px '+F_BODY;ctx.fillText('née Fontaine',0,28);ctx.font='18px '+F_DISP;ctx.fillText('1897 – 1989',0,52);
+  ctx.font='22px '+F_DISP;ctx.fillText('Marguerite GARNIER',0,6);ctx.font='italic 17px '+F_BODY;ctx.fillText('née Fontaine',0,28);ctx.font='18px '+F_DISP;ctx.fillText('1896 – 1989',0,52);
   for(let k=0;k<9;k++){ctx.fillStyle=['#c8302a','#e9dfc7','#d9a441'][k%3];ctx.beginPath();ctx.arc(-140+k*35,96,7,0,7);ctx.fill()}
   ctx.restore();
 }
@@ -184,7 +184,7 @@ function drawFinaleCard(ct){
   engrave('FAMILLE GARNIER',0,stTop+50,'15px '+F_DISP);
   ctx.fillStyle='#c8a75e';ctx.fillRect(-40,stTop+58,80,1);
   engrave('Joseph GARNIER',0,stTop+88,'12px '+F_DISP);engrave('1893 – 1958',0,stTop+104,'10px '+F_DISP);
-  engrave('Marguerite GARNIER',0,stTop+134,'12px '+F_DISP);engrave('née FONTAINE',0,stTop+148,'italic 9.5px '+F_BODY);engrave('1897 – 1989',0,stTop+164,'10px '+F_DISP);
+  engrave('Marguerite GARNIER',0,stTop+134,'12px '+F_DISP);engrave('née FONTAINE',0,stTop+148,'italic 9.5px '+F_BODY);engrave('1896 – 1989',0,stTop+164,'10px '+F_DISP);
   // plaque en porcelaine
   ctx.fillStyle='#d8d2c4';rr(ctx,-30,stTop+186,60,26,4);ctx.fill();ctx.strokeStyle='#8a7a52';ctx.lineWidth=1;rr(ctx,-28,stTop+188,56,22,3);ctx.stroke();
   ctx.fillStyle='#4a3e2e';ctx.font='italic 7px '+F_BODY;ctx.fillText('À nos parents',0,stTop+199);ctx.fillText('regrettés',0,stTop+207);
@@ -338,7 +338,12 @@ function handleCards(dt){
 }
 function finishCards(){const f=G.cardsDone;G.cardsDone=null;f&&f()}
 /* lettre de Lucien */
-function tokens(text){return text.split(' ').map(w=>{const s=/^~.*~[.,]?$/.test(w);return{w:w.replace(/~/g,''),s}})}
+/* mots de la lettre : ~…~ = passage rayé (sur plusieurs mots), \n = retour à la ligne */
+function tokens(text){const out=[];let on=false;
+  for(const line of text.split('\n').map((l,k)=>[l,k])){if(line[1]>0)out.push({w:'',br:true});
+    for(const w of line[0].split(' ')){if(!w)continue;const st=w.startsWith('~');if(st)on=true;const s=on;if(w.replace(/[.,!?…]+$/,'').endsWith('~'))on=false;out.push({w:w.replace(/~/g,''),s})}}
+  return out}
+function letterToks(li){const l=LEVELS[li].letter;return tokens((li===0||l.pre?'':'… ')+l.text)}
 function renderLetter(t){
   if(G.LE.mode==='short'){renderLevelDone(t);return}
   const LE=G.LE,def=LEVELS[LE.li],fx=def.letter.fx;
@@ -352,8 +357,8 @@ function renderLetter(t){
   const pg=ctx.createRadialGradient(0,0,80,0,0,380);pg.addColorStop(0,verso?'#e2d5b2':'#eadfc2');pg.addColorStop(1,verso?'#bca878':'#c9b386');ctx.fillStyle=pg;
   ctx.beginPath();ctx.moveTo(-pw/2,-ph/2);for(let x=-pw/2;x<=pw/2;x+=15)ctx.lineTo(x,-ph/2+((x*13)%4)-1);ctx.lineTo(pw/2,ph/2);for(let x=pw/2;x>=-pw/2;x-=15)ctx.lineTo(x,ph/2+((x*7)%4)-1);ctx.closePath();ctx.fill();
   ctx.save();ctx.clip();ctx.globalAlpha=.35;ctx.fillStyle=ctx.createPattern(paperC,'repeat');ctx.fillRect(-pw/2,-ph/2,pw,ph);ctx.restore();
-  if(verso){ctx.save();ctx.scale(-1,1);ctx.globalAlpha=.1;ctx.fillStyle='#2a2f5a';ctx.font='26px '+F_HAND;for(let k=0;k<5;k++)ctx.fillText('Marguerite, je t\'écris pour te dire',-pw/2+40,-ph/2+60+k*40);ctx.restore();
-    ctx.fillStyle='rgba(60,60,70,.55)';ctx.font='italic 13px '+F_BODY;ctx.textAlign='right';ctx.fillText('(au dos, au crayon, à demi effacé par la pluie)',pw/2-30,ph/2-14);ctx.textAlign='left';
+  if(verso){ctx.save();ctx.scale(-1,1);ctx.globalAlpha=.1;ctx.fillStyle='#2a2f5a';ctx.font='26px '+F_HAND;for(let k=0;k<5;k++)ctx.fillText(['Marguerite, je t\'écris cette lettre pour','te rassurer et te dire qu\'ici, tout va','bien. Nous sommes en surnombre et nous','repoussons les Allemands. Je vois une','issue à cette guerre sans fin…'][k],-pw/2+40,-ph/2+60+k*40);ctx.restore();
+    ctx.fillStyle='rgba(60,60,70,.55)';ctx.font='italic 13px '+F_BODY;ctx.textAlign='right';ctx.fillText('(au dos, au crayon, à moitié effacé par l\'humidité)',pw/2-30,ph/2-14);ctx.textAlign='left';
     ctx.fillStyle='rgba(90,110,140,.12)';for(let k=0;k<7;k++){ctx.beginPath();ctx.ellipse(-pw/2+60+k*80,-ph/2+40+((k*53)%180),18,30,0,0,7);ctx.fill()}}
   ctx.strokeStyle='rgba(120,90,50,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-ph/2);ctx.lineTo(0,ph/2);ctx.moveTo(-pw/2,0);ctx.lineTo(pw/2,0);ctx.stroke();
   ctx.strokeStyle='rgba(60,70,120,.12)';ctx.lineWidth=1;for(let y=-ph/2+70;y<ph/2-20;y+=40){ctx.beginPath();ctx.moveTo(-pw/2+30,y);ctx.lineTo(pw/2-30,y);ctx.stroke()}
@@ -364,20 +369,32 @@ function renderLetter(t){
   ctx.font='26px '+F_HAND;
   let budget=Math.floor(LE.chars);
   if(head){ctx.textAlign='right';ctx.fillText(head.slice(0,budget),pw/2-40,y);budget-=head.length;ctx.textAlign='left';y+=44}
-  const toks=tokens((LE.li===0?'':'… ')+def.letter.text);
+  const toks=letterToks(LE.li);
   ctx.font='29px '+F_HAND;
   let x=-pw/2+44,ci=0;const maxX=pw/2-40,sp=ctx.measureText(' ').width;
-  for(const tk of toks){
+  const lastBr=toks.map(t=>!!t.br).lastIndexOf(true);
+  for(let ti=0;ti<toks.length;ti++){const tk=toks[ti];
     if(budget<=0)break;
+    if(tk.br){x=-pw/2+44;y+=40;
+      if(def.letter.sign&&ti===lastBr){let lw=0;for(let k=ti+1;k<toks.length;k++)lw+=ctx.measureText(toks[k].w).width+(k>ti+1?sp:0);x=maxX-lw-20}
+      continue}
     const full=ctx.measureText(tk.w).width;
     if(x+full>maxX){x=-pw/2+44;y+=40}
     const s=tk.w.slice(0,Math.max(0,budget));
     if(fx==='shaky'){let xx=x;for(const ch of s){const j=Math.sin(ci*7.3+t*14)*1.6;ctx.fillText(ch,xx+j*.5,y+j);xx+=ctx.measureText(ch).width;ci++}}
     else ctx.fillText(s,x,y);
-    if(tk.s&&budget>=tk.w.length){ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-2,y-9);ctx.lineTo(x+full+2,y-11);ctx.moveTo(x-1,y-6);ctx.lineTo(x+full+1,y-8);ctx.stroke()}
+    if(tk.s&&budget>=tk.w.length){ctx.lineWidth=2;ctx.beginPath();const ex=toks[ti+1]&&toks[ti+1].s&&!toks[ti+1].br?sp:2;ctx.moveTo(x-2,y-9);ctx.lineTo(x+full+ex,y-11);ctx.moveTo(x-1,y-6);ctx.lineTo(x+full+ex-1,y-8);ctx.stroke()}
     budget-=tk.w.length+1;x+=full+sp;
   }
-  if(fx==='blot'&&LE.done){ctx.fillStyle='rgba(42,47,90,.5)';ctx.beginPath();for(let k=0;k<=20;k++){const a=k/20*Math.PI*2,r=26+Math.sin(k*3.7)*7;ctx.lineTo(70+Math.cos(a)*r,-30+Math.sin(a)*r*.8)}ctx.fill();ctx.fillStyle='rgba(42,47,90,.18)';ctx.beginPath();ctx.arc(70,-30,48,0,7);ctx.fill()}
+  if(fx==='blot'&&LE.done){const u=Math.min(1,LE.after*2.5),gx=96,gy=-6,blob=(r0,sx,sy)=>{ctx.beginPath();for(let k=0;k<=24;k++){const a=k/24*Math.PI*2,r=r0*(1+Math.sin(k*2.9)*.08+Math.sin(k*5.3)*.05);ctx.lineTo(gx+Math.cos(a)*r*sx,gy+Math.sin(a)*r*sy)}ctx.closePath()};
+    ctx.save();ctx.globalAlpha=u;
+    // l'encre délavée qui a coulé sous la goutte
+    ctx.fillStyle='rgba(60,72,130,.16)';blob(40,1.1,.9);ctx.fill();
+    // l'eau : plus sombre sur le bord, un reflet au centre
+    const wg=ctx.createRadialGradient(gx-6,gy-6,2,gx,gy,30);wg.addColorStop(0,'rgba(255,255,250,.35)');wg.addColorStop(.6,'rgba(150,140,110,.12)');wg.addColorStop(1,'rgba(110,95,60,.28)');ctx.fillStyle=wg;blob(28,1,.86);ctx.fill();
+    ctx.strokeStyle='rgba(100,82,50,.45)';ctx.lineWidth=1.6;blob(28,1,.86);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.ellipse(gx-9,gy-9,5,3,-.6,0,7);ctx.fill();
+    ctx.restore()}
   ctx.restore();
   if(LE.done){
     const a=Math.min(1,LE.after*1.6);
@@ -409,9 +426,9 @@ function handleLetter(dt){
   const LE=G.LE;const go=pressed.has('ok')||pressed.has('jump')||G.click;
   if(LE.mode==='short'){LE.after+=dt;if(go&&LE.after>.5){G.cutSeen=true;startLevel(LE.li+1)}return}
   const def=LEVELS[LE.li];
-  const total=(def.letter.date||'').length+tokens((LE.li===0?'':'… ')+def.letter.text).reduce((s,t)=>s+t.w.length+1,0);
+  const total=(def.letter.date||'').length+letterToks(LE.li).reduce((s,t)=>s+(t.br?0:t.w.length+1),0);
   if(!LE.done){const before=Math.floor(LE.chars);LE.chars+=dt*30;if(Math.floor(LE.chars)!==before&&Math.floor(LE.chars)%3===0)noise(.03,2600,.04,'highpass');if(go)LE.chars=total;if(LE.chars>=total){LE.done=true;LE.after=0;achLetter(LE.li)}}
-  else{LE.after+=dt;if(go&&LE.after>.5){if(LE.li<LE.last){LE.li++;LE.chars=0;LE.done=false;LE.after=0;SFX.page()}else afterLetter(LE.last)}}
+  else{LE.after+=dt;if(go&&LE.after>.5){if(LE.li<LE.last){LE.li++;LE.chars=0;LE.done=false;LE.after=0;SFX.page();const pre=LEVELS[LE.li].letter.pre;if(pre){const keep=LE;G.state='intro';G.cards=[{t:pre,minT:.8}];G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='levelend';G.LE=keep;G.fade=1;SFX.page()}}}else afterLetter(LE.last)}}
 }
 function renderLevelDone(t){
   const LE=G.LE,def=LEVELS[LE.li],st=LE.st;

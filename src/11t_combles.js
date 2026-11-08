@@ -43,7 +43,6 @@ const CB={};
   /* D · la chambre des cloches (son plancher, troué) */
   fill(93,94,1,16,'X');fill(126,127,7,CBR-1,'X');fill(126,127,1,1,'X');
   bm(95,101,21);bm(104,107,21);bm(111,118,21);bm(121,125,21);
-  put(97,20,'h');
   bm(96,99,17);put(102,11,'I');bm(105,107,10);put(110,5,'I');bm(113,116,7);put(119,1,'I');bm(122,125,4);bm(99,101,3);
   put(104,15,'m');put(116,12,'m');put(124,3,'C');
   for(const[c,r]of[[97,16],[98,16],[102,9],[106,9],[110,3],[114,6],[115,6],[121,2],[123,3]])put(c,r,'o');
@@ -84,8 +83,8 @@ function comblesPost(Lv){
   // les poutres qui changent avec l'époque
   C.dyn=CB.beams.filter(b=>b.e!=='b').map(b=>Object.assign({},b,{st:'ok',t:0,deb:[]}));
   Lv.acts=Lv.acts||[];
-  C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Fontaine. Il a fini ses jours ici, au calme. Il y a pire."]};
-  C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Garnier montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
+  C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Vasseur. Il a fini ses jours ici, au calme. Il y a pire."]};
+  C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Vasseur montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
   C.canif={kind:'secret',style:'canif',x:11.5*T,y:3*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:["Un canif oublié sur la poutre, tout en haut. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
   Lv.acts.push(C.bague,C.graf,C.canif);
   // la médaille de la mission : en 1914, tout en haut à gauche, au bout de la poutre du canif
@@ -156,7 +155,7 @@ function comblesStep(dt){const C=L.cb;if(!C)return;C.t+=dt;if(C.grace>0)C.grace-
   // Raymond essaie de parler aux collègues
   if(!C.said.parle&&!P.dead&&Math.abs(pcx-C.pig[0].x)<230&&Math.abs(pcy-C.pig[0].y)<120){C.said.parle=1;C.talk={t:0,k:0}}
   if(C.talk&&!G.sim){const k=C.talk;k.t+=dt;const o=C.pig[0];
-    if(k.k===0){k.k=1;say("Pardon, camarade ! Le pigeonnier Fontaine, au bout du village… Vous savez ce qu'il est devenu ?",4)}
+    if(k.k===0){k.k=1;say("Pardon, camarade ! Le pigeonnier Vasseur, au bout du village… Vous savez ce qu'il est devenu ?",4)}
     else if(k.k===1&&k.t>4.1){k.k=2;bubble(o.x,o.y-44,"Rrrou… krr… wesh… rrou-rrou ?",'#6a5a48')}
     else if(k.k===2&&k.t>5.8){k.k=3;say("On ne leur a même pas appris à parler correctement. On ne comprend rien à ce qu'ils disent.",4.2)}
     else if(k.k===3&&k.t>10.2)C.talk=null}
@@ -278,7 +277,7 @@ function comblesOverlay(t){const C=L.cb;if(!C)return;
   {const[hx,hy]=CBV.hole;drawRaymond(ctx,hx+44,hy-6,{f:1,t,walk:0,wear:S.run.wear||0,size:1.5,eyeClosed:false})}
   if(e.t<2.1){ctx.fillStyle='rgba(255,250,235,'+(1-(e.t-1.3)/.8)+')';ctx.fillRect(0,0,W,H)}
   if(e.t>7){const a=Math.min(1,(e.t-7)/1.1)*(e.t>15.5?Math.max(0,1-(e.t-15.5)):1);
-    vxCard("Par le trou de la charpente, Raymond découvrit toute la commune.\nAu loin, sur la place, on donnait un bal.\nMarguerite avait toujours aimé les fêtes.",a,t)}
+    vxCard("Par le trou de la charpente, Raymond admira toute la commune.\nAu loin, sur la place, on donnait un bal.\nMarguerite avait toujours aimé les fêtes.",a,t)}
 }
 /* ---------- les tuiles : la charpente fixe, peinte une fois (les poutres qui changent avec l'époque sont dessinées à part) ---------- */
 function cbBeam(g,x,y,len,lf,rt,fr,seed){const R=mulberry(seed|0),oak='#5a4028',oakL='#7a5a3a',oakD='#2e2014';

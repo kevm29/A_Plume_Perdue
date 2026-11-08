@@ -28,10 +28,11 @@ const PLX={
 };
 const PL_CARDS={2:"Marguerite n'était pas sur la place.\nRaymond en refit le tour, dans l'autre sens.",3:"Le soir tombait. Il se mit à pleuvoir.\nRaymond chercha encore.",4:"La nuit était venue.\nLa place s'était vidée."};
 const PL_END=["Raymond a cherché Marguerite toute la journée.\nAu marché, au bal, sous la pluie, jusqu'à la nuit. Elle n'était nulle part.",
-  "Verdun. Raymond y était, en 1916, avec Lucien.\nUn cent-dixième anniversaire… Il refait le calcul, une fois, deux fois.",
-  "1916 – 2026.\nIl a mis cent dix ans à rentrer.",
-  "Marguerite avait dix-neuf ans quand Lucien lui a écrit.\nElle en aurait cent vingt-neuf aujourd'hui.",
-  "Raymond sait maintenant où la trouver."];
+  "Verdun. Raymond y était, en 1916, avec Lucien.\nUn cent-dixième anniversaire…",
+  "Raymond refait le calcul, encore et encore…\n« 2026 »",
+  "1916 – 2026.\nIl a mis cent dix ans à rentrer.\nCent dix ans…\nLa guerre est finie depuis longtemps.\nLucien, le capitaine, les gars du 142e : tout le monde…",
+  "Marguerite avait vingt ans quand Lucien lui a écrit.\nElle en aurait cent trente aujourd'hui…",
+  "Raymond comprit.\nAu milieu des flonflons, il s'effondra.\nPersonne ne remarqua ce pigeon à terre.\n\nÀ présent, il savait où aller…"];
 const PL_START={2:"Pas de Marguerite. Elle est peut-être repartie de ce côté. Je refais le tour.",
   3:"Cette pluie… je me sens lourd. Lourd comme un sac de sable mouillé. Je ne monterai plus sur les toits, et un seul battement d'ailes, c'est tout ce que j'ai.",
   4:"Plus personne. Il ne reste que le manège et la scène. Un dernier tour, jusqu'à la scène."};
@@ -208,7 +209,7 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
   {const gr=S2.grill;if(gr.on){gr.t+=dt;const u=gr.t%3.1;gr.ph=u<1.5?'idle':u<2.1?'warn':u<2.9?'burst':'idle';
     if(gr.ph==='burst'&&gr.last!=='burst'&&!G.sim&&Math.abs(pcx-56*T)<900){noise(.6,2600,.07,'bandpass');noise(.35,5200,.04,'highpass',.08)}
     // le cuisinier ne crie qu'une fois les flammes bien hautes
-    if(gr.ph==='burst'&&u>2.35&&!gr.yelled){gr.yelled=1;if(!G.sim&&Math.abs(pcx-56*T)<900)bubble(56.9*T,PLF-160,pick(['Oh là !','Au feu !','Mes merguez !','Pas encore !']),'#2a2420')}
+    if(gr.ph==='burst'&&u>2.35&&!gr.yelled){gr.yelled=1;if(!G.sim&&Math.abs(pcx-56*T)<900)bubble(56.9*T,PLF-160,pick(['Oh là !','Au feu !','Saucisses ! Merguez !','Pas encore !']),'#2a2420')}
     if(gr.ph!=='burst')gr.yelled=0;
     if(gr.ph==='warn'&&gr.last!=='warn'&&!G.sim&&Math.abs(pcx-56*T)<900)noise(.5,4200,.03,'highpass');
     gr.last=gr.ph;if(gr.ph==='burst'&&!P.dead){const k=Math.min(1,(u-2.1)/.25);if(overlap(hb,{x:57*T+4,y:PLF-70-k*190,w:1.6*T-8,h:70+k*190-30}))hit='grill'}}}
@@ -287,11 +288,11 @@ function placeSeqStep(dt){const S2=L.pl,q=S2.seq;q.t+=dt;G.lt+=dt;P.vx=0;
     else if(e.t<10.2){const u=Math.min(1,(e.t-6.6)/2.2),k=u*u*(3-2*u);z.z=lerp(1,2.3,k);z.fx=lerp(cam.x+W/2,rx,k);z.fy=lerp(cam.y+H/2,ry,k)}
     else if(e.t<15.6){const u=Math.min(1,(e.t-10.2)/2.4),k=u*u*(3-2*u);z.z=lerp(2.3,1.95,k);z.fx=lerp(rx,bx,k);z.fy=lerp(ry,by,k)}
     P.spin=e.t>8.4&&e.t<15.6?-.38*Math.min(1,(e.t-8.4)/.5):0;
-    if(e.t>33.8){S2.seq=null;L.zoom=null;P.spin=0;winLevel()}
+    if(e.t>40.6){S2.seq=null;L.zoom=null;P.spin=0;winLevel()}
   }
 }
 function placeSkip(){const q=L.pl&&L.pl.seq;if(!q)return;if(q.k==='pass'){if(q.t>1.6&&q.t<4.6)q.t=4.6}
-  else if(q.k==='end'){const marks=[1.4,6.6,10.2,15.2,20.4,24.6,29.2,33.8];for(const m of marks)if(q.t<m-.05&&q.t>1){q.t=m;break}}}
+  else if(q.k==='end'){const marks=[1.4,6.6,10.2,15.2,20,24,30,34.6,40.6];for(const m of marks)if(q.t<m-.05&&q.t>1){q.t=m;break}}}
 function placeGoPass(n){const S2=L.pl;plSetPass(L,n);
   P.cp={x:S2.start.x,y:S2.start.y};resetPlayer();P.facing=S2.dir;P.wake=0;
   cam.x=clamp(P.x+P.w/2-W/2+P.facing*70,0,L.wpx-W);
@@ -938,5 +939,5 @@ function placeOverlay(t){const S2=L.pl;if(!S2)return;const n=S2.pass,cx=Math.rou
     card(1.4,6.6,PL_END[0]);
     // à partir d'ici, le noir ne se lève plus : les intertitres s'enchaînent
     if(q.t>15.2){ctx.fillStyle='rgba(11,10,12,'+Math.min(1,(q.t-15.2)/.5)+')';ctx.fillRect(0,0,W,H)}
-    card(15.6,20.4,PL_END[1]);card(20.4,24.6,PL_END[2]);card(24.6,29.2,PL_END[3]);card(29.2,33.8,PL_END[4])}
+    card(15.6,20,PL_END[1]);card(20,24,PL_END[2]);card(24,30,PL_END[3]);card(30,34.6,PL_END[4]);card(34.6,40.6,PL_END[5])}
 }

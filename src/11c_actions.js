@@ -32,7 +32,7 @@ function actPost(L){
   if(L.def.vaneAt){const[c,r]=L.def.vaneAt;L.acts.push({kind:'secret',style:'vane',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,ang:.6,av:0,
     q:["La girouette grince, tourne… et du pigeon d'or tombe une touffe de paille. Un collègue en métal précieux. Lui, au moins, on l'a mis sur un piédestal."]})}
   if(L.def.lingeAt){const[c,r]=L.def.lingeAt;L.acts.push({kind:'secret',style:'linge',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
-    q:["Un drap qui sèche au balcon. Et dans le pli, de la paille. Quelqu'un secoue ses draps sur la rue depuis cent ans."]})}
+    q:["Un drap qui sèche au balcon. Et dans le pli, de la paille. Il faudrait peut-être revoir les méthodes pour laver le linge !"]})}
   if(L.def.poopAt){const[c,r]=L.def.poopAt;L.acts.push({kind:'secret',style:'poop',x:c*T+T/2,y:(r+1)*T,rx:200,open:0,t:0,used:false,noStraw:true,q:["Copains de toit. On ne se refait pas."]})}
   if(L.def.tiroirAt){const[c,r]=L.def.tiroirAt;L.acts.push({kind:'secret',style:'tiroir',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
     q:["Un meuble d'entomologiste. Cent tiroirs de papillons épinglés… et un seul de paille. On dirait qu'on m'attendait."]})}

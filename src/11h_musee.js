@@ -20,7 +20,7 @@ function museePost(Lv){
     if(a.task==='cook')Lv.lights.push({x:a.x+26,y:a.b-12,r:150,i:.7,warm:2});
     if(a.task==='map'||a.task==='phone')Lv.lights.push({x:a.x,y:a.b-70,r:150,i:.6,warm:1});
     if(a.search){a.sact={kind:'secret',style:'autom',x:a.x-26,y:a.b,open:0,t:0,used:false,q:["Je fouille sa musette. Il ne bronche pas : il écrit. De la paille… et la photo d'une fiancée. Pardon, camarade, je ne prends que la paille."]};Lv.acts.push(a.sact)}
-    if(a.fiente){a.act={kind:'secret',style:'fiente',x:a.x,y:a.b,open:0,t:0,used:false,q:["Je mériterais une promotion ! Mais ? J'ai enfin réussi à le faire !"]};a.act.when=()=>false;Lv.acts.push(a.act);M.fa=a}}
+    if(a.fiente){a.act={kind:'secret',style:'fiente',x:a.x,y:a.b,open:0,t:0,used:false,q:["Je mériterais une promotion ! Mais ? J'ai enfin réussi à le faire !!!"]};a.act.when=()=>false;Lv.acts.push(a.act);M.fa=a}}
 }
 /* Raymond dans un placard */
 function museeHide(a){

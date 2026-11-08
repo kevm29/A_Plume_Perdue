@@ -73,7 +73,7 @@ function renderSettings(t){
   // touches
   {let y=318;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText('TOUCHES',W/2,y);y+=24;
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
-    if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);K.push(['R','Revenir au dernier cartel'],['Échap ou P','Pause'],['M','Couper le son']);
+    if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=19}}
   // retour
   {const y=H-28,sel=rows[G.setSel]==='back';ctx.textAlign='center';ctx.font=(sel?'21px ':'19px ')+F_DISP;ctx.fillStyle=sel?'#f2e8cf':'rgba(233,223,199,.65)';ctx.fillText('Retour',W/2,y);G.setBoxes.push({r:'back',x:W/2-60,y:y-24,w:120,h:32})}

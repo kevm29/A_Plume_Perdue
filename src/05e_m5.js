@@ -1,14 +1,14 @@
 /* ------------------------------ MISSION 5 · CRÉCY-LA-CHAPELLE ------------------------------ */
 LEVELS.push({w:4,name:"Le pigeonnier",theme:'crecy',exit:'none',exitLabel:"",seed:127,crecy:true,
- start:"Crécy-la-Chapelle. Enfin dans la commune ! Des canaux partout, des lavoirs, des passerelles. Le pigeonnier Fontaine est par là, quelque part.",
+ start:"Crécy-la-Chapelle. Enfin dans la commune ! Des canaux partout, des lavoirs, des passerelles. Je ne connais pas ce coin du village, mais le pigeonnier Vasseur doit être par là, quelque part.",
  hints:[],quips:[],signs:[],
  catWake:"Un chat. Un vrai, un chasseur. Il m'a vu. Règlement, article 3 : en cas de chat, courir.",chaseEnd:139*T,chaseEndQuip:"Il s'arrête net devant la pancarte « Attention au chien ». Lui aussi sait lire.",
- exitLines:[["RAYMOND","La maison Fontaine. Les volets sont neufs. Il y a une voiture devant.",4.2],["RAYMOND","Mais… où est le pigeonnier ? Un garage. On a mis un garage à la place du pigeonnier !",4.2],["RAYMOND","Bon. Le clocher. De là-haut, je trouverai bien où ils ont mis mes collègues.",4]],
+ exitLines:[["RAYMOND","La maison Vasseur. Les volets sont neufs. Il y a une voiture devant.",4.2],["RAYMOND","Mais… où est le pigeonnier ? Un garage. On a mis un garage à la place du pigeonnier !",4.2],["RAYMOND","Bon. Le clocher. De là-haut, je trouverai bien où ils ont mis mes collègues.",4]],
  segs:[]  // construits par 11s_crecy.js
 });
 LEVELS.push({w:4,name:"Les combles",theme:'combles',exit:'none',exitLabel:"",seed:131,rows:24,camY:.55,combles:true,
- start:"Les combles de l'église. Tout en haut, il y aura bien un trou dans le toit. De là, je verrai toute la commune.",
- hints:[["LES COMBLES","B : septembre 1914. La charpente n'était pas tout à fait la même."],["ARTICLE 23 — LA CLOCHE","Elle se balance toujours au même rythme. À chaque coup, l'onde repousse tout ce qui est trop près."]],
+ start:"Les combles de l'église. Tout en haut, il y aura bien de quoi me mettre sur le toit. De là, je verrai toute la commune.",
+ hints:[["LES COMBLES","En septembre 1914, la charpente n'était pas tout à fait la même."]],
  quips:[],signs:[],
  segs:[]  // construits par 11t_combles.js
 });
@@ -19,7 +19,7 @@ LEVELS.push({w:4,name:"Elle aimait les fêtes",theme:'place',exit:'none',exitLab
 });
 
 LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',exitLabel:"",seed:139,cm:true,
- start:"Le cimetière. Je sais l'année, maintenant. Je sais ce que je vais trouver. Il faut quand même que je la voie.",
+ start:"Le cimetière. Je sais l'année, maintenant.\nJe sais ce que je vais trouver…\nIl faut quand même que je la voie.",
  hints:[],quips:[],signs:[],
  segs:[]  // construits par 11w_cimetiere.js
 });

@@ -145,7 +145,7 @@ function skipCut(){
 }
 
 /* ---------- mise à jour du jeu ---------- */
-const TOMB_LINES=["Fontaine… Marguerite. 1897 – 1989. Elle a vécu jusqu'à quatre-vingt-douze ans.",
+const TOMB_LINES=["Fontaine… Marguerite. 1896 – 1989. Elle a vécu jusqu'à quatre-vingt-treize ans.",
   "Mariée au fils Garnier. Toute une vie sans jamais recevoir la lettre. Sans savoir.",
   "J'ai une lettre pour elle. Le règlement ne prévoit pas les tombes. Tant pis pour le règlement."];
 function stepTomb(dt){
@@ -383,8 +383,8 @@ function gameOver(){
   setSong('s5-4');
 }
 /* sons des bêtes et ambiances, une fois par image */
-const WALK_CRY={rat:['kwik !',()=>SFX.squeak()],boar:[null,()=>SFX.grunt()],piglet:[null,()=>SFX.grunt(true)],pigeon:['rou-rou',()=>SFX.coo()],hedgehog:['snif snif',()=>noise(.08,3000,.12,'bandpass',0,3)],goose:['KWAAK !',()=>SFX.honk()]};
-const FLY_CRY={crow:['KRA !',()=>SFX.caw()],gull:['KYAA',()=>tone(1500,.3,'sawtooth',.06,900)],bag:['frrt',()=>SFX.bag()],wasp:['bzzz',()=>SFX.buzz()],bat:['tsiii',()=>tone(4200,.12,'sine',.05,3600)],moth:[null,()=>SFX.flutter()]};
+const WALK_CRY={rat:[null,()=>SFX.squeak()],boar:[null,()=>SFX.grunt()],piglet:[null,()=>SFX.grunt(true)],pigeon:[null,()=>SFX.coo()],hedgehog:[null,()=>noise(.08,3000,.12,'bandpass',0,3)],goose:[null,()=>SFX.honk()]};
+const FLY_CRY={crow:[null,()=>SFX.caw()],gull:[null,()=>tone(1500,.3,'sawtooth',.06,900)],bag:[null,()=>SFX.bag()],wasp:[null,()=>SFX.buzz()],bat:[null,()=>tone(4200,.12,'sine',.05,3600)],moth:[null,()=>SFX.flutter()]};
 function animalSounds(dt){
   const pcx=P.x+P.w/2,pcy=P.y+P.h/2;
   for(const c of L.rats){c.sq-=dt;const d=Math.hypot(c.x-pcx,c.y-pcy);if(d<420&&c.sq<=0){const cr=WALK_CRY[c.kind];if(cr)cr[1]();c.sq=2.2+rnd()*2.6}}

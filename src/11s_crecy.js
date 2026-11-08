@@ -89,7 +89,7 @@ function crecyPost(Lv){
   Lv.acts=Lv.acts||[];
   C.nain={kind:'secret',style:'nain',x:114*T,y:CGR*T,open:0,t:0,used:false,q:["Il est tombé. Il était creux, et plein de paille. Les nains de jardin, c'est comme les sergents : tout dans l'apparence."]};
   C.linge={kind:'secret',style:'linge',x:207*T,rx:3*T,y:8*T,open:0,t:0,used:false,q:["En plein sur le linge propre. J'ai honte. Mais qu'est-ce que j'adorais faire ça, quand j'étais jeune."]};
-  C.grain={kind:'secret',style:'grain',x:251.5*T,y:CGR*T,open:0,t:0,used:false,when:()=>L.crecy&&L.crecy.era===14,q:["Le sac de grain du père Fontaine. Il en laissait toujours tomber un peu exprès, pour nous. Je m'en souviens comme si c'était ce matin."]};
+  C.grain={kind:'secret',style:'grain',x:251.5*T,y:CGR*T,open:0,t:0,used:false,when:()=>L.crecy&&L.crecy.era===14,q:["Le sac de grain du père Vasseur. Il en laissait toujours tomber un peu exprès, pour nous. Je m'en souviens comme si c'était ce matin."]};
   C.niche={kind:'secret',style:'niche',x:133*T,y:CGR*T,open:0,t:0,used:false,q:["La niche de Rex. Une couverture, un os, une balle mâchouillée… et de la paille. Ce chien a des goûts de sergent."]};
   Lv.acts.push(C.nain,C.linge,C.grain,C.niche);
   for(const w of Lv.watchers)w.white=true;
@@ -133,7 +133,7 @@ function crecyStep(dt){const C=L.crecy;if(!C)return;C.t+=dt;C.flash=Math.max(0,C
   // répliques
   if(!C.said.moulin&&px>40*T){C.said.moulin=1;say("Le moulin. Sa roue tourne toujours. Elle me montera plus haut que mes ailes.",3.8)}
   if(!C.said.chatb&&px>104*T){C.said.chatb=1;say("Un chat blanc sur le muret. Il fait semblant de dormir, comme Bijou. Quand ses yeux s'allument, ne plus bouger d'une plume.",4.4)}
-  if(!C.said.quartier&&px>101*T){C.said.quartier=1;say("Des maisons neuves partout. Le pigeonnier Fontaine était au bout du village… je crois. Je le sens par là.",4.2)}
+  if(!C.said.quartier&&px>101*T){C.said.quartier=1;say("Des maisons neuves partout. Le pigeonnier Vasseur était au bout du village… je crois. Je le sens par là.",4.2)}
   if(!C.said.foot&&px>142*T){C.said.foot=1;say("Deux gamins qui jouent à la balle. Leur ballon vole mieux que moi.",3.2)}
   if(!C.said.velo&&px>183*T){C.said.velo=1;say("Un casque de tranchée sur la tête d'un enfant, à vélo. On mobilise jeune, ici.",3.8)}
 }
@@ -407,7 +407,7 @@ function cBlock(g,b,t){const x0=b.c0*T,x1=(b.c1+1)*T,top=b.r0*T,base=CGR*T,w=x1-
     g.fillStyle='rgba(255,255,255,.35)';poly(g,[c0+6,roof+8,c0+18,roof+8,c0+4,hood-2,c0-6,hood-2]);g.fill();g.fillStyle='rgba(255,255,255,.25)';g.fillRect(x0+10,hood+2,w-20,2);
     g.fillStyle=shade(c,-.25);g.fillRect(x0,hood+20,w,4);g.fillRect(x0+w/2-1,hood+4,2,28);
     for(const wx of[x0+34,x1-34]){g.fillStyle='#1a1a1a';g.beginPath();g.arc(wx,base-14,16,0,7);g.fill();g.fillStyle='#b8bcc0';g.beginPath();g.arc(wx,base-14,7,0,7);g.fill()}
-    g.fillStyle='#f6f2c8';g.fillRect(x1-5,hood+8,5,8);g.fillStyle='#d83a2a';g.fillRect(x0,hood+8,5,8);g.fillStyle='#f2f2f2';g.fillRect(x0+w/2-20,base-28,40,9);g.fillStyle='#1a1a1a';g.textAlign='center';fitText(g,'GH-417-77',x0+w/2,base-21,36,6)}
+    g.fillStyle='#f6f2c8';g.fillRect(x1-5,hood+8,5,8);g.fillStyle='#d83a2a';g.fillRect(x0,hood+8,5,8);g.fillStyle='#f2f2f2';g.fillRect(x0+w/2-20,base-28,40,9);g.fillStyle='#1a1a1a';g.textAlign='center';fitText(g,'KM-201-89',x0+w/2,base-21,36,6)}
   else if(b.kind==='haie'){g.fillStyle='#3e6a2e';rr(g,x0-8,top-6,w+16,base-top+6,10);g.fill();g.fillStyle='rgba(120,180,80,.3)';for(let k=0;k<6;k++){g.beginPath();g.arc(x0+(k*13)%w,top+4+(k*7)%30,6,0,7);g.fill()}}
   else if(b.kind==='poubelles'){for(const[dx,c]of[[-6,'#3a6a3a'],[20,'#e8c040']]){g.fillStyle=c;rr(g,x0+dx,top+4,28,base-top-4,3);g.fill();g.fillStyle=shade(c,-.25);g.fillRect(x0+dx-2,top,32,7);g.fillStyle='#1a1a1a';g.beginPath();g.arc(x0+dx+6,base-3,3,0,7);g.fill()}}
   else if(b.kind==='bambou'){for(let k=0;k<9;k++){const x=x0-6+k*11;g.fillStyle=k%2?'#7a9a3a':'#8aaa48';g.fillRect(x,top-30-(k%3)*14,6,base-top+30+(k%3)*14);g.fillStyle='rgba(60,80,30,.5)';for(let y=top-20;y<base;y+=24)g.fillRect(x,y,6,2)}
@@ -501,7 +501,7 @@ function cSecrets(g,t){const C=L.crecy;if(!C)return;
   {const a=C.nain,x=a.x,b=a.y;g.save();if(a.used){const u=Math.min(1,a.t/.35);g.translate(x,b);g.rotate(u*Math.PI/2*.94);g.translate(-x,-b)}cGnome(g,x,b);g.restore()}
   {const a0=C.linge,a={x:a0.sx!=null?a0.sx-6:a0.x,y:a0.y,t:a0.t,used:a0.used};if(a.used){const u=Math.min(1,a.t/.5);if(u<1){g.fillStyle='#f2f0e6';g.beginPath();g.arc(a.x+6,a.y+6+u*26,3,0,7);g.fill()}else{g.fillStyle='rgba(240,240,230,.95)';g.beginPath();g.arc(a.x+8,a.y+34,6,0,7);g.arc(a.x+12,a.y+38,4,0,7);g.arc(a.x+4,a.y+40,3,0,7);g.fill();g.fillStyle='rgba(120,110,80,.5)';g.beginPath();g.arc(a.x+9,a.y+35,2,0,7);g.fill()}}}
   if(C.era===14){const a=C.grain,x=a.x,b=a.y;g.save();g.fillStyle='#c8b080';g.beginPath();g.moveTo(x-16,b);g.quadraticCurveTo(x-20,b-30,x-10,b-40);g.lineTo(x+10,b-40);g.quadraticCurveTo(x+20,b-30,x+16,b);g.closePath();g.fill();g.strokeStyle='#8a6a3a';g.lineWidth=1.5;g.beginPath();g.moveTo(x-10,b-38);g.lineTo(x+10,b-38);g.stroke();
-    g.fillStyle='#5a4a2a';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('FONTAINE',x,b-20);if(!a.used){g.fillStyle='#d8b860';for(let k=0;k<6;k++){g.beginPath();g.arc(x+18+k*4,b-2,1.5,0,7);g.fill()}}g.restore()}
+    g.fillStyle='#5a4a2a';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('VASSEUR',x,b-20);if(!a.used){g.fillStyle='#d8b860';for(let k=0;k<6;k++){g.beginPath();g.arc(x+18+k*4,b-2,1.5,0,7);g.fill()}}g.restore()}
 }
 
 /* ---------- cheminées et toits : la cheminée est peinte avant le toit, qui en cache le pied ---------- */

@@ -321,8 +321,9 @@ function drawMedal(g,x,y,t){
 }
 function drawCartel(g,x,y,on,t,outdoor){
   g.save();g.translate(x,y);
-  if(outdoor){
-    g.fillStyle='#4a3a2a';g.fillRect(-2,-56,4,56);
+  // partout un fanion (le cartel de musée d'autrefois n'est plus utilisé)
+  if(true){
+    g.fillStyle='#4a3a2a';g.fillRect(-2,-56,4,56);g.fillRect(-7,-3,14,3);
     const wv=Math.sin(t*4)*3;g.fillStyle=on?'#c8302a':'#7a7068';poly(g,[2,-56,26,-50+wv*.3,24+wv,-42,2,-40]);g.fill();
     if(on){g.fillStyle='rgba(255,210,130,.9)';g.beginPath();g.arc(0,-60,3,0,7);g.fill()}
     g.restore();return;
@@ -429,7 +430,7 @@ function drawExit(g,e,style,t,label){
     g.textAlign='center';
     eg('FAMILLE GARNIER',st+24,'8px '+F_DISP);g.fillStyle='#c8a75e';g.fillRect(cx-20,st+28,40,.8);
     eg('Joseph GARNIER',st+44,'6.5px '+F_DISP);eg('1893 – 1958',st+53,'5.5px '+F_DISP);
-    eg('Marguerite GARNIER',st+70,'6.5px '+F_DISP);eg('née FONTAINE',st+78,'italic 5.5px '+F_BODY);eg('1897 – 1989',st+87,'5.5px '+F_DISP);
+    eg('Marguerite GARNIER',st+70,'6.5px '+F_DISP);eg('née FONTAINE',st+78,'italic 5.5px '+F_BODY);eg('1896 – 1989',st+87,'5.5px '+F_DISP);
     g.fillStyle='#d8d2c4';rr(g,cx-15,st+98,30,13,2);g.fill();
     // dalle
     const tg=g.createLinearGradient(0,sb-14,0,sb);tg.addColorStop(0,'#77746d');tg.addColorStop(1,'#99968e');g.fillStyle=tg;poly(g,[cx-68,sb-14,cx+68,sb-14,cx+78,sb,cx-78,sb]);g.fill();

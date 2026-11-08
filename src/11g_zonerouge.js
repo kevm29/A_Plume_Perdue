@@ -33,7 +33,7 @@ function zrPost(Lv){
     const ex=Lv.exit?Lv.exit.x+6:x0+80;for(let x=ex+110;x<x1-60;x+=78){const l={x,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
     {const l={x:x1-26,y:b-80,r:130,i:.75,warm:1};Z.bh.lamps.push(l);Lv.lights.push(l)}
     if(Lv.def.exitByAct&&Lv.exit)Lv.acts.push({kind:'door',x:ex+T/2,y:b,open:0,t:0,used:false});
-    const lb=Z.bh.lamps[Z.bh.lamps.length-1],a={kind:'secret',style:'lamp',ly:lb.y+4,x:lb.x,y:b,open:0,t:0,used:false,q:["Un nid de paille dans la lanterne : voilà pourquoi elle clignotait. Et le locataire s'en va !"]};Z.lampAct=a;Lv.acts.push(a);
+    const lb=Z.bh.lamps[Z.bh.lamps.length-1],a={kind:'secret',style:'lamp',ly:lb.y+4,x:lb.x,y:b,open:0,t:0,used:false,q:["Un nid de paille dans la lanterne : voilà pourquoi elle clignotait. Et le locataire qui s'en va !"]};Z.lampAct=a;Lv.acts.push(a);
     for(let x=x0;x<=x1;x+=40)Lv.avoid.push(x)}
   for(const h of Z.holes)Lv.avoid.push(h.x0-30,h.x1+30);
   for(const w of Z.wires)Lv.avoid.push(w.x0,(w.x0+w.x1)/2,w.x1);
@@ -47,7 +47,7 @@ function zrStep(dt){
   for(const c of L.rats){if(c.dead)continue;const h=zrHole(c.x+c.w/2);if(h&&c.y+c.h>h.wy+4){c.dead=true;if(!G.sim){splash(c.x+c.w/2,h.wy);
     if(c.kind==='boar'&&!Z.said.boar){Z.said.boar=1;say("Plouf. Le sanglier a pris le trou d'obus pour une souille. Il y restera.",3.4)}}}}
   if(Z.bh){const l0=Z.bh.lamps[Z.bh.lamps.length-1],used=Z.lampAct.used;l0.i=used?.75:(((G.lt*7)%5<2.2||(G.lt*13)%7<1)?.75:0);
-    if(used&&Z.lampAct.anim&&!Z.decoy){Z.decoy={x:l0.x,y:Z.bh.b-96,t:0};if(!G.sim){SFX.caw();bubble(l0.x,Z.bh.b-120,'KRA !','#2a2420')}
+    if(used&&Z.lampAct.anim&&!Z.decoy){Z.decoy={x:l0.x,y:Z.bh.b-96,t:0};if(!G.sim){SFX.caw()}
       const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Les corbeaux, eux, ne disent jamais merci.",3.6),500)}}}
   // le corbeau s'ébroue un instant au-dessus de la lanterne, puis file vers la gauche (le drone a le temps de faire sa pirouette)
   if(Z.decoy){const d=Z.decoy;d.t+=dt;if(d.t<.8){d.x-=40*dt;d.y-=50*dt}else{d.x-=Math.min(430,120+(d.t-.8)*700)*dt;d.y-=Math.max(0,30-d.t*8)*dt+Math.sin(d.t*5)*.6}

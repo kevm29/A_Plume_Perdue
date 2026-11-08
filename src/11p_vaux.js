@@ -19,9 +19,9 @@ THEMES.vaux={outdoor:true,far:'train',horizon:'road',sky:['#04060d','#0c1222','#
 let V=null;
 function vxSongOff(){curName='__off';CUR=null}
 const VX_CARDS={
-  cart:["SUR LA ROUTE DU FORT DE VAUX · FIN MAI 1916","Le cinquième éclair est tombé tout près. Raymond a fermé les yeux. Quand il les a rouverts, il n'y avait plus d'autoroute : il y avait des arbres, des chevaux, et les genoux de Lucien."],
-  room:["FORT DE VAUX · NUIT DU 2 JUIN 1916","Dehors, les obus tombaient sans arrêt. Dans la chambrée, ceux qui pouvaient dormir dormaient. Lucien, lui, écrivait."],
-  yard:["3 JUIN 1916 · AVANT L'AUBE","Au petit jour, Lucien a sorti Raymond du panier. Raymond se souvient de ses mains : elles tremblaient un peu."],
+  cart:["SUR LA ROUTE DU FORT DE VAUX · FIN MAI 1916","Un cinquième éclair est tombé tout près. Raymond a perdu connaissance. Quand il a rouvert les yeux, il n'y avait plus d'autoroute : il y avait des arbres, des chevaux, et…"],
+  room:["FORT DE VAUX · NUIT DU 2 JUIN 1916","Dehors, les obus tombaient sans arrêt. Cela faisait plusieurs jours, maintenant. Dans la chambrée, ceux qui pouvaient dormir dormaient. Lucien, lui, écrivait."],
+  yard:["3 JUIN 1916 · AU PETIT MATIN","À l'aube, Lucien a sorti Raymond du panier. Raymond se souvient de ses mains : elles tremblaient un peu."],
   van2:["","Raymond s'est réveillé dans la remorque, trempé jusqu'aux os. Du bout de l'aile, il a cherché sa blessure. Il ne l'a pas trouvée. Il en a conclu qu'il avait rêvé, ce que le règlement interdit en service."]
 };
 
@@ -299,7 +299,7 @@ function cartRoad(x){let h=Math.sin(x*.012)*3+Math.sin(x*.031+1)*2+Math.sin(x*.0
 function cartUpdate(dt){const s=V.s;s.u+=150*dt;s.hoof-=dt;
   if(s.hoof<=0){s.hoof=.19;if(!G.sim){noise(.05,900+rnd()*300,.18,'bandpass',0,3);if(rnd()<.06)noise(.3,300,.08,'lowpass')}}
   if(V.t>2.4)s.zoom=Math.min(s.pinch>=0?2.75:2.1,s.zoom+dt*(s.pinch>=0?.32:.19));
-  if(!s.said.a&&V.t>1.2){s.said.a=1;vxBubble(170,196,"Paraît qu'au fort, y a même plus d'eau.",'#2a3a5a',3.4)}
+  if(!s.said.a&&V.t>1.2){s.said.a=1;vxBubble(170,196,"Il paraît qu'au fort, y a même plus d'eau.",'#2a3a5a',3.4)}
   if(!s.said.b&&V.t>5){s.said.b=1;vxBubble(440,200,'♪ … ♫ …','#2a3a5a',2.6)}
   if(!s.said.c&&V.t>7.5){s.said.c=1;vxBubble(520,206,'Allez, hue !','#4a3a2a',2.2)}
   if(pressed.has('act')&&s.pinch<0&&V.t>1){s.pinch=0;s.peck=.3;s.wince=.8;if(!G.sim){tone(1500,.05,'square',.04);SFX.coo()}{const h=s.lucHead||{x:340,y:230};vxBubble(h.x-6,h.y-34,'Aïe !','#a8322d',1.6)}}

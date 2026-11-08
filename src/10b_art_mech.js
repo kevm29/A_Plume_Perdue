@@ -234,7 +234,7 @@ function drawHouse(g,e,t){
   g.fillStyle='#5a4a3a';g.fillRect(wx+ww-50,gy-wh-60,16,30);
   for(const[ox,oy]of[[24,-120],[130,-120],[24,-60]]){g.fillStyle='rgba(255,210,140,.75)';g.fillRect(wx+ox,gy+oy,36,40);g.fillStyle='#3a6a5a';g.fillRect(wx+ox-12,gy+oy,10,40);g.fillRect(wx+ox+38,gy+oy,10,40);g.fillStyle='#4a3a2a';g.fillRect(wx+ox+16,gy+oy,3,40);g.fillRect(wx+ox,gy+oy+18,36,3)}
   g.fillStyle='#5a3a24';rr(g,wx+128,gy-70,40,70,4);g.fill();g.fillStyle='#c9a24a';g.beginPath();g.arc(wx+160,gy-36,2.5,0,7);g.fill();
-  g.fillStyle='#efe6d0';g.fillRect(wx+70,gy-24,40,12);g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('FONTAINE',wx+90,gy-15);
+  g.fillStyle='#efe6d0';g.fillRect(wx+70,gy-24,40,12);g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('VASSEUR',wx+90,gy-15);
   // garage à la place du pigeonnier
   const gx=x+56;g.fillStyle='#b4aca0';g.fillRect(gx,gy-90,120,90);g.fillStyle='#8a8478';g.fillRect(gx-6,gy-96,132,8);
   g.fillStyle='#9aa0a8';g.fillRect(gx+12,gy-72,96,72);g.fillStyle='rgba(0,0,0,.18)';for(let k=0;k<8;k++)g.fillRect(gx+12,gy-70+k*9,96,2);

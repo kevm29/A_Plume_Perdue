@@ -22,7 +22,7 @@ LEVELS.push((()=>{
   for(const c of[74,134,194,236,322,358,372,412])g[G0-1][c]='C';
   for(const[c,r]of[[20,9],[48,12],[90,12],[110,9],[150,12],[170,9],[214,12],[248,9],[262,10],[278,8],[306,10],[330,12],[349,9],[380,12],[396,12],[418,12],[428,12]])g[r][c]='o';
   g[7][289]='*';g[G0-1][3]='S';g[G0-1][434]='E';
-  return {w:3,name:"L'autoroute de l'Est",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.62,
+  return {w:3,name:"L'autoroute vers l'Ouest",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.62,
     a4:{G0,bridges:[[2400,2760],[4800,5160],[7200,7560]],jamX:9800,jam,booth:[12640,12760],canopy:[12420,13020],vans,cones,tar:{x0:14400,x1:14700,c1:14860},
         roller:[15020,15820],workers:[16300,16345,16392],tyre:4990,engine:12260,exitX:17360},
     start:"Sur le dos d'un camion, en pleine nuit, à toute allure vers l'ouest. Le règlement n'a rien prévu : c'est donc autorisé.",
@@ -64,7 +64,7 @@ LEVELS.push((()=>{
       wake:[1,1,0,1],beggar:[2560,2760],jumpers:[[3150,3600,440,130],[6380,6700,520,110],[6650,7060,520,110]],
       customers:[3760,4220],cashiers:[[4400,4580,480],[7680,7860,480]],tables:[8300,8900,9500,10100,10620],
       coffee:5340,salad:5900,hood:[5700,6100],fridge:6850,window:12440},
-    start:"L'aire de Gueux. Des lumières, des odeurs de gasoil et de café. Et, sous l'auvent, deux chiens qui dorment. Marcher. Surtout, ne pas sauter.",
+    start:"L'aire de Gueux. Des lumières, des odeurs de gasoil et de café. Et, sous l'auvent, deux chiens qui dorment. Marcher doucement pour ne pas les exciter !",
     hints:[],quips:[],
     segs:[{z:'aire',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
@@ -79,9 +79,9 @@ LEVELS.push({w:3,name:"L'orage",theme:'vaux',exit:'none',exitLabel:"",seed:109,v
 ############`]});
 
 LEVELS.push({w:3,name:"La Marne",theme:'ferte26',exit:'none',exitLabel:"",seed:113,ferte:true,
- start:"La Marne, au petit matin. Un chemin de halage. Je connais cet endroit, et je ne sais pas d'où.",
+ start:"La Marne, au petit matin. Un chemin de halage. En 1914, on se battait pour cet endroit !",
  quips:["La Ferté-sous-Jouarre, dit un panneau. Le nom me chatouille quelque part sous les plumes."],
  signs:[],
- hints:[["ARTICLE 25 — LES BRUMES","En appuyant sur B, on peut partir dans des brumes de souvenirs."]],
+ hints:[["ARTICLE 20 — LES BRUMES","En appuyant sur B, on peut partir dans des brumes de souvenirs."]],
  segs:[],segs14:[]  // construits par 11r_ferte.js
 });

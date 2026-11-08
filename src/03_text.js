@@ -45,42 +45,41 @@ const DEATH_Q={
   wasp:["Piqué par une guêpe. Elle visait la tarte, je crois."],
   bat:["Une chauve-souris. Elle voit dans le noir, pas moi. Ce n'est pas juste."],
   drone:["Le pigeon mécanique m'a rattrapé. Il ne transpire même pas.","Battu par une machine. Je proteste officiellement."],
-  buse:["La buse. Elle a toujours voulu ma place. Elle l'a presque.","Rattrapé par une voisine de vitrine. L'humiliation est totale."],
+  buse:["Rattrapé par une voisine de vitrine. L'humiliation est totale."],
   bolt:["La foudre. Comme au fort. Je… je me souviens d'un éclair.","Frappé par la foudre. Ma paille sent le roussi."],
   fall:["J'avais oublié de battre des ailes. Détail technique.","Il y avait un trou. Je l'ai trouvé.","Chute libre. La liberté, on ne me l'a jamais demandée."],
-  guard:["Repéré. Le gardien m'a ramené au cartel, avec des pincettes.","Pris dans la lumière, comme un lapin. Un lapin décoré.","Il m'a vu. Il n'a pas eu l'air surpris de voir un pigeon se promener dans un musée en pleine nuit. Bizarre."],
+  guard:["Repéré. Le gardien m'a ramené au fanion, avec des pincettes.","Pris dans la lumière, comme un lapin. Un lapin décoré.","Il m'a vu. Il n'a pas eu l'air surpris de voir un pigeon se promener dans un musée en pleine nuit. Bizarre."],
   catwatch:["Il m'a vu bouger. Un chat, ça voit tout, même les yeux fermés.","J'ai bougé. Erreur de débutant."],
   guardnet:["Pris au filet comme un papillon. Le docteur Laffont aurait été ravi.","Le filet. Vexant."],
   mud:["La boue d'ici. Elle ne rend jamais rien.","Englouti. Il fallait avancer, ne jamais s'arrêter."],
   water:["Une gargouille m'a craché dessus. Même les statues m'en veulent."],
-  fire:["Trop près du feu. La paille, ça n'aime pas ça."],
+  fire:["Trop près du feu. Les plumes, ça n'aime pas ça."],
   storm:["L'orage m'a rattrapé. Il ne fallait pas traîner."],
-  sweeper:["Aspiré par la balayeuse. Classé avec les mégots.","Ramassé par la voirie. Comme un vieux journal."],
-  blade:["Coupé net par un moulin. Le meunier ne s'est même pas excusé.","Fauché par une aile de moulin. Ma paille vole en trois morceaux.","Haché menu, comme du tabac de troupe."],
-  obus:["Un vieil obus qui dépassait à peine. Il attendait quelqu'un depuis longtemps. Il n'a pas raté son tour.","Le nez d'un obus. Il a suffi d'une patte. Le génie aurait dû passer avant moi.","Boum. Un vieux de la vieille, qui n'avait pas dit son dernier mot."],
-  trou:["Tombé dans un trou d'obus. L'eau y croupit depuis des années, et moi avec.","Un trou d'obus plein d'eau. Le ciel s'y reflétait si bien que je n'ai pas vu le fond."],
+  blade:["Coupé net par un moulin. Le meunier ne s'est même pas excusé.","Fauché par une aile de moulin. Je pensais les miennes plus solides.","Haché menu, comme du tabac de troupe."],
+  obus:["Un obus qui dépassait à peine. Il attendait quelqu'un. Il n'a pas raté son tour.","Le nez d'un obus. Il a suffi d'une patte. Le génie aurait dû passer avant moi.","Boum. Rouillé comme il était, c'était un vieux de la vieille. De quelle guerre date-t-il ?"],
+  trou:["Tombé dans un trou d'obus. L'eau y croupit, et moi avec.","Un trou d'obus plein d'eau. Le ciel s'y reflétait si bien que je n'ai pas vu le fond."],
   fourgonnette:["Renversé par la fourgonnette du ravitaillement. Livré avec les sandwichs.","Une voiture sur un quai. Je ne l'avais pas prévue, celle-là."],
   voiture:["Écrasé sur le cours de la Gare. Il fallait monter dessus, pas passer devant.","Une automobile. Même pas un cheval pour avoir pitié."],
   passant:["Un voyageur m'a balayé du revers de la main. Comme une miette.","Pris dans les roulettes d'une valise. Quelle fin."],
   pigeonGros:["Un gros pigeon de ville. Il m'a regardé de haut, puis de très près.","Bousculé par un costaud du square. Aucune camaraderie."],
-  pigeonDeplume:["Rattrapé par un déplumé. Il court plus vite qu'il n'a l'air.","Ce pigeon tout nu m'a mis à terre. Je n'en parlerai à personne."],
+  pigeonDeplume:["Rattrapé par un sans-dent déplumé. Il court plus vite qu'il n'a l'air.","Ce pigeon tout nu m'a mis à terre. Je n'en parlerai à personne, j'ai honte !"],
   graine:["Une graine, crachée en plein bec. Il visait bien, le vieux.","Je l'ai survolé : il m'a craché sa graine. Il fallait passer devant lui."],
   tram:["Renversé par le tramway. Il a sonné, pourtant. Deux fois.","Le tramway ne s'arrête pas pour les pigeons. Ni pour personne, d'ailleurs."],
   touristes:["Piétiné par une troupe de touristes. Ils m'ont pris en photo, au moins.","Bousculé par un visiteur qui regardait en l'air."],
   pylone:["Un pylône en pleine figure. Le train, lui, ne s'est même pas arrêté.","Emporté par un poteau. Je ne savais pas que les poteaux voyageaient.","Le pylône m'a cueilli comme une prune. Il fallait sauter."],
-  passerelle:["Un pont. J'ai sauté pile dedans. Il fallait rester à plat.","La passerelle m'a ramassé au vol. Ce n'était pas un pylône, c'était pire."],
+  passerelle:["Un pont. J'ai sauté pile dedans. Il aurait mieux fallu rester à plat.","La passerelle m'a ramassé au vol. Ce n'était pas un pylône, c'était pire."],
   bouteille:["Une canette m'a fauché les pattes. Abattu par un soda.","Une bouteille qui roule. Le bowling, version pigeon."],
   projectile:["Touché par un voyageur. Ils visent mieux que les artilleurs.","Un journal en pleine tête. Au moins, j'aurai lu les nouvelles."],
   serveur:["Un coup de torchon. Le serveur n'aime pas les pigeons au comptoir.","Chassé du bar comme un client sans le sou."],
   rails:["Tombé sous le train. Le règlement ne prévoit même pas ce cas.","Entre les wagons, il n'y a que les rails. Et maintenant moi."],
-  elec:["Une décharge ! Ma paille fume. Ça sent le foin grillé.","Le fil de fer était chargé comme un canon. Je le saurai."],
+  elec:["Une décharge ! Mes plumes fument. Ça sent le foin grillé.","Le fil de fer était chargé comme un canon. Je le saurai."],
   chien:["Le chien. La chaîne était plus longue que je ne pensais. Ou c'est moi qui suis plus court.","Mordu. Il fallait regarder où l'herbe est usée : c'est là qu'il peut aller."],
   chat:["Un coup de patte. Le chat ne bouge pas de son mur ; il attend les pigeons qui passent trop près.","Le chat m'a fauché. Il n'a même pas ouvert les deux yeux."],
   heron:["Le héron. Il m'a pris pour un gardon. Vexant.","Un coup de bec de héron. Il frappe à intervalles réguliers, comme un mortier."],
   ballon:["Un ballon en pleine tête. Lucarne. But.","Le ballon. Ils ont tiré au ras du sol, cette fois."],
   enfant:["Bousculé par un gamin. Il ne m'a même pas vu.","Un enfant m'a percuté. Ils courent partout, ces petits."],
   velo:["Le vélo. Il avait sonné, pourtant. Deux fois.","Écrasé par un vélo. Le casque, c'était pour lui, pas pour moi."],
-  tondeuse:["La tondeuse toute seule. Une machine qui tond sans personne. Tout fout le camp.","Happé par la tondeuse automatique. Je n'ai pas compris qui la conduisait."],
+  tondeuse:["La tondeuse toute seule. Une machine qui tond sans personne. Tout fout le camp.","Happé par la tondeuse. Je n'ai pas compris qui la conduisait."],
   ecureuil:["Un écureuil m'est tombé dessus. Il descendait chercher une noisette. Je n'étais pas une noisette.","Percuté par un écureuil pressé. Il fallait passer quand il remontait."],
   poisson:["Un poisson m'a sauté au bec. On n'attend pas d'un poisson qu'il vole. Lui non plus, sans doute.","Fauché par une carpe en plein saut. La Marne a de l'humour."],
   foule:["Piétiné. Toute la commune m'est passée dessus, et personne ne s'est excusé.","Une forêt de jambes. Je m'y suis perdu, et elles ne regardaient pas où elles marchaient.","Bousculé par la foule. Pour eux, un pigeon, c'est un pavé qui bouge."],
@@ -89,7 +88,7 @@ const DEATH_Q={
   grill:["Les flammes du barbecue. Je sens la merguez, maintenant.","Grillé. Le cuisinier a eu plus peur que moi, et c'est lui qui tenait les pinces."],
   abeille:["Une abeille. Elle allait aux fleurs ; j'étais sur son chemin.","Piqué par une abeille. Elle ne s'en remettra pas, paraît-il. Moi non plus, sur le moment."],
   chatToit:["Le chat sur le toit du marchand de miel. Un coup de patte, sans même se lever.","Fauché par le chat. Il gardait le miel. Ou il m'attendait."],
-  fantome:["Une raideur, d'un coup, dans tout le corps. Froide comme la pierre. Je repars du cartel.","Je l'ai frôlé. Tout s'est raidi en moi, comme si on m'avait cousu les ailes. Je reprends au cartel."],
+  fantome:["Une raideur, d'un coup, dans tout le corps. Froide comme la pierre. Je repars du fanion.","Je l'ai frôlé. Tout s'est raidi en moi, comme si on m'avait cousu les ailes. Je reprends au fanion."],
   chatRue:["Un chat errant, roulé en boule. Il ne dormait que d'un œil.","Le chat dormait. Je l'ai réveillé. Il n'a pas apprécié."],
   pigeonsToit:["Les pigeons du toit. Ils sont chez eux, et ils me l'ont fait comprendre.","Chassé par toute une bande. Pas un pour reconnaître un sergent."],
   hibou:["Un hibou. Il fond sans un bruit sur tout ce qui bouge. J'ai bougé.","Emporté par un hibou. Il m'a pris pour un mulot. C'est vexant, pour un sergent."],
@@ -105,51 +104,44 @@ const INTRO=[
   {t:"Vittoncourt, Moselle. Octobre 2026.\nLe petit musée communal n'a plus les moyens d'ouvrir."},
   {t:"Liquidation : le mammouth en plâtre et les papillons partent aux enchères.\nCe qui ne se vend pas finit à la benne."},
   {t:"… comme lui.",pic:'dome'},
-  {title:"RAYMOND",t:"Sergent Raymond, pigeon voyageur, matricule 7413.\nTombé en service au fort de Vaux, juin 1916.\nEmpaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
+  {title:"RAYMOND",t:"Sergent Raymond, pigeon voyageur, matricule 7413.\nTombé en service près du fort de Vaux, juin 1916.\nEmpaillé avec les honneurs.\nLot n° 212 : invendu.",pic:'dome'},
   {t:"Un message est toujours attaché à sa patte.\nPersonne ne l'a jamais ouvert."},
-  {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui n'a pas acheté de billet."}
+  {t:"Cette nuit-là, il y a de l'orage.\nEt un visiteur qui, semble-t-il, n'a pas acheté de billet."}
 ];
 /* cartes jouées entre les missions, après la dernière lettre de la mission */
 const WORLD_CARDS=[
   null,
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
-   {t:"Direction l'ouest : le pigeonnier Fontaine, à Crécy-la-Chapelle.\nIl connaît le chemin. Il l'a toujours connu."},
-   {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
-   {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Raymond doit rentrer au pigeonnier Fontaine, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
+   {t:"Direction l'ouest : le pigeonnier Vasseur, à Crécy-la-Chapelle.\nIl connaît le chemin. Il l'a toujours connu."},
+   {title:"MISSION 2 · RÉMINISCENCES",t:"Des champs paisibles à perte de vue.\nRaymond a pourtant l'impression d'être déjà passé par là."}],
+  [{t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
+   {t:"Raymond doit rentrer au pigeonnier Vasseur, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
    {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
    {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
-  [{t:"Les ratures ont rendu Raymond silencieux.\nLes pigeons de Reims, eux, ne se taisent jamais."},
+  [{t:"Raymond repense à cette phrase rayée. Il n'en dit rien à personne.\nLes pigeons de Reims, eux, ne se taisent jamais."},
    {t:"Du haut de la cathédrale, Raymond aperçoit un grand axe qui file vers l'ouest.\nAu loin, il reconnaît les paysages."},
    {t:"Il décide d'y filer. Une route immense, sans chevaux ni soldats,\noù des lumières roulent toute la nuit."},
-   {title:"MISSION 4 · L'A4",t:"C'est l'A4. Il fait nuit, et les camions roulent vite."}],
+   {title:"MISSION 4 · LA VOIE DU SOUVENIR",t:"C'est l'A4. Il fait nuit, et les camions roulent vite."}],
   [{t:"L'orage est passé. La lettre est trempée,\net Raymond sait maintenant ce qui est écrit au dos."},
-   {title:"MISSION 5 · CRÉCY-LA-CHAPELLE",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
+   {title:"MISSION 5 · LA NOUVELLE CRÉCY",t:"Le village est en fête.\nPersonne n'attend de pigeon."}]
 ];
 const ENDING=[
   {t:"Cent dix ans. Aucun pigeon ne vit cent dix ans."},
-  {t:"« Alors qu'est-ce que je suis ? »\nIl regarde sa patte. Une couture. Un brin de paille qui dépasse."},
-  {t:"La paille qui s'envolait à chaque chute. La buse qui a flambé comme une botte de foin.\nTout s'explique, d'un coup."},
+  {t:"« Alors qu'est-ce que je suis ? »\nIl regarde sa patte.\nUne couture.\nUn brin de paille qui dépasse."},
+  {t:"La paille qui s'envolait à chaque chute.\nCes billes qui le ballottaient.\nTout s'explique… d'un coup !"},
   {t:"Il n'est pas un pigeon qui a survécu.\nIl est ce qu'il en reste."},
-  {t:"Il voudrait pleurer.\nÀ l'empaillage, on lui a retiré ça aussi."},
-  {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nLe pigeonnier Fontaine n'existe plus. Il n'a nulle part où rentrer."},
-  {t:"Alors il reste là, sur la tombe.\nIl ferme les yeux. De son plein gré, cette fois."},
+  {t:"Il voudrait pleurer.\nMais à l'empaillage… on lui a retiré ça aussi."},
+  {t:"Il dépose la lettre sur la pierre. Mission accomplie !\nLe pigeonnier Vasseur n'existe plus. Il n'a nulle part où rentrer."},
+  {t:"Alors il reste là, sur la tombe.\nIl ferme les yeux.\nDe son plein gré, cette fois."},
   {pic:'finale',minT:10},
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
-];
-/* la fête foraine (fin du niveau 5-3) : Raymond apprend la date */
-const DATE_CARDS=[
-  {pic:'banner'},
-  {t:"Raymond fait le calcul. Deux fois.\n« 2026. »"},
-  {t:"Cent dix ans. La guerre est finie depuis longtemps.\nLucien, le capitaine, les gars du 142e : tout le monde."},
-  {t:"Au milieu des flonflons, Raymond s'effondre.\nPersonne ne remarque un pigeon par terre."}
 ];
 /* intertitres muets avant les morceaux de lettre d'une mission (la mission 1 a TUBE) */
 const LETTER_CARDS={
   1:[{t:"Raymond n'a pas croisé Lucien.\nNi dans les champs, ni sous les bois, ni dans l'abri."},
      {t:"Hormis cet abri, Raymond en conclut que les Allemands ont été repoussés plus loin.\nPour lui, Lucien Vasseur doit y être, en première ligne."},
-     {t:"Raymond l'a déjà vu à l'œuvre : à ses yeux, Lucien est un brave, un héros.\nMais il le trouve si goujat…"},
+     {t:"Raymond l'a déjà vu à l'œuvre : à ses yeux, Lucien est un brave, un héros.\nAlors pourquoi ne se voit-il pas revenir auprès d'elle ?"},
      {t:"L'article 4 interdit de lire le courrier. Raymond le connaît par cœur.\nMais il ne comprend pas le comportement de son maître."},
      {t:"La curiosité l'emporte : Raymond déplie la suite."}]
 };
@@ -157,7 +149,7 @@ const LETTER_CARDS={
 const TUBE=[
   {t:"Raymond a filé par la fenêtre de la loge.\nDerrière lui, des sifflets, un chat furieux, des draps qui couraient tout seuls dans les couloirs."},
   {t:"Dehors, il a voulu voler. Ses ailes s'en souvenaient mal : il est tombé comme une pierre dans la cour.\nDans la chute, le petit tube fixé à sa patte s'est fendu. Le papier dépasse, froissé, taché d'humidité."},
-  {t:"Article 4 : un pigeon militaire ne lit jamais le courrier.\nArticle 4 bis : si le courrier est abîmé, il vérifie qu'il est lisible.\nRaymond vérifie. Un morceau à la fois, par discrétion."}
+  {t:"Article 4 : un pigeon militaire ne lit jamais le courrier.\nArticle 4 bis : si le courrier est abîmé, il vérifie qu'il est lisible.\nRaymond vérifie… le début, par discrétion…"}
 ];
 const GAMEOVER=[
   {pic:'headless',minT:3.2,t:"Raymond a perdu la tête.\nAu sens propre."}
@@ -166,6 +158,6 @@ const WORLDS=[
   {name:"La nuit au Musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
   {name:"Réminiscences",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
   {name:"Le Cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
-  {name:"La voie du souvenir",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","La Marne"]},
+  {name:"La voie du souvenir",levels:["L'autoroute vers l'Ouest","L'aire de Gueux","L'orage","La Marne"]},
   {name:"La nouvelle Crécy",levels:["Le pigeonnier","Les combles","Elle aimait les fêtes","Le cimetière"]}
 ];
