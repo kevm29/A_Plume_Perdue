@@ -88,7 +88,7 @@ const DEATH_Q={
   mouette:["Une mouette, à Crécy. Elle visait le poissonnier, elle a eu le pigeon.","Fauché par une mouette en piqué. Elle n'a même pas freiné."],
   grill:["Les flammes du barbecue. Je sens la merguez, maintenant.","Grillé. Le cuisinier a eu plus peur que moi, et c'est lui qui tenait les pinces."],
   abeille:["Une abeille. Elle allait aux fleurs ; j'étais sur son chemin.","Piqué par une abeille. Elle ne s'en remettra pas, paraît-il. Moi non plus, sur le moment."],
-  chatToit:["Le chat sur le toit des fleurs. Un coup de patte, sans même se lever.","Fauché par le chat. Il gardait les fleurs. Ou il m'attendait."],
+  chatToit:["Le chat sur le toit du crêpier. Un coup de patte, sans même se lever.","Fauché par le chat. Il gardait les crêpes. Ou il m'attendait."],
   chatRue:["Un chat errant. Pour lui, la fête, c'était moi.","Le chat s'est ramassé, puis il a bondi. Dans cet ordre. J'aurais dû regarder."],
   pigeonsToit:["Les pigeons du toit. Ils sont chez eux, et ils me l'ont fait comprendre.","Chassé par toute une bande. Pas un pour reconnaître un sergent."],
   hibou:["Un hibou. Il fond sans un bruit sur tout ce qui bouge. J'ai bougé.","Emporté par un hibou. Il m'a pris pour un mulot. C'est vexant, pour un sergent."],
