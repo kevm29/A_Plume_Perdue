@@ -88,6 +88,8 @@ function comblesPost(Lv){
   C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Garnier montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
   C.canif={kind:'secret',style:'canif',x:11.5*T,y:3*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:["Un canif oublié sur la poutre, tout en haut. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
   Lv.acts.push(C.bague,C.graf,C.canif);
+  // la médaille de la mission : en 1914, tout en haut à gauche, au bout de la poutre du canif
+  Lv.medal={x:8.6*T,y:2.45*T,taken:false,era:14};
   C.motes=Array.from({length:70},(_,i)=>({r:i%CB.rays.length,u:(i*.137)%1,v:(i*.618)%1,s:.6+(i%5)*.3}));
   comblesApplyEra(Lv,26);
 }

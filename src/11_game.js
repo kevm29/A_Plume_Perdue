@@ -49,7 +49,7 @@ function startLevel(i){
   }else say(L.def.start,5);
   applyGot(i);if(S.infinite)S.run.usedInf=true;
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
-  V=null;if(L.def.vaux)vauxStart();
+  V=null;VF.god=!!S.god;if(L.def.vaux)vauxStart();
 }
 function resetPlayer(){
   P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;P.ride=null;P.lift=0;P.hideIn=null;P.carried=null;
@@ -58,13 +58,17 @@ function puff(x,y,n,straw){
   for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,s=60+rnd()*260;parts.push({type:straw?'straw':'feather',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,life:0,max:.9+rnd()*1.1,rot:rnd()*6,vr:(rnd()-.5)*14,len:4+rnd()*7})}
 }
 function obusBoom(x,y){if(G.sim)return;if(G.lt-(G.boomT||-9)<.4)return;G.boomT=G.lt;G.shake=18;noise(.9,240,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<24;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x,y:y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.5})}parts.push({type:'ring',x,y:y-10,life:0,max:.4});G.flash=Math.max(G.flash,.35)}
+/* la médaille n'est là que dans son époque (5-2 : en 1914) */
+function medalVis(){return!!(L.medal&&!L.medal.taken&&!(L.medal.era&&L.cb&&L.medal.era!==L.cb.era))}
 function die(kind,tiles){
   if(P.dead)return;
   if(kind==='obus'){obusBoom(P.x+P.w/2,P.y+P.h);tiles=null}if(kind==='elec')tiles=null;
   if(G.sim){P.dead=true;return}
+  // Dieu-Pigeon : rien ne l'atteint ; s'il tombe hors du monde, il revient au cartel sans dommage
+  if(S.god){if(P.y>ROWS*T+40){resetPlayer();P.wake=.3;actRespawn()}return}
   P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;S.run.anyAccroc=true;
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
-  // (mode caché de l'œil : on meurt et on repart du cartel, mais on ne perd jamais de paille, donc jamais la tête)
+  // (Super-Raymond : on meurt et on repart du cartel, mais on ne perd jamais de paille, donc jamais la tête)
   if(S.infinite){}
   else if((S.run.wear||0)>=MAX_WEAR)G.gameOverPending=true;
   else{S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);if(S.run.wear>=MAX_WEAR)S.run.wasLow=true}
@@ -288,7 +292,7 @@ function stepPlay(dt){
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&cornOn(k)&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
     if((S.run.wear||0)>0){S.run.wear--;save();P.sx=1.15;P.sy=1.15;puff(pc.x,pc.y,6,true);if(!G.tuftSaid){G.tuftSaid=true;say(pick(TUFT_Q),3.4)}}}
-  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();if(!S.run.medals[G.li]&&!S.infinite){S.run.medals[G.li]=true;S.run.lives++;save();say(pick(MEDAL_Q)+' (Une vie de plus.)',4.2)}else say(pick(MEDAL_Q),3.6)}
+  if(medalVis()&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();S.run.medals[G.li]=true;save();say(pick(MEDAL_Q),3.6)}
   for(const cp of L.cps)if(!cp.on&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir
@@ -357,16 +361,25 @@ function respawn(){
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
-  // Raymond a perdu la tête : une vie le ramène au début de la mission, sinon tout recommence
+  // Raymond a perdu la tête : ce qui suit dépend du mode de jeu
+  //   facile : retour au début du niveau ; normal : au début de la mission ; difficile : tout recommence
+  //   (les succès restent ; la paille, les médailles et les secrets concernés reviennent en jeu)
   loopsOff();G.chase=false;
-  const w=LEVELS[G.li].w,first=w*4,hasLife=S.run.lives>0;
-  unlock('a49');S.run.headLost=true;if(!hasLife)unlock('a50');
-  if(hasLife){S.run.lives--;S.run.wear=0;save()}
-  const tail=hasLife
-    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\n${S.run.lives?`Il reste ${S.run.lives} vie${S.run.lives>1?'s':''}.`:'Plus de vie en réserve : la prochaine fois sera la dernière.'} Retour au début de la mission : ${WORLDS[w].name}.`}
-    :{title:"PLUS AUCUNE VIE",t:"Le règlement est formel : tout recommencer depuis le début.\nDepuis la remise de Vittoncourt."};
-  G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;
-  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(first)}:()=>{newRun();S.unlocked=0;save();startIntro()};
+  const w=LEVELS[G.li].w,first=w*4,li=G.li,mode=S.mode;
+  unlock('a49');S.run.headLost=true;S.run.wear=0;
+  const forget=k=>{if(S.run.got)delete S.run.got[k];if(S.run.stats)delete S.run.stats[k];if(S.run.medals)delete S.run.medals[k]};
+  let tail,next;
+  if(mode==='difficile'){unlock('a50');
+    tail={title:"TOUT RECOMMENCER",t:"Le règlement est formel : tout reprendre depuis le début.\nDepuis la remise de Vittoncourt."};
+    next=()=>{newRun();S.unlocked=0;S.resume=0;save();startIntro()}}
+  else if(mode==='normal'){for(let k=first;k<first+4;k++)forget(k);S.unlocked=Math.min(S.unlocked,first);S.resume=first;
+    tail={t:`Un empailleur de passage lui recoud la tête, un peu de travers.\nRetour au début de la mission : ${WORLDS[w].name}.`};
+    next=()=>{G.cutSeen=true;startLevel(first)}}
+  else{forget(li);S.resume=li;
+    tail={t:"Un empailleur de passage lui recoud la tête, un peu de travers.\nRetour au début du niveau."};
+    next=()=>{G.cutSeen=true;startLevel(li)}}
+  save();
+  G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;G.cardsDone=next;
   setSong('s5-4');
 }
 /* sons des bêtes et ambiances, une fois par image */

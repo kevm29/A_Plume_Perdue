@@ -106,8 +106,9 @@ let grainPat=null;
 /* ---------- sauvegarde ---------- */
 const SAVE_KEY='a-plume-perdue-v2';
 const START_LIVES=0,MAX_WEAR=4;
-let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
+let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,mode:'normal',vMus:8,vSfx:8,modesShown:false,codes:{},run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
+if(S.mode==null){S.mode='normal';S.infinite=false}
 if(S.v!==5){S.v=5;S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}};try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
 /* points : chaque niveau vaut 1000 points.
@@ -122,7 +123,7 @@ function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 /* =========================================================
    AUDIO — musiques synthétisées, bruitages, ambiances
    ========================================================= */
-let MUS_OLD=false,AC=null,master,mGain,sGain,noiseBuf,tick=0,nextTick=0,loopN=0,CUR=null,curName='';
+let MUS_OLD=false,AC=null,master,mGain,sGain,mUser,sUser,noiseBuf,tick=0,nextTick=0,loopN=0,CUR=null,curName='';
 const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 function midi(n){const m=/([A-G])([#b]?)(\d)/.exec(n);return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)}
 const mtof=m=>440*Math.pow(2,(m-69)/12);
@@ -243,8 +244,9 @@ function ensureAudio(){
     if(!AC){
       AC=new(window.AudioContext||window.webkitAudioContext)();
       master=AC.createGain();master.gain.value=S.muted?0:.9;master.connect(AC.destination);
-      mGain=AC.createGain();mGain.gain.value=.1;mGain.connect(master);
-      sGain=AC.createGain();sGain.gain.value=.5;sGain.connect(master);
+      mUser=AC.createGain();mUser.connect(master);sUser=AC.createGain();sUser.connect(master);applyVolumes();
+      mGain=AC.createGain();mGain.gain.value=.1;mGain.connect(mUser);
+      sGain=AC.createGain();sGain.gain.value=.5;sGain.connect(sUser);
       noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);
       const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
       nextTick=AC.currentTime+.1;setInterval(sched,50);
@@ -403,6 +405,8 @@ const SFX={
   tick(){tone(1200,.04,'square',.03)},
   secret(){tone(1318,.08,'sine',.12);tone(1760,.12,'sine',.1,null,.07)}
 };
+/* volumes réglés dans les paramètres : 0 à 10, 8 = le volume d'origine */
+function applyVolumes(){if(!mUser)return;const f=v=>Math.pow((v==null?8:v)/8,1.6);mUser.gain.value=f(S.vMus);sUser.gain.value=f(S.vSfx)}
 function toggleMute(){S.muted=!S.muted;save();if(master)master.gain.value=S.muted?0:.9}
 
 /* =========================================================
@@ -569,11 +573,11 @@ const GAMEOVER=[
   {pic:'headless',minT:3.2,t:"Raymond a perdu la tête.\nAu sens propre."}
 ];
 const WORLDS=[
-  {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
-  {name:"Le cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
-  {name:"L'A4 sous l'orage",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","La Marne"]},
-  {name:"Crécy-la-Chapelle",levels:["Le pigeonnier","Les combles","Elle aimait les fêtes","Le cimetière"]}
+  {name:"La nuit au Musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
+  {name:"Réminiscences",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
+  {name:"Le Cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
+  {name:"La voie du souvenir",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","La Marne"]},
+  {name:"La nouvelle Crécy",levels:["Le pigeonnier","Les combles","Elle aimait les fêtes","Le cimetière"]}
 ];
 
 /* =========================================================
@@ -3789,7 +3793,7 @@ function startLevel(i){
   }else say(L.def.start,5);
   applyGot(i);if(S.infinite)S.run.usedInf=true;
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
-  V=null;if(L.def.vaux)vauxStart();
+  V=null;VF.god=!!S.god;if(L.def.vaux)vauxStart();
 }
 function resetPlayer(){
   P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;P.ride=null;P.lift=0;P.hideIn=null;P.carried=null;
@@ -3798,13 +3802,17 @@ function puff(x,y,n,straw){
   for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,s=60+rnd()*260;parts.push({type:straw?'straw':'feather',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,life:0,max:.9+rnd()*1.1,rot:rnd()*6,vr:(rnd()-.5)*14,len:4+rnd()*7})}
 }
 function obusBoom(x,y){if(G.sim)return;if(G.lt-(G.boomT||-9)<.4)return;G.boomT=G.lt;G.shake=18;noise(.9,240,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<24;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x,y:y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.5})}parts.push({type:'ring',x,y:y-10,life:0,max:.4});G.flash=Math.max(G.flash,.35)}
+/* la médaille n'est là que dans son époque (5-2 : en 1914) */
+function medalVis(){return!!(L.medal&&!L.medal.taken&&!(L.medal.era&&L.cb&&L.medal.era!==L.cb.era))}
 function die(kind,tiles){
   if(P.dead)return;
   if(kind==='obus'){obusBoom(P.x+P.w/2,P.y+P.h);tiles=null}if(kind==='elec')tiles=null;
   if(G.sim){P.dead=true;return}
+  // Dieu-Pigeon : rien ne l'atteint ; s'il tombe hors du monde, il revient au cartel sans dommage
+  if(S.god){if(P.y>ROWS*T+40){resetPlayer();P.wake=.3;actRespawn()}return}
   P.dead=true;P.deadT=1.25;G.levelDeaths++;gotOf(G.li).d++;S.run.anyAccroc=true;
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
-  // (mode caché de l'œil : on meurt et on repart du cartel, mais on ne perd jamais de paille, donc jamais la tête)
+  // (Super-Raymond : on meurt et on repart du cartel, mais on ne perd jamais de paille, donc jamais la tête)
   if(S.infinite){}
   else if((S.run.wear||0)>=MAX_WEAR)G.gameOverPending=true;
   else{S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);if(S.run.wear>=MAX_WEAR)S.run.wasLow=true}
@@ -4028,7 +4036,7 @@ function stepPlay(dt){
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&cornOn(k)&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
     if((S.run.wear||0)>0){S.run.wear--;save();P.sx=1.15;P.sy=1.15;puff(pc.x,pc.y,6,true);if(!G.tuftSaid){G.tuftSaid=true;say(pick(TUFT_Q),3.4)}}}
-  if(L.medal&&!L.medal.taken&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();if(!S.run.medals[G.li]&&!S.infinite){S.run.medals[G.li]=true;S.run.lives++;save();say(pick(MEDAL_Q)+' (Une vie de plus.)',4.2)}else say(pick(MEDAL_Q),3.6)}
+  if(medalVis()&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();S.run.medals[G.li]=true;save();say(pick(MEDAL_Q),3.6)}
   for(const cp of L.cps)if(!cp.on&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir
@@ -4097,16 +4105,25 @@ function respawn(){
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){
-  // Raymond a perdu la tête : une vie le ramène au début de la mission, sinon tout recommence
+  // Raymond a perdu la tête : ce qui suit dépend du mode de jeu
+  //   facile : retour au début du niveau ; normal : au début de la mission ; difficile : tout recommence
+  //   (les succès restent ; la paille, les médailles et les secrets concernés reviennent en jeu)
   loopsOff();G.chase=false;
-  const w=LEVELS[G.li].w,first=w*4,hasLife=S.run.lives>0;
-  unlock('a49');S.run.headLost=true;if(!hasLife)unlock('a50');
-  if(hasLife){S.run.lives--;S.run.wear=0;save()}
-  const tail=hasLife
-    ?{t:`Un empailleur de passage lui recoud la tête, un peu de travers.\n${S.run.lives?`Il reste ${S.run.lives} vie${S.run.lives>1?'s':''}.`:'Plus de vie en réserve : la prochaine fois sera la dernière.'} Retour au début de la mission : ${WORLDS[w].name}.`}
-    :{title:"PLUS AUCUNE VIE",t:"Le règlement est formel : tout recommencer depuis le début.\nDepuis la remise de Vittoncourt."};
-  G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;
-  G.cardsDone=hasLife?()=>{G.cutSeen=true;startLevel(first)}:()=>{newRun();S.unlocked=0;save();startIntro()};
+  const w=LEVELS[G.li].w,first=w*4,li=G.li,mode=S.mode;
+  unlock('a49');S.run.headLost=true;S.run.wear=0;
+  const forget=k=>{if(S.run.got)delete S.run.got[k];if(S.run.stats)delete S.run.stats[k];if(S.run.medals)delete S.run.medals[k]};
+  let tail,next;
+  if(mode==='difficile'){unlock('a50');
+    tail={title:"TOUT RECOMMENCER",t:"Le règlement est formel : tout reprendre depuis le début.\nDepuis la remise de Vittoncourt."};
+    next=()=>{newRun();S.unlocked=0;S.resume=0;save();startIntro()}}
+  else if(mode==='normal'){for(let k=first;k<first+4;k++)forget(k);S.unlocked=Math.min(S.unlocked,first);S.resume=first;
+    tail={t:`Un empailleur de passage lui recoud la tête, un peu de travers.\nRetour au début de la mission : ${WORLDS[w].name}.`};
+    next=()=>{G.cutSeen=true;startLevel(first)}}
+  else{forget(li);S.resume=li;
+    tail={t:"Un empailleur de passage lui recoud la tête, un peu de travers.\nRetour au début du niveau."};
+    next=()=>{G.cutSeen=true;startLevel(li)}}
+  save();
+  G.state='intro';G.cards=GAMEOVER.concat([tail]);G.card=0;G.cardT=0;G.fade=1;G.cardsDone=next;
   setSong('s5-4');
 }
 /* sons des bêtes et ambiances, une fois par image */
@@ -4709,7 +4726,7 @@ const ACH=[
  ['a30','C',"Rien ne m'échappe","Trouver tous les secrets du jeu."],
  ['a35','C','Mission parfaite',"Tout trouver dans une mission."],
  ['a49','D','Recousu de travers',"Perdre la tête une première fois."],
- ['a50','D','Depuis la remise',"Perdre sa dernière vie et tout recommencer."],
+ ['a50','D','Depuis la remise',"Perdre la tête en mode difficile et tout recommencer."],
  ['a53','E','Fantôme du musée',"Jeter un drap sur la tête d'un gardien."],
  ['a54','E',"Bijou s'emmêle","Faire s'emmêler le chat dans un drap."],
  ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
@@ -4717,7 +4734,7 @@ const ACH=[
  ['a70','S','Terminus, tout le monde descend',"Au cours Langlet, monter sur un tramway après la rue Guillaume-de-Machault et rester sur son toit jusqu'au tout début de la rue."],
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
- ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond et l'entendre roucouler."],
+ ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond : de nouveaux modes apparaissent dans les paramètres."],
  ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."]
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
@@ -4746,7 +4763,7 @@ function achMission(w){
 const ACH_HINT={a1:"Tout commence par une nuit d'orage.",a2:"Le voleur n'est pas sorti par la fenêtre.",a3:"Un pigeon a un bec. Qu'il s'en serve.",a4:"Sortir du musée.",a5:"Traverser les champs rouges.",a6:"Atteindre le sommet du clocher le plus haut de la région.",
  a7:"Survivre à la route sans fin.",a8:"Arriver au village.",a9:"Remettre la lettre.",a10:"Arriver au bout sans jamais avoir besoin d'un empailleur.",a11:"Arriver au bout sans perdre un seul brin.",a12:"Quatre niveaux d'affilée sans un accroc.",
  a13:"Lire ce qui est écrit au-dessus de la fête.",a15:"Aller jusqu'au bout de l'histoire.",a17:"Tout lire, morceau par morceau.",a24:"Toucher le fond, puis remonter à neuf.",a26:"Une décoration par mission, dans la même partie.",
- a30:"Fouiller partout. Vraiment partout.",a35:"Ne rien laisser derrière soi pendant toute une mission.",a49:"Perdre la tête.",a50:"Perdre la tête sans vie en réserve.",a53:"Un drap, un gardien, un bec.",a54:"Un chat, un drap, un pigeon pressé.",
+ a30:"Fouiller partout. Vraiment partout.",a35:"Ne rien laisser derrière soi pendant toute une mission.",a49:"Perdre la tête.",a50:"Perdre la tête en mode difficile.",a53:"Un drap, un gardien, un bec.",a54:"Un chat, un drap, un pigeon pressé.",
  a56:"Le filet n'attrape pas tout.",c1:"Un gardien n'a jamais assez de clefs. Une pie, non plus.",a68:"Trop forcer sur ses coutures.",a81:"Regarder Raymond droit dans l'œil, avec insistance.",a82:"Ne rien faire du tout, assez longtemps."};
 // forme, métal, ruban [couleurs de bandes], emblème
 const ACH_MEDAL={
@@ -11337,6 +11354,8 @@ function comblesPost(Lv){
   C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Garnier montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
   C.canif={kind:'secret',style:'canif',x:11.5*T,y:3*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:["Un canif oublié sur la poutre, tout en haut. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
   Lv.acts.push(C.bague,C.graf,C.canif);
+  // la médaille de la mission : en 1914, tout en haut à gauche, au bout de la poutre du canif
+  Lv.medal={x:8.6*T,y:2.45*T,taken:false,era:14};
   C.motes=Array.from({length:70},(_,i)=>({r:i%CB.rays.length,u:(i*.137)%1,v:(i*.618)%1,s:.6+(i%5)*.3}));
   comblesApplyEra(Lv,26);
 }
@@ -13043,7 +13062,7 @@ function drawEntities(t){
   if(L.exit&&L.def.exit!=='none')drawExit(ctx,L.exit,L.def.exit,t,L.def.exitLabel);
   for(const m of L.movers)if(vis(m.x)||vis(m.x+m.w))drawMover(ctx,m);
   for(const k of L.corn)if(!k.taken&&cornOn(k)&&vis(k.x))drawTuft(ctx,k.x,k.y,t+k.ph);
-  if(L.medal&&!L.medal.taken)drawMedal(ctx,L.medal.x,L.medal.y,t);
+  if(medalVis())drawMedal(ctx,L.medal.x,L.medal.y,t);
   for(const b of L.bolts){if(!vis(b.x)||b.state==='idle')continue;const floor=13*T;
     if(b.state==='warn'){const a=.25+.25*Math.sin(t*20);ctx.fillStyle='rgba(200,220,255,'+a+')';ctx.beginPath();ctx.ellipse(b.x,floor-2,30,6,0,0,7);ctx.fill();ctx.strokeStyle='rgba(200,220,255,'+(a*.6)+')';ctx.lineWidth=1;ctx.setLineDash([4,6]);ctx.beginPath();ctx.moveTo(b.x,0);ctx.lineTo(b.x,floor);ctx.stroke();ctx.setLineDash([])}
     else{ctx.strokeStyle='rgba(235,245,255,.95)';ctx.lineWidth=4;ctx.beginPath();let x=b.x,y=-20;ctx.moveTo(x,y);const R=mulberry((G.lt*10|0)+b.x);while(y<floor){y+=30+R()*20;x=b.x+(R()-.5)*30;ctx.lineTo(x,Math.min(y,floor))}ctx.stroke();ctx.lineWidth=12;ctx.strokeStyle='rgba(160,190,255,.25)';ctx.stroke();ctx.fillStyle='rgba(235,245,255,.6)';ctx.beginPath();ctx.ellipse(b.x,floor,40,10,0,0,7);ctx.fill()}}
@@ -13181,7 +13200,7 @@ function renderHUD(){
   ctx.font='17px '+F_DISP;ctx.textAlign='right';
   const nl=Math.max(0,S.run.lives),wr=Math.min(MAX_WEAR,S.run.wear||0);
   const ctw=ctx.measureText(`${G.corn}/${G.cornTotal}`).width;
-  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+14+(S.infinite?48:Math.max(1,nl)*17+(nl===0?70:0))+8;
+  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+(S.infinite?14+48:0)+8;
   ctx.fillStyle='rgba(14,12,18,.6)';rr(ctx,bx-panelW,by,panelW,36,8);ctx.fill();
   ctx.strokeStyle='rgba(233,223,199,.15)';ctx.lineWidth=1;rr(ctx,bx-panelW+.5,by+.5,panelW-1,35,8);ctx.stroke();
   x-=12;
@@ -13193,10 +13212,8 @@ function renderHUD(){
     ctx.fillStyle=full?(warn?'rgba(200,48,42,'+(.6+.4*Math.sin(G.t*8))+')':'#d9a441'):'rgba(233,223,199,.18)';
     rr(ctx,cx-5,by+12,10,13,3);ctx.fill()}
   x-=MAX_WEAR*13+24;
-  ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;
-  // vies : têtes de pigeon
-  if(S.infinite){ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
-  else{for(let k=0;k<nl;k++)lifeIcon(x-6-k*17,by+19);if(nl===0){ctx.fillStyle='#c8302a';ctx.font='italic 13px '+F_BODY;ctx.fillText('dernière vie',x,by+23)}}
+  // Super-Raymond et Dieu-Pigeon : paille illimitée
+  if(S.infinite){ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
   ctx.restore();
   // panneau d'aide puis réplique
   let qy=64;
@@ -13253,7 +13270,7 @@ function menuItems(){
     if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.resume!=null?S.resume:S.unlocked,19);freshRun();startLevel(li)}});
     it.push({label:'Choisir un niveau',act:openSelect});
     if(Object.keys(achState()).length)it.push({label:'Succès',act:openAch});
-    it.push({label:S.muted?'Son : coupé':'Son : activé',act:toggleMute});
+    it.push({label:'Paramètres',act:openSettings});
     return it;
   }
   if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:"Retour à l'accueil",act:askHome},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
@@ -13286,10 +13303,10 @@ function handleMenu(){
   if(pressed.has('up'))G.menuSel=(G.menuSel-1+it.length)%it.length;
   if(pressed.has('down'))G.menuSel=(G.menuSel+1)%it.length;
   if(G.click){
-    // l'œil de Raymond : quatre clics rapprochés, et il roucoule (tous les niveaux ouverts ; on meurt et on repart du cartel, mais sans jamais perdre de paille)
+    // l'œil de Raymond : quatre clics rapprochés, il roucoule, et les modes Super-Raymond et Dieu-Pigeon apparaissent dans les paramètres
     if(G.state==='title'){const ex=W*.3+11*3.2,ey=460-29.5*3.2;if(Math.hypot(G.click.x-ex,G.click.y-ey)<16){
       if(G.t-(G.eyeT||-9)>1.4)G.eyeN=0;G.eyeT=G.t;G.eyeN=(G.eyeN||0)+1;G.wink=.18;SFX.tick();
-      if(G.eyeN>=4){G.eyeN=0;S.infinite=!S.infinite;save();SFX.coo();G.wink=.9;if(S.infinite)unlock('a81')}return}}
+      if(G.eyeN>=4){G.eyeN=0;S.modesShown=true;save();SFX.coo();G.wink=.9;unlock('a81')}return}}
     for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.menuSel=b.i;it[b.i].act();return}
   }
   if(pressed.has('ok'))it[G.menuSel].act();
@@ -13326,7 +13343,6 @@ function renderSelect(t){
   ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
   ctx.fillStyle='rgba(12,10,16,.84)';ctx.fillRect(0,0,W,H);
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Itinéraire de Raymond',W/2,46);
-  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → les coquelicots → Reims → A4 → Crécy-la-Chapelle',W/2,67);
   G.boxes=[];
   const tile=(i,x,yy,w,h,top,bottom)=>{const sel=i===G.sel,open=selectOpen(i);
     ctx.save();if(!open)ctx.globalAlpha=.35;ctx.fillStyle=sel?'#efe5cc':'#d8cdb2';rr(ctx,x,yy,w,h,6);ctx.fill();
@@ -13339,13 +13355,13 @@ function renderSelect(t){
     const y=82+wi*64;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`MISSION ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
     wd.levels.forEach((ln,lj)=>{
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
-      tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,ln);
+      tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,(li<=S.unlocked||S.best[li])?ln:'?????');
       const b=S.best[li];if(b){ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';ctx.fillText((b.medal?'✠ ':'')+`paille ${b.corn}`,x+188,yy+16)}
     });
   });
   tile(100,70,480,406,28,"Revoir l'introduction");
   tile(101,484,480,406,28,'Revoir la fin');
-  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText((S.infinite?'Tous les niveaux sont ouverts · Raymond ne perd jamais sa paille':'Les niveaux s\'ouvrent à mesure que Raymond avance')+' · Entrée pour partir · Échap pour revenir',W/2,H-12);
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Entrée pour lancer · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){
@@ -13360,7 +13376,7 @@ function handleSelect(){
     if(!selectOpen(li)){tone(200,.1,'square',.04);return}
     if(li===100){startIntro();return}
     if(li===101){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
-    G.cutSeen=li>0;newRun();startLevel(li)};
+    G.cutSeen=li>0;S.run.wear=0;save();startLevel(li)};
   if(G.click)for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){go(b.i);return}
   if(pressed.has('ok'))go(G.sel);
 }
@@ -13687,12 +13703,95 @@ function afterLetter(li){
 }
 
 /* =========================================================
+   PARAMÈTRES : volumes, mode de jeu, touches
+   ---------------------------------------------------------
+   Modes : facile, normal, difficile (toujours visibles) ; Super-Raymond et Dieu-Pigeon n'apparaissent
+   qu'après les quatre clics sur l'œil de Raymond, et ne s'ouvrent qu'avec leur code (on ne garde
+   ici que l'empreinte des codes, jamais les codes eux-mêmes).
+   ========================================================= */
+const MODES=[
+  {k:'facile',n:'Facile',d:"Perdre la tête ramène au début du niveau."},
+  {k:'normal',n:'Normal',d:"Perdre la tête ramène au début de la mission."},
+  {k:'difficile',n:'Difficile',d:"Perdre la tête, c'est tout recommencer depuis la remise."},
+  {k:'super',n:'Super-Raymond',d:"Paille illimitée : Raymond ne perd jamais la tête. Tous les niveaux sont ouverts.",hidden:1,h:419132830826481},
+  {k:'dieu',n:'Dieu-Pigeon',d:"Rien ne l'atteint. Tous les niveaux sont ouverts.",hidden:1,h:4784510863132940}];
+function modeHash(s,seed=7413){let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0)}
+function applyMode(){if(!MODES.some(m=>m.k===S.mode))S.mode='normal';S.infinite=S.mode==='super'||S.mode==='dieu';S.god=S.mode==='dieu'}
+function modesVisible(){return MODES.filter(m=>!m.hidden||S.modesShown||S.mode===m.k)}
+/* la touche B (changer d'époque) n'existe qu'une fois le 4-3 terminé */
+function eraKeyOn(){return S.unlocked>=15}
+function openSettings(){G.state='settings';G.setSel=0;G.codeEntry=null;G.setMsg=null;G.fade=1}
+function setVol(k,d){S[k]=clamp((S[k]==null?8:S[k])+d,0,10);applyVolumes();save();if(k==='vSfx')SFX.tick()}
+function setMode(d){const vis=modesVisible();let i=vis.findIndex(m=>m.k===(G.setPick||S.mode));if(i<0)i=0;i=(i+d+vis.length)%vis.length;const m=vis[i];G.setPick=m.k;G.setMsg=null;
+  if(m.hidden&&!(S.codes&&S.codes[m.k]))return;S.mode=m.k;G.setPick=null;applyMode();save()}
+function settingsRows(){return['mus','sfx','mode','back']}
+function handleSettings(){
+  const C=G.codeEntry;if(C)return; // la saisie du code passe par le clavier (voir 14_main)
+  const rows=settingsRows();
+  if(pressed.has('esc')||pressed.has('back')){G.setPick=null;goTitle();return}
+  if(pressed.has('up'))G.setSel=(G.setSel-1+rows.length)%rows.length;
+  if(pressed.has('down'))G.setSel=(G.setSel+1)%rows.length;
+  const r=rows[G.setSel],dx=pressed.has('left')?-1:pressed.has('right')?1:0;
+  if(dx){if(r==='mus')setVol('vMus',dx);else if(r==='sfx')setVol('vSfx',dx);else if(r==='mode')setMode(dx)}
+  if(G.click&&G.setBoxes)for(const b of G.setBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.setSel=rows.indexOf(b.r);
+    if(b.d){if(b.r==='mus')setVol('vMus',b.d);else if(b.r==='sfx')setVol('vSfx',b.d);else if(b.r==='mode')setMode(b.d)}
+    else if(b.r==='back'){G.setPick=null;goTitle()}else if(b.r==='code')askCode();return}
+  if(pressed.has('ok')){if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
+}
+function pendingLocked(){const m=MODES.find(m=>m.k===G.setPick);return m&&m.hidden&&!(S.codes&&S.codes[m.k])?m:null}
+function askCode(){const m=pendingLocked();if(m){G.codeEntry={k:m.k,txt:''};G.setMsg=null}}
+/* appelée par le clavier pendant la saisie du code */
+function codeKey(e){const C=G.codeEntry;if(!C)return false;e.preventDefault();
+  if(e.key==='Escape'){G.codeEntry=null;return true}
+  if(e.key==='Backspace'){C.txt=C.txt.slice(0,-1);return true}
+  if(e.key==='Enter'||e.key==='NumpadEnter'){const m=MODES.find(m=>m.k===C.k);
+    if(m&&modeHash(C.txt)===m.h){S.codes=S.codes||{};S.codes[m.k]=1;S.mode=m.k;G.setPick=null;applyMode();save();G.setMsg={t:m.n+' : activé.',ok:1};SFX.coo()}
+    else{G.setMsg={t:'Ce n\'est pas le bon code.',ok:0};tone(200,.12,'square',.04)}
+    G.codeEntry=null;return true}
+  if(e.key&&e.key.length===1&&C.txt.length<16){C.txt+=e.key;SFX.tick()}
+  return true}
+function renderSettings(t){
+  ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
+  ctx.fillStyle='rgba(12,10,16,.86)';ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='32px '+F_DISP;ctx.fillText('Paramètres',W/2,52);
+  G.setBoxes=[];const rows=settingsRows(),L0=170,R0=W/2+10;
+  const label=(r,txt,y)=>{const sel=rows[G.setSel]===r;ctx.textAlign='right';ctx.font=(sel?'21px ':'19px ')+F_DISP;ctx.fillStyle=sel?'#f2e8cf':'rgba(233,223,199,.65)';ctx.fillText(txt,W/2-30,y);
+    if(sel){ctx.fillStyle='#d9a441';ctx.save();ctx.translate(W/2-30-ctx.measureText(txt).width-16,y-7);ctx.rotate(-.5);ctx.beginPath();ctx.ellipse(0,0,8,3,0,0,7);ctx.fill();ctx.restore()}};
+  const arrows=(r,y,w)=>{ctx.font='20px '+F_DISP;ctx.fillStyle='#d9a441';ctx.textAlign='center';ctx.fillText('◂',R0,y);ctx.fillText('▸',R0+w,y);
+    G.setBoxes.push({r,d:-1,x:R0-16,y:y-22,w:32,h:30},{r,d:1,x:R0+w-16,y:y-22,w:32,h:30})};
+  // volumes
+  [['mus','Musique','vMus',100],['sfx','Sons','vSfx',140]].forEach(([r,lb,k,y])=>{label(r,lb,y);arrows(r,y,250);const v=S[k]==null?8:S[k];
+    for(let i=0;i<10;i++){ctx.fillStyle=i<v?'#d9a441':'rgba(233,223,199,.16)';rr(ctx,R0+22+i*21,y-17,15,18,3);ctx.fill()}
+    if(v===0){ctx.textAlign='left';ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('coupée',R0+272,y-2)}
+    G.setBoxes.push({r,x:W/2-200,y:y-24,w:170,h:32})});
+  // mode
+  {const y=190;label('mode','Mode de jeu',y);arrows('mode',y,250);const k=G.setPick||S.mode,m=MODES.find(m=>m.k===k)||MODES[1],locked=m.hidden&&!(S.codes&&S.codes[m.k]);
+    ctx.textAlign='center';ctx.font='20px '+F_DISP;ctx.fillStyle=locked?'rgba(233,223,199,.5)':'#efe5cc';ctx.fillText(m.n,R0+125,y);
+    ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(m.d,W/2,y+26);
+    if(G.codeEntry){ctx.fillStyle='#ece3cc';rr(ctx,W/2-150,y+40,300,34,6);ctx.fill();ctx.fillStyle='#2a2420';ctx.font='18px '+F_DISP;ctx.fillText((G.codeEntry.txt||'')+(Math.sin(t*6)>0?'|':' '),W/2,y+63);
+      ctx.font='italic 13px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Taper le code puis Entrée · Échap pour annuler',W/2,y+92)}
+    else if(locked){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='#d9a441';ctx.fillText('Verrouillé · Entrée (ou clic ici) pour saisir le code',W/2,y+52);G.setBoxes.push({r:'code',x:W/2-200,y:y+34,w:400,h:26})}
+    else if(G.setMsg){ctx.font='italic 15px '+F_BODY;ctx.fillStyle=G.setMsg.ok?'#9fd19f':'#e08a80';ctx.fillText(G.setMsg.t,W/2,y+52)}
+    G.setBoxes.push({r:'mode',x:W/2-200,y:y-24,w:170,h:32})}
+  // touches
+  {let y=318;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText('TOUCHES',W/2,y);y+=24;
+    const K=[['← →  ou  Q D','marcher'],['Espace, ↑ ou Z','sauter ; en l\'air, battre des ailes ; maintenu, planer'],['E ou F','donner un coup de bec'],['↓ ou S','descendre, en vol']];
+    if(eraKeyOn())K.push(['B','changer d\'époque']);K.push(['R','revenir au cartel'],['Échap ou P','pause'],['M','couper le son']);
+    ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=19}}
+  // retour
+  {const y=H-28,sel=rows[G.setSel]==='back';ctx.textAlign='center';ctx.font=(sel?'21px ':'19px ')+F_DISP;ctx.fillStyle=sel?'#f2e8cf':'rgba(233,223,199,.65)';ctx.fillText('Retour',W/2,y);G.setBoxes.push({r:'back',x:W/2-60,y:y-24,w:120,h:32})}
+  ctx.restore();
+}
+
+/* =========================================================
    ENTRÉES ET BOUCLE PRINCIPALE
    ========================================================= */
 const keys=new Set(),pressed=new Set();
 const KMAP={ArrowLeft:['left'],KeyA:['left'],ArrowRight:['right'],KeyD:['right'],ArrowUp:['jump','up'],KeyW:['jump','up'],KeyZ:['jump','up'],Space:['jump','ok'],ArrowDown:['down'],KeyS:['down'],KeyE:['act'],KeyB:['era'],KeyF:['act'],Enter:['ok'],NumpadEnter:['ok'],Escape:['esc'],KeyP:['esc'],Backspace:['back']};
 addEventListener('keydown',e=>{
   ensureAudio();
+  if(G.state==='settings'&&G.codeEntry&&codeKey(e))return;
   const a=KMAP[e.code];
   if(a){for(const k of a){if(!keys.has(k))pressed.add(k);keys.add(k)}e.preventDefault()}
   const k=(e.key||'').toLowerCase();
@@ -13714,7 +13813,8 @@ function bindTouch(id,act){
 bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch('te','act');bindTouch('tb','era');
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
 let touchUI=false;
-function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te','tb'])document.getElementById(id).classList.add('on')}
+function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on');syncTouchB()}
+function syncTouchB(){if(touchUI)document.getElementById('tb').classList.toggle('on',eraKeyOn())}
 if(matchMedia('(pointer: coarse)').matches)showTouch();
 addEventListener('touchstart',showTouch,{passive:true});
 
@@ -13734,12 +13834,14 @@ function update(dt){
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
     case'ach':handleAch();break;
+    case'settings':handleSettings();break;
     case'intro':handleCards(dt);break;
     case'levelend':handleLetter(dt);break;
     case'play':{
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
+      if(!eraKeyOn())pressed.delete('era');if(touchUI&&!G.tbSync){G.tbSync=1;syncTouchB()}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
@@ -13781,6 +13883,7 @@ function render(){
     case'title':renderTitle(t);renderGrain();break;
     case'select':renderSelect(t);renderGrain();break;
     case'ach':renderAch(t);renderGrain();break;
+    case'settings':renderSettings(t);renderGrain();break;
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;
     case'play':case'pause':case'exiting':case'confirm':{
@@ -13793,7 +13896,7 @@ function render(){
       const extra=[{x:P.x+P.w/2,y:P.y+P.h/2,r:190,i:.8}];
       for(const cp of L.cps)if(cp.on)extra.push({x:cp.x,y:cp.y-46,r:150,i:.75,warm:1,flick:1});
       if(L.exit)extra.push({x:L.exit.x+26,y:L.exit.y+40,r:230,i:1,warm:L.def.exit==='door'||L.def.exit==='bunker'?1:0});
-      if(L.medal&&!L.medal.taken)extra.push({x:L.medal.x,y:L.medal.y,r:70,i:.5});
+      if(medalVis())extra.push({x:L.medal.x,y:L.medal.y,r:70,i:.5});
       if(L.dome)extra.push({x:L.dome.x,y:L.dome.floor-90,r:170,i:.7,warm:1});
       if(G.cut&&G.cut.thief.state!=='out'&&G.cut.thief.state!=='gone')extra.push({x:G.cut.thief.x-40,y:L.dome.floor-60,r:200,i:.85,warm:1});
       for(const b of L.bolts)if(b.state==='strike')extra.push({x:b.x,y:13*T-60,r:260,i:1});
@@ -13823,6 +13926,7 @@ function frame(now){
   G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);
 }
+applyMode();
 async function boot(){
   try{await Promise.race([Promise.all([document.fonts.load('30px "IM Fell English SC"'),document.fonts.load('italic 20px "IM Fell English"'),document.fonts.load('20px "IM Fell English"'),document.fonts.load('30px "La Belle Aurore"')]),new Promise(r=>setTimeout(r,2500))])}catch(e){}
   ensureTitleLv();G.state='title';G.fade=1;setSong('title');

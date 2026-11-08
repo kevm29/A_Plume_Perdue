@@ -23,7 +23,7 @@ const ACH=[
  ['a30','C',"Rien ne m'échappe","Trouver tous les secrets du jeu."],
  ['a35','C','Mission parfaite',"Tout trouver dans une mission."],
  ['a49','D','Recousu de travers',"Perdre la tête une première fois."],
- ['a50','D','Depuis la remise',"Perdre sa dernière vie et tout recommencer."],
+ ['a50','D','Depuis la remise',"Perdre la tête en mode difficile et tout recommencer."],
  ['a53','E','Fantôme du musée',"Jeter un drap sur la tête d'un gardien."],
  ['a54','E',"Bijou s'emmêle","Faire s'emmêler le chat dans un drap."],
  ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
@@ -31,7 +31,7 @@ const ACH=[
  ['a70','S','Terminus, tout le monde descend',"Au cours Langlet, monter sur un tramway après la rue Guillaume-de-Machault et rester sur son toit jusqu'au tout début de la rue."],
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
- ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond et l'entendre roucouler."],
+ ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond : de nouveaux modes apparaissent dans les paramètres."],
  ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."]
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
@@ -60,7 +60,7 @@ function achMission(w){
 const ACH_HINT={a1:"Tout commence par une nuit d'orage.",a2:"Le voleur n'est pas sorti par la fenêtre.",a3:"Un pigeon a un bec. Qu'il s'en serve.",a4:"Sortir du musée.",a5:"Traverser les champs rouges.",a6:"Atteindre le sommet du clocher le plus haut de la région.",
  a7:"Survivre à la route sans fin.",a8:"Arriver au village.",a9:"Remettre la lettre.",a10:"Arriver au bout sans jamais avoir besoin d'un empailleur.",a11:"Arriver au bout sans perdre un seul brin.",a12:"Quatre niveaux d'affilée sans un accroc.",
  a13:"Lire ce qui est écrit au-dessus de la fête.",a15:"Aller jusqu'au bout de l'histoire.",a17:"Tout lire, morceau par morceau.",a24:"Toucher le fond, puis remonter à neuf.",a26:"Une décoration par mission, dans la même partie.",
- a30:"Fouiller partout. Vraiment partout.",a35:"Ne rien laisser derrière soi pendant toute une mission.",a49:"Perdre la tête.",a50:"Perdre la tête sans vie en réserve.",a53:"Un drap, un gardien, un bec.",a54:"Un chat, un drap, un pigeon pressé.",
+ a30:"Fouiller partout. Vraiment partout.",a35:"Ne rien laisser derrière soi pendant toute une mission.",a49:"Perdre la tête.",a50:"Perdre la tête en mode difficile.",a53:"Un drap, un gardien, un bec.",a54:"Un chat, un drap, un pigeon pressé.",
  a56:"Le filet n'attrape pas tout.",c1:"Un gardien n'a jamais assez de clefs. Une pie, non plus.",a68:"Trop forcer sur ses coutures.",a81:"Regarder Raymond droit dans l'œil, avec insistance.",a82:"Ne rien faire du tout, assez longtemps."};
 // forme, métal, ruban [couleurs de bandes], emblème
 const ACH_MEDAL={

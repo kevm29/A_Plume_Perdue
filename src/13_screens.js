@@ -14,7 +14,7 @@ function menuItems(){
     if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.resume!=null?S.resume:S.unlocked,19);freshRun();startLevel(li)}});
     it.push({label:'Choisir un niveau',act:openSelect});
     if(Object.keys(achState()).length)it.push({label:'Succès',act:openAch});
-    it.push({label:S.muted?'Son : coupé':'Son : activé',act:toggleMute});
+    it.push({label:'Paramètres',act:openSettings});
     return it;
   }
   if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:"Retour à l'accueil",act:askHome},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
@@ -47,10 +47,10 @@ function handleMenu(){
   if(pressed.has('up'))G.menuSel=(G.menuSel-1+it.length)%it.length;
   if(pressed.has('down'))G.menuSel=(G.menuSel+1)%it.length;
   if(G.click){
-    // l'œil de Raymond : quatre clics rapprochés, et il roucoule (tous les niveaux ouverts ; on meurt et on repart du cartel, mais sans jamais perdre de paille)
+    // l'œil de Raymond : quatre clics rapprochés, il roucoule, et les modes Super-Raymond et Dieu-Pigeon apparaissent dans les paramètres
     if(G.state==='title'){const ex=W*.3+11*3.2,ey=460-29.5*3.2;if(Math.hypot(G.click.x-ex,G.click.y-ey)<16){
       if(G.t-(G.eyeT||-9)>1.4)G.eyeN=0;G.eyeT=G.t;G.eyeN=(G.eyeN||0)+1;G.wink=.18;SFX.tick();
-      if(G.eyeN>=4){G.eyeN=0;S.infinite=!S.infinite;save();SFX.coo();G.wink=.9;if(S.infinite)unlock('a81')}return}}
+      if(G.eyeN>=4){G.eyeN=0;S.modesShown=true;save();SFX.coo();G.wink=.9;unlock('a81')}return}}
     for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.menuSel=b.i;it[b.i].act();return}
   }
   if(pressed.has('ok'))it[G.menuSel].act();
@@ -87,7 +87,6 @@ function renderSelect(t){
   ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
   ctx.fillStyle='rgba(12,10,16,.84)';ctx.fillRect(0,0,W,H);
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Itinéraire de Raymond',W/2,46);
-  ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('Vittoncourt → les coquelicots → Reims → A4 → Crécy-la-Chapelle',W/2,67);
   G.boxes=[];
   const tile=(i,x,yy,w,h,top,bottom)=>{const sel=i===G.sel,open=selectOpen(i);
     ctx.save();if(!open)ctx.globalAlpha=.35;ctx.fillStyle=sel?'#efe5cc':'#d8cdb2';rr(ctx,x,yy,w,h,6);ctx.fill();
@@ -100,13 +99,13 @@ function renderSelect(t){
     const y=82+wi*64;ctx.textAlign='left';ctx.font='12px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(`MISSION ${wi+1} · ${wd.name.toUpperCase()}`,70,y+6);
     wd.levels.forEach((ln,lj)=>{
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
-      tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,ln);
+      tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,(li<=S.unlocked||S.best[li])?ln:'?????');
       const b=S.best[li];if(b){ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';ctx.fillText((b.medal?'✠ ':'')+`paille ${b.corn}`,x+188,yy+16)}
     });
   });
   tile(100,70,480,406,28,"Revoir l'introduction");
   tile(101,484,480,406,28,'Revoir la fin');
-  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText((S.infinite?'Tous les niveaux sont ouverts · Raymond ne perd jamais sa paille':'Les niveaux s\'ouvrent à mesure que Raymond avance')+' · Entrée pour partir · Échap pour revenir',W/2,H-12);
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Entrée pour lancer · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){
@@ -121,7 +120,7 @@ function handleSelect(){
     if(!selectOpen(li)){tone(200,.1,'square',.04);return}
     if(li===100){startIntro();return}
     if(li===101){G.state='intro';G.cards=ENDING;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>openSelect();setSong('s5-4');return}
-    G.cutSeen=li>0;newRun();startLevel(li)};
+    G.cutSeen=li>0;S.run.wear=0;save();startLevel(li)};
   if(G.click)for(const b of G.boxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){go(b.i);return}
   if(pressed.has('ok'))go(G.sel);
 }

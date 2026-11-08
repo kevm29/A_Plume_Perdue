@@ -63,8 +63,9 @@ let grainPat=null;
 /* ---------- sauvegarde ---------- */
 const SAVE_KEY='a-plume-perdue-v2';
 const START_LIVES=0,MAX_WEAR=4;
-let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
+let S={unlocked:0,best:{},muted:false,infinite:false,finished:false,mode:'normal',vMus:8,vSfx:8,modesShown:false,codes:{},run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{}}};
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(s){S=Object.assign(S,s);S.run=Object.assign({lives:START_LIVES,worldLives:[START_LIVES],medals:{}},S.run||{})}}catch(e){}
+if(S.mode==null){S.mode='normal';S.infinite=false}
 if(S.v!==5){S.v=5;S.run={lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}};try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 S.run.wear=Math.min(MAX_WEAR,S.run.wear||0);if(!S.run.stats)S.run.stats={};
 /* points : chaque niveau vaut 1000 points.

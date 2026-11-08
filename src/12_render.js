@@ -39,7 +39,7 @@ function drawEntities(t){
   if(L.exit&&L.def.exit!=='none')drawExit(ctx,L.exit,L.def.exit,t,L.def.exitLabel);
   for(const m of L.movers)if(vis(m.x)||vis(m.x+m.w))drawMover(ctx,m);
   for(const k of L.corn)if(!k.taken&&cornOn(k)&&vis(k.x))drawTuft(ctx,k.x,k.y,t+k.ph);
-  if(L.medal&&!L.medal.taken)drawMedal(ctx,L.medal.x,L.medal.y,t);
+  if(medalVis())drawMedal(ctx,L.medal.x,L.medal.y,t);
   for(const b of L.bolts){if(!vis(b.x)||b.state==='idle')continue;const floor=13*T;
     if(b.state==='warn'){const a=.25+.25*Math.sin(t*20);ctx.fillStyle='rgba(200,220,255,'+a+')';ctx.beginPath();ctx.ellipse(b.x,floor-2,30,6,0,0,7);ctx.fill();ctx.strokeStyle='rgba(200,220,255,'+(a*.6)+')';ctx.lineWidth=1;ctx.setLineDash([4,6]);ctx.beginPath();ctx.moveTo(b.x,0);ctx.lineTo(b.x,floor);ctx.stroke();ctx.setLineDash([])}
     else{ctx.strokeStyle='rgba(235,245,255,.95)';ctx.lineWidth=4;ctx.beginPath();let x=b.x,y=-20;ctx.moveTo(x,y);const R=mulberry((G.lt*10|0)+b.x);while(y<floor){y+=30+R()*20;x=b.x+(R()-.5)*30;ctx.lineTo(x,Math.min(y,floor))}ctx.stroke();ctx.lineWidth=12;ctx.strokeStyle='rgba(160,190,255,.25)';ctx.stroke();ctx.fillStyle='rgba(235,245,255,.6)';ctx.beginPath();ctx.ellipse(b.x,floor,40,10,0,0,7);ctx.fill()}}
@@ -177,7 +177,7 @@ function renderHUD(){
   ctx.font='17px '+F_DISP;ctx.textAlign='right';
   const nl=Math.max(0,S.run.lives),wr=Math.min(MAX_WEAR,S.run.wear||0);
   const ctw=ctx.measureText(`${G.corn}/${G.cornTotal}`).width;
-  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+14+(S.infinite?48:Math.max(1,nl)*17+(nl===0?70:0))+8;
+  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+(S.infinite?14+48:0)+8;
   ctx.fillStyle='rgba(14,12,18,.6)';rr(ctx,bx-panelW,by,panelW,36,8);ctx.fill();
   ctx.strokeStyle='rgba(233,223,199,.15)';ctx.lineWidth=1;rr(ctx,bx-panelW+.5,by+.5,panelW-1,35,8);ctx.stroke();
   x-=12;
@@ -189,10 +189,8 @@ function renderHUD(){
     ctx.fillStyle=full?(warn?'rgba(200,48,42,'+(.6+.4*Math.sin(G.t*8))+')':'#d9a441'):'rgba(233,223,199,.18)';
     rr(ctx,cx-5,by+12,10,13,3);ctx.fill()}
   x-=MAX_WEAR*13+24;
-  ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;
-  // vies : têtes de pigeon
-  if(S.infinite){ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
-  else{for(let k=0;k<nl;k++)lifeIcon(x-6-k*17,by+19);if(nl===0){ctx.fillStyle='#c8302a';ctx.font='italic 13px '+F_BODY;ctx.fillText('dernière vie',x,by+23)}}
+  // Super-Raymond et Dieu-Pigeon : paille illimitée
+  if(S.infinite){ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
   ctx.restore();
   // panneau d'aide puis réplique
   let qy=64;

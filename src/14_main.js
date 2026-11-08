@@ -5,6 +5,7 @@ const keys=new Set(),pressed=new Set();
 const KMAP={ArrowLeft:['left'],KeyA:['left'],ArrowRight:['right'],KeyD:['right'],ArrowUp:['jump','up'],KeyW:['jump','up'],KeyZ:['jump','up'],Space:['jump','ok'],ArrowDown:['down'],KeyS:['down'],KeyE:['act'],KeyB:['era'],KeyF:['act'],Enter:['ok'],NumpadEnter:['ok'],Escape:['esc'],KeyP:['esc'],Backspace:['back']};
 addEventListener('keydown',e=>{
   ensureAudio();
+  if(G.state==='settings'&&G.codeEntry&&codeKey(e))return;
   const a=KMAP[e.code];
   if(a){for(const k of a){if(!keys.has(k))pressed.add(k);keys.add(k)}e.preventDefault()}
   const k=(e.key||'').toLowerCase();
@@ -26,7 +27,8 @@ function bindTouch(id,act){
 bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch('te','act');bindTouch('tb','era');
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
 let touchUI=false;
-function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te','tb'])document.getElementById(id).classList.add('on')}
+function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on');syncTouchB()}
+function syncTouchB(){if(touchUI)document.getElementById('tb').classList.toggle('on',eraKeyOn())}
 if(matchMedia('(pointer: coarse)').matches)showTouch();
 addEventListener('touchstart',showTouch,{passive:true});
 
@@ -46,12 +48,14 @@ function update(dt){
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
     case'ach':handleAch();break;
+    case'settings':handleSettings();break;
     case'intro':handleCards(dt);break;
     case'levelend':handleLetter(dt);break;
     case'play':{
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
+      if(!eraKeyOn())pressed.delete('era');if(touchUI&&!G.tbSync){G.tbSync=1;syncTouchB()}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
@@ -93,6 +97,7 @@ function render(){
     case'title':renderTitle(t);renderGrain();break;
     case'select':renderSelect(t);renderGrain();break;
     case'ach':renderAch(t);renderGrain();break;
+    case'settings':renderSettings(t);renderGrain();break;
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;
     case'play':case'pause':case'exiting':case'confirm':{
@@ -105,7 +110,7 @@ function render(){
       const extra=[{x:P.x+P.w/2,y:P.y+P.h/2,r:190,i:.8}];
       for(const cp of L.cps)if(cp.on)extra.push({x:cp.x,y:cp.y-46,r:150,i:.75,warm:1,flick:1});
       if(L.exit)extra.push({x:L.exit.x+26,y:L.exit.y+40,r:230,i:1,warm:L.def.exit==='door'||L.def.exit==='bunker'?1:0});
-      if(L.medal&&!L.medal.taken)extra.push({x:L.medal.x,y:L.medal.y,r:70,i:.5});
+      if(medalVis())extra.push({x:L.medal.x,y:L.medal.y,r:70,i:.5});
       if(L.dome)extra.push({x:L.dome.x,y:L.dome.floor-90,r:170,i:.7,warm:1});
       if(G.cut&&G.cut.thief.state!=='out'&&G.cut.thief.state!=='gone')extra.push({x:G.cut.thief.x-40,y:L.dome.floor-60,r:200,i:.85,warm:1});
       for(const b of L.bolts)if(b.state==='strike')extra.push({x:b.x,y:13*T-60,r:260,i:1});
@@ -135,6 +140,7 @@ function frame(now){
   G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);
 }
+applyMode();
 async function boot(){
   try{await Promise.race([Promise.all([document.fonts.load('30px "IM Fell English SC"'),document.fonts.load('italic 20px "IM Fell English"'),document.fonts.load('20px "IM Fell English"'),document.fonts.load('30px "La Belle Aurore"')]),new Promise(r=>setTimeout(r,2500))])}catch(e){}
   ensureTitleLv();G.state='title';G.fade=1;setSong('title');

@@ -1,7 +1,7 @@
 /* =========================================================
    AUDIO — musiques synthétisées, bruitages, ambiances
    ========================================================= */
-let MUS_OLD=false,AC=null,master,mGain,sGain,noiseBuf,tick=0,nextTick=0,loopN=0,CUR=null,curName='';
+let MUS_OLD=false,AC=null,master,mGain,sGain,mUser,sUser,noiseBuf,tick=0,nextTick=0,loopN=0,CUR=null,curName='';
 const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 function midi(n){const m=/([A-G])([#b]?)(\d)/.exec(n);return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)}
 const mtof=m=>440*Math.pow(2,(m-69)/12);
@@ -122,8 +122,9 @@ function ensureAudio(){
     if(!AC){
       AC=new(window.AudioContext||window.webkitAudioContext)();
       master=AC.createGain();master.gain.value=S.muted?0:.9;master.connect(AC.destination);
-      mGain=AC.createGain();mGain.gain.value=.1;mGain.connect(master);
-      sGain=AC.createGain();sGain.gain.value=.5;sGain.connect(master);
+      mUser=AC.createGain();mUser.connect(master);sUser=AC.createGain();sUser.connect(master);applyVolumes();
+      mGain=AC.createGain();mGain.gain.value=.1;mGain.connect(mUser);
+      sGain=AC.createGain();sGain.gain.value=.5;sGain.connect(sUser);
       noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);
       const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
       nextTick=AC.currentTime+.1;setInterval(sched,50);
@@ -282,4 +283,6 @@ const SFX={
   tick(){tone(1200,.04,'square',.03)},
   secret(){tone(1318,.08,'sine',.12);tone(1760,.12,'sine',.1,null,.07)}
 };
+/* volumes réglés dans les paramètres : 0 à 10, 8 = le volume d'origine */
+function applyVolumes(){if(!mUser)return;const f=v=>Math.pow((v==null?8:v)/8,1.6);mUser.gain.value=f(S.vMus);sUser.gain.value=f(S.vSfx)}
 function toggleMute(){S.muted=!S.muted;save();if(master)master.gain.value=S.muted?0:.9}

@@ -17,9 +17,9 @@ Une nuit d'orage, un voleur entre pour se servir avant la liquidation. Il fait t
 | Mission | Lieu | Niveaux |
 |---|---|---|
 | 1 | Vittoncourt, le musée qui ferme | La vitrine · La galerie des insectes · L'étage du mammouth · La loge du gardien |
-| 2 | Verdun, les champs de l'ancien front | Retour à la case départ : Le sentier · Les éoliennes · La zone rouge · L'abri du Mort-Homme |
-| 3 | Le cap céleste : le train, Reims, la cathédrale | Le train · La gare · La place d'Erlon · La cathédrale |
-| 4 | L'A4 sous l'orage, vers l'ouest | L'aire de repos · Les camions · L'orage · La Marne |
+| 2 | Verdun, les champs de l'ancien front | Réminiscences : Le sentier · Les éoliennes · La zone rouge · L'abri du Mort-Homme |
+| 3 | Le Cap céleste : le train, Reims, la cathédrale | Le train · La gare · La place d'Erlon · La cathédrale |
+| 4 | La voie du souvenir : l'A4 sous l'orage, vers l'ouest | L'aire de repos · Les camions · L'orage · La Marne |
 | 5 | Crécy-la-Chapelle (la « Venise briarde »), le village de Marguerite | Le pigeonnier · Les combles · Elle aimait les fêtes · Le cimetière |
 
 ## Introduction (cartes)
@@ -78,7 +78,7 @@ Chaque niveau terminé révèle un fragment, mais Raymond ne lit les quatre morc
 - **3 → 4.** Les ratures l'ont rendu silencieux. Une route immense, toute droite vers l'ouest, sans chevaux ni soldats. Il pleut des cordes.
 - **4 → 5.** L'orage est passé. La lettre est trempée, et Raymond sait maintenant ce qui est écrit au dos. Le village est en fête. Personne n'attend de pigeon.
 
-Règles : aucune vie au départ, une de plus par médaille. Raymond a 5 états ; au-delà, il perd la tête (« Raymond a perdu la tête. Au sens propre. »). Chaque chute le renvoie au dernier cartel (ou au début du niveau). Quand il perd la tête, une vie le ramène au début de la mission ; sans vie, tout recommence. À la fin de chaque mission, un bilan donne les points de chaque niveau (10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute).
+Règles : Raymond a 5 états ; chaque accroc le renvoie au dernier cartel (ou au début du niveau) et lui coûte un état ; au-delà du 5e, il perd la tête (« Raymond a perdu la tête. Au sens propre. »). Ce qui suit dépend du mode choisi dans les paramètres : facile, retour au début du niveau ; normal, au début de la mission (les niveaux suivants se referment) ; difficile, tout recommence depuis la remise. Les succès restent toujours acquis ; la paille, les médailles et les secrets des niveaux concernés reviennent en jeu. Deux modes cachés, qui n'apparaissent qu'après quatre clics sur l'œil de Raymond et ne s'ouvrent qu'avec un code : Super-Raymond (paille illimitée, tous les niveaux ouverts) et Dieu-Pigeon (rien ne l'atteint). Un niveau rejoué ne garde que la paille et la médaille qu'on n'y a pas encore prises. La touche B (changer d'époque) n'existe qu'une fois le 4-3 terminé. Dans la sélection, seuls les niveaux ouverts ou réussis montrent leur nom. Une médaille par mission (1-1, 2-2, 3-2, 4-2, et en 1914 tout en haut à gauche des combles, 5-2). À la fin de chaque mission, un bilan donne les points de chaque niveau (10 par touffe, 100 la médaille, 50 sans chute, 15 de moins par chute).
 
 ## Les boss et les moments clés
 

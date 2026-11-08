@@ -162,9 +162,9 @@ const GAMEOVER=[
   {pic:'headless',minT:3.2,t:"Raymond a perdu la tête.\nAu sens propre."}
 ];
 const WORLDS=[
-  {name:"Vittoncourt · le musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
-  {name:"Retour à la case départ",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
-  {name:"Le cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
-  {name:"L'A4 sous l'orage",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","La Marne"]},
-  {name:"Crécy-la-Chapelle",levels:["Le pigeonnier","Les combles","Elle aimait les fêtes","Le cimetière"]}
+  {name:"La nuit au Musée",levels:["La vitrine","La galerie des insectes","La salle du mammouth","La loge du gardien"]},
+  {name:"Réminiscences",levels:["Le sentier","Les éoliennes","La zone rouge","L'abri du Mort-Homme"]},
+  {name:"Le Cap céleste",levels:["Le train","La gare","Le cours Langlet","La cathédrale"]},
+  {name:"La voie du souvenir",levels:["L'autoroute de l'Est","L'aire de Gueux","L'orage","La Marne"]},
+  {name:"La nouvelle Crécy",levels:["Le pigeonnier","Les combles","Elle aimait les fêtes","Le cimetière"]}
 ];
