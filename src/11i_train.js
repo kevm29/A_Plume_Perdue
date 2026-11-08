@@ -120,7 +120,7 @@ function trainAfterMove(dt){
   const Tn=L.train;if(!Tn)return null;
   if(Tn.grace>0){Tn.grace-=dt;G.trainHit=null}
   if(P.carried){const c=P.carried;P.x=c.p.x+c.dx;P.y=c.y;P.vx=P.vy=0;P.sx=.7;P.sy=1.2;
-    if(P.x<cam.x-70){P.carried=null;if(S.infinite){resetPlayer();return null}return c.k}return null}
+    if(P.x<cam.x-70){P.carried=null;return c.k}return null}
   if(G.trainHit){const k=G.trainHit;G.trainHit=null;return k}
   if(P.y>TRN.BOT+30&&!P.dead)return'rails';
   return null;

@@ -57,7 +57,7 @@ function zrStep(dt){
 }
 function zrAfterMove(){
   if(!L.zr||P.dead)return null;const pcx=P.x+P.w/2,h=zrHole(pcx);
-  if(h&&P.y+P.h>h.wy+8){splash(pcx,h.wy);if(S.infinite){resetPlayer();return null}return'trou'}
+  if(h&&P.y+P.h>h.wy+8){splash(pcx,h.wy);return'trou'}
   return null;
 }
 /* ---------- dessins ---------- */

@@ -20,8 +20,7 @@ function menuItems(){
   if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:"Retour à l'accueil",act:askHome},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
   return[];
 }
-// tous les niveaux sont ouverts dès le début (les vies restent comptées, sauf en mode infini)
-function selectOpen(i){if(S.infinite)return true;if(i===100)return true;if(i===101)return !!S.finished;return i>=0&&i<LEVELS.length}
+function selectOpen(i){if(S.infinite)return true;if(i===100)return true;if(i===101)return !!S.finished;return i<=S.unlocked}
 /* retour à l'accueil en pleine mission : l'avancement et les scores de la mission sont perdus */
 function abandonMission(){const w=LEVELS[G.li].w;for(let k=w*4;k<w*4+4;k++){delete S.run.stats[k];if(S.run.got)delete S.run.got[k]}S.resume=w*4;save();G.chase=false;goTitle()}
 function askHome(){G.confirm={prev:G.state,text:"Retourner à l'accueil ?",sub:"L'avancement et les points de cette mission seront perdus. Raymond reprendra au début de la mission."};G.state='confirm';G.confirmSel=0}
@@ -48,7 +47,7 @@ function handleMenu(){
   if(pressed.has('up'))G.menuSel=(G.menuSel-1+it.length)%it.length;
   if(pressed.has('down'))G.menuSel=(G.menuSel+1)%it.length;
   if(G.click){
-    // l'œil de Raymond : quatre clics rapprochés, et il roucoule (vies illimitées, tous les niveaux ouverts)
+    // l'œil de Raymond : quatre clics rapprochés, et il roucoule (tous les niveaux ouverts ; on meurt et on repart du cartel, mais sans jamais perdre de paille)
     if(G.state==='title'){const ex=W*.3+11*3.2,ey=460-29.5*3.2;if(Math.hypot(G.click.x-ex,G.click.y-ey)<16){
       if(G.t-(G.eyeT||-9)>1.4)G.eyeN=0;G.eyeT=G.t;G.eyeN=(G.eyeN||0)+1;G.wink=.18;SFX.tick();
       if(G.eyeN>=4){G.eyeN=0;S.infinite=!S.infinite;save();SFX.coo();G.wink=.9;if(S.infinite)unlock('a81')}return}}
@@ -107,7 +106,7 @@ function renderSelect(t){
   });
   tile(100,70,480,406,28,"Revoir l'introduction");
   tile(101,484,480,406,28,'Revoir la fin');
-  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText((S.infinite?'Tous les niveaux sont ouverts · vies illimitées':'Tous les niveaux sont ouverts')+' · Entrée pour partir · Échap pour revenir',W/2,H-12);
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText((S.infinite?'Tous les niveaux sont ouverts · Raymond ne perd jamais sa paille':'Les niveaux s\'ouvrent à mesure que Raymond avance')+' · Entrée pour partir · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){

@@ -183,7 +183,7 @@ function meuseAfterMove(dt){
     if(!G.sim){SFX.flap();noise(1.2,500,.3,'bandpass');puff(pcx,P.y+P.h,12,true);if(!M.said.ride){M.said.ride=1;say("Le vent m'arrache ! Je n'ai rien demandé !",2.6)}}
     return null}
   // la Meuse
-  if(pcx>M.xL&&pcx<M.xR&&P.y+P.h>M.yW+8){splash(pcx,M.yW);if(S.infinite){resetPlayer();return null}return'drown'}
+  if(pcx>M.xL&&pcx<M.xR&&P.y+P.h>M.yW+8){splash(pcx,M.yW);return'drown'}
   return null;
 }
 function meuseRespawn(){const M=L.meuse;if(!M)return;for(const b of M.bales){b.armed=b.rats;b.shake=0}L.rats=L.rats.filter(c=>!c.fromBale)}
