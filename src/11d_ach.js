@@ -32,11 +32,12 @@ const ACH=[
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
  ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond : de nouveaux modes apparaissent dans les paramètres."],
- ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."]
+ ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."],
+ ['a90','E','Les dessous du musée',"Voir ce qui se cache sous les treize draps de la mission 1."]
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=36;
+const SECRET_TOTAL=45;   // tous les secrets du jeu (vérifié niveau par niveau)
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -61,7 +62,7 @@ const ACH_HINT={a1:"Tout commence par une nuit d'orage.",a2:"Le voleur n'est pas
  a7:"Survivre à la route sans fin.",a8:"Arriver au village.",a9:"Remettre la lettre.",a10:"Arriver au bout sans jamais avoir besoin d'un empailleur.",a11:"Arriver au bout sans perdre un seul brin.",a12:"Quatre niveaux d'affilée sans un accroc.",
  a13:"Lire ce qui est écrit au-dessus de la fête.",a15:"Aller jusqu'au bout de l'histoire.",a17:"Tout lire, morceau par morceau.",a24:"Toucher le fond, puis remonter à neuf.",a26:"Une décoration par mission, dans la même partie.",
  a30:"Fouiller partout. Vraiment partout.",a35:"Ne rien laisser derrière soi pendant toute une mission.",a49:"Perdre la tête.",a50:"Perdre la tête en mode difficile.",a53:"Un drap, un gardien, un bec.",a54:"Un chat, un drap, un pigeon pressé.",
- a56:"Le filet n'attrape pas tout.",c1:"Un gardien n'a jamais assez de clefs. Une pie, non plus.",a68:"Trop forcer sur ses coutures.",a81:"Regarder Raymond droit dans l'œil, avec insistance.",a82:"Ne rien faire du tout, assez longtemps."};
+ a90:"Un chat, un gardien… et treize draps.",a56:"Le filet n'attrape pas tout.",c1:"Un gardien n'a jamais assez de clefs. Une pie, non plus.",a68:"Trop forcer sur ses coutures.",a81:"Regarder Raymond droit dans l'œil, avec insistance.",a82:"Ne rien faire du tout, assez longtemps."};
 // forme, métal, ruban [couleurs de bandes], emblème
 const ACH_MEDAL={
  a1:['round','bronze',['#2a3f6a','#e9dfc7','#2a3f6a']],a2:['shield','bronze',['#2f5a3a','#e9dfc7']],a3:['oval','bronze',['#a8322d','#c9a24a','#a8322d']],
@@ -72,7 +73,7 @@ const ACH_MEDAL={
  a24:['round','silver',['#c86a8a','#e9dfc7','#c86a8a']],a26:['star','silver',['#2a3f6a','#a8322d','#c9a24a','#a8322d','#2a3f6a']],a30:['rosette','gold',['#6a3a6a','#c9a24a','#6a3a6a']],
  a35:['laurel','gold',['#4f7a5a','#c9a24a','#4f7a5a']],a49:['cross','bronze',['#3a3a48','#a8322d','#3a3a48']],a50:['round','bronze',['#1a1a1a','#6a6a6a','#1a1a1a']],
  a53:['shield','bronze',['#e6e0d2','#2e3a58','#e6e0d2']],a54:['oval','bronze',['#1e1c22','#c8f060','#1e1c22']],a56:['rosette','bronze',['#d8d0bc','#8a6a3a','#d8d0bc']],
- c1:['shield','silver',['#1a1a1a','#e9dfc7','#2a3f6a']],a68:['cross','silver',['#727b8f','#e9dfc7','#727b8f']],a81:['round','gold',['#d97a2a','#efe9df','#d97a2a']],a82:['oval','silver',['#1c2438','#e9dfc7','#1c2438']]};
+ a90:['oval','silver',['#e6e0d2','#5a3a24','#e6e0d2']],c1:['shield','silver',['#1a1a1a','#e9dfc7','#2a3f6a']],a68:['cross','silver',['#727b8f','#e9dfc7','#727b8f']],a81:['round','gold',['#d97a2a','#efe9df','#d97a2a']],a82:['oval','silver',['#1c2438','#e9dfc7','#1c2438']]};
 const METAL={gold:['#fbeab0','#d6ad52','#8a6420','#4a3410'],silver:['#ffffff','#c8ccd4','#7c828c','#2e323a'],bronze:['#f6d0a4','#bd7e44','#7a4a22','#3a2210']};
 const achCache={};
 function drawAchMedal(g,x,y,id,on,s){
@@ -149,6 +150,7 @@ const EMB={
  c1(g,i,h){g.strokeStyle=i;g.lineWidth=1.4;g.beginPath();g.arc(0,-6,4,0,7);g.stroke();for(const[a,l]of[[-.5,12],[0,14],[.5,11]]){g.save();g.translate(0,-3);g.rotate(a);g.beginPath();g.moveTo(0,0);g.lineTo(0,l);g.stroke();g.fillRect(0,l-3,3,1.4);g.fillRect(0,l-1,2,1.4);g.restore()}},
  a68(g,i,h){g.fillStyle=i;g.beginPath();g.moveTo(8,-2);g.quadraticCurveTo(2,-12,-12,-6);g.quadraticCurveTo(-14,0,-10,4);g.quadraticCurveTo(0,6,8,2);g.closePath();g.fill();g.strokeStyle=h;g.lineWidth=.8;g.setLineDash([1.6,1.4]);g.beginPath();g.moveTo(7,1);g.quadraticCurveTo(-2,4,-10,2);g.stroke();g.setLineDash([]);g.strokeStyle='#e0b04e';for(let k=0;k<3;k++){g.beginPath();g.moveTo(-2+k*3,4);g.lineTo(-3+k*3,9+k);g.stroke()}},
  a81(g,i,h){g.fillStyle='#efe9df';g.beginPath();g.ellipse(-5,0,5,3.5,0,0,7);g.fill();g.fillStyle='#d97a2a';g.beginPath();g.arc(-5,0,2.6,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.arc(-4.5,-.4,1.2,0,7);g.fill();g.strokeStyle=i;g.lineWidth=1.4;g.beginPath();g.moveTo(2,0);g.quadraticCurveTo(6,3,10,0);g.stroke()},
+ a90(g,i){g.fillStyle='#f0ebe0';g.beginPath();g.moveTo(-10,10);g.quadraticCurveTo(-12,-12,0,-12);g.quadraticCurveTo(12,-12,10,10);g.closePath();g.fill();g.fillStyle='#2a2420';g.fillRect(-10,4,20,7);g.fillStyle=i;g.beginPath();g.arc(-4,-3,1.6,0,7);g.arc(4,-3,1.6,0,7);g.fill();g.fillStyle='#e05a6a';g.beginPath();g.ellipse(0,3,2.4,3.6,0,0,7);g.fill()},
  a82(g,i,h){g.fillStyle=h;g.beginPath();g.arc(-2,1,8,0,7);g.arc(1,-2,7,0,7,true);g.fill('evenodd');g.fillStyle=i;g.font='italic bold 6px '+F_BODY;g.textAlign='left';g.fillText('z',3,-3);g.font='italic bold 4.5px '+F_BODY;g.fillText('z',7,-7)}
 };
 /* bandeau « succès débloqué » */

@@ -8,6 +8,7 @@ function drawSecretProp(g,a,t){
   if(st==='bal'){cMailbox(g,a.x,a.y,'BLANC');return}
   if(st==='poop'||st==='tyre'||st==='engine'||st==='beacon'||st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips'||st==='coffee'||st==='salad'||st==='fridge')return;
   if(st==='stump'){drawOldStump(g,a,t);return}
+  if(st==='tiroir'){drawTiroir(g,a,t);return}
   if(st==='vane'){drawVane(g,a,t);return}
   if(st==='linge'){drawLinge(g,a,t);return}   // la couchette est dessinée avec l'abri : rien à montrer dehors, pas même une ombre
   g.save();g.translate(x,y);g.scale(1.25,1.25);g.lineJoin='round';
@@ -155,7 +156,7 @@ function drawGuardTangled(g,gd,t){
   g.restore();
 }
 /* le chat qui guettait, maintenant lancé à la poursuite */
-function drawWatchCatRun(g,w,t){const k=w.k;drawCat(g,k.x+k.w/2,k.y+k.h,k.f||1,t,w.mode==='chase'?1.5:1,{size:1.3,col:'#1e1c22',rim:'#3a3842',eye:'#c8f060',mouth:w.mode==='chase'})}
+function drawWatchCatRun(g,w,t){const k=w.k;drawCat(g,k.x+k.w/2,k.y+k.h,k.f||1,t,w.mode==='chase'?1.5:1,{size:1.3,col:w.white?'#f0ece4':'#1e1c22',rim:w.white?'#c8c2b8':'#3a3842',eye:'#c8f060',mouth:w.mode==='chase'})}
 
 /* grande armoire de loge : son dessus sert de perchoir */
 function drawWardrobe(g,d){
@@ -174,9 +175,34 @@ function drawWardrobe(g,d){
   g.fillStyle='#3a2414';g.fillRect(x+4,d.floor-10,6,10);g.fillRect(x+w-10,d.floor-10,6,10);
   g.restore();
 }
-/* sous les draps : cinq meubles de réserve, tous un peu farfelus (même silhouette que le drap) */
+/* le meuble d'entomologiste du 1-2 : un tiroir de paille parmi les tiroirs de papillons */
+function drawTiroir(g,a,t){const x=a.x,b=a.y,o=a.used?1:(a.open||0),W2=84,H2=128;g.save();
+  g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(x,b,W2/2+8,5,0,0,7);g.fill();
+  const x0=x-W2/2,y0=b-H2;const wd=g.createLinearGradient(x0,0,x0+W2,0);wd.addColorStop(0,'#5a3a24');wd.addColorStop(.5,'#6e4a2e');wd.addColorStop(1,'#4a2e1c');
+  g.fillStyle=wd;g.fillRect(x0,y0,W2,H2);g.fillStyle='#7a5434';g.fillRect(x0-4,y0-6,W2+8,8);g.fillStyle='rgba(255,255,255,.08)';g.fillRect(x0-4,y0-6,W2+8,2);
+  g.fillStyle='#3a2414';g.fillRect(x0+2,b-8,6,8);g.fillRect(x0+W2-8,b-8,6,8);
+  // la plaque
+  g.fillStyle='#d8c890';rr(g,x-20,y0+5,40,9,2);g.fill();g.fillStyle='#3a2a18';g.font='6px '+F_DISP;g.textAlign='center';g.fillText('LEPIDOPTERA',x,y0+12);
+  // la grille de tiroirs : 3 colonnes, 6 rangées
+  const cw=24,ch=16,gx=x0+6,gy=y0+20;
+  for(let r=0;r<6;r++)for(let c=0;c<3;c++){const dx=gx+c*(cw+2),dy=gy+r*(ch+2);if(r===3&&c===1)continue;
+    g.fillStyle='#5e3c24';g.fillRect(dx,dy,cw,ch);g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=1;g.strokeRect(dx+.5,dy+.5,cw-1,ch-1);
+    g.fillStyle='#e8dcc0';g.fillRect(dx+7,dy+3,10,4);g.fillStyle='#c9a24a';g.beginPath();g.arc(dx+cw/2,dy+11,1.8,0,7);g.fill()}
+  // le tiroir qui s'ouvre (vers nous : il s'agrandit et descend un peu)
+  {const dx=gx+(cw+2),dy=gy+3*(ch+2),k=o;
+    g.fillStyle='#1a120c';g.fillRect(dx,dy,cw,ch);
+    const ex=dx-6*k,ey=dy+14*k,ew=cw+12*k,eh=ch+4*k;
+    if(k>0){// les côtés et le fond du tiroir
+      g.fillStyle='#6e4a2e';poly(g,[dx,dy,ex,ey,ex,ey+eh,dx,dy+ch]);g.fill();poly(g,[dx+cw,dy,ex+ew,ey,ex+ew,ey+eh,dx+cw,dy+ch]);g.fill();
+      g.fillStyle='#d8c08a';poly(g,[dx+1,dy+1,dx+cw-1,dy+1,ex+ew-2,ey+2,ex+2,ey+2]);g.fill();
+      if(!a.used||a.anim){g.strokeStyle='#e0b04e';g.lineWidth=1.3;for(let i=0;i<7;i++){const sx=dx+3+i*3;g.beginPath();g.moveTo(sx,dy+3);g.lineTo(sx+Math.sin(i)*3+4*k,ey+1);g.stroke()}}
+      else{g.strokeStyle='rgba(224,176,78,.6)';g.lineWidth=1;g.beginPath();g.moveTo(dx+6,dy+5);g.lineTo(dx+10,ey);g.moveTo(dx+16,dy+4);g.lineTo(dx+13,ey);g.stroke()}}
+    g.fillStyle='#6a4428';g.fillRect(ex,ey,ew,eh);g.strokeStyle='rgba(0,0,0,.4)';g.strokeRect(ex+.5,ey+.5,ew-1,eh-1);
+    g.fillStyle='#e8dcc0';g.fillRect(ex+ew/2-5,ey+3,10,4);g.fillStyle='#c9a24a';g.beginPath();g.arc(ex+ew/2,ey+eh-5,2,0,7);g.fill()}
+  g.restore()}
+/* sous les draps : treize pièces de réserve, une par drap de la mission 1, toutes un peu farfelues (même silhouette que le drap) */
 function drawCoverFurniture(g,c,t){
-  const k=c.kind%5,x=c.x+c.w/2,y=c.y+c.h;g.save();g.translate(x,y);
+  const k=c.kind%13;if(k>=5){drawCoverOdd(g,c,k,t);return}const x=c.x+c.w/2,y=c.y+c.h;g.save();g.translate(x,y);
   if(k===0){// buste au regard qui louche, sur sa colonne
     g.fillStyle='#b8b0a0';g.fillRect(-12,-40,24,40);g.fillStyle='#cfc8b8';g.fillRect(-16,-44,32,6);
     g.beginPath();g.ellipse(0,-58,16,12,0,0,7);g.fill();g.beginPath();g.ellipse(0,-74,11,13,0,0,7);g.fill();
@@ -208,6 +234,69 @@ function drawCoverFurniture(g,c,t){
   g.restore();
 }
 /* drap tombé par terre, roulé en boule */
+function drawCoverOdd(g,c,k,t){const x=c.x+c.w/2,y=c.y+c.h;g.save();g.translate(x,y);
+  const stone='#c8c2b2',st2='#a8a090';
+  if(k===5){// masque géant de carnaval qui tire la langue
+    g.fillStyle='#5a3a24';g.fillRect(-4,-30,8,30);g.fillRect(-14,-4,28,4);
+    g.fillStyle='#f0c8a0';g.beginPath();g.ellipse(0,-58,24,28,0,0,7);g.fill();
+    g.fillStyle='#d84a3a';g.beginPath();g.arc(-15,-50,6,0,7);g.arc(15,-50,6,0,7);g.fill();
+    g.fillStyle='#fff';g.beginPath();g.ellipse(-9,-66,7,8,0,0,7);g.ellipse(9,-66,7,8,0,0,7);g.fill();g.fillStyle='#2a2420';g.beginPath();g.arc(-7,-64,3,0,7);g.arc(11,-68,3,0,7);g.fill();
+    g.strokeStyle='#2a2420';g.lineWidth=2;g.beginPath();g.moveTo(-16,-78);g.lineTo(-4,-75);g.moveTo(16,-80);g.lineTo(5,-76);g.stroke();
+    g.fillStyle='#3a1a14';g.beginPath();g.ellipse(0,-44,11,6,0,0,Math.PI);g.fill();g.fillStyle='#e05a6a';g.beginPath();g.moveTo(-6,-44);g.quadraticCurveTo(-7,-26+Math.sin(t*3)*2,0,-25+Math.sin(t*3)*2);g.quadraticCurveTo(7,-26+Math.sin(t*3)*2,6,-44);g.fill();
+    g.strokeStyle='#b83a4a';g.lineWidth=1;g.beginPath();g.moveTo(0,-42);g.lineTo(0,-30);g.stroke();
+    g.fillStyle='#e8a050';for(let i=0;i<7;i++){g.beginPath();g.arc(-21+i*7,-84-Math.abs(i-3)*2,5,0,7);g.fill()}
+  }else if(k===6){// Vénus de dos, qui regarde par-dessus son épaule (le musée appelle ça « callipyge »)
+    g.fillStyle=st2;g.fillRect(-14,-10,28,10);g.fillStyle=stone;
+    g.beginPath();g.moveTo(-8,-10);g.quadraticCurveTo(-12,-26,-11,-34);g.quadraticCurveTo(-14,-42,-8,-48);g.lineTo(8,-48);g.quadraticCurveTo(14,-42,11,-34);g.quadraticCurveTo(12,-26,8,-10);g.closePath();g.fill();
+    g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=1.2;g.beginPath();g.moveTo(0,-44);g.lineTo(0,-30);g.stroke();
+    g.fillStyle=stone;g.beginPath();g.moveTo(-8,-48);g.quadraticCurveTo(-9,-62,-6,-68);g.lineTo(6,-68);g.quadraticCurveTo(9,-62,8,-48);g.fill();
+    g.beginPath();g.arc(4,-76,7,0,7);g.fill();g.fillStyle=st2;g.beginPath();g.arc(1,-80,5,Math.PI,2*Math.PI);g.fill();
+    g.fillStyle='#4a4438';g.beginPath();g.arc(8,-77,1,0,7);g.fill();
+    g.fillStyle='#e9dfc7';g.fillRect(-10,-46,20,7);g.fillStyle='#d8d0bc';poly(g,[-10,-40,10,-40,12,-30,-12,-30]);g.fill();
+    g.fillStyle='#6a6458';g.font='italic 6px '+F_BODY;g.textAlign='center';g.fillText('« Callipyge »',0,-2);
+  }else if(k===7){// gargouille de pierre qui tire une langue interminable
+    g.fillStyle=st2;g.fillRect(-12,-36,24,36);g.fillStyle=stone;g.beginPath();g.ellipse(0,-56,18,20,0,0,7);g.fill();
+    poly(g,[-14,-68,-20,-84,-6,-72]);g.fill();poly(g,[14,-68,20,-84,6,-72]);g.fill();
+    g.fillStyle='#4a4438';g.beginPath();g.ellipse(-7,-62,4,3,0,0,7);g.ellipse(7,-62,4,3,0,0,7);g.fill();g.fillStyle='#e8c040';g.beginPath();g.arc(-7,-62,1.4,0,7);g.arc(7,-62,1.4,0,7);g.fill();
+    g.fillStyle='#3a3430';g.fillRect(-9,-48,18,6);g.fillStyle='#c85a6a';g.beginPath();g.moveTo(-5,-44);g.bezierCurveTo(-6,-20,14,-26,10,-4);g.lineTo(16,-4);g.bezierCurveTo(18,-30,2,-24,5,-44);g.fill();
+  }else if(k===8){// crocodile empaillé debout, en haut-de-forme
+    g.fillStyle='#4a6a3a';g.beginPath();g.ellipse(0,-34,13,30,0,0,7);g.fill();g.fillStyle='#c8c090';g.beginPath();g.ellipse(2,-32,7,22,0,0,7);g.fill();
+    g.strokeStyle='rgba(0,0,0,.25)';for(let i=0;i<6;i++){g.beginPath();g.moveTo(-4,-48+i*6);g.lineTo(8,-48+i*6);g.stroke()}
+    g.fillStyle='#4a6a3a';g.beginPath();g.moveTo(-8,-62);g.lineTo(26,-66);g.lineTo(26,-58);g.lineTo(-6,-54);g.fill();
+    g.fillStyle='#fff';for(let i=0;i<6;i++)poly(g,[0+i*4,-58,2+i*4,-55,4+i*4,-58]),g.fill();
+    g.fillStyle='#e8c040';g.beginPath();g.arc(-2,-66,2.4,0,7);g.fill();g.fillStyle='#111';g.fillRect(-2.5,-67.5,1,3);
+    g.fillStyle='#1a1a1a';g.fillRect(-12,-82,18,14);g.fillRect(-16,-70,26,3);g.fillStyle='#a8322d';g.fillRect(-12,-72,18,3);
+    g.fillStyle='#4a6a3a';g.beginPath();g.moveTo(-10,-8);g.quadraticCurveTo(-26,-4,-24,6);g.lineTo(-18,4);g.quadraticCurveTo(-18,-2,-6,-4);g.fill();
+  }else if(k===9){// phonographe au pavillon géant
+    g.fillStyle='#5a3a22';g.fillRect(-16,-26,32,26);g.fillStyle='#3a2414';g.fillRect(-18,-28,36,4);g.fillStyle='#c9a24a';g.beginPath();g.arc(12,-12,3,0,7);g.fill();
+    g.strokeStyle='#8a6a3a';g.lineWidth=3;g.beginPath();g.moveTo(0,-28);g.quadraticCurveTo(-4,-44,-2,-50);g.stroke();
+    const hg=g.createLinearGradient(-30,-90,20,-50);hg.addColorStop(0,'#e8c060');hg.addColorStop(1,'#a8742a');g.fillStyle=hg;
+    g.beginPath();g.moveTo(-2,-50);g.quadraticCurveTo(-10,-64,-30,-92);g.quadraticCurveTo(-4,-104,22,-78);g.quadraticCurveTo(4,-64,-2,-50);g.fill();
+    g.fillStyle='#3a2414';g.beginPath();g.ellipse(-4,-85,26,8,-.7,0,7);g.fill();
+    g.fillStyle='#2a2420';g.font='italic 9px '+F_BODY;g.fillText('♪',14+Math.sin(t*2)*2,-96-((t*10)%10));
+  }else if(k===10){// armure de chevalier trop petite : un lapin dans le heaume
+    g.fillStyle='#9aa0a8';g.fillRect(-8,-30,6,30);g.fillRect(2,-30,6,30);g.fillStyle='#b8bec6';g.beginPath();g.moveTo(-14,-60);g.lineTo(14,-60);g.lineTo(10,-30);g.lineTo(-10,-30);g.fill();
+    g.strokeStyle='rgba(0,0,0,.25)';g.beginPath();g.moveTo(0,-60);g.lineTo(0,-30);g.stroke();g.fillStyle='#a8aeb6';g.beginPath();g.arc(-15,-56,5,0,7);g.arc(15,-56,5,0,7);g.fill();
+    g.fillStyle='#b8bec6';rr(g,-10,-80,20,20,6);g.fill();g.fillStyle='#2a2a30';g.fillRect(-7,-72,14,3);
+    g.fillStyle='#d8d0c4';g.beginPath();g.ellipse(-4,-90,3,10,-.2,0,7);g.ellipse(4,-91,3,10,.2,0,7);g.fill();g.fillStyle='#e8a0a8';g.beginPath();g.ellipse(-4,-90,1.3,7,-.2,0,7);g.ellipse(4,-91,1.3,7,.2,0,7);g.fill();
+    g.fillStyle='#2a2420';g.beginPath();g.arc(-3,-71,1.2,0,7);g.arc(3,-71,1.2,0,7);g.fill();
+  }else if(k===11){// hercule de foire en cire, maillot rayé, haltère au-dessus de la tête
+    g.fillStyle='#e0b890';g.fillRect(-9,-22,7,22);g.fillRect(2,-22,7,22);
+    for(let i=0;i<5;i++){g.fillStyle=i%2?'#f2ead8':'#a8322d';g.fillRect(-12,-56+i*7,24,7)}
+    g.fillStyle='#e0b890';g.beginPath();g.arc(0,-64,8,0,7);g.fill();g.fillStyle='#2a1a10';g.beginPath();g.moveTo(-7,-61);g.quadraticCurveTo(0,-58,7,-61);g.quadraticCurveTo(10,-56,4,-59);g.quadraticCurveTo(0,-57,-4,-59);g.quadraticCurveTo(-10,-56,-7,-61);g.fill();
+    g.fillStyle='#2a1a10';g.beginPath();g.arc(0,-69,8,Math.PI,2*Math.PI);g.fill();
+    g.strokeStyle='#e0b890';g.lineWidth=6;g.lineCap='round';g.beginPath();g.moveTo(-11,-54);g.lineTo(-16,-80);g.moveTo(11,-54);g.lineTo(16,-80);g.stroke();
+    g.fillStyle='#2a2a2a';g.fillRect(-24,-84,48,3);g.beginPath();g.arc(-25,-82,7,0,7);g.arc(25,-82,7,0,7);g.fill();
+  }else{// marionnette de ventriloque au grand sourire, sur sa chaise
+    g.strokeStyle='#3a2414';g.lineWidth=3;g.beginPath();g.moveTo(-12,0);g.lineTo(-12,-30);g.moveTo(12,0);g.lineTo(12,-30);g.moveTo(-12,-30);g.lineTo(-12,-56);g.stroke();g.fillStyle='#5a3a22';g.fillRect(-14,-32,28,4);
+    g.fillStyle='#2a3a6a';g.fillRect(-9,-58,18,26);g.fillStyle='#fff';poly(g,[-4,-58,4,-58,0,-48]);g.fill();g.fillStyle='#a8322d';poly(g,[-4,-54,4,-54,0,-50]);g.fill();
+    g.fillStyle='#2a3a6a';g.fillRect(-8,-32,6,14);g.fillRect(2,-32,6,14);g.fillStyle='#1a1a1a';g.fillRect(-9,-20,8,4);g.fillRect(1,-20,8,4);
+    g.fillStyle='#f0d0b0';g.beginPath();g.arc(0,-70,12,0,7);g.fill();g.fillStyle='#d86a6a';g.beginPath();g.arc(-7,-66,3,0,7);g.arc(7,-66,3,0,7);g.fill();
+    g.strokeStyle='#2a1a10';g.lineWidth=1.4;g.beginPath();g.arc(0,-66,7,.2,Math.PI-.2);g.stroke();g.beginPath();g.moveTo(-7,-63);g.lineTo(-7,-58);g.moveTo(7,-63);g.lineTo(7,-58);g.stroke();
+    g.fillStyle='#fff';g.beginPath();g.arc(-4,-73,3,0,7);g.arc(4,-73,3,0,7);g.fill();g.fillStyle='#2a2420';g.beginPath();g.arc(-4+Math.sin(t)*1,-73,1.4,0,7);g.arc(4+Math.sin(t)*1,-73,1.4,0,7);g.fill();
+    g.fillStyle='#8a4a2a';g.beginPath();g.arc(0,-78,11,Math.PI,2*Math.PI);g.fill();
+  }
+  g.restore()}
 function drawFallenSheet(g,x,y){
   g.save();const gr=g.createLinearGradient(x-26,y-14,x+26,y);gr.addColorStop(0,'#d8d2c2');gr.addColorStop(1,'#a8a090');g.fillStyle=gr;
   g.beginPath();g.moveTo(x-28,y);g.quadraticCurveTo(x-24,y-14,x-8,y-12);g.quadraticCurveTo(x+4,y-20,x+16,y-10);g.quadraticCurveTo(x+28,y-8,x+30,y);g.closePath();g.fill();

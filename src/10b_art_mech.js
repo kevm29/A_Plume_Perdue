@@ -58,18 +58,18 @@ function drawBeam(g,b,alert){
 function drawWatchCat(g,w,t){
   const x=w.x,y=w.y;g.save();g.translate(x,y);
   g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(0,0,30,5,0,0,7);g.fill();
-  const col='#1e1c22';g.fillStyle=col;
+  const col=w.white?'#f0ece4':'#1e1c22';g.fillStyle=col;
   g.beginPath();g.moveTo(-22,0);g.quadraticCurveTo(-26,-30,-10,-42);g.quadraticCurveTo(10,-46,18,-30);g.quadraticCurveTo(24,-12,20,0);g.closePath();g.fill();
   g.strokeStyle=col;g.lineWidth=6;g.lineCap='round';g.beginPath();g.moveTo(18,-4);g.quadraticCurveTo(36,-6+Math.sin(t*2)*3,34,-26+Math.sin(t*1.6)*4);g.stroke();
   g.beginPath();g.ellipse(0,-50,15,13,0,0,7);g.fill();
   const ear=w.state!=='closed'?-6:0;
   poly(g,[-14,-56,-10,-72+ear,-3,-60]);g.fill();poly(g,[14,-56,10,-72+ear,3,-60]);g.fill();
-  g.fillStyle='#3a2a32';poly(g,[-12,-58,-10,-67+ear,-6,-60]);g.fill();poly(g,[12,-58,10,-67+ear,6,-60]);g.fill();
+  g.fillStyle=w.white?'#e8a0a8':'#3a2a32';poly(g,[-12,-58,-10,-67+ear,-6,-60]);g.fill();poly(g,[12,-58,10,-67+ear,6,-60]);g.fill();
   // yeux
   for(const s of[-1,1]){const ex=s*6,ey=-51;
     if(w.open>0){const gl=g.createRadialGradient(ex,ey,0,ex,ey,12);gl.addColorStop(0,'rgba(200,255,120,'+(.55*w.open)+')');gl.addColorStop(1,'rgba(200,255,120,0)');g.fillStyle=gl;g.beginPath();g.arc(ex,ey,12,0,7);g.fill();
       g.fillStyle='#c8f060';g.beginPath();g.ellipse(ex,ey,4,3.2*w.open+.4,0,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.ellipse(ex,ey,1,2.6*w.open+.2,0,0,7);g.fill()}
-    else{g.strokeStyle='#5a5560';g.lineWidth=1.4;g.beginPath();g.moveTo(ex-4,ey);g.quadraticCurveTo(ex,ey+2.5,ex+4,ey);g.stroke()}}
+    else{g.strokeStyle=w.white?'#8a8078':'#5a5560';g.lineWidth=1.4;g.beginPath();g.moveTo(ex-4,ey);g.quadraticCurveTo(ex,ey+2.5,ex+4,ey);g.stroke()}}
   g.fillStyle='#d88a9a';poly(g,[-2,-45,2,-45,0,-43]);g.fill();
   g.strokeStyle='rgba(220,220,220,.4)';g.lineWidth=.7;for(const s of[-1,1])for(let k=0;k<3;k++){g.beginPath();g.moveTo(s*4,-44+k);g.lineTo(s*16,-46+k*3);g.stroke()}
   if(w.state==='closed'&&(t%2)<1.4){g.fillStyle='rgba(233,223,199,'+(.5-((t%2)/1.4)*.5)+')';g.font='italic 13px '+F_BODY;g.textAlign='left';g.fillText('Zzz',16,-64-((t%2)/1.4)*16)}

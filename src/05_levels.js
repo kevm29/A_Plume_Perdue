@@ -150,7 +150,7 @@ g...................
 ############
 ############`]});
 
-LEVELS.push({w:0,name:"La galerie des insectes",theme:'insectes',exit:'door',seed:23,
+LEVELS.push({w:0,name:"La galerie des insectes",tiroirAt:[64,4],sheetBase:0,theme:'insectes',exit:'door',seed:23,
  start:"Des papillons épinglés par centaines. Et quelqu'un qui marche, là-bas, avec une lampe.",
  hints:[["FIG. 6 — LE GARDIEN DE NUIT","Il fait sa ronde, toujours la même. Sa lampe éclaire devant lui. Se glisser sous un drap, ou passer dans son dos."],
         ["FIG. 7 — L'ÉPINGLE","Redoutable. Le pigeon qui s'y frotte y laisse des plumes. Au sens propre."]],
@@ -251,7 +251,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '............####',
 '..........######',
 '........########',
-'......##########',
+'....h.##########',
 '################',
 '################']),full([
 '......................',
@@ -261,7 +261,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '..........o...........',
 '....====........====..',
 '...............o......',
-'.h....................',
+'......................',
 '#####........#########',
 '#####........#########',
 '#####........#########',
@@ -308,7 +308,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '.......................',
 '.......................',
 '.........m.............',
-'.......................',
+'...............o.......',
 '.....====.....====.....',
 '.......................',
 '..o..........o.......o.',
@@ -381,7 +381,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
 '############',
 '############'])]});
 
-LEVELS.push({w:0,name:"La loge du gardien",theme:'loge',exit:'window',seed:53,
+LEVELS.push({w:0,name:"La loge du gardien",sheetBase:8,theme:'loge',exit:'window',seed:53,
  dark:{base:.86,period:3.8},
  start:"Une loge de concierge. Ça sent la soupe froide et la croquette.",
  hints:[["FIG. 10 — LE CHAT DU GARDIEN","Il fait semblant de dormir. Quand ses yeux s'allument, ne plus bouger d'une plume : s'il voit bouger, il bondit. Un drap le décourage."]],
@@ -424,7 +424,7 @@ LEVELS.push({w:0,name:"La loge du gardien",theme:'loge',exit:'window',seed:53,
 ........====...........
 ....................o..
 ...====.......====.....
-.......................
+...........Y...........
 ###.......#####.....###
 ###.......#####.....###`,`
 ......................

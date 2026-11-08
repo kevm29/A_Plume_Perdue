@@ -20,6 +20,8 @@ const SECRET_Q=["Un secret ! Le règlement appelle ça « dépôt clandestin ».
 
 function actPost(L){
   L.acts=L.acts||[];L.gates=[];
+  // mission 1 : un objet différent sous chaque drap (1-2 : 0 à 7, 1-4 : 8 à 12)
+  if(L.covers&&L.covers.length&&L.def.sheetBase!=null)L.covers.forEach((c,j)=>c.kind=L.def.sheetBase+j);
   // portillons : colonnes de R
   for(let c=0;c<L.w;c++){let r=0;while(r<ROWS){if(L.g[r][c]==='R'){let r1=r;while(r1+1<ROWS&&L.g[r1+1][c]==='R')r1++;L.gates.push({c,r0:r,r1,open:0,opening:false});r=r1+1}else r++}}
   for(const a of L.acts)if(a.kind==='lever'){let best=null,bd=1e9;for(const g of L.gates){const d=Math.abs(g.c*T-a.x);if(d<bd){bd=d;best=g}}a.gate=best}
@@ -32,6 +34,8 @@ function actPost(L){
   if(L.def.lingeAt){const[c,r]=L.def.lingeAt;L.acts.push({kind:'secret',style:'linge',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
     q:["Un drap qui sèche au balcon. Et dans le pli, de la paille. Quelqu'un secoue ses draps sur la rue depuis cent ans."]})}
   if(L.def.poopAt){const[c,r]=L.def.poopAt;L.acts.push({kind:'secret',style:'poop',x:c*T+T/2,y:(r+1)*T,rx:200,open:0,t:0,used:false,noStraw:true,q:["Copains de toit. On ne se refait pas."]})}
+  if(L.def.tiroirAt){const[c,r]=L.def.tiroirAt;L.acts.push({kind:'secret',style:'tiroir',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
+    q:["Un meuble d'entomologiste. Cent tiroirs de papillons épinglés… et un seul de paille. On dirait qu'on m'attendait."]})}
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -62,7 +66,7 @@ function tryAct(){
   const n=nearAct();if(!n){dropMarble();return}
   if(n.type==='tangle'){
     // le drap sous lequel on se cachait lui tombe dessus : Raymond est à découvert
-    const g=n.o,c=coverHere();g.tangle=1.1;g.sweep=0;if(c){c.gone=true;c.on=g}
+    const g=n.o,c=coverHere();g.tangle=1.1;g.sweep=0;if(c){c.gone=true;c.on=g;sheetSeen(c)}
     unlock('a53');if(!G.sim)achKey();
     if(!G.sim){SFX.flap();noise(.35,700,.25,'bandpass');bubble(g.x+g.w/2,g.y-16,'Hé ! Qui a éteint ?','#2a3a5a');if(!G.tangleSaid){G.tangleSaid=true;say("Le drap sur la tête. Il va être de très mauvaise humeur en sortant de là. Filer.",3.8)}}
     return;
@@ -95,6 +99,8 @@ function grantSecret(a,py){
   if(!G.sim){SFX.secret();if(a.noStraw)noise(.25,3200,.2,'highpass');else{setTimeout(()=>SFX.straw(),180);parts.push({type:'tuftpop',x:a.x,y:py,life:0,max:1.3});puff(a.x,py+4,8,true)}say(pick(a.q||SECRET_Q),3.8)}
 }
 /* le drap sous lequel se trouve Raymond */
+/* on a vu ce qu'il y avait sous ce drap (le chat ou le gardien l'a emporté) */
+function sheetSeen(c){if(G.sim||L.def.sheetBase==null)return;S.sheets=S.sheets||{};if(!S.sheets[c.kind]){S.sheets[c.kind]=1;save();if(Object.keys(S.sheets).length>=13)unlock('a90')}}
 function coverHere(){const cx=P.x+P.w/2,cy=P.y+P.h/2;for(const c of L.covers)if(!c.gone&&cx>c.x+4&&cx<c.x+c.w-4&&cy>c.y&&cy<c.y+c.h)return c;return null}
 /* dans un faux mur (carton creux) */
 function inFake(){const c=Math.floor((P.x+P.w/2)/T),r=Math.floor((P.y+P.h/2)/T);return tile(c,r)==='f'}
@@ -150,8 +156,10 @@ function watchStep(w,dt,pcx,pcy){
   const hid=w.mode==='chase'?coverHere():null;
   let target=w.mode==='chase'?(hid?hid.x+hid.w/2:pcx):w.x;
   const dist=target-(k.x+k.w/2),dir=Math.sign(dist)||1;
-  if(hid&&Math.abs(dist)<18&&k.onGround){w.mode='tangle';w.ct=0;w.cover=hid;hid.gone=true;hid.on=w;unlock('a54');if(!G.sim){SFX.hiss();noise(.3,800,.2,'bandpass')}return}
+  if(hid&&Math.abs(dist)<18&&k.onGround){w.mode='tangle';w.ct=0;w.cover=hid;hid.gone=true;hid.on=w;sheetSeen(hid);unlock('a54');if(!G.sim){SFX.hiss();noise(.3,800,.2,'bandpass')}return}
   if(w.mode==='chase'&&!hid&&(w.ct>6.5||Math.abs(dist)>640||P.dead)){w.mode='back';w.ct=0}
+  // 5-1 : un chien dans son champ de vision, et le chat repart d'où il vient
+  if(w.mode==='chase'&&L.crecy)for(const d of L.crecy.dogs){const dx=d.x-(k.x+k.w/2);if(Math.sign(dx)===(k.f||dir)&&Math.abs(dx)<360){w.mode='back';w.ct=0;if(!w.dogSaid&&!G.sim){w.dogSaid=1;say("Il a vu le chien. Demi-tour, la queue en l'air. Lui aussi sait lire les pancartes.",3.8)}break}}
   if(w.mode==='back'&&Math.abs(dist)<8&&k.onGround){w.mode='sit';w.k=null;w.t=0;w.state='closed';w.open=0;return}
   const sp=w.mode==='chase'?clamp(220+(Math.abs(dist)-150)*.25,220,300):170;
   k.leapT=(k.leapT||0)-dt;if(!(k.leapT>0&&!k.onGround))k.vx=lerp(k.vx,dir*Math.min(sp,Math.abs(dist)*6+20),Math.min(1,dt*6));k.f=dir;

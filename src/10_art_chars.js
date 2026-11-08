@@ -393,6 +393,17 @@ function drawExit(g,e,style,t,label){
     g.strokeStyle='#1b2630';g.lineWidth=3;g.beginPath();g.moveTo(x+20,y-64);g.lineTo(x+20,y+78);g.stroke();
     g.fillStyle='#e9dfc7';g.font='13px '+F_DISP;g.textAlign='center';g.fillText('DEHORS',x+20,y+102);
   }else if(style==='door'){
+    // la porte s'ouvre dans un pan de mur, du sol au plafond (sinon elle flotte dans la salle)
+    {const th=L.th||{},wc=th.wall2||th.wall||'#3a3028',x0=x-58,x1=x+T+58,fl=y+2*T;g.save();
+      const wg=g.createLinearGradient(x0,0,x1,0);wg.addColorStop(0,mix(wc,'#000000',.35));wg.addColorStop(.12,mix(wc,'#e9dfc7',.1));wg.addColorStop(.88,mix(wc,'#e9dfc7',.06));wg.addColorStop(1,mix(wc,'#000000',.4));
+      g.fillStyle=wg;g.fillRect(x0,-40,x1-x0,fl+40);
+      g.strokeStyle='rgba(0,0,0,.22)';g.lineWidth=1.5;for(let yy=fl-120;yy>-40;yy-=150){g.strokeRect(x0+10,yy-120,x1-x0-20,110)}
+      g.fillStyle=th.wains||'#2e2218';g.fillRect(x0,fl-92,x1-x0,92);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x0,fl-92,x1-x0,4);g.fillStyle='rgba(255,255,255,.06)';g.fillRect(x0,fl-96,x1-x0,3);
+      g.strokeStyle='rgba(0,0,0,.3)';for(const px of[x0+8,x1-30])g.strokeRect(px,fl-80,22,70);
+      g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x0,fl-10,x1-x0,10);
+      // chambranle mouluré et linteau
+      g.fillStyle='#4a3020';g.fillRect(x-14,y-34,T+28,2*T+34);g.fillStyle='#5e3e28';g.fillRect(x-18,y-40,T+36,10);g.fillStyle='rgba(255,255,255,.08)';g.fillRect(x-18,y-40,T+36,2);
+      g.restore()}
     g.fillStyle='#2a1c12';g.fillRect(x-6,y-6,T+12,2*T+6);
     const gr=g.createLinearGradient(x,y,x+T,y);gr.addColorStop(0,'#ffd9a0');gr.addColorStop(1,'#f0a860');
     g.fillStyle=gr;g.fillRect(x,y,T,2*T);
