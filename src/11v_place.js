@@ -95,11 +95,11 @@ function plSetPass(Lv,n){
   // abeilles : du nid (dans le premier platane) aux fleurs, et retour
   S2.bees=[];if(P1||P2)for(const[per,ph,path]of[[5.2,0,PL_BEE1],[5.2,.5,PL_BEE1],[6.4,.25,PL_BEE2]])S2.bees.push({path,per,ph,x:0,y:0,f:1});
   // écureuils
-  S2.squirrels=[];if(P1||P2)S2.squirrels.push({a:24.1*T,b:25.9*T,y:3*T,x:25*T,f:1,pause:0},{a:81.1*T,b:82.9*T,y:2*T,x:82*T,f:-1,pause:.7});
+  S2.squirrels=[];if(P1||P2)for(const[i,col,ph]of[[0,'roux',0],[1,'gris',.5],[2,'roux',.25]])S2.squirrels.push({x:PLX.trees[i].x*T,top:PLF-292,bot:PLF-70,y:PLF-70-ph*200,d:-1,pause:ph,col,side:i%2?-1:1});
   // les grillades
   S2.grill={t:0,on:P1||P2};
   // le chat sur le toit des fleurs (2e passage) : un coup de patte si l'on passe trop près
-  S2.roofCat=P2?{x:30.7*T,y:8*T,sw:0,cool:0}:null;
+  S2.roofCat=P2?{x:13.4*T,y:8*T,sw:0,cool:0}:null;
   // les toits pris par les pigeons (2e passage)
   S2.flocks=[];if(P2)for(const c0 of[19,44,98]){const fl={c0,c1:c0+3,birds:[]};const ks=['gros','moignon','deplume','gros','moignon','deplume'];
     for(let i=0;i<6;i++)fl.birds.push({k:ks[(i+c0)%6],hx:(c0+.85+i*.45)*T,x:(c0+.85+i*.45)*T,y:8*T,y0:8*T,vy:0,f:i%2?1:-1,st:'walk',t:i*.7,cool:i*.35,beg:0});S2.flocks.push(fl)}
@@ -195,8 +195,8 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
   for(const b of S2.bees){const u=(S2.t/b.per+b.ph)%1,[x,y]=cwAt(b.path,u),[x2]=cwAt(b.path,(u+.01)%1);b.f=x2>=x?1:-1;b.x=x+Math.sin(S2.t*9+b.ph*20)*4;b.y=y+Math.sin(S2.t*13+b.ph*30)*3;
     if(!P.dead&&overlap(hb,{x:b.x-6,y:b.y-5,w:12,h:10}))hit='abeille'}
   // les écureuils
-  for(const s of S2.squirrels){if(s.pause>0){s.pause-=dt;continue}s.x+=s.f*240*dt;if(s.x>s.b){s.x=s.b;s.f=-1;s.pause=.9}if(s.x<s.a){s.x=s.a;s.f=1;s.pause=.9}
-    if(!P.dead&&overlap(hb,{x:s.x-14,y:s.y-20,w:28,h:20}))hit='ecureuil'}
+  for(const s of S2.squirrels){if(s.pause>0)s.pause-=dt;else{s.y+=s.d*165*dt;if(s.y<s.top){s.y=s.top;s.d=1;s.pause=.9}if(s.y>s.bot){s.y=s.bot;s.d=-1;s.pause=1.1}}
+    if(!P.dead&&overlap(hb,{x:s.x-11,y:s.y-15,w:22,h:30}))hit='ecureuil'}
   // les grillades : ça grésille, puis les flammes jaillissent
   {const gr=S2.grill;if(gr.on){gr.t+=dt;const u=gr.t%3.1;gr.ph=u<1.5?'idle':u<2.1?'warn':u<2.9?'burst':'idle';
     if(gr.ph==='burst'&&gr.last!=='burst'&&!G.sim&&Math.abs(pcx-56*T)<900){noise(.6,2600,.07,'bandpass');noise(.35,5200,.04,'highpass',.08)}
@@ -206,8 +206,8 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
     if(gr.ph==='warn'&&gr.last!=='warn'&&!G.sim&&Math.abs(pcx-56*T)<900)noise(.5,4200,.03,'highpass');
     gr.last=gr.ph;if(gr.ph==='burst'&&!P.dead){const k=Math.min(1,(u-2.1)/.25);if(overlap(hb,{x:57*T+4,y:PLF-70-k*190,w:1.6*T-8,h:70+k*190-30}))hit='grill'}}}
   // le chat du toit
-  {const k=S2.roofCat;if(k){k.cool-=dt;if(k.sw>0)k.sw-=dt;if(k.cool<=0&&Math.abs(pcx-k.x)<78&&P.y<k.y+20&&P.y>k.y-120){k.sw=.45;k.cool=1.4;if(!G.sim)noise(.15,2400,.06,'bandpass')}
-    if(k.sw>0&&k.sw<.38&&!P.dead&&overlap(hb,{x:k.x-50,y:k.y-46,w:100,h:46}))hit='chatToit'}}
+  {const k=S2.roofCat;if(k){k.cool-=dt;if(k.sw>0)k.sw-=dt;if(k.cool<=0&&Math.abs(pcx-k.x)<70&&P.y<k.y+20&&P.y>k.y-110){k.sw=.45;k.cool=1.5;if(!G.sim)noise(.15,2400,.06,'bandpass')}
+    if(k.sw>0&&k.sw<.3&&!P.dead&&overlap(hb,{x:k.x-44,y:k.y-42,w:88,h:42}))hit='chatToit'}}
   // les pigeons des toits : ils chassent qui s'y pose, et sautent au passage de qui les survole
   for(const fl of S2.flocks){const x0=fl.c0*T,x1=(fl.c1+1)*T,over=pcx>x0-40&&pcx<x1+40&&P.y+P.h<=8*T+4&&!P.dead,onRoof=P.onGround&&!P.dead&&Math.abs(P.y+P.h-8*T)<3&&pcx>x0-6&&pcx<x1+6;
     if(onRoof&&!fl.angry){fl.angry=1.6;if(!G.sim){SFX.coo();bubble((x0+x1)/2,8*T-60,pick(['Krrr ! Dégage !','Rrou ! Chez nous !','Wesh ! Pas ici !']),'#6a4a4a')}}
@@ -249,7 +249,7 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
     once('grill',pcx>51*T,"Des grillades. Le cuisinier a plus peur de son feu que moi.",3.4);
     once('bal',pcx>61*T,"Un orchestre ! Lucien dansait si mal. Marguerite riait si fort.",3.8);
     once('manege',pcx>112*T,"Des chevaux de bois ! Comme à la foire de Coulommiers. Ils tournent, ils montent, ils descendent.",4)}
-  if(S2.pass===2){once('pig',pcx<110*T,"Les pigeons du coin ont pris les toits. Ils ne partagent pas.",3.4);once('chat',pcx<38*T,"Un chat sur le toit du crêpier. Article 3 : en cas de chat… le contourner, par le haut.",4)}
+  if(S2.pass===2){once('pig',pcx<110*T,"Les pigeons du coin ont pris les toits. Ils ne partagent pas.",3.4);once('chat',pcx<19*T,"Un chat sur le toit du marchand de miel. Article 3 : en cas de chat… le contourner, par le haut.",4)}
   if(S2.pass===3){once('vide',pcx>58*T,"Les musiciens sont partis. Les marchands remballent. Et toujours pas de Marguerite.",3.8);once('hibou',pcx>98*T,"Un hibou. Il a l'œil sur moi. Les deux yeux, même.",3.4)}
   // fin du passage
   if(!S2.seq&&!P.dead&&(S2.dir>0?pcx>S2.endX:pcx<S2.endX)){if(S2.pass<4)S2.seq={k:'pass',t:0,next:S2.pass+1};else S2.seq={k:'end',t:0,x0:P.x};P.vx=0;G.quip=null;G.quipQ=[]}
@@ -855,11 +855,14 @@ function plNest(g,x,y){g.save();g.strokeStyle='#5a4a30';g.lineWidth=2;g.beginPat
 function plBee(g,b,t){g.save();g.translate(b.x,b.y);g.scale(b.f,1);const fl=Math.abs(Math.sin(t*44));
   g.fillStyle='rgba(235,245,255,.6)';g.save();g.scale(1,.3+fl*.7);g.beginPath();g.ellipse(-1,-5,4,5,-.4,0,7);g.ellipse(2,-5,4,5,.4,0,7);g.fill();g.restore();
   g.fillStyle='#f0b820';g.beginPath();g.ellipse(-1,0,6,4,0,0,7);g.fill();g.fillStyle='#1a1410';g.fillRect(-4,-3.5,1.8,7);g.fillRect(-.5,-3.8,1.8,7.6);g.beginPath();g.arc(5,-.5,2.6,0,7);g.fill();g.restore()}
-function plSquirrel(g,s,t){g.save();g.translate(s.x,s.y);g.scale(s.f,1);const run=s.pause>0?0:Math.sin(t*30);
-  g.fillStyle='#a8562a';g.beginPath();g.moveTo(-6,-8);g.bezierCurveTo(-24,-10,-26,-30,-12,-32);g.bezierCurveTo(-4,-30,-10,-18,-4,-12);g.closePath();g.fill();
-  g.fillStyle='#b8622e';g.beginPath();g.ellipse(0,-8,9,6,-.2,0,7);g.fill();g.beginPath();g.arc(8,-13,5,0,7);g.fill();poly(g,[6,-17,7,-23,10,-17]);g.fill();
-  g.fillStyle='#f0d8b0';g.beginPath();g.ellipse(3,-6,4,3,0,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.arc(10,-14,1.2,0,7);g.fill();
-  g.strokeStyle='#8a4420';g.lineWidth=2;g.beginPath();g.moveTo(-4,-3);g.lineTo(-5+run*3,0);g.moveTo(5,-3);g.lineTo(6-run*3,0);g.stroke();g.restore()}
+function plSquirrel(g,s,t){// il court le long du tronc, tête vers le haut ou vers le bas, la queue en panache
+  g.save();g.translate(s.x+s.side*4,s.y);g.rotate(s.d<0?-Math.PI/2:Math.PI/2);g.scale(1,s.side*(s.d<0?1:-1));
+  const run=s.pause>0?0:Math.sin(t*30),c=s.col==='gris'?['#8a8a8a','#9a9a9e','#ecebe6','#6a6a6e']:['#a8562a','#b8622e','#f0d8b0','#8a4420'];
+  g.fillStyle=c[0];g.beginPath();g.moveTo(-6,-8);g.bezierCurveTo(-24,-10,-26,-30,-12,-32);g.bezierCurveTo(-4,-30,-10,-18,-4,-12);g.closePath();g.fill();
+  if(s.col==='gris'){g.strokeStyle='rgba(240,240,236,.6)';g.lineWidth=1.4;g.beginPath();g.moveTo(-8,-10);g.bezierCurveTo(-22,-12,-23,-28,-12,-30);g.stroke()}
+  g.fillStyle=c[1];g.beginPath();g.ellipse(0,-8,9,6,-.2,0,7);g.fill();g.beginPath();g.arc(8,-13,5,0,7);g.fill();poly(g,[6,-17,7,-23,10,-17]);g.fill();
+  g.fillStyle=c[2];g.beginPath();g.ellipse(3,-6,4,3,0,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.arc(10,-14,1.3,0,7);g.fill();g.fillStyle='rgba(255,255,255,.7)';g.fillRect(10.2,-14.8,.6,.6);
+  g.strokeStyle=c[3];g.lineWidth=2;g.beginPath();g.moveTo(-4,-3);g.lineTo(-5+run*3,0);g.moveTo(5,-3);g.lineTo(6-run*3,0);g.stroke();g.restore()}
 function plOwl(g,o,t){g.save();g.translate(o.x,o.y);g.scale(o.f,1);const fly=o.st==='dive'||o.st==='back';
   if(fly){const fl=Math.sin(t*(o.st==='dive'?6:16))*.5;g.fillStyle='#7a5a3a';for(const s of[-1,1]){g.save();g.scale(1,s);g.rotate(-.25+fl*s*.3);g.beginPath();g.ellipse(-2,-12,26,8,-.3,0,7);g.fill();g.restore()}}
   const by=fly?0:-18;g.fillStyle='#8a6a44';g.beginPath();g.ellipse(0,by,13,17,0,0,7);g.fill();g.fillStyle='#e8d8b8';g.beginPath();g.ellipse(2,by-5,10,9,0,0,7);g.fill();
