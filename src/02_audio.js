@@ -81,6 +81,16 @@ const SONGS={
   vol1916:{tempo:150,bpb:4,lead:['clar','pizz','harpsi'],bass:'barrage',gap:1,
     prog:'Em Em F Em Em Am B B Em Em F Em C Am B Em',
     mel:'E5:.5 F5:.5 E5:1 B4:1 E5:.5 G5:.5 F5:1 E5:1 r:1 F5:.5 G5:.5 A5:1 G5:.5 F5:.5 E5:2 r:1 B4:.5 C5:.5 D#5:1 E5:1 F#5:1 B4:1 G5:.5 F#5:.5 E5:.5 D#5:.5 E5:2 B5:1 A5:.5 G5:.5 F5:1 E5:1 C5:1 E5:1 A5:2 G5:1 F#5:1 D#5:1 B4:1 E5:.5 G5:.5 B5:1 A5:.5 G5:.5 F#5:2 E5:4 r:2 E5:1 G5:1 B5:2 A5:1 G5:1 F5:2 E5:2 C5:1 E5:1 A5:3 G5:1 F#5:2 D#5:2 E5:4'},
+  // 5-3 — l'orchestre de la place : une valse musette (le matin)…
+  musette:{tempo:150,bpb:3,lead:['accord','accord','clar'],bass:'waltz',gap:1,
+    prog:'Am Am E E E E Am Am Dm Dm Am Am E E Am Am C C G G G G C C F F C C G G C C',
+    mel:'E5:1 A5:1 C6:1 B5:1.5 A5:.5 E5:1 G#5:1 B5:1 D6:1 C6:1.5 B5:.5 G#5:1 E5:1 G#5:1 B5:1 A5:1.5 G#5:.5 F#5:1 E5:1 A5:1 C6:1 A5:3 D5:1 F5:1 A5:1 D6:1.5 C6:.5 A5:1 C6:1 B5:1 A5:1 E5:3 G#5:1 A5:1 B5:1 D6:1.5 C6:.5 B5:1 A5:1 E5:1 C5:1 A4:2 r:1 G5:1 C6:1 E6:1 D6:1.5 C6:.5 G5:1 B5:1 D6:1 G6:1 F6:1.5 E6:.5 D6:1 B5:1 G5:1 D5:1 F5:1.5 E5:.5 D5:1 E5:1 G5:1 C6:1 C6:3 A5:1 C6:1 F6:1 E6:1.5 D6:.5 C6:1 E6:1 D6:1 C6:1 G5:3 B5:1 C6:1 D6:1 F6:1.5 E6:.5 D6:1 C6:1 G5:1 E5:1 C5:2 r:1'},
+  // … puis une java, plus enjouée encore (l'après-midi)
+  java:{tempo:184,bpb:3,lead:['accord','clar','accord'],bass:'waltz',gap:0,
+    prog:'G G D D D D G G C C G G D D G G Em Em B B B B Em Em Am Am Em Em B B Em Em',
+    mel:'D5:1 G5:1 B5:1 D6:2 B5:1 C6:1 A5:1 F#5:1 D5:3 E5:1 F#5:1 A5:1 C6:2 A5:1 B5:1 G5:1 D5:1 B4:3 C5:1 E5:1 G5:1 C6:2 B5:1 A5:1 G5:1 E5:1 D5:3 D5:1 F#5:1 A5:1 C6:1 B5:1 A5:1 G5:3 r:3 B4:1 E5:1 G5:1 B5:2 G5:1 A5:1 F#5:1 D#5:1 B4:3 C5:1 D#5:1 F#5:1 A5:2 F#5:1 G5:1 E5:1 B4:1 G4:3 A4:1 C5:1 E5:1 A5:2 G5:1 F#5:1 E5:1 C5:1 B4:3 B4:1 D#5:1 F#5:1 A5:1 G5:1 F#5:1 E5:3 r:3'},
+  // le silence (la pluie, la nuit) : plus d'orchestre
+  silence:{tempo:60,bpb:4,lead:['box'],bass:'none',gap:0,prog:'Am',mel:'r:8'},
   // polka de la fête
   polka:{tempo:128,bpb:4,lead:['accord','box'],bass:'polka',gap:1,
     prog:'C G C G C F G C',
@@ -93,7 +103,7 @@ const LEVEL_SONGS={
   's2-3':{base:'zonerouge'},'s2-4':{base:'complainte',tr:-2,tempo:70,lead:['box'],bass:'soft'},
   's3-1':{base:'train'},'s3-2':{base:'gare'},'s3-3':{base:'tango'},'s3-4':{base:'cantique'},
   's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'orage',tempo:136,bass:'gallop'},'s4-3':{base:'orage',tr:-2,lead:['clar','pizz']},'s4-4':{base:'orage',tr:3,lead:['harpsi','box']},
-  's5-1':{base:'polka'},'s5-2':{base:'cantique',tr:-3,tempo:74,lead:['pipe','harpsi'],bass:'chorale'},'bal':{base:'valse',tempo:132,lead:['accord','box'],bass:'waltz'},'s6-1':{base:'galop',tempo:168,lead:['accord','box'],bass:'soft'},'s5-3':{base:'galop',tr:2},'s5-4':{base:'title',tempo:64},
+  's5-1':{base:'polka'},'s5-2':{base:'cantique',tr:-3,tempo:74,lead:['pipe','harpsi'],bass:'chorale'},'bal':{base:'valse',tempo:132,lead:['accord','box'],bass:'waltz'},'s5-3':{base:'musette'},'pl-java':{base:'java'},'s5-4':{base:'title',tempo:64},
   'vx-nuit':{base:'nuitA4'},'vx-route':{base:'route1916'},'vx-chambree':{base:'chambree'},'vx-aube':{base:'aube'},'vx-vol':{base:'vol1916'},'vx-reveil':{base:'nuitA4',tempo:66,tr:-3,lead:['box'],bass:'soft'},
   'chase':{base:'galop'},'title':{base:'title'}
 };

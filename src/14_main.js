@@ -38,6 +38,8 @@ function update(dt){
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt*30);
   if(G.quip&&!(G.state==='play'&&G.hintI>=0)){G.quip.t+=dt;if(G.quip.t>G.quip.dur){G.quip=null;if(G.quipQ&&G.quipQ.length){const f=G.quipQ.shift();say(f[1],f[2]||4,f[0])}}}
   if(G.state!=='play')loopsOff();
+  // l'orchestre de la 5-3 joue plus ou moins fort selon la distance à la scène : hors du niveau, volume normal
+  if(G.state!=='play'&&G.state!=='pause'&&G.state!=='confirm'&&G.state!=='exiting'&&typeof mGain!=='undefined'&&mGain&&mGain.gain.value!==.1)mGain.gain.value=.1;
   switch(G.state){
     case'title':handleMenu();break;
     case'pause':if(pressed.has('esc')){G.state='play';break}handleMenu();break;
@@ -50,13 +52,13 @@ function update(dt){
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
-      if(runnerActive()){runnerUpdate(dt);break}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
       if(L.cb&&L.cb.end&&(pressed.has('act')||pressed.has('jump')))comblesSkip();
+      if(L.pl&&L.pl.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))placeSkip();
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
-      if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn()}
+      if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn();if(L.pl)placeRespawn()}
       if(pressed.has('jump')&&!G.cut)P.jumpBuf=.12;
       if(pressed.has('act')&&!G.cut)tryAct();
       acc+=dt;let n=0;while(acc>=STEP&&n<12){stepPlay(STEP);acc-=STEP;n++;if(G.state!=='play')break}
@@ -94,9 +96,10 @@ function render(){
     case'levelend':renderLetter(t);renderGrain();break;
     case'play':case'pause':case'exiting':case'confirm':{
       if(vauxActive()){vauxRender(t);vauxOverlays();break}
-      if(runnerActive()){runnerRender(t);vauxOverlays();break}
       const sx=(rnd()-.5)*G.shake,sy=(rnd()-.5)*G.shake;
-      const cx=Math.round(cam.x+sx),cy=Math.round(cam.y+sy);
+      let cx=Math.round(cam.x+sx),cy=Math.round(cam.y+sy);
+      // zoom de cinématique (5-3) : centré sur un point du monde
+      const zm=L.zoom&&L.zoom.z>1.001?L.zoom:null;if(zm){cx=Math.round(zm.fx-W/2);cy=Math.round(zm.fy-H/2);ctx.save();ctx.translate(W/2,H/2);ctx.scale(zm.z,zm.z);ctx.translate(-W/2,-H/2)}
       renderWorld(L,cx,cy,t);
       const extra=[{x:P.x+P.w/2,y:P.y+P.h/2,r:190,i:.8}];
       for(const cp of L.cps)if(cp.on)extra.push({x:cp.x,y:cp.y-46,r:150,i:.75,warm:1,flick:1});
@@ -107,11 +110,12 @@ function render(){
       for(const b of L.bolts)if(b.state==='strike')extra.push({x:b.x,y:13*T-60,r:260,i:1});
       for(const l of mechLights())extra.push(l);
       renderLighting(L,cx,cy,t,extra);
+      if(zm)ctx.restore();
       renderWeather(L.th,cx,t);
       drawForeground(cx,L.def.seed,L.th);
-      if(L.ferte)ferteOverlay(t);if(L.crecy)crecyOverlay(t);if(L.cb)comblesOverlay(t);
+      if(L.ferte)ferteOverlay(t);if(L.crecy)crecyOverlay(t);if(L.cb)comblesOverlay(t);if(L.pl)placeOverlay(t);
       renderGrain();
-      if(!G.cut&&!(L.cb&&L.cb.end&&L.cb.end.t>1.2))renderHUD();else if(G.cut)drawQuip(66);
+      if(!G.cut&&!(L.cb&&L.cb.end&&L.cb.end.t>1.2)&&!(L.pl&&L.pl.seq))renderHUD();else if(G.cut)drawQuip(66);
       if(G.cut){ctx.fillStyle='rgba(0,0,0,.88)';ctx.fillRect(0,0,W,46);ctx.fillRect(0,H-46,W,46);if(G.cut.t>1){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('appuyer pour passer',W-20,H-18)}}
       vauxOverlays();
       break}

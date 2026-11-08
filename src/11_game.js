@@ -29,9 +29,9 @@ function loadLayers(i){
 function computeRS(){RS=Math.min(2,Math.max(1,Math.round(scale*dpr*2)/2))}
 function songKey(i){const d=LEVELS[i];return's'+(d.w+1)+'-'+(i%4+1)}
 function startLevel(i){
-  computeRS();
+  computeRS();if(typeof mGain!=='undefined'&&mGain)mGain.gain.value=.1;
   G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
-  MUS_OLD=false;if(L.ferte)ferteLayers();if(L.crecy)L.tiles=crecyTiles();if(L.cb)L.tiles=comblesTiles();
+  MUS_OLD=false;if(L.ferte)ferteLayers();if(L.crecy)L.tiles=crecyTiles();if(L.cb)L.tiles=comblesTiles();if(L.pl)L.tiles=placeTiles();
   {const tb=document.getElementById('tb');if(tb)tb.classList.toggle('ferte',!!L.ferte)}
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
   setSong(songKey(i));loopsOff();
@@ -49,7 +49,7 @@ function startLevel(i){
   }else say(L.def.start,5);
   applyGot(i);if(S.infinite)S.run.usedInf=true;
   cam.x=clamp(P.x-W*.35,0,L.wpx-W);cam.y=ROWS*T-H;
-  V=null;if(L.def.vaux)vauxStart();RN=null;if(L.def.runner)runnerStart();
+  V=null;if(L.def.vaux)vauxStart();
 }
 function resetPlayer(){
   P.x=P.cp.x-P.w/2;P.y=P.cp.y-P.h;P.vx=P.vy=0;P.flaps=0;P.dead=false;P.onGround=false;P.onMover=null;P.jumping=false;P.sx=P.sy=1;P.jumpBuf=0;P.coyote=0;P.facing=1;P.spin=0;P.stam=STAM_MAX;P.torn=false;P.lastGY=null;P.idle=0;P.ride=null;P.lift=0;P.hideIn=null;P.carried=null;
@@ -73,7 +73,7 @@ function die(kind,tiles){
   const cx=P.x+P.w/2,cy=P.y+P.h/2;
   puff(cx,cy,30,true);puff(cx,cy,10,false);parts.push({type:'ring',x:cx,y:cy,life:0,max:.45});
   if(kind==='cat'){meow(.9,true);}
-  if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=L.ferte?ferteTiles(L.ferte.era):L.crecy?crecyTiles():L.cb?comblesTiles():buildTilesF(L)}
+  if(tiles&&tiles.length){for(const[c,r]of tiles)L.g[r][c]='p';L.tiles=L.ferte?ferteTiles(L.ferte.era):L.crecy?crecyTiles():L.cb?comblesTiles():L.pl?placeTiles():buildTilesF(L)}
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
 const TORN_Q=["Mon aile gauche vient de déposer un préavis de grève.","Ça craque aux coutures. Des coutures ? Depuis quand j'ai des coutures, moi ?","Elle se décroche ! Non. Si. Presque. Ne plus bouger d'une plume.",
@@ -153,6 +153,7 @@ function stepTomb(dt){
 function stepPlay(dt){
   if(G.tombSeq){stepTomb(dt);return}
   if(L.cb&&L.cb.end){comblesEndStep(dt);return}
+  if(L.pl&&L.pl.seq){placeSeqStep(dt);return}
   G.lt+=dt;
   for(const m of L.movers){
     if(m.axis==='s'||m.axis==='p'){mechMoverStep(m,dt);continue}
@@ -224,7 +225,7 @@ function stepPlay(dt){
   for(const c of L.rats){if(c.dead||c.runner)continue;const ch=tile(Math.floor((c.x+c.w/2)/T),Math.floor((c.y+c.h-2)/T));if(c.y>ROWS*T+40||ch==='^'){c.dead=true;if(!G.sim&&ch==='^'){puff(c.x+c.w/2,c.y,8,false);if(L.th.spike==='obus')obusBoom(c.x+c.w/2,c.y+c.h)}}}
   if(L.rats.some(c=>c.dead))L.rats=L.rats.filter(c=>!c.dead);
   for(const b of L.bolts){const cyc=(G.lt+b.ph)%BOLT_PERIOD;const st=cyc>=2.6&&cyc<2.85?'strike':cyc>=1.6?'warn':'idle';if(st==='strike'&&b.state!=='strike'&&!G.sim){SFX.zap();G.flash=Math.max(G.flash,.7);setTimeout(()=>SFX.thunder(.5),150)}b.state=st}
-  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);trainStep(dt);gareStep(dt);langletStep(dt);facadeStep(dt);a4Step(dt);aireStep(dt);ferteStep(dt);crecyStep(dt);comblesStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
+  mechStep(dt,pcx,pcy);meuseStep(dt);zrStep(dt);museeStep(dt);trainStep(dt);gareStep(dt);langletStep(dt);facadeStep(dt);a4Step(dt);aireStep(dt);ferteStep(dt);crecyStep(dt);comblesStep(dt);placeStep(dt);actStep(dt);marbleStep(dt);mineStep(dt);grenadeStep(dt);hunterStep(dt);moleStep(dt);
   const K=L.chaser;
   if(K)stepChaser(K,dt,pcx,pcy);
   if(G.cut){stepCut(dt);return}
@@ -244,8 +245,8 @@ function stepPlay(dt){
   P.coyote=P.onGround?.1:P.coyote-dt;P.jumpBuf-=dt;
   if(P.jumpBuf>0&&!MD.noInput){
     if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;SFX.jump()}
-    else if(P.flaps<MAXFLAPS&&!P.torn&&!MD.noFly&&P.stam>=STAM_FLAP){P.vy=-FLAPV;P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
-    else if(P.flaps<MAXFLAPS&&!G.sim){P.jumpBuf=0;P.strain=.5;tone(160,.08,'triangle',.05)}
+    else if(P.flaps<(MD.maxFlaps||MAXFLAPS)&&!P.torn&&!MD.noFly&&P.stam>=STAM_FLAP){P.vy=-(MD.flapV||FLAPV);P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
+    else if(P.flaps<(MD.maxFlaps||MAXFLAPS)&&!G.sim){P.jumpBuf=0;P.strain=.5;tone(160,.08,'triangle',.05)}
   }
   if(P.jumping&&!held&&P.vy<0){P.vy*=.5;P.jumping=false}
   P.vy+=GRAV*dt;
@@ -343,7 +344,7 @@ function stepChaser(K,dt,pcx,pcy){
   else if(K.state==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.9||K.y>ROWS*T-60){K.state='hover';K.pt=0}}
 }
 function respawn(){
-  resetPlayer();P.wake=.35;if(L.gare)gareRespawn();if(L.train)trainRespawn();if(L.lg)langletRespawn();if(L.fc)facadeRespawn();if(L.a4)a4Respawn();if(L.aire)aireRespawn();if(L.ferte)ferteRespawn();if(L.cb)comblesRespawn();
+  resetPlayer();P.wake=.35;if(L.gare)gareRespawn();if(L.train)trainRespawn();if(L.lg)langletRespawn();if(L.fc)facadeRespawn();if(L.a4)a4Respawn();if(L.aire)aireRespawn();if(L.ferte)ferteRespawn();if(L.cb)comblesRespawn();if(L.pl)placeRespawn();
   const K=L.chaser;
   if(K){
     if(K.state==='dead'){}

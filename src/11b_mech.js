@@ -126,6 +126,8 @@ function mechMods(){
   // la boue colle aux plumes : à peine un sautillement, plus de battement ni de vol plané, un moment encore après en être sorti
   if(onMud()){m.run=RUN*.42;m.jump=JUMPV*.36;P.mudCoat=1.4}
   if(P.mudCoat>0)m.noFly=true;
+  // 5-3, sous la pluie : Raymond, alourdi, saute moins haut et ne bat qu'une fois des ailes
+  if(L.pl&&L.pl.rain){m.jump=JUMPV*.72;m.flapV=FLAPV*.75;m.maxFlaps=1}
   if(P.stun>0||P.ride||P.hideIn||P.carried)m.noInput=true;
   return m;
 }
@@ -162,7 +164,7 @@ function mechAfterMove(dt,vyBefore){
   {const k=a4AfterMove();if(k)return k}
   {const k=aireAfterMove();if(k)return k}
   {const k=ferteAfterMove();if(k)return k}
-  {const k=crecyAfterMove();if(k)return k}{const k=comblesAfterMove();if(k)return k}
+  {const k=crecyAfterMove();if(k)return k}{const k=comblesAfterMove();if(k)return k}{const k=placeAfterMove();if(k)return k}
   return null;
 }
 /* ---------- collisions mortelles ---------- */

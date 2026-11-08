@@ -432,7 +432,7 @@ function drawExit(g,e,style,t,label){
 }
 function drawMover(g,m){
   if(m.kind==='ponton'){fertePonton(g,m);return}
-  if(m.kind==='pale'||m.kind==='trampo')return;
+  if(m.kind==='pale'||m.kind==='trampo'||m.kind==='plh')return;
   if(m.kind==='cane'){cDuck(g,m);return}
   if(drawMechMover(g,m,G.t))return;
   g.save();
