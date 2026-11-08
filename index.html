@@ -9352,8 +9352,9 @@ function cartUpdate(dt){const s=V.s;s.u+=150*dt;s.hoof-=dt;
   if(s.hoof<=0){s.hoof=.19;if(!G.sim){noise(.05,900+rnd()*300,.18,'bandpass',0,3);if(rnd()<.06)noise(.3,300,.08,'lowpass')}}
   if(V.t>2.4)s.zoom=Math.min(s.pinch>=0?2.75:2.1,s.zoom+dt*(s.pinch>=0?.32:.19));
   if(!s.said.a&&V.t>1.2){s.said.a=1;vxBubble(170,196,"Il paraît qu'au fort, y a même plus d'eau.",'#2a3a5a',3.4)}
-  if(!s.said.b&&V.t>5){s.said.b=1;vxBubble(440,200,'♪ … ♫ …','#2a3a5a',2.6)}
-  if(!s.said.c&&V.t>7.5){s.said.c=1;vxBubble(520,206,'Allez, hue !','#4a3a2a',2.2)}
+  if(!s.said.r&&V.t>4.7){s.said.r=1;vxBubble(440,200,'Tais-toi, Lafitte !','#2a3a5a',2.2)}
+  if(!s.said.b&&V.t>7.1){s.said.b=1;vxBubble(440,200,'♪ … ♫ …','#2a3a5a',2.6)}
+  if(!s.said.c&&V.t>9.2){s.said.c=1;vxBubble(520,206,'Allez, hue !','#4a3a2a',2.2)}
   if(pressed.has('act')&&s.pinch<0&&V.t>1){s.pinch=0;s.peck=.3;s.wince=.8;if(!G.sim){tone(1500,.05,'square',.04);SFX.coo()}{const h=s.lucHead||{x:340,y:230};vxBubble(h.x-6,h.y-34,'Aïe !','#a8322d',1.6)}}
   if(s.pinch>=0){s.pinch+=dt;s.peck=Math.max(0,s.peck-dt);s.wince=Math.max(0,s.wince-dt);s.gaze=Math.min(1,s.gaze+dt*2);
     if(!s.said.l&&s.pinch>1){s.said.l=1;say("Je sais, mon vieux… Ça ne me plaît pas plus qu'à toi, d'y monter.",4.4,'LUCIEN')}
