@@ -89,7 +89,7 @@ const DEATH_Q={
   grill:["Les flammes du barbecue. Je sens la merguez, maintenant.","Grillé. Le cuisinier a eu plus peur que moi, et c'est lui qui tenait les pinces."],
   abeille:["Une abeille. Elle allait aux fleurs ; j'étais sur son chemin.","Piqué par une abeille. Elle ne s'en remettra pas, paraît-il. Moi non plus, sur le moment."],
   chatToit:["Le chat sur le toit du marchand de miel. Un coup de patte, sans même se lever.","Fauché par le chat. Il gardait le miel. Ou il m'attendait."],
-  chatRue:["Un chat errant. Pour lui, la fête, c'était moi.","Le chat s'est ramassé, puis il a bondi. Dans cet ordre. J'aurais dû regarder."],
+  chatRue:["Un chat errant, roulé en boule. Il ne dormait que d'un œil.","Le chat dormait. Je l'ai réveillé. Il n'a pas apprécié."],
   pigeonsToit:["Les pigeons du toit. Ils sont chez eux, et ils me l'ont fait comprendre.","Chassé par toute une bande. Pas un pour reconnaître un sergent."],
   hibou:["Un hibou. Il fond sans un bruit sur tout ce qui bouge. J'ai bougé.","Emporté par un hibou. Il m'a pris pour un mulot. C'est vexant, pour un sergent."],
   voute:["Tombé dans le noir, entre deux poutres. Tout en bas, la voûte. Et dessous, la nef.","Pas de fond, dans ces combles. Enfin si : la voûte, très dure, très loin."],
