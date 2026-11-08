@@ -57,8 +57,9 @@ function update(dt){
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
       if(L.cb&&L.cb.end&&(pressed.has('act')||pressed.has('jump')))comblesSkip();
       if(L.pl&&L.pl.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))placeSkip();
+      if(L.cm&&L.cm.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))cmSkip();
       if(G.cut&&(pressed.has('ok')||pressed.has('restart')||G.click)&&G.cut.t>1)skipCut();
-      if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn();if(L.pl)placeRespawn()}
+      if(pressed.has('restart')&&!P.dead&&!G.cut){resetPlayer();P.wake=.3;respawnChaserOnly();if(L.ferte)ferteRespawn();if(L.pl)placeRespawn();if(L.cm)cmRespawn()}
       if(pressed.has('jump')&&!G.cut)P.jumpBuf=.12;
       if(pressed.has('act')&&!G.cut)tryAct();
       acc+=dt;let n=0;while(acc>=STEP&&n<12){stepPlay(STEP);acc-=STEP;n++;if(G.state!=='play')break}
@@ -113,9 +114,9 @@ function render(){
       if(zm)ctx.restore();
       renderWeather(L.th,cx,t);
       drawForeground(cx,L.def.seed,L.th);
-      if(L.ferte)ferteOverlay(t);if(L.crecy)crecyOverlay(t);if(L.cb)comblesOverlay(t);if(L.pl)placeOverlay(t);
+      if(L.ferte)ferteOverlay(t);if(L.crecy)crecyOverlay(t);if(L.cb)comblesOverlay(t);if(L.pl)placeOverlay(t);if(L.cm)cmOverlay(t);
       renderGrain();
-      if(!G.cut&&!(L.cb&&L.cb.end&&L.cb.end.t>1.2)&&!(L.pl&&L.pl.seq))renderHUD();else if(G.cut)drawQuip(66);
+      if(!G.cut&&!(L.cb&&L.cb.end&&L.cb.end.t>1.2)&&!(L.pl&&L.pl.seq)&&!(L.cm&&L.cm.seq))renderHUD();else if(G.cut)drawQuip(66);
       if(G.cut){ctx.fillStyle='rgba(0,0,0,.88)';ctx.fillRect(0,0,W,46);ctx.fillRect(0,H-46,W,46);if(G.cut.t>1){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('appuyer pour passer',W-20,H-18)}}
       vauxOverlays();
       break}

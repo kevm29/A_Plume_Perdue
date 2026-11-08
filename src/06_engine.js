@@ -87,7 +87,7 @@ function parseLevel(i,ov){
   if(def.garlands)for(let x=200;x<L.wpx-200;x+=520){L.decor.push({t:'garland',x,y:130,w:400});for(let k=1;k<8;k+=2)L.lights.push({x:x+k*50,y:150+Math.sin(k/8*Math.PI)*40,r:110,i:.55,warm:1})}
   if(def.flyers)def.flyers.forEach((o,i)=>{const m=L.moths[i];if(!m||!o)return;if(o.kind)m.kind=o.kind;if(o.dy){m.cy+=o.dy;m.y=m.cy}if(o.amp)m.amp=o.amp;if(o.sp)m.sp=o.sp});
   for(const c of L.rats)c.base=Math.abs(c.vx);
-  verdunPost(L);meusePost(L);zrPost(L);museePost(L);trainPost(L);garePost(L);langletPost(L);facadePost(L);a4Post(L);airePost(L);fertePost(L);crecyPost(L);comblesPost(L);placePost(L);
+  verdunPost(L);meusePost(L);zrPost(L);museePost(L);trainPost(L);garePost(L);langletPost(L);facadePost(L);a4Post(L);airePost(L);fertePost(L);crecyPost(L);comblesPost(L);placePost(L);cmPost(L);
   return L;
 }
 
