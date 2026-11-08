@@ -72,7 +72,7 @@ function plSetPass(Lv,n){
   const P1=n===1,P2=n===2,P3=n===3,P4=n===4;
   if(P1){prop('crate',2,2,10);prop('barrel',3,3,11)}
   if(P2){prop('crate',17,17,10);prop('crate',22,22,11);prop('crate',45,45,11);prop('basket',48,48,11);prop('crate',97,97,11);prop('crate',100,100,11)}
-  if(P3){prop('crate',9,9,11,{tomates:1});prop('table',15,16,11);prop('crate',21,21,11);prop('crate',34,35,10);prop('crate',41,41,11);prop('crate',45,45,11);prop('crate',46,46,10);prop('van',49,53,9);prop('crate',58,58,11);prop('crate',88,88,11,{tomates:1});prop('crate',99,99,11);prop('pallet',112,113,11)}
+  if(P3){prop('crate',9,9,11,{tomates:1});prop('table',15,16,11);prop('crate',21,21,11);prop('crate',34,35,10);prop('crate',41,41,11);prop('crate',45,45,11);prop('crate',46,46,10);prop('van',49,53,9);prop('crate',58,58,11);prop('crate',61,61,11);prop('crate',88,88,11,{tomates:1});prop('crate',99,99,11);prop('pallet',112,113,11)}
   if(P4){prop('bin',12,12,11);prop('bin',47,47,11);prop('crate',101,101,11);prop('crate',118,118,11)}
   // les cartels du passage
   const cp={1:[[42.3,PLF],[66,10*T],[106.5,PLF]],2:[[106.5,PLF],[74,10*T],[42.3,PLF]],3:[[42.3,PLF],[66,10*T],[106.5,PLF]],4:[[106.5,PLF],[90.5,PLF]]}[n];
