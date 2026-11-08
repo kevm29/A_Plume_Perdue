@@ -113,10 +113,10 @@ const INTRO=[
 const WORLD_CARDS=[
   null,
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
-   {t:"Direction l'ouest : le pigeonnier Vasseur, à Crécy-la-Chapelle.\nIl connaît le chemin. Il l'a toujours connu."},
+   {t:"Direction l'ouest : le pigeonnier Fontaine, à Crécy-la-Chapelle.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
    {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Raymond doit rentrer au pigeonnier Vasseur, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
+  [{t:"Raymond doit rentrer au pigeonnier Fontaine, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
    {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
    {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
@@ -133,7 +133,7 @@ const ENDING=[
   {t:"La paille qui s'envolait à chaque chute. La buse qui a flambé comme une botte de foin.\nTout s'explique, d'un coup."},
   {t:"Il n'est pas un pigeon qui a survécu.\nIl est ce qu'il en reste."},
   {t:"Il voudrait pleurer.\nÀ l'empaillage, on lui a retiré ça aussi."},
-  {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nLe pigeonnier Vasseur n'existe plus. Il n'a nulle part où rentrer."},
+  {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nLe pigeonnier Fontaine n'existe plus. Il n'a nulle part où rentrer."},
   {t:"Alors il reste là, sur la tombe.\nIl ferme les yeux. De son plein gré, cette fois."},
   {pic:'finale',minT:10},
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}

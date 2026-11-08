@@ -38,8 +38,8 @@ const CMX={
     [165.6,174.2,0,40,'lunettes',"Ma petite-fille m'a montré la maison sur son téléphone. Vue du ciel !"]]
 };
 const CM_NAMES=[['ADAM','Raymond'],['BARBIER','André'],['BERTIN','Louis'],['BLONDEAU','Gaston'],['BOUCHER','Émile'],['CHAUVIN','Paul'],['COLLIN','Marcel'],['DELAUNAY','Jules'],['DUBOIS','Henri'],['FERRAND','Charles'],
-  ['GAUTHIER','Albert'],['GIRARD','Fernand'],['HUBERT','Joseph'],['JOLY','Pierre'],['LAMBERT','Eugène'],['LECLERC','Maurice'],['LEROY','Georges'],['MARCHAL','Lucien'],['MARTIN','Alfred'],['MOREAU','Jean'],
-  ['NOËL','René'],['PERRIN','Victor'],['PICARD','Édouard'],['RENARD','Léon'],['ROUSSEAU','Gustave'],['TISSIER','Arthur']];
+  ['GAUTHIER','Albert'],['GIRARD','Fernand'],['HUBERT','Joseph'],['JOLY','Pierre'],['LAMBERT','Eugène'],['LECLERC','Maurice'],['LEROY','Georges'],['MARTIN','Alfred'],['MOREAU','Jean'],
+  ['NOËL','René'],['PERRIN','Victor'],['PICARD','Édouard'],['RENARD','Léon'],['ROUSSEAU','Gustave'],['TISSIER','Arthur'],['VASSEUR','Lucien']];
 (function(){const g=Array.from({length:15},()=>Array(CMW).fill('.'));for(let c=0;c<CMW;c++)for(let r=CMG;r<15;r++)g[r][c]='#';
   const d=LEVELS.find(d=>d.cm);if(d)d.segs=[g.map(r=>r.join('')).join('\n')]})();
 
@@ -123,9 +123,9 @@ function cmRespawn(){const C=L.cm;if(!C)return;C.hit=null;for(const o of C.owls)
 
 /* ---------- le monument aux morts : on s'approche des noms ---------- */
 const CM_MEM_LINES=[[0,"Le monument aux morts. « Hommage des enfants de Crécy à leurs aînés morts pour la patrie. »",4.6],
-  [4.8,"Marchal… Lucien.",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré.",4.4],[14.8,"Marguerite doit être plus loin.",3]];
+  [4.8,"Vasseur… Lucien.",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré.",4.4],[14.8,"Marguerite doit être plus loin.",3]];
 function cmNameXY(){// la place du nom de Lucien sur la plaque de droite
-  const i=CM_NAMES.findIndex(n=>n[0]==='MARCHAL'),half=Math.ceil(CM_NAMES.length/2),j=i-half;return[CMX.mem.x+58,234+j*8.2]}
+  const i=CM_NAMES.findIndex(n=>n[0]==='VASSEUR'),half=Math.ceil(CM_NAMES.length/2),j=i-half;return[CMX.mem.x+58,234+j*8.2]}
 function cmSeqStep(dt){const C=L.cm,q=C.seq;q.t+=dt;G.lt+=dt;P.vx=0;P.vy=Math.min(MAXFALL,P.vy+GRAV*dt);P.onGround=false;moveY(P,P.vy*dt);P.facing=1;
   for(const[t0,txt,d]of CM_MEM_LINES)if(q.t>=t0&&!(q['l'+t0])){q['l'+t0]=1;say(txt,d)}
   const z=L.zoom||(L.zoom={z:1,fx:cam.x+W/2,fy:cam.y+H/2});const[nx,ny]=cmNameXY(),c0x=cam.x+W/2,c0y=cam.y+H/2;
@@ -383,7 +383,7 @@ function cmOverlay(t){const C=L.cm;if(!C)return;const cx=Math.round(cam.x),cy=Ma
   // le nom de Lucien, sous les doigts de la lumière
   {const q=C.seq;if(q&&q.k==='mem'&&q.t>4.6){const[nx,ny]=cmNameXY(),k=Math.min(1,(q.t-4.6)/1.2)*(q.t>12.8?Math.max(0,1-(q.t-12.8)/1.2):1);ctx.save();ctx.globalCompositeOperation='lighter';
     const gr=ctx.createRadialGradient(nx-8,ny-3,2,nx-8,ny-3,46);gr.addColorStop(0,'rgba(255,220,140,'+.35*k+')');gr.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=gr;ctx.fillRect(nx-60,ny-50,104,100);ctx.restore();
-    ctx.font='6.4px '+F_DISP;ctx.textAlign='left';ctx.fillStyle='rgba(255,236,170,'+k+')';ctx.fillText('MARCHAL Lucien',CMX.mem.x+14,ny)}}
+    ctx.font='6.4px '+F_DISP;ctx.textAlign='left';ctx.fillStyle='rgba(255,236,170,'+k+')';ctx.fillText('VASSEUR Lucien',CMX.mem.x+14,ny)}}
   // le pigeon fantôme, en haut de la stèle du fond
   if(129*T>x0v&&129*T<x1v)cmPigeonGhost(ctx,129*T,CMF-20-226,t);
   // les fantômes

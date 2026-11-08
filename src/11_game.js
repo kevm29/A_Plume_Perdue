@@ -145,7 +145,7 @@ function skipCut(){
 }
 
 /* ---------- mise à jour du jeu ---------- */
-const TOMB_LINES=["Vasseur… Marguerite. 1897 – 1989. Elle a vécu jusqu'à quatre-vingt-douze ans.",
+const TOMB_LINES=["Fontaine… Marguerite. 1897 – 1989. Elle a vécu jusqu'à quatre-vingt-douze ans.",
   "Mariée au fils Garnier. Toute une vie sans jamais recevoir la lettre. Sans savoir.",
   "J'ai une lettre pour elle. Le règlement ne prévoit pas les tombes. Tant pis pour le règlement."];
 function stepTomb(dt){

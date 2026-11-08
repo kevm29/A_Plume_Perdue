@@ -429,7 +429,7 @@ function drawExit(g,e,style,t,label){
     g.textAlign='center';
     eg('FAMILLE GARNIER',st+24,'8px '+F_DISP);g.fillStyle='#c8a75e';g.fillRect(cx-20,st+28,40,.8);
     eg('Joseph GARNIER',st+44,'6.5px '+F_DISP);eg('1893 – 1958',st+53,'5.5px '+F_DISP);
-    eg('Marguerite GARNIER',st+70,'6.5px '+F_DISP);eg('née VASSEUR',st+78,'italic 5.5px '+F_BODY);eg('1897 – 1989',st+87,'5.5px '+F_DISP);
+    eg('Marguerite GARNIER',st+70,'6.5px '+F_DISP);eg('née FONTAINE',st+78,'italic 5.5px '+F_BODY);eg('1897 – 1989',st+87,'5.5px '+F_DISP);
     g.fillStyle='#d8d2c4';rr(g,cx-15,st+98,30,13,2);g.fill();
     // dalle
     const tg=g.createLinearGradient(0,sb-14,0,sb);tg.addColorStop(0,'#77746d');tg.addColorStop(1,'#99968e');g.fillStyle=tg;poly(g,[cx-68,sb-14,cx+68,sb-14,cx+78,sb,cx-78,sb]);g.fill();

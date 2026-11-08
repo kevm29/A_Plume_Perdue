@@ -6,7 +6,7 @@
    le héron, la cane et ses petits) ; puis le quartier pavillonnaire : barrières, jardinets,
    voitures, le chat sur son mur, le chien à la chaîne, deux gamins qui jouent au foot,
    un troisième qui dévale la rue à vélo, une tondeuse robot, un trampoline, un étendoir.
-   Au bout : l'adresse Vasseur, et un garage à la place du pigeonnier.
+   Au bout : l'adresse Fontaine, et un garage à la place du pigeonnier.
    ========================================================= */
 const CW=262,CGR=12;
 THEMES.crecy={outdoor:true,far:'crecy',horizon:'bridge',sky:['#5e8cc0','#a8cce6','#eef2e6'],celestial:'sun',sunY:150,fog:'#b8cad8',dark:0,weather:'clear',
@@ -89,7 +89,7 @@ function crecyPost(Lv){
   Lv.acts=Lv.acts||[];
   C.nain={kind:'secret',style:'nain',x:114*T,y:CGR*T,open:0,t:0,used:false,q:["Il est tombé. Il était creux, et plein de paille. Les nains de jardin, c'est comme les sergents : tout dans l'apparence."]};
   C.linge={kind:'secret',style:'linge',x:207*T,rx:3*T,y:8*T,open:0,t:0,used:false,q:["En plein sur le linge propre. J'ai honte. Mais qu'est-ce que j'adorais faire ça, quand j'étais jeune."]};
-  C.grain={kind:'secret',style:'grain',x:251.5*T,y:CGR*T,open:0,t:0,used:false,when:()=>L.crecy&&L.crecy.era===14,q:["Le sac de grain du père Vasseur. Il en laissait toujours tomber un peu exprès, pour nous. Je m'en souviens comme si c'était ce matin."]};
+  C.grain={kind:'secret',style:'grain',x:251.5*T,y:CGR*T,open:0,t:0,used:false,when:()=>L.crecy&&L.crecy.era===14,q:["Le sac de grain du père Fontaine. Il en laissait toujours tomber un peu exprès, pour nous. Je m'en souviens comme si c'était ce matin."]};
   C.niche={kind:'secret',style:'niche',x:133*T,y:CGR*T,open:0,t:0,used:false,q:["La niche de Rex. Une couverture, un os, une balle mâchouillée… et de la paille. Ce chien a des goûts de sergent."]};
   Lv.acts.push(C.nain,C.linge,C.grain,C.niche);
   for(const w of Lv.watchers)w.white=true;
@@ -133,7 +133,7 @@ function crecyStep(dt){const C=L.crecy;if(!C)return;C.t+=dt;C.flash=Math.max(0,C
   // répliques
   if(!C.said.moulin&&px>40*T){C.said.moulin=1;say("Le moulin. Sa roue tourne toujours. Elle me montera plus haut que mes ailes.",3.8)}
   if(!C.said.chatb&&px>104*T){C.said.chatb=1;say("Un chat blanc sur le muret. Il fait semblant de dormir, comme Bijou. Quand ses yeux s'allument, ne plus bouger d'une plume.",4.4)}
-  if(!C.said.quartier&&px>101*T){C.said.quartier=1;say("Des maisons neuves partout. Le pigeonnier Vasseur était au bout du village… je crois. Je le sens par là.",4.2)}
+  if(!C.said.quartier&&px>101*T){C.said.quartier=1;say("Des maisons neuves partout. Le pigeonnier Fontaine était au bout du village… je crois. Je le sens par là.",4.2)}
   if(!C.said.foot&&px>142*T){C.said.foot=1;say("Deux gamins qui jouent à la balle. Leur ballon vole mieux que moi.",3.2)}
   if(!C.said.velo&&px>183*T){C.said.velo=1;say("Un casque de tranchée sur la tête d'un enfant, à vélo. On mobilise jeune, ici.",3.8)}
 }
@@ -201,7 +201,7 @@ function drawCrecyBack(t,cx){const C=L.crecy;if(!C)return;const g=ctx,vis=(a,b)=
   if(vis(165*T,180*T))cLawn(g,165*T,179*T);
   if(vis(129*T,138*T))cWornLawn(g,C.dogs[0]);
   if(vis(228*T,236*T))cWornLawn(g,C.dogs[1]);
-  if(vis(244*T,262*T))cVasseur(g,t);
+  if(vis(244*T,262*T))cFontaine(g,t);
 }
 function drawCrecyMid(t){const C=L.crecy;if(!C)return;const g=ctx,vis=(a,b)=>b>cam.x-220&&a<cam.x+W+220;
   for(const b of CRECY.blocks)if(vis(b.c0*T-40,(b.c1+1)*T+40))cBlock(g,b,t);
@@ -435,7 +435,7 @@ function cBlock(g,b,t){const x0=b.c0*T,x1=(b.c1+1)*T,top=b.r0*T,base=CGR*T,w=x1-
     g.fillStyle='#c8302a';g.beginPath();for(let k=0;k<6;k++){g.arc(x0+20+k*42,top-40,4,0,7)}g.fill();
   }
   g.restore()}
-function cVasseur(g,t){if(L.crecy.era===14){cVasseur14(g,t);return}const b=CGR*T,x=246*T;g.save();
+function cFontaine(g,t){if(L.crecy.era===14){cFontaine14(g,t);return}const b=CGR*T,x=246*T;g.save();
   // la maison : enduit, volets neufs, une voiture devant ; à droite, le garage là où était le pigeonnier
   const w=260,h=190;g.fillStyle='#e8dcc4';g.fillRect(x,b-h,w,h);cChimney(g,x+w-62,b-h-118,b-h-50,24);
   cRoofTiles(g,[x-16,b-h,x+40,b-h-90,x+w-40,b-h-90,x+w+16,b-h],'#a84a32',[x+40,x+w-40,b-h-90]);
@@ -458,7 +458,7 @@ function cDuck(g,m){const t=G.t,x=m.x,y=m.y;if(Math.abs(m.dx)>.01)m.dir=m.dx>0?1
   g.fillStyle='#7a5c3e';g.beginPath();g.arc(20,-8,8,0,7);g.fill();g.fillStyle='#e8902a';poly(g,[26,-9,36,-7,26,-5]);g.fill();g.fillStyle='#1a1a1a';g.beginPath();g.arc(22,-10,1.4,0,7);g.fill();
   g.fillStyle='rgba(230,245,240,.5)';g.beginPath();g.ellipse(0,12,32,3,0,0,7);g.fill();g.restore()}
 
-/* ---------- le souvenir : la maison Vasseur en 1914, le pigeonnier, les pigeons ---------- */
+/* ---------- le souvenir : la maison Fontaine en 1914, le pigeonnier, les pigeons ---------- */
 function crecySet(era,quiet){const C=L.crecy;if(C.era===era)return;C.era=era;MUS_OLD=era===14;C.flash=quiet?.5:1;
   if(!G.sim&&!quiet){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Le pigeonnier ! Il est là, tout blanc, et les copains tournent autour. Septembre 1914 : je rentre de la Marne avec le pli de Lucien.",5)}}
@@ -467,7 +467,7 @@ function crecyOverlay(t){const C=L.crecy;if(!C)return;
   if(C.era===14){const fc=ferteFogTex();ctx.save();const ox=((t*14+cam.x*.15)%fc.fog.width+fc.fog.width)%fc.fog.width;ctx.drawImage(fc.fog,-ox,0,fc.fog.width,H);ctx.drawImage(fc.fog,fc.fog.width-ox,0,fc.fog.width,H);ctx.drawImage(fc.vig,0,0,W,H);
     ctx.globalAlpha=.6;ctx.fillStyle='#efe5cc';ctx.font='italic 15px '+F_BODY;ctx.textAlign='left';ctx.fillText('Crécy · septembre 1914',20,H-20);ctx.restore()}
   if(C.flash>0){ctx.fillStyle='rgba(236,232,222,'+(Math.min(1,C.flash)*.85)+')';ctx.fillRect(0,0,W,H)}}
-function cVasseur14(g,t){const b=CGR*T,x=246*T,C=L.crecy;g.save();
+function cFontaine14(g,t){const b=CGR*T,x=246*T,C=L.crecy;g.save();
   // la ferme : même maison, plus vieille ; volets de bois, vigne, banc ; une charrette dans la cour
   const w=260,h=190;g.fillStyle='#d8c8a4';g.fillRect(x,b-h,w,h);g.fillStyle='rgba(120,100,70,.15)';for(let k=0;k<20;k++){g.beginPath();g.ellipse(x+(k*53)%w,b-h+(k*37)%h,12,6,0,0,7);g.fill()}
   cChimney(g,x+w-62,b-h-118,b-h-50,24,1);cRoofTiles(g,[x-16,b-h,x+40,b-h-90,x+w-40,b-h-90,x+w+16,b-h],'#8a4a34',[x+40,x+w-40,b-h-90],1);
@@ -501,7 +501,7 @@ function cSecrets(g,t){const C=L.crecy;if(!C)return;
   {const a=C.nain,x=a.x,b=a.y;g.save();if(a.used){const u=Math.min(1,a.t/.35);g.translate(x,b);g.rotate(u*Math.PI/2*.94);g.translate(-x,-b)}cGnome(g,x,b);g.restore()}
   {const a0=C.linge,a={x:a0.sx!=null?a0.sx-6:a0.x,y:a0.y,t:a0.t,used:a0.used};if(a.used){const u=Math.min(1,a.t/.5);if(u<1){g.fillStyle='#f2f0e6';g.beginPath();g.arc(a.x+6,a.y+6+u*26,3,0,7);g.fill()}else{g.fillStyle='rgba(240,240,230,.95)';g.beginPath();g.arc(a.x+8,a.y+34,6,0,7);g.arc(a.x+12,a.y+38,4,0,7);g.arc(a.x+4,a.y+40,3,0,7);g.fill();g.fillStyle='rgba(120,110,80,.5)';g.beginPath();g.arc(a.x+9,a.y+35,2,0,7);g.fill()}}}
   if(C.era===14){const a=C.grain,x=a.x,b=a.y;g.save();g.fillStyle='#c8b080';g.beginPath();g.moveTo(x-16,b);g.quadraticCurveTo(x-20,b-30,x-10,b-40);g.lineTo(x+10,b-40);g.quadraticCurveTo(x+20,b-30,x+16,b);g.closePath();g.fill();g.strokeStyle='#8a6a3a';g.lineWidth=1.5;g.beginPath();g.moveTo(x-10,b-38);g.lineTo(x+10,b-38);g.stroke();
-    g.fillStyle='#5a4a2a';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('VASSEUR',x,b-20);if(!a.used){g.fillStyle='#d8b860';for(let k=0;k<6;k++){g.beginPath();g.arc(x+18+k*4,b-2,1.5,0,7);g.fill()}}g.restore()}
+    g.fillStyle='#5a4a2a';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('FONTAINE',x,b-20);if(!a.used){g.fillStyle='#d8b860';for(let k=0;k<6;k++){g.beginPath();g.arc(x+18+k*4,b-2,1.5,0,7);g.fill()}}g.restore()}
 }
 
 /* ---------- cheminées et toits : la cheminée est peinte avant le toit, qui en cache le pied ---------- */

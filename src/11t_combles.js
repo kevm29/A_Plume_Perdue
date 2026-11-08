@@ -84,7 +84,7 @@ function comblesPost(Lv){
   // les poutres qui changent avec l'époque
   C.dyn=CB.beams.filter(b=>b.e!=='b').map(b=>Object.assign({},b,{st:'ok',t:0,deb:[]}));
   Lv.acts=Lv.acts||[];
-  C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Vasseur. Il a fini ses jours ici, au calme. Il y a pire."]};
+  C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Fontaine. Il a fini ses jours ici, au calme. Il y a pire."]};
   C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Garnier montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
   C.canif={kind:'secret',style:'canif',x:11.5*T,y:3*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:["Un canif oublié sur la poutre, tout en haut. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
   Lv.acts.push(C.bague,C.graf,C.canif);
@@ -156,7 +156,7 @@ function comblesStep(dt){const C=L.cb;if(!C)return;C.t+=dt;if(C.grace>0)C.grace-
   // Raymond essaie de parler aux collègues
   if(!C.said.parle&&!P.dead&&Math.abs(pcx-C.pig[0].x)<230&&Math.abs(pcy-C.pig[0].y)<120){C.said.parle=1;C.talk={t:0,k:0}}
   if(C.talk&&!G.sim){const k=C.talk;k.t+=dt;const o=C.pig[0];
-    if(k.k===0){k.k=1;say("Pardon, camarade ! Le pigeonnier Vasseur, au bout du village… Vous savez ce qu'il est devenu ?",4)}
+    if(k.k===0){k.k=1;say("Pardon, camarade ! Le pigeonnier Fontaine, au bout du village… Vous savez ce qu'il est devenu ?",4)}
     else if(k.k===1&&k.t>4.1){k.k=2;bubble(o.x,o.y-44,"Rrrou… krr… wesh… rrou-rrou ?",'#6a5a48')}
     else if(k.k===2&&k.t>5.8){k.k=3;say("On ne leur a même pas appris à parler correctement. On ne comprend rien à ce qu'ils disent.",4.2)}
     else if(k.k===3&&k.t>10.2)C.talk=null}

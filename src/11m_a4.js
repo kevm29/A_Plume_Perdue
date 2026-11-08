@@ -194,7 +194,7 @@ function drawA4Mid(t){const S=L.a4;if(!S)return;const g=ctx,D=L.def.a4,GY=D.G0*T
 function a4DrawTruck(g,m,t){const x=m.x,y=m.y,w=m.w,h=m.vh,GY=y+h;g.save();
   // la remorque, la cabine, les roues
   g.fillStyle='#d8d8d0';g.fillRect(x,y,w-110,h-30);g.fillStyle='rgba(0,0,0,.12)';for(let k=x+40;k<x+w-110;k+=40)g.fillRect(k,y,2,h-30);
-  g.fillStyle=m.col;g.fillRect(x,y+h-46,w-110,6);g.fillStyle='rgba(0,0,0,.4)';g.font='bold 14px '+F_DISP;g.textAlign='center';g.fillText('TRANSPORTS VASSEUR & FILS',x+(w-110)/2,y+44);
+  g.fillStyle=m.col;g.fillRect(x,y+h-46,w-110,6);g.fillStyle='rgba(0,0,0,.4)';g.font='bold 14px '+F_DISP;g.textAlign='center';g.fillText('TRANSPORTS FONTAINE & FILS',x+(w-110)/2,y+44);
   g.fillStyle=m.col;rr(g,x+w-104,y+24,104,h-40,10);g.fill();g.fillStyle='#1c2430';g.fillRect(x+w-86,y+34,60,36);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(x+w-84,y+36,10,32);
   g.fillStyle='#fff4c0';g.fillRect(x+w-6,y+h-40,6,10);g.fillStyle='#ff3020';g.fillRect(x,y+h-44,6,10);
   for(const wx of[x+50,x+100,x+w-170,x+w-50]){g.fillStyle='#121214';g.beginPath();g.arc(wx,GY-12,15,0,7);g.fill();g.save();g.translate(wx,GY-12);g.rotate(t*16);g.fillStyle='#4a4a4e';g.fillRect(-6,-1.5,12,3);g.restore()}

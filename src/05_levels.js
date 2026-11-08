@@ -45,7 +45,7 @@ function full(lines){return '\n'+lines.join('\n')}
 LEVELS.push({w:0,name:"La vitrine",theme:'vitrine',exit:'door',seed:11,
  stashQuips:["Un passage dans les cartons. Quelqu'un s'est creusé une cachette. Un rat, sûrement. Un rat qui aime la paille."],rows:20,deep:3,camY:.62,
  leverQuip:"Le portillon remonte. Le bec : l'outil le plus sous-estimé de l'armée française.",
- start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Vasseur, à Crécy-la-Chapelle : je connais le chemin.",
+ start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Fontaine, à Crécy-la-Chapelle : je connais le chemin.",
  hints:[["FIG. 1 — LA MARCHE","← → (ou Q / D). Le pigeon avance. Sans grâce, mais il avance."],
         ["FIG. 2 — LE SAUT","Espace, Z ou ↑. Le saut, inventé par les puces, perfectionné par personne."],
         ["FIG. 3 — LE BATTEMENT D'AILES","Rappuyer en l'air. Deux battements maximum : les ailes sont cousues. Chaque battement use l'aile ; posé, il lui faut une seconde par battement pour s'en remettre."],

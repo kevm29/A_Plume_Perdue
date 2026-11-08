@@ -133,7 +133,7 @@ function drawTombCard(t){
   ctx.fillStyle='rgba(30,30,34,.85)';ctx.textAlign='center';ctx.font='26px '+F_DISP;ctx.fillText('FAMILLE GARNIER',0,-104);
   ctx.fillRect(-60,-92,120,1.5);
   ctx.font='22px '+F_DISP;ctx.fillText('Joseph GARNIER',0,-60);ctx.font='18px '+F_DISP;ctx.fillText('1893 – 1958',0,-36);
-  ctx.font='22px '+F_DISP;ctx.fillText('Marguerite GARNIER',0,6);ctx.font='italic 17px '+F_BODY;ctx.fillText('née Vasseur',0,28);ctx.font='18px '+F_DISP;ctx.fillText('1897 – 1989',0,52);
+  ctx.font='22px '+F_DISP;ctx.fillText('Marguerite GARNIER',0,6);ctx.font='italic 17px '+F_BODY;ctx.fillText('née Fontaine',0,28);ctx.font='18px '+F_DISP;ctx.fillText('1897 – 1989',0,52);
   for(let k=0;k<9;k++){ctx.fillStyle=['#c8302a','#e9dfc7','#d9a441'][k%3];ctx.beginPath();ctx.arc(-140+k*35,96,7,0,7);ctx.fill()}
   ctx.restore();
 }
@@ -184,7 +184,7 @@ function drawFinaleCard(ct){
   engrave('FAMILLE GARNIER',0,stTop+50,'15px '+F_DISP);
   ctx.fillStyle='#c8a75e';ctx.fillRect(-40,stTop+58,80,1);
   engrave('Joseph GARNIER',0,stTop+88,'12px '+F_DISP);engrave('1893 – 1958',0,stTop+104,'10px '+F_DISP);
-  engrave('Marguerite GARNIER',0,stTop+134,'12px '+F_DISP);engrave('née VASSEUR',0,stTop+148,'italic 9.5px '+F_BODY);engrave('1897 – 1989',0,stTop+164,'10px '+F_DISP);
+  engrave('Marguerite GARNIER',0,stTop+134,'12px '+F_DISP);engrave('née FONTAINE',0,stTop+148,'italic 9.5px '+F_BODY);engrave('1897 – 1989',0,stTop+164,'10px '+F_DISP);
   // plaque en porcelaine
   ctx.fillStyle='#d8d2c4';rr(ctx,-30,stTop+186,60,26,4);ctx.fill();ctx.strokeStyle='#8a7a52';ctx.lineWidth=1;rr(ctx,-28,stTop+188,56,22,3);ctx.stroke();
   ctx.fillStyle='#4a3e2e';ctx.font='italic 7px '+F_BODY;ctx.fillText('À nos parents',0,stTop+199);ctx.fillText('regrettés',0,stTop+207);
@@ -214,7 +214,7 @@ function drawFinaleCard(ct){
   ctx.fillStyle='#e2d3a6';ctx.fillRect(-58,-34,70,38);
   ctx.strokeStyle='rgba(120,95,50,.35)';ctx.lineWidth=.8;ctx.strokeRect(-58,-34,70,38);
   ctx.fillStyle='rgba(110,80,40,.22)';ctx.beginPath();ctx.arc(-48,-6,7,0,7);ctx.fill();
-  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='italic 7px '+F_BODY;ctx.fillText('Au soldat',-53,-21);ctx.fillText('Lucien Marchal',-53,-12);ctx.fillText('142e R.I. — Verdun',-53,-3);
+  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='italic 7px '+F_BODY;ctx.fillText('Au soldat',-53,-21);ctx.fillText('Lucien Vasseur',-53,-12);ctx.fillText('142e R.I. — Verdun',-53,-3);
   ctx.restore();
   // pétales tombés
   for(const[x,y,c]of[[px-40,pb+8,'#c8302a'],[px+28,pb+6,'#d9a441'],[px-62,pb+3,'#efe6d0']]){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,3,1.3,.4,0,7);ctx.fill()}

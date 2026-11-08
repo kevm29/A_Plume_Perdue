@@ -524,10 +524,10 @@ const INTRO=[
 const WORLD_CARDS=[
   null,
   [{t:"Raymond s'échappe par la fenêtre de la loge.\nIl vole mal. Il vole quand même."},
-   {t:"Direction l'ouest : le pigeonnier Vasseur, à Crécy-la-Chapelle.\nIl connaît le chemin. Il l'a toujours connu."},
+   {t:"Direction l'ouest : le pigeonnier Fontaine, à Crécy-la-Chapelle.\nIl connaît le chemin. Il l'a toujours connu."},
    {t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
    {title:"MISSION 2 · RETOUR À LA CASE DÉPART",t:"Des champs rouges à perte de vue.\nRaymond a l'impression d'être déjà passé par là."}],
-  [{t:"Raymond doit rentrer au pigeonnier Vasseur, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
+  [{t:"Raymond doit rentrer au pigeonnier Fontaine, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
    {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
    {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
@@ -544,7 +544,7 @@ const ENDING=[
   {t:"La paille qui s'envolait à chaque chute. La buse qui a flambé comme une botte de foin.\nTout s'explique, d'un coup."},
   {t:"Il n'est pas un pigeon qui a survécu.\nIl est ce qu'il en reste."},
   {t:"Il voudrait pleurer.\nÀ l'empaillage, on lui a retiré ça aussi."},
-  {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nLe pigeonnier Vasseur n'existe plus. Il n'a nulle part où rentrer."},
+  {t:"Il dépose la lettre sur la pierre. Mission accomplie.\nLe pigeonnier Fontaine n'existe plus. Il n'a nulle part où rentrer."},
   {t:"Alors il reste là, sur la tombe.\nIl ferme les yeux. De son plein gré, cette fois."},
   {pic:'finale',minT:10},
   {title:"FIN",t:"À Plume Perdue\nMerci d'avoir porté le courrier."}
@@ -692,7 +692,7 @@ function full(lines){return '\n'+lines.join('\n')}
 LEVELS.push({w:0,name:"La vitrine",theme:'vitrine',exit:'door',seed:11,
  stashQuips:["Un passage dans les cartons. Quelqu'un s'est creusé une cachette. Un rat, sûrement. Un rat qui aime la paille."],rows:20,deep:3,camY:.62,
  leverQuip:"Le portillon remonte. Le bec : l'outil le plus sous-estimé de l'armée française.",
- start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Vasseur, à Crécy-la-Chapelle : je connais le chemin.",
+ start:"Une remise. On m'a rangé dans une remise ! Le pigeonnier Fontaine, à Crécy-la-Chapelle : je connais le chemin.",
  hints:[["FIG. 1 — LA MARCHE","← → (ou Q / D). Le pigeon avance. Sans grâce, mais il avance."],
         ["FIG. 2 — LE SAUT","Espace, Z ou ↑. Le saut, inventé par les puces, perfectionné par personne."],
         ["FIG. 3 — LE BATTEMENT D'AILES","Rappuyer en l'air. Deux battements maximum : les ailes sont cousues. Chaque battement use l'aile ; posé, il lui faut une seconde par battement pour s'en remettre."],
@@ -1682,10 +1682,10 @@ LEVELS.push({w:3,name:"La Marne",theme:'ferte26',exit:'none',exitLabel:"",seed:1
 
 /* ------------------------------ MISSION 5 · CRÉCY-LA-CHAPELLE ------------------------------ */
 LEVELS.push({w:4,name:"Le pigeonnier",theme:'crecy',exit:'none',exitLabel:"",seed:127,crecy:true,
- start:"Crécy-la-Chapelle. Enfin dans la commune ! Des canaux partout, des lavoirs, des passerelles. Le pigeonnier Vasseur est par là, quelque part.",
+ start:"Crécy-la-Chapelle. Enfin dans la commune ! Des canaux partout, des lavoirs, des passerelles. Le pigeonnier Fontaine est par là, quelque part.",
  hints:[],quips:[],signs:[],
  catWake:"Un chat. Un vrai, un chasseur. Il m'a vu. Règlement, article 3 : en cas de chat, courir.",chaseEnd:139*T,chaseEndQuip:"Il s'arrête net devant la pancarte « Attention au chien ». Lui aussi sait lire.",
- exitLines:[["RAYMOND","La maison Vasseur. Les volets sont neufs. Il y a une voiture devant.",4.2],["RAYMOND","Mais… où est le pigeonnier ? Un garage. On a mis un garage à la place du pigeonnier !",4.2],["RAYMOND","Bon. Le clocher. De là-haut, je trouverai bien où ils ont mis mes collègues.",4]],
+ exitLines:[["RAYMOND","La maison Fontaine. Les volets sont neufs. Il y a une voiture devant.",4.2],["RAYMOND","Mais… où est le pigeonnier ? Un garage. On a mis un garage à la place du pigeonnier !",4.2],["RAYMOND","Bon. Le clocher. De là-haut, je trouverai bien où ils ont mis mes collègues.",4]],
  segs:[]  // construits par 11s_crecy.js
 });
 LEVELS.push({w:4,name:"Les combles",theme:'combles',exit:'none',exitLabel:"",seed:131,rows:24,camY:.55,combles:true,
@@ -2913,7 +2913,7 @@ function drawExit(g,e,style,t,label){
     g.textAlign='center';
     eg('FAMILLE GARNIER',st+24,'8px '+F_DISP);g.fillStyle='#c8a75e';g.fillRect(cx-20,st+28,40,.8);
     eg('Joseph GARNIER',st+44,'6.5px '+F_DISP);eg('1893 – 1958',st+53,'5.5px '+F_DISP);
-    eg('Marguerite GARNIER',st+70,'6.5px '+F_DISP);eg('née VASSEUR',st+78,'italic 5.5px '+F_BODY);eg('1897 – 1989',st+87,'5.5px '+F_DISP);
+    eg('Marguerite GARNIER',st+70,'6.5px '+F_DISP);eg('née FONTAINE',st+78,'italic 5.5px '+F_BODY);eg('1897 – 1989',st+87,'5.5px '+F_DISP);
     g.fillStyle='#d8d2c4';rr(g,cx-15,st+98,30,13,2);g.fill();
     // dalle
     const tg=g.createLinearGradient(0,sb-14,0,sb);tg.addColorStop(0,'#77746d');tg.addColorStop(1,'#99968e');g.fillStyle=tg;poly(g,[cx-68,sb-14,cx+68,sb-14,cx+78,sb,cx-78,sb]);g.fill();
@@ -3433,7 +3433,7 @@ function drawMechFront(t){
     if((G.lt%1.7)<.12){ctx.strokeStyle='rgba(235,240,255,.9)';ctx.lineWidth=3;ctx.beginPath();let lx=x+40,ly=cam.y;ctx.moveTo(lx,ly);while(ly<cam.y+H){ly+=26;lx+=Math.sin(ly*.2+G.lt*40)*16;ctx.lineTo(lx,ly)}ctx.stroke()}
     ctx.restore()}
 }
-/* maison Vasseur : la maison est là, le pigeonnier a laissé place à un garage */
+/* maison Fontaine : la maison est là, le pigeonnier a laissé place à un garage */
 function drawHouse(g,e,t){
   const x=e.x+6,gy=e.y+2*T;g.save();
   g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(x+40,gy+2,190,10,0,0,7);g.fill();
@@ -3446,7 +3446,7 @@ function drawHouse(g,e,t){
   g.fillStyle='#5a4a3a';g.fillRect(wx+ww-50,gy-wh-60,16,30);
   for(const[ox,oy]of[[24,-120],[130,-120],[24,-60]]){g.fillStyle='rgba(255,210,140,.75)';g.fillRect(wx+ox,gy+oy,36,40);g.fillStyle='#3a6a5a';g.fillRect(wx+ox-12,gy+oy,10,40);g.fillRect(wx+ox+38,gy+oy,10,40);g.fillStyle='#4a3a2a';g.fillRect(wx+ox+16,gy+oy,3,40);g.fillRect(wx+ox,gy+oy+18,36,3)}
   g.fillStyle='#5a3a24';rr(g,wx+128,gy-70,40,70,4);g.fill();g.fillStyle='#c9a24a';g.beginPath();g.arc(wx+160,gy-36,2.5,0,7);g.fill();
-  g.fillStyle='#efe6d0';g.fillRect(wx+70,gy-24,40,12);g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('VASSEUR',wx+90,gy-15);
+  g.fillStyle='#efe6d0';g.fillRect(wx+70,gy-24,40,12);g.fillStyle='#2a2420';g.font='8px '+F_DISP;g.textAlign='center';g.fillText('FONTAINE',wx+90,gy-15);
   // garage à la place du pigeonnier
   const gx=x+56;g.fillStyle='#b4aca0';g.fillRect(gx,gy-90,120,90);g.fillStyle='#8a8478';g.fillRect(gx-6,gy-96,132,8);
   g.fillStyle='#9aa0a8';g.fillRect(gx+12,gy-72,96,72);g.fillStyle='rgba(0,0,0,.18)';for(let k=0;k<8;k++)g.fillRect(gx+12,gy-70+k*9,96,2);
@@ -3990,7 +3990,7 @@ function skipCut(){
 }
 
 /* ---------- mise à jour du jeu ---------- */
-const TOMB_LINES=["Vasseur… Marguerite. 1897 – 1989. Elle a vécu jusqu'à quatre-vingt-douze ans.",
+const TOMB_LINES=["Fontaine… Marguerite. 1897 – 1989. Elle a vécu jusqu'à quatre-vingt-douze ans.",
   "Mariée au fils Garnier. Toute une vie sans jamais recevoir la lettre. Sans savoir.",
   "J'ai une lettre pour elle. Le règlement ne prévoit pas les tombes. Tant pis pour le règlement."];
 function stepTomb(dt){
@@ -8377,7 +8377,7 @@ function drawA4Mid(t){const S=L.a4;if(!S)return;const g=ctx,D=L.def.a4,GY=D.G0*T
 function a4DrawTruck(g,m,t){const x=m.x,y=m.y,w=m.w,h=m.vh,GY=y+h;g.save();
   // la remorque, la cabine, les roues
   g.fillStyle='#d8d8d0';g.fillRect(x,y,w-110,h-30);g.fillStyle='rgba(0,0,0,.12)';for(let k=x+40;k<x+w-110;k+=40)g.fillRect(k,y,2,h-30);
-  g.fillStyle=m.col;g.fillRect(x,y+h-46,w-110,6);g.fillStyle='rgba(0,0,0,.4)';g.font='bold 14px '+F_DISP;g.textAlign='center';g.fillText('TRANSPORTS VASSEUR & FILS',x+(w-110)/2,y+44);
+  g.fillStyle=m.col;g.fillRect(x,y+h-46,w-110,6);g.fillStyle='rgba(0,0,0,.4)';g.font='bold 14px '+F_DISP;g.textAlign='center';g.fillText('TRANSPORTS FONTAINE & FILS',x+(w-110)/2,y+44);
   g.fillStyle=m.col;rr(g,x+w-104,y+24,104,h-40,10);g.fill();g.fillStyle='#1c2430';g.fillRect(x+w-86,y+34,60,36);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(x+w-84,y+36,10,32);
   g.fillStyle='#fff4c0';g.fillRect(x+w-6,y+h-40,6,10);g.fillStyle='#ff3020';g.fillRect(x,y+h-44,6,10);
   for(const wx of[x+50,x+100,x+w-170,x+w-50]){g.fillStyle='#121214';g.beginPath();g.arc(wx,GY-12,15,0,7);g.fill();g.save();g.translate(wx,GY-12);g.rotate(t*16);g.fillStyle='#4a4a4e';g.fillRect(-6,-1.5,12,3);g.restore()}
@@ -9825,7 +9825,7 @@ function vfInit(first){
   VF.hm=new Float32Array(VF.hm0);vfPeople();
   const s=V.s;Object.assign(s,{x:VF.X0,cx:VF.X0-VF.BX,bx:VF.BX,bxv:0,y:330,sp:225,vy:-260,fph:0,dead:0,grace:1.1,shells:[],booms:[],bullets:[],gshells:[],poops:[],splats:[],shellT:1.2,said:{},trig:{},fr:{shots:0,t:-1},fall:null,wound:0,heart:0,cosT:.4});
   V.sc='flight';V.t=0;V.parts=[];V.bub=[];
-  if(first){say("Libre ! L'ouest, c'est par là. Le pigeonnier Vasseur, c'est par là.",3.6)}
+  if(first){say("Libre ! L'ouest, c'est par là. Le pigeonnier Fontaine, c'est par là.",3.6)}
 }
 function vfCrash(why){const s=V.s;if(s.dead>0||s.fall||VF.god)return;s.why=why;s.dead=1.25;s.dvy=-120;s.drot=0;G.levelDeaths++;gotOf(G.li).d++;save();
   if(!G.sim){noise(.4,900,.5,'bandpass');tone(700,.3,'sine',.08,200)}V.shake=Math.max(V.shake,8);
@@ -10856,7 +10856,7 @@ function fForest(g,era,vis,b){const list=forestList(era),e14=era===14;let veiled
    le héron, la cane et ses petits) ; puis le quartier pavillonnaire : barrières, jardinets,
    voitures, le chat sur son mur, le chien à la chaîne, deux gamins qui jouent au foot,
    un troisième qui dévale la rue à vélo, une tondeuse robot, un trampoline, un étendoir.
-   Au bout : l'adresse Vasseur, et un garage à la place du pigeonnier.
+   Au bout : l'adresse Fontaine, et un garage à la place du pigeonnier.
    ========================================================= */
 const CW=262,CGR=12;
 THEMES.crecy={outdoor:true,far:'crecy',horizon:'bridge',sky:['#5e8cc0','#a8cce6','#eef2e6'],celestial:'sun',sunY:150,fog:'#b8cad8',dark:0,weather:'clear',
@@ -10939,7 +10939,7 @@ function crecyPost(Lv){
   Lv.acts=Lv.acts||[];
   C.nain={kind:'secret',style:'nain',x:114*T,y:CGR*T,open:0,t:0,used:false,q:["Il est tombé. Il était creux, et plein de paille. Les nains de jardin, c'est comme les sergents : tout dans l'apparence."]};
   C.linge={kind:'secret',style:'linge',x:207*T,rx:3*T,y:8*T,open:0,t:0,used:false,q:["En plein sur le linge propre. J'ai honte. Mais qu'est-ce que j'adorais faire ça, quand j'étais jeune."]};
-  C.grain={kind:'secret',style:'grain',x:251.5*T,y:CGR*T,open:0,t:0,used:false,when:()=>L.crecy&&L.crecy.era===14,q:["Le sac de grain du père Vasseur. Il en laissait toujours tomber un peu exprès, pour nous. Je m'en souviens comme si c'était ce matin."]};
+  C.grain={kind:'secret',style:'grain',x:251.5*T,y:CGR*T,open:0,t:0,used:false,when:()=>L.crecy&&L.crecy.era===14,q:["Le sac de grain du père Fontaine. Il en laissait toujours tomber un peu exprès, pour nous. Je m'en souviens comme si c'était ce matin."]};
   C.niche={kind:'secret',style:'niche',x:133*T,y:CGR*T,open:0,t:0,used:false,q:["La niche de Rex. Une couverture, un os, une balle mâchouillée… et de la paille. Ce chien a des goûts de sergent."]};
   Lv.acts.push(C.nain,C.linge,C.grain,C.niche);
   for(const w of Lv.watchers)w.white=true;
@@ -10983,7 +10983,7 @@ function crecyStep(dt){const C=L.crecy;if(!C)return;C.t+=dt;C.flash=Math.max(0,C
   // répliques
   if(!C.said.moulin&&px>40*T){C.said.moulin=1;say("Le moulin. Sa roue tourne toujours. Elle me montera plus haut que mes ailes.",3.8)}
   if(!C.said.chatb&&px>104*T){C.said.chatb=1;say("Un chat blanc sur le muret. Il fait semblant de dormir, comme Bijou. Quand ses yeux s'allument, ne plus bouger d'une plume.",4.4)}
-  if(!C.said.quartier&&px>101*T){C.said.quartier=1;say("Des maisons neuves partout. Le pigeonnier Vasseur était au bout du village… je crois. Je le sens par là.",4.2)}
+  if(!C.said.quartier&&px>101*T){C.said.quartier=1;say("Des maisons neuves partout. Le pigeonnier Fontaine était au bout du village… je crois. Je le sens par là.",4.2)}
   if(!C.said.foot&&px>142*T){C.said.foot=1;say("Deux gamins qui jouent à la balle. Leur ballon vole mieux que moi.",3.2)}
   if(!C.said.velo&&px>183*T){C.said.velo=1;say("Un casque de tranchée sur la tête d'un enfant, à vélo. On mobilise jeune, ici.",3.8)}
 }
@@ -11051,7 +11051,7 @@ function drawCrecyBack(t,cx){const C=L.crecy;if(!C)return;const g=ctx,vis=(a,b)=
   if(vis(165*T,180*T))cLawn(g,165*T,179*T);
   if(vis(129*T,138*T))cWornLawn(g,C.dogs[0]);
   if(vis(228*T,236*T))cWornLawn(g,C.dogs[1]);
-  if(vis(244*T,262*T))cVasseur(g,t);
+  if(vis(244*T,262*T))cFontaine(g,t);
 }
 function drawCrecyMid(t){const C=L.crecy;if(!C)return;const g=ctx,vis=(a,b)=>b>cam.x-220&&a<cam.x+W+220;
   for(const b of CRECY.blocks)if(vis(b.c0*T-40,(b.c1+1)*T+40))cBlock(g,b,t);
@@ -11285,7 +11285,7 @@ function cBlock(g,b,t){const x0=b.c0*T,x1=(b.c1+1)*T,top=b.r0*T,base=CGR*T,w=x1-
     g.fillStyle='#c8302a';g.beginPath();for(let k=0;k<6;k++){g.arc(x0+20+k*42,top-40,4,0,7)}g.fill();
   }
   g.restore()}
-function cVasseur(g,t){if(L.crecy.era===14){cVasseur14(g,t);return}const b=CGR*T,x=246*T;g.save();
+function cFontaine(g,t){if(L.crecy.era===14){cFontaine14(g,t);return}const b=CGR*T,x=246*T;g.save();
   // la maison : enduit, volets neufs, une voiture devant ; à droite, le garage là où était le pigeonnier
   const w=260,h=190;g.fillStyle='#e8dcc4';g.fillRect(x,b-h,w,h);cChimney(g,x+w-62,b-h-118,b-h-50,24);
   cRoofTiles(g,[x-16,b-h,x+40,b-h-90,x+w-40,b-h-90,x+w+16,b-h],'#a84a32',[x+40,x+w-40,b-h-90]);
@@ -11308,7 +11308,7 @@ function cDuck(g,m){const t=G.t,x=m.x,y=m.y;if(Math.abs(m.dx)>.01)m.dir=m.dx>0?1
   g.fillStyle='#7a5c3e';g.beginPath();g.arc(20,-8,8,0,7);g.fill();g.fillStyle='#e8902a';poly(g,[26,-9,36,-7,26,-5]);g.fill();g.fillStyle='#1a1a1a';g.beginPath();g.arc(22,-10,1.4,0,7);g.fill();
   g.fillStyle='rgba(230,245,240,.5)';g.beginPath();g.ellipse(0,12,32,3,0,0,7);g.fill();g.restore()}
 
-/* ---------- le souvenir : la maison Vasseur en 1914, le pigeonnier, les pigeons ---------- */
+/* ---------- le souvenir : la maison Fontaine en 1914, le pigeonnier, les pigeons ---------- */
 function crecySet(era,quiet){const C=L.crecy;if(C.era===era)return;C.era=era;MUS_OLD=era===14;C.flash=quiet?.5:1;
   if(!G.sim&&!quiet){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Le pigeonnier ! Il est là, tout blanc, et les copains tournent autour. Septembre 1914 : je rentre de la Marne avec le pli de Lucien.",5)}}
@@ -11317,7 +11317,7 @@ function crecyOverlay(t){const C=L.crecy;if(!C)return;
   if(C.era===14){const fc=ferteFogTex();ctx.save();const ox=((t*14+cam.x*.15)%fc.fog.width+fc.fog.width)%fc.fog.width;ctx.drawImage(fc.fog,-ox,0,fc.fog.width,H);ctx.drawImage(fc.fog,fc.fog.width-ox,0,fc.fog.width,H);ctx.drawImage(fc.vig,0,0,W,H);
     ctx.globalAlpha=.6;ctx.fillStyle='#efe5cc';ctx.font='italic 15px '+F_BODY;ctx.textAlign='left';ctx.fillText('Crécy · septembre 1914',20,H-20);ctx.restore()}
   if(C.flash>0){ctx.fillStyle='rgba(236,232,222,'+(Math.min(1,C.flash)*.85)+')';ctx.fillRect(0,0,W,H)}}
-function cVasseur14(g,t){const b=CGR*T,x=246*T,C=L.crecy;g.save();
+function cFontaine14(g,t){const b=CGR*T,x=246*T,C=L.crecy;g.save();
   // la ferme : même maison, plus vieille ; volets de bois, vigne, banc ; une charrette dans la cour
   const w=260,h=190;g.fillStyle='#d8c8a4';g.fillRect(x,b-h,w,h);g.fillStyle='rgba(120,100,70,.15)';for(let k=0;k<20;k++){g.beginPath();g.ellipse(x+(k*53)%w,b-h+(k*37)%h,12,6,0,0,7);g.fill()}
   cChimney(g,x+w-62,b-h-118,b-h-50,24,1);cRoofTiles(g,[x-16,b-h,x+40,b-h-90,x+w-40,b-h-90,x+w+16,b-h],'#8a4a34',[x+40,x+w-40,b-h-90],1);
@@ -11351,7 +11351,7 @@ function cSecrets(g,t){const C=L.crecy;if(!C)return;
   {const a=C.nain,x=a.x,b=a.y;g.save();if(a.used){const u=Math.min(1,a.t/.35);g.translate(x,b);g.rotate(u*Math.PI/2*.94);g.translate(-x,-b)}cGnome(g,x,b);g.restore()}
   {const a0=C.linge,a={x:a0.sx!=null?a0.sx-6:a0.x,y:a0.y,t:a0.t,used:a0.used};if(a.used){const u=Math.min(1,a.t/.5);if(u<1){g.fillStyle='#f2f0e6';g.beginPath();g.arc(a.x+6,a.y+6+u*26,3,0,7);g.fill()}else{g.fillStyle='rgba(240,240,230,.95)';g.beginPath();g.arc(a.x+8,a.y+34,6,0,7);g.arc(a.x+12,a.y+38,4,0,7);g.arc(a.x+4,a.y+40,3,0,7);g.fill();g.fillStyle='rgba(120,110,80,.5)';g.beginPath();g.arc(a.x+9,a.y+35,2,0,7);g.fill()}}}
   if(C.era===14){const a=C.grain,x=a.x,b=a.y;g.save();g.fillStyle='#c8b080';g.beginPath();g.moveTo(x-16,b);g.quadraticCurveTo(x-20,b-30,x-10,b-40);g.lineTo(x+10,b-40);g.quadraticCurveTo(x+20,b-30,x+16,b);g.closePath();g.fill();g.strokeStyle='#8a6a3a';g.lineWidth=1.5;g.beginPath();g.moveTo(x-10,b-38);g.lineTo(x+10,b-38);g.stroke();
-    g.fillStyle='#5a4a2a';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('VASSEUR',x,b-20);if(!a.used){g.fillStyle='#d8b860';for(let k=0;k<6;k++){g.beginPath();g.arc(x+18+k*4,b-2,1.5,0,7);g.fill()}}g.restore()}
+    g.fillStyle='#5a4a2a';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText('FONTAINE',x,b-20);if(!a.used){g.fillStyle='#d8b860';for(let k=0;k<6;k++){g.beginPath();g.arc(x+18+k*4,b-2,1.5,0,7);g.fill()}}g.restore()}
 }
 
 /* ---------- cheminées et toits : la cheminée est peinte avant le toit, qui en cache le pied ---------- */
@@ -11518,7 +11518,7 @@ function comblesPost(Lv){
   // les poutres qui changent avec l'époque
   C.dyn=CB.beams.filter(b=>b.e!=='b').map(b=>Object.assign({},b,{st:'ok',t:0,deb:[]}));
   Lv.acts=Lv.acts||[];
-  C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Vasseur. Il a fini ses jours ici, au calme. Il y a pire."]};
+  C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Fontaine. Il a fini ses jours ici, au calme. Il y a pire."]};
   C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Garnier montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
   C.canif={kind:'secret',style:'canif',x:11.5*T,y:3*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:["Un canif oublié sur la poutre, tout en haut. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
   Lv.acts.push(C.bague,C.graf,C.canif);
@@ -11590,7 +11590,7 @@ function comblesStep(dt){const C=L.cb;if(!C)return;C.t+=dt;if(C.grace>0)C.grace-
   // Raymond essaie de parler aux collègues
   if(!C.said.parle&&!P.dead&&Math.abs(pcx-C.pig[0].x)<230&&Math.abs(pcy-C.pig[0].y)<120){C.said.parle=1;C.talk={t:0,k:0}}
   if(C.talk&&!G.sim){const k=C.talk;k.t+=dt;const o=C.pig[0];
-    if(k.k===0){k.k=1;say("Pardon, camarade ! Le pigeonnier Vasseur, au bout du village… Vous savez ce qu'il est devenu ?",4)}
+    if(k.k===0){k.k=1;say("Pardon, camarade ! Le pigeonnier Fontaine, au bout du village… Vous savez ce qu'il est devenu ?",4)}
     else if(k.k===1&&k.t>4.1){k.k=2;bubble(o.x,o.y-44,"Rrrou… krr… wesh… rrou-rrou ?",'#6a5a48')}
     else if(k.k===2&&k.t>5.8){k.k=3;say("On ne leur a même pas appris à parler correctement. On ne comprend rien à ce qu'ils disent.",4.2)}
     else if(k.k===3&&k.t>10.2)C.talk=null}
@@ -12828,8 +12828,8 @@ const CMX={
     [165.6,174.2,0,40,'lunettes',"Ma petite-fille m'a montré la maison sur son téléphone. Vue du ciel !"]]
 };
 const CM_NAMES=[['ADAM','Raymond'],['BARBIER','André'],['BERTIN','Louis'],['BLONDEAU','Gaston'],['BOUCHER','Émile'],['CHAUVIN','Paul'],['COLLIN','Marcel'],['DELAUNAY','Jules'],['DUBOIS','Henri'],['FERRAND','Charles'],
-  ['GAUTHIER','Albert'],['GIRARD','Fernand'],['HUBERT','Joseph'],['JOLY','Pierre'],['LAMBERT','Eugène'],['LECLERC','Maurice'],['LEROY','Georges'],['MARCHAL','Lucien'],['MARTIN','Alfred'],['MOREAU','Jean'],
-  ['NOËL','René'],['PERRIN','Victor'],['PICARD','Édouard'],['RENARD','Léon'],['ROUSSEAU','Gustave'],['TISSIER','Arthur']];
+  ['GAUTHIER','Albert'],['GIRARD','Fernand'],['HUBERT','Joseph'],['JOLY','Pierre'],['LAMBERT','Eugène'],['LECLERC','Maurice'],['LEROY','Georges'],['MARTIN','Alfred'],['MOREAU','Jean'],
+  ['NOËL','René'],['PERRIN','Victor'],['PICARD','Édouard'],['RENARD','Léon'],['ROUSSEAU','Gustave'],['TISSIER','Arthur'],['VASSEUR','Lucien']];
 (function(){const g=Array.from({length:15},()=>Array(CMW).fill('.'));for(let c=0;c<CMW;c++)for(let r=CMG;r<15;r++)g[r][c]='#';
   const d=LEVELS.find(d=>d.cm);if(d)d.segs=[g.map(r=>r.join('')).join('\n')]})();
 
@@ -12913,9 +12913,9 @@ function cmRespawn(){const C=L.cm;if(!C)return;C.hit=null;for(const o of C.owls)
 
 /* ---------- le monument aux morts : on s'approche des noms ---------- */
 const CM_MEM_LINES=[[0,"Le monument aux morts. « Hommage des enfants de Crécy à leurs aînés morts pour la patrie. »",4.6],
-  [4.8,"Marchal… Lucien.",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré.",4.4],[14.8,"Marguerite doit être plus loin.",3]];
+  [4.8,"Vasseur… Lucien.",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré.",4.4],[14.8,"Marguerite doit être plus loin.",3]];
 function cmNameXY(){// la place du nom de Lucien sur la plaque de droite
-  const i=CM_NAMES.findIndex(n=>n[0]==='MARCHAL'),half=Math.ceil(CM_NAMES.length/2),j=i-half;return[CMX.mem.x+58,234+j*8.2]}
+  const i=CM_NAMES.findIndex(n=>n[0]==='VASSEUR'),half=Math.ceil(CM_NAMES.length/2),j=i-half;return[CMX.mem.x+58,234+j*8.2]}
 function cmSeqStep(dt){const C=L.cm,q=C.seq;q.t+=dt;G.lt+=dt;P.vx=0;P.vy=Math.min(MAXFALL,P.vy+GRAV*dt);P.onGround=false;moveY(P,P.vy*dt);P.facing=1;
   for(const[t0,txt,d]of CM_MEM_LINES)if(q.t>=t0&&!(q['l'+t0])){q['l'+t0]=1;say(txt,d)}
   const z=L.zoom||(L.zoom={z:1,fx:cam.x+W/2,fy:cam.y+H/2});const[nx,ny]=cmNameXY(),c0x=cam.x+W/2,c0y=cam.y+H/2;
@@ -13173,7 +13173,7 @@ function cmOverlay(t){const C=L.cm;if(!C)return;const cx=Math.round(cam.x),cy=Ma
   // le nom de Lucien, sous les doigts de la lumière
   {const q=C.seq;if(q&&q.k==='mem'&&q.t>4.6){const[nx,ny]=cmNameXY(),k=Math.min(1,(q.t-4.6)/1.2)*(q.t>12.8?Math.max(0,1-(q.t-12.8)/1.2):1);ctx.save();ctx.globalCompositeOperation='lighter';
     const gr=ctx.createRadialGradient(nx-8,ny-3,2,nx-8,ny-3,46);gr.addColorStop(0,'rgba(255,220,140,'+.35*k+')');gr.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=gr;ctx.fillRect(nx-60,ny-50,104,100);ctx.restore();
-    ctx.font='6.4px '+F_DISP;ctx.textAlign='left';ctx.fillStyle='rgba(255,236,170,'+k+')';ctx.fillText('MARCHAL Lucien',CMX.mem.x+14,ny)}}
+    ctx.font='6.4px '+F_DISP;ctx.textAlign='left';ctx.fillStyle='rgba(255,236,170,'+k+')';ctx.fillText('VASSEUR Lucien',CMX.mem.x+14,ny)}}
   // le pigeon fantôme, en haut de la stèle du fond
   if(129*T>x0v&&129*T<x1v)cmPigeonGhost(ctx,129*T,CMF-20-226,t);
   // les fantômes
@@ -13559,7 +13559,7 @@ function drawTombCard(t){
   ctx.fillStyle='rgba(30,30,34,.85)';ctx.textAlign='center';ctx.font='26px '+F_DISP;ctx.fillText('FAMILLE GARNIER',0,-104);
   ctx.fillRect(-60,-92,120,1.5);
   ctx.font='22px '+F_DISP;ctx.fillText('Joseph GARNIER',0,-60);ctx.font='18px '+F_DISP;ctx.fillText('1893 – 1958',0,-36);
-  ctx.font='22px '+F_DISP;ctx.fillText('Marguerite GARNIER',0,6);ctx.font='italic 17px '+F_BODY;ctx.fillText('née Vasseur',0,28);ctx.font='18px '+F_DISP;ctx.fillText('1897 – 1989',0,52);
+  ctx.font='22px '+F_DISP;ctx.fillText('Marguerite GARNIER',0,6);ctx.font='italic 17px '+F_BODY;ctx.fillText('née Fontaine',0,28);ctx.font='18px '+F_DISP;ctx.fillText('1897 – 1989',0,52);
   for(let k=0;k<9;k++){ctx.fillStyle=['#c8302a','#e9dfc7','#d9a441'][k%3];ctx.beginPath();ctx.arc(-140+k*35,96,7,0,7);ctx.fill()}
   ctx.restore();
 }
@@ -13610,7 +13610,7 @@ function drawFinaleCard(ct){
   engrave('FAMILLE GARNIER',0,stTop+50,'15px '+F_DISP);
   ctx.fillStyle='#c8a75e';ctx.fillRect(-40,stTop+58,80,1);
   engrave('Joseph GARNIER',0,stTop+88,'12px '+F_DISP);engrave('1893 – 1958',0,stTop+104,'10px '+F_DISP);
-  engrave('Marguerite GARNIER',0,stTop+134,'12px '+F_DISP);engrave('née VASSEUR',0,stTop+148,'italic 9.5px '+F_BODY);engrave('1897 – 1989',0,stTop+164,'10px '+F_DISP);
+  engrave('Marguerite GARNIER',0,stTop+134,'12px '+F_DISP);engrave('née FONTAINE',0,stTop+148,'italic 9.5px '+F_BODY);engrave('1897 – 1989',0,stTop+164,'10px '+F_DISP);
   // plaque en porcelaine
   ctx.fillStyle='#d8d2c4';rr(ctx,-30,stTop+186,60,26,4);ctx.fill();ctx.strokeStyle='#8a7a52';ctx.lineWidth=1;rr(ctx,-28,stTop+188,56,22,3);ctx.stroke();
   ctx.fillStyle='#4a3e2e';ctx.font='italic 7px '+F_BODY;ctx.fillText('À nos parents',0,stTop+199);ctx.fillText('regrettés',0,stTop+207);
@@ -13640,7 +13640,7 @@ function drawFinaleCard(ct){
   ctx.fillStyle='#e2d3a6';ctx.fillRect(-58,-34,70,38);
   ctx.strokeStyle='rgba(120,95,50,.35)';ctx.lineWidth=.8;ctx.strokeRect(-58,-34,70,38);
   ctx.fillStyle='rgba(110,80,40,.22)';ctx.beginPath();ctx.arc(-48,-6,7,0,7);ctx.fill();
-  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='italic 7px '+F_BODY;ctx.fillText('Au soldat',-53,-21);ctx.fillText('Lucien Marchal',-53,-12);ctx.fillText('142e R.I. — Verdun',-53,-3);
+  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='italic 7px '+F_BODY;ctx.fillText('Au soldat',-53,-21);ctx.fillText('Lucien Vasseur',-53,-12);ctx.fillText('142e R.I. — Verdun',-53,-3);
   ctx.restore();
   // pétales tombés
   for(const[x,y,c]of[[px-40,pb+8,'#c8302a'],[px+28,pb+6,'#d9a441'],[px-62,pb+3,'#efe6d0']]){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,3,1.3,.4,0,7);ctx.fill()}
