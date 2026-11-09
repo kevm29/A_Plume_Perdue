@@ -351,25 +351,26 @@ function vxHorse(g,x,y,s,f,t,o){
 
 /* ---------- Raymond vivant, en vol (1916) ---------- */
 function vxPigeon(g,x,y,sz,f,t,o){
-  o=o||{};g.save();g.translate(x,y);g.rotate(o.rot||0);g.scale(sz*f,sz);g.lineCap='round';g.lineJoin='round';
+  o=o||{};const C=Object.assign({w0:'#5d6577',w1:'#727b8f',tail:'#7b8496',tailT:'#2c303b',b0:'#a2abbc',b1:'#7b8496',n0:'#7a5d9e',n1:'#4f9a7a',n2:'#8d96a8',head:'#929bad',bar:'#23262e',tube:true},o.pal||{});   // o.pal : un autre plumage (pigeon blanc…)
+  g.save();g.translate(x,y);g.rotate(o.rot||0);g.scale(sz*f,sz);g.lineCap='round';g.lineJoin='round';
   const ph=o.flap!=null?o.flap:t*14,up=Math.sin(ph),fold=o.fold||0;
   // l'aile du fond
   const wing=(dy,col,k)=>{const u=lerp(up,-.2,fold);g.fillStyle=col;g.beginPath();g.moveTo(5,-3);g.quadraticCurveTo(-2,-3-u*14*k,-12,-4-u*22*k);
     for(let i=0;i<5;i++){const a=i/4;g.lineTo(-12-a*9,-4-u*(22-a*4)*k+a*6);g.lineTo(-16-a*9,-1-u*(18-a*4)*k+a*7)}
     g.quadraticCurveTo(-10,4,-2,3);g.closePath();g.fill();
-    if(k>.8){g.strokeStyle='#23262e';g.lineWidth=1.4;g.beginPath();g.moveTo(-5,-1-u*6);g.lineTo(-8,3-u*4);g.moveTo(-9,-2-u*9);g.lineTo(-12,2-u*7);g.stroke()}};
-  wing(0,'#5d6577',.75);
+    if(k>.8){g.strokeStyle=C.bar;g.lineWidth=1.4;g.beginPath();g.moveTo(-5,-1-u*6);g.lineTo(-8,3-u*4);g.moveTo(-9,-2-u*9);g.lineTo(-12,2-u*7);g.stroke()}};
+  wing(0,C.w0,.75);
   // la queue
-  g.fillStyle='#7b8496';g.beginPath();g.moveTo(-10,-2);g.lineTo(-26,-5);g.lineTo(-27,2);g.lineTo(-10,3);g.closePath();g.fill();g.fillStyle='#2c303b';g.fillRect(-27,-4.6,4,6.4);
+  g.fillStyle=C.tail;g.beginPath();g.moveTo(-10,-2);g.lineTo(-26,-5);g.lineTo(-27,2);g.lineTo(-10,3);g.closePath();g.fill();g.fillStyle=C.tailT;g.fillRect(-27,-4.6,4,6.4);
   // les pattes repliées, le tube rouge
   g.strokeStyle='#b4454c';g.lineWidth=2;g.beginPath();g.moveTo(-3,4);g.lineTo(-10,7);g.moveTo(0,4);g.lineTo(-7,8);g.stroke();
-  g.save();g.translate(-6,6.5);g.rotate(-.35);g.fillStyle='#a8322d';rr(g,-3.5,-2,7,4,1.4);g.fill();g.fillStyle='#e9dfc7';g.fillRect(3,-1.4,1.6,2.8);g.restore();
+  if(C.tube){g.save();g.translate(-6,6.5);g.rotate(-.35);g.fillStyle='#a8322d';rr(g,-3.5,-2,7,4,1.4);g.fill();g.fillStyle='#e9dfc7';g.fillRect(3,-1.4,1.6,2.8);g.restore()}
   // le corps
-  const bg=g.createLinearGradient(0,-8,0,6);bg.addColorStop(0,'#a2abbc');bg.addColorStop(1,'#7b8496');g.fillStyle=bg;g.beginPath();g.ellipse(0,0,14,7,-.05,0,7);g.fill();
+  const bg=g.createLinearGradient(0,-8,0,6);bg.addColorStop(0,C.b0);bg.addColorStop(1,C.b1);g.fillStyle=bg;g.beginPath();g.ellipse(0,0,14,7,-.05,0,7);g.fill();
   g.fillStyle='rgba(255,255,255,.14)';g.beginPath();g.ellipse(2,3,8,2.6,0,0,7);g.fill();
   // le cou irisé, la tête, le bec, l'œil
-  const ng=g.createLinearGradient(8,-8,14,2);ng.addColorStop(0,'#7a5d9e');ng.addColorStop(.6,'#4f9a7a');ng.addColorStop(1,'#8d96a8');g.fillStyle=ng;g.beginPath();g.ellipse(11,-2.5,6,5,.4,0,7);g.fill();
-  g.fillStyle='#929bad';g.beginPath();g.arc(16,-5,5,0,7);g.fill();
+  const ng=g.createLinearGradient(8,-8,14,2);ng.addColorStop(0,C.n0);ng.addColorStop(.6,C.n1);ng.addColorStop(1,C.n2);g.fillStyle=ng;g.beginPath();g.ellipse(11,-2.5,6,5,.4,0,7);g.fill();
+  g.fillStyle=C.head;g.beginPath();g.arc(16,-5,5,0,7);g.fill();
   g.fillStyle='#3a3836';poly(g,[20.4,-6,25,-4.6,20.4,-3.4]);g.fill();g.fillStyle='#efe9df';g.beginPath();g.ellipse(20.6,-6,1.6,1.1,0,0,7);g.fill();
   if(o.closed){g.strokeStyle='#2a2830';g.lineWidth=1;g.beginPath();g.moveTo(15.3,-5.8);g.quadraticCurveTo(17.3,-4.6,19.2,-5.8);g.stroke()}
   else{g.fillStyle='#d97a2a';g.beginPath();g.arc(17.4,-6,2.3,0,7);g.fill();g.fillStyle='#f4ecd8';g.beginPath();g.arc(17.4,-6,1.5,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.arc(18.1,-6.3,.95,0,7);g.fill()}
@@ -378,7 +379,7 @@ function vxPigeon(g,x,y,sz,f,t,o){
     g.fillStyle='#9a1418';g.globalAlpha=Math.min(1,b);g.beginPath();g.moveTo(12.6,-9.4);g.quadraticCurveTo(10.4,-5,11,-1+b*3);g.quadraticCurveTo(11.6,1+b*4,10.4,2+b*5);g.lineTo(9.2,1.6+b*5);g.quadraticCurveTo(9.8,-2,10.4,-6);g.quadraticCurveTo(11,-8.6,12.6,-9.4);g.fill();
     g.beginPath();g.moveTo(15.5,-10.6);g.quadraticCurveTo(14.8,-8,15.4,-6.4+b);g.lineTo(14.6,-6.2+b);g.quadraticCurveTo(14.2,-8.4,15.5,-10.6);g.fill();g.globalAlpha=1}
   // l'aile de devant
-  wing(0,'#727b8f',1);
+  wing(0,C.w1,1);
   if(!o.noSeam){g.strokeStyle='rgba(233,223,199,.0)'}
   g.restore();
 }

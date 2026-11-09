@@ -56,11 +56,13 @@ function update(dt){
       if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
       if(vauxActive()){vauxUpdate(dt);break}
       if(svActive()){svUpdate(dt);break}
+      if(rfActive()){rfUpdate(dt);break}
       if(!eraKeyOn())pressed.delete('era');if(touchUI&&!G.tbSync){G.tbSync=1;syncTouchB()}
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
       if(pressed.has('era')&&!G.cut&&(L.s16||L.zr16))s16Switch();
+      if(pressed.has('era')&&!G.cut&&L.fc)rfStart();
       if(L.cb&&L.cb.end&&(pressed.has('act')||pressed.has('jump')))comblesSkip();
       if(L.pl&&L.pl.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))placeSkip();
       if(L.cm&&L.cm.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))cmSkip();
@@ -105,6 +107,7 @@ function render(){
     case'play':case'pause':case'exiting':case'confirm':{
       if(vauxActive()){vauxRender(t);vauxOverlays();break}
       if(svActive()){svRender(t);drawQuip(66);vauxOverlays();break}
+      if(rfActive()){rfRender(t);vauxOverlays();break}
       const sx=(rnd()-.5)*G.shake,sy=(rnd()-.5)*G.shake;
       let cx=Math.round(cam.x+sx),cy=Math.round(cam.y+sy);
       // zoom de cinématique (5-3) : centré sur un point du monde

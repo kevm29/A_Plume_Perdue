@@ -29,6 +29,7 @@ const ACH=[
  ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
  ['c1','E','Instinct de pie',"Chiper dix clefs aux gardiens."],
  ['a70','S','Terminus, tout le monde descend',"Au cours Langlet, monter sur un tramway après la rue Guillaume-de-Machault et rester sur son toit jusqu'au tout début de la rue."],
+ ['a73','X',/*v2*/'Frères d\'armes',/*v2*/"Dans la cathédrale de Reims en feu, en 1914, sortir avec Flocon et Gaston sains et saufs."],
  ['a72','X',/*v2*/'Voyeur',/*v2*/"Sur l'aire de Gueux, ouvrir la porte d'un cabinet occupé."],
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
