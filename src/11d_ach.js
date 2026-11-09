@@ -176,6 +176,14 @@ function handleAch(){
   G.achY=clamp(G.achY||0,0,achMaxY());
   if(G.click){if(G.click.y>H-34||G.click.y<70)goTitle();else G.achTap=G.click}
 }
+/* description d'un succès : retour à la ligne dans la case (2 lignes, police réduite si besoin) */
+/* largeur prudente : selon le navigateur et le chargement des polices, measureText peut sous-estimer ; on prend aussi une estimation par caractère */
+function achW(t,fs){return Math.max(ctx.measureText(t).width,t.length*fs*.41)}
+function achWrap(text,maxW,fs){const out=[];let line='';for(const w of text.split(/[ \u00a0]+/)){const t=line?line+' '+w:w;if(achW(t,fs)>maxW&&line){out.push(line);line=w}else line=t}out.push(line);return out}
+function achDesc(text,x,y,maxW){let fs=14,lines;
+  for(;fs>=12;fs-=.5){ctx.font='italic '+fs+'px '+F_BODY;lines=achWrap(text,maxW,fs);if(lines.length<=2)break}
+  if(lines.length>2){fs=11.5;ctx.font='italic 11.5px '+F_BODY;lines=achWrap(text,maxW,fs).slice(0,3)}   // texte long : trois lignes, sous un titre remonté
+  const lh=fs+2.5,y0=lines.length>2?y-10:lines.length>1?y-lh/2+4:y;lines.forEach((l,k)=>ctx.fillText(l,x,y0+k*lh))}
 function renderAch(t){
   ensureTitleLv();const prev=L;L=titleLv;renderWorld(titleLv,200,60,t,{noEntities:true});L=prev;
   ctx.fillStyle='rgba(12,10,16,.9)';ctx.fillRect(0,0,W,H);
@@ -185,11 +193,11 @@ function renderAch(t){
   ACH.forEach((a,i)=>{const on=!!st[a[0]],c=i%2,r=Math.floor(i/2),x=x0+c*(cw+12),y=y0+r*rh;if(y<-rh||y>H)return;
     const hov=ms.x>x&&ms.x<x+cw&&ms.y>y&&ms.y<y+rh-8&&ms.y>74&&ms.y<H-36,tap=G.achTap&&G.achTap.x>x&&G.achTap.x<x+cw&&G.achTap.y>y&&G.achTap.y<y+rh-8;
     ctx.fillStyle=on?(hov?'rgba(233,223,199,.11)':'rgba(233,223,199,.07)'):(hov?'rgba(233,223,199,.06)':'rgba(233,223,199,.025)');rr(ctx,x,y,cw,rh-8,8);ctx.fill();
-    drawAchMedal(ctx,x+36,y+40,a[0],on,1.15);
-    ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.45)';ctx.font='17px '+F_DISP;ctx.fillText(on?a[2]:'Décoration secrète',x+74,y+30);
-    ctx.font='italic 14px '+F_BODY;ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';ctx.fillText(on?a[3]:(hov||tap?'':'Survoler pour un indice'),x+74,y+52);
-    if(!on&&(hov||tap))tip={x:x+74,y:y+52,t:ACH_HINT[a[0]]||'…'}});
-  if(tip){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='#d9a441';ctx.textAlign='left';ctx.fillText('Indice : '+tip.t,tip.x,tip.y)}
+    ctx.save();rr(ctx,x,y,cw,rh-8,8);ctx.clip();drawAchMedal(ctx,x+36,y+40,a[0],on,1.15);
+    ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.45)';ctx.font='17px '+F_DISP;ctx.font='italic 14px '+F_BODY;const long=on&&achWrap(a[3],cw-74-16,12).length>2;ctx.font='17px '+F_DISP;ctx.fillText(on?a[2]:'Décoration secrète',x+74,y+(long?24:30));
+    ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?a[3]:(hov||tap?'':'Survoler pour un indice'),x+74,y+52,cw-74-16);
+    ctx.restore();if(!on&&(hov||tap))tip={x:x+74,y:y+52,w:cw-74-16,t:ACH_HINT[a[0]]||'…'}});
+  if(tip){ctx.fillStyle='#d9a441';ctx.textAlign='left';achDesc('Indice : '+tip.t,tip.x,tip.y,tip.w)}
   ctx.restore();
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Décorations de Raymond',W/2,40);
   ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText(`${n} sur ${ACH.length}`,W/2,62);

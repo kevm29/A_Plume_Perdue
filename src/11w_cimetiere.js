@@ -387,7 +387,7 @@ function cmOverlay(t){const C=L.cm;if(!C)return;const cx=Math.round(cam.x),cy=Ma
   // le pigeon fantôme, en haut de la stèle du fond
   if(129*T>x0v&&129*T<x1v)cmPigeonGhost(ctx,129*T,CMF-20-226,t);
   // les fantômes
-  for(const gh of C.ghosts){if(gh.x<x0v||gh.x>x1v)continue;const ph=(C.t+gh.ph*2.9)%4,talk=ph<3.1;cmGhostDraw(ctx,gh,t,.9,talk);
+  for(const gh of C.ghosts){if(gh.x<x0v||gh.x>x1v)continue;const ph=(C.t+gh.ph*2.9)%7.1,talk=ph<3.1;  // 3,1 s de réplique, puis 4 s de silencecmGhostDraw(ctx,gh,t,.9,talk);
     if(talk&&!C.seq&&!G.tombSeq){const ba=Math.min(1,ph/.25,(3.1-ph)/.25);cmBubble(ctx,gh.x,gh.y-90,gh.line,ba)}}
   // Marguerite et Joseph
   {const pcx=P.x+P.w/2,a=G.tombSeq?.85:clamp((pcx-174*T)/(5*T),0,1)*.75;if(a>0)cmCouple(ctx,t,a)}
