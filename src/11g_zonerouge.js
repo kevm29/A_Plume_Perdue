@@ -27,6 +27,9 @@ function zrPost(Lv){
     let e=c;while(Lv.g[r][e+1]==='X')e++;let b=r;while(b+1<Lv.g.length&&Lv.g[b+1][c]==='X'&&Lv.g[b+1][e]==='X')b++;
     for(let rr=r;rr<=b;rr++)for(let cc=c;cc<=e;cc++)seen.add(cc+','+rr);
     (zoneOfL(Lv,c)==='trench'?Z.rondins:Z.logs).push({x0:c*T,x1:(e+1)*T,top:r*T,bot:(b+1)*T,seed:c*7+r})}}
+  // le dernier tronc couché : creux, il s'ouvre par la coupe de droite (action, sans rien afficher) ; une paille dedans
+  {const h=Z.logs.filter(o=>o.bot-o.top>=70).sort((a,b)=>b.x0-a.x0)[0];if(h){h.home=1;Z.home=h;Z.homeOpen=0;
+    Lv.corn.push({x:h.x0+(h.x1-h.x0)*.5,y:h.bot-22,taken:false,ph:3,hidden:()=>!(L.zr&&L.zr.homeOpen)})}}
   // l'abri allemand du Mort-Homme : un long blockhaus, une rangée de lanternes ; la dernière clignote (cachette)
   if(Lv.def.blockhaus){const[c0,c1]=Lv.def.blockhaus,x0=c0*T,x1=(c1+1)*T,b=G0*T;Z.bh={x0,x1,b,lamps:[]};
     // la porte est à gauche (on la franchit à pied ; en sautant on passe devant) ; les lanternes suivent, toutes sur la même ligne ; la dernière clignote
@@ -40,6 +43,10 @@ function zrPost(Lv){
 }
 function zrHole(x){for(const h of L.zr.holes)if(x>h.x0&&x<h.x1)return h;return null}
 /* sous le feuillage d'un arbre, le drone ne voit plus Raymond */
+function zrHome(){const Z=L.zr,h=Z&&Z.home;return!!(h&&Z.homeOpen&&P.x+P.w/2>h.x0+20&&P.x+P.w/2<h.x1&&P.y+P.h>h.bot-44)}
+function zrAct(){const Z=L.zr,h=Z&&Z.home;if(!h||Z.homeOpen||P.dead)return;const pc=P.x+P.w/2;
+  if(pc>h.x1-16&&pc<h.x1+50&&Math.abs(P.y+P.h-h.bot)<6){Z.homeOpen=1;const r=Math.round(h.bot/T)-1;for(let c=Math.round(h.x0/T)+1;c<Math.round(h.x1/T);c++)L.g[r][c]='.';
+    if(!G.sim){noise(.35,500,.15,'lowpass');SFX.thud&&SFX.thud()}say(/*v2*/"La coupe du tronc pivote comme une porte. Dedans, c'est creux, sec, et ça sent le bois. Une vraie maison. Avec un lit de paille.",4.2)}}
 function zrLeaf(){const pcx=P.x+P.w/2,pcy=P.y+P.h/2;for(const d of L.decor)if(d.t==='tree'&&Math.abs(pcx-d.x)<78&&pcy>treeTop(d)*T-40)return true;return false}
 function zrStep(dt){
   const Z=L.zr;if(!Z)return;
@@ -171,6 +178,9 @@ function drawFallenLog(g,o,t){
     g.fillStyle='#4a3828';g.beginPath();for(let k=0;k<=14;k++){const a=k/14*Math.PI*2,r=d*.62+R()*d*.14;g.lineTo(x0+4+Math.cos(a)*r*.42,cy+Math.sin(a)*r)}g.closePath();g.fill();
     g.strokeStyle='#5a4230';g.lineWidth=3;for(let k=0;k<7;k++){const a=-Math.PI*.5+k*.45;g.beginPath();g.moveTo(x0+4,cy);g.quadraticCurveTo(x0-10+Math.cos(a)*20,cy+Math.sin(a)*d*.5,x0-14+Math.cos(a)*d*.3,cy+Math.sin(a)*d*.7);g.stroke()}
     g.fillStyle='#8a8478';for(let k=0;k<5;k++){g.beginPath();g.ellipse(x0-4+R()*16,top+R()*d,3+R()*3,2.4,0,0,7);g.fill()}}
+  // le pied du tronc (dessiné dessous) : un bourrelet de terre et d'herbe qui comble les coins arrondis
+  g.fillStyle='#3e2e20';g.beginPath();g.moveTo(x0-12,bot);g.quadraticCurveTo(x0-4,cy,x0+d*.5,cy);g.lineTo(x1-d*.4,cy);g.quadraticCurveTo(x1+6,cy,x1+14,bot);g.closePath();g.fill();
+  g.fillStyle='#4f6a2a';for(let x=x0-10;x<x1+12;x+=6){const hh=5+((x*13)%8);g.beginPath();g.moveTo(x,bot);g.lineTo(x+2,bot-hh);g.lineTo(x+4,bot);g.fill()}
   const gr=g.createLinearGradient(0,top,0,bot);gr.addColorStop(0,'#86684a');gr.addColorStop(.35,'#6a5038');gr.addColorStop(1,'#3a2a1c');
   g.fillStyle=gr;rr(g,x0+(big?6:2),top+1,x1-x0-(big?6:2)-4,d-1,d*.42);g.fill();
   g.strokeStyle='rgba(30,20,12,.4)';g.lineWidth=1.3;for(let k=0;k<Math.floor(d/9);k++){const yy=top+6+k*9;g.beginPath();g.moveTo(x0+10,yy);for(let x=x0+10;x<x1-10;x+=26)g.quadraticCurveTo(x+13,yy+((x/26|0)%2?3:-3),x+26,yy);g.stroke()}
@@ -179,7 +189,12 @@ function drawFallenLog(g,o,t){
   if(x1-x0>=100){const sx=x0+(x1-x0)*.55;g.fillStyle='#5a4230';poly(g,[sx-5,top+4,sx+5,top+4,sx+10,top-16,sx+6,top-18]);g.fill()}
   if(!big){g.fillStyle='#d8b484';poly(g,[x0+2,top+4,x0-5,top+d*.3,x0+1,top+d*.5,x0-4,top+d*.75,x0+3,bot-2,x0+8,cy]);g.fill()}
   // la coupe à la scie, ronde, avec ses cernes
-  const ex=x1-4;g.fillStyle='#c8a070';g.beginPath();g.ellipse(ex,cy,d*.2,d*.48,0,0,7);g.fill();g.strokeStyle='rgba(110,70,40,.55)';g.lineWidth=1;for(const k of[.3,.55,.8]){g.beginPath();g.ellipse(ex,cy,d*.2*k,d*.48*k,0,0,7);g.stroke()}
+  const open=o.home&&L.zr&&L.zr.homeOpen,ex=x1-4;
+  if(open){// creux : l'intérieur sombre, le lit de paille ; la coupe a pivoté vers l'avant comme une porte
+    g.fillStyle='#1c140c';rr(g,x0+d*.55,cy-d*.05,x1-x0-d*.55-2,bot-cy+d*.02,d*.18);g.fill();g.fillStyle='#d8b860';for(let k=0;k<26;k++){const x=x0+d*.6+((k*37)%(x1-x0-d*.7)),y=bot-6-((k*11)%8);g.fillRect(x,y,9,1.6)}
+    g.fillStyle='#b08a5a';g.beginPath();g.ellipse(ex+16,cy+4,d*.08,d*.46,.08,0,7);g.fill();g.strokeStyle='#5a4230';g.lineWidth=2;g.stroke();
+    g.fillStyle='#c8a070';g.beginPath();g.ellipse(ex,cy,d*.2,d*.48,0,0,7);g.fill();g.fillStyle='#1c140c';g.beginPath();g.ellipse(ex,cy+d*.12,d*.15,d*.3,0,0,7);g.fill();return}
+  g.fillStyle='#c8a070';g.beginPath();g.ellipse(ex,cy,d*.2,d*.48,0,0,7);g.fill();g.strokeStyle='rgba(110,70,40,.55)';g.lineWidth=1;for(const k of[.3,.55,.8]){g.beginPath();g.ellipse(ex,cy,d*.2*k,d*.48*k,0,0,7);g.stroke()}
   g.strokeStyle='#5a4230';g.lineWidth=2;g.beginPath();g.ellipse(ex,cy,d*.2,d*.48,0,0,7);g.stroke();
 }
 /* rondins de la sape : posés en travers de la tranchée, on voit leurs bouts ronds */

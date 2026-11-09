@@ -1,5 +1,5 @@
 /* ------------------------------ MISSION 2 · VERDUN ------------------------------ */
-LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
+LEVELS.push({w:1,name:"Le sentier",theme:'verdun',sentier:true,exit:'post',exitLabel:"BRAS-SUR-MEUSE",seed:61,
  rows:20,deep:2,deepFill:'#',mineDelay:.22,helmetAt:[263,17],dugout:[233,243],marks:[[243,19]],nestAt:[154,3],bedAt:[235,19],
  frontLeaves:[[158,4],[161,6],[154,4,'nest']],communeName:'VERDUN',
  zoneProps:{field:['fence'],wood:['stump','fern','fern'],mines:[],trench:[],monument:['bench','flowerbed']},
@@ -192,7 +192,7 @@ LEVELS.push((()=>{
   uxo(229,231);corn([230,14]);hole(236,238);corn([237,15]);put(243,17,'q');
   put(246,17,'E');
   const zones=[['zr1',0,59],['wood',60,129],['trench',130,159],['wood',160,229],['zr2',230,RW-1]];
-  return {w:1,name:"La zone rouge",theme:'zonerouge',exit:'blockhaus',seed:71,rows:RR,deep:2,deepFill:'#',
+  return {w:1,name:"La zone rouge",theme:'zonerouge',zr16:true,exit:'blockhaus',seed:71,rows:RR,deep:2,deepFill:'#',
     zoneProps:{zr1:['stump','molehill'],wood:['stump','fern','fern'],trench:[],zr2:['stump','molehill']},
     stumpAt:[86,17],blockhaus:[244,257],exitGround:true,signs:["brown:ZONE ROUGE|Forêt domaniale · accès interdit"],
     start:"Le soir tombe sur Verdun. Des pancartes partout : « Zone rouge ». Rouge, je connais : c'est la couleur du front.",

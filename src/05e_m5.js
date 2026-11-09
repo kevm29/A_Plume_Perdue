@@ -26,7 +26,7 @@ LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',exitLabel:"",
 const SECRETS={3:[116,9],11:[36,19],15:[260,11]};
 LEVELS.forEach((l,i)=>{if(SECRETS[i])l.secretAt=SECRETS[i]});
 /* une seule médaille par mission : au 1-1 (la première vie), puis au deuxième niveau de chaque mission */
-LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=4&&i%4===1)});
+LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=8&&i%4===1)});   // (la médaille de la mission 2 est dans une musette de la tranchée de 1916, au 2-1)
 /* chaque niveau reçoit son morceau de lettre (lu à la fin de la mission) */
 LEVELS.forEach((l,i)=>{l.letter=LETTERS_SRC[i]});
 /* les noms affichés au choix des niveaux suivent ceux des niveaux */
