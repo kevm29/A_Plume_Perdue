@@ -69,7 +69,7 @@ function vfInit(first){
   V.sc='flight';V.t=0;V.parts=[];V.bub=[];
   if(first){say("Libre ! L'ouest, c'est par là. Le pigeonnier Vasseur, c'est par là.",3.6)}
 }
-function vfCrash(why){const s=V.s;if(s.dead>0||s.fall||VF.god)return;s.why=why;s.dead=1.25;s.dvy=-120;s.drot=0;G.levelDeaths++;gotOf(G.li).d++;save();
+function vfCrash(why){const s=V.s;if(s.dead>0||s.fall||VF.god)return;s.why=why;s.dead=1.25;s.dvy=-120;s.drot=0;G.levelDeaths++;gotOf(G.li).d++;S.run.anyAccroc=true;save();   // chaque reprise du vol compte comme un accroc, même sans perte de paille
   if(!G.sim){noise(.4,900,.5,'bandpass');tone(700,.3,'sine',.08,200)}V.shake=Math.max(V.shake,8);
   for(let k=0;k<16;k++)V.parts.push({k:'feather',wx:1,x:s.x,y:s.y,vx:(rnd()-.5)*260,vy:-rnd()*220,g:160,drag:2.2,life:0,max:1.8,rot:rnd()*6,vr:(rnd()-.5)*10})}
 function vfExplode(X,big){const s=V.s,gy=vfGround(X),r=big?66:52,d=big?30:24;
@@ -112,6 +112,8 @@ function vfUpdate(dt){
        else if(!s.said.poop){s.said.poop=1;say(q,4)}}break}}
     if(!p.dead&&p.y>vfGround(p.x)){p.dead=1;s.splats.push({x:p.x,y:vfGround(p.x),t:0})}}
   s.poops=s.poops.filter(p=>!p.dead);for(const q of s.splats)q.t+=dt;s.splats=s.splats.filter(q=>q.t<8);
+  // les pailles du ciel
+  for(const k of L.corn)if(k.vf&&!k.taken&&Math.abs(k.x-s.x)<22&&Math.abs(k.y-s.y)<24){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}save();if(!G.sim)SFX.straw()}
   vfHazards(dt);
   vfStory(dt);
 }
@@ -315,6 +317,8 @@ function vfThings(t,camX){
   for(const X of[-7460,-7860,-8340,-8760,-9220,-9660]){if(!vis(X))continue;const y=vfSurface(X)+14;for(let k=0;k<3;k++)for(let j=0;j<2;j++){ctx.fillStyle='#8a6a3a';rr(ctx,X+k*12,y-12-j*12,11,12,3);ctx.fill();ctx.fillStyle='#b8902a';ctx.fillRect(X+k*12+3,y-15-j*12,5,4)}}
   if(vis(-9780)){const y=vfSurface(-9780);vxHorse(ctx,-9780,y,.42,1,t*.1,{col:'#5a3a26',rate:.4,traceTo:-60});vxHorse(ctx,-9840,y-3,.4,1,t*.1+3,{col:'#3a2a20',far:true,rate:.4,traceTo:-60});
     ctx.fillStyle='#4a5040';ctx.fillRect(-9900,y-34,50,22);for(const wx of[-9890,-9858]){ctx.strokeStyle='#2a2420';ctx.lineWidth=2;ctx.beginPath();ctx.arc(wx,y-12,12,0,7);ctx.stroke()}}
+  // les pailles, hors d'atteinte des gerbes d'obus
+  for(const k of L.corn)if(k.vf&&!k.taken&&vis(k.x))drawTuft(ctx,k.x,k.y,t+k.ph);
   // les mitrailleuses
   for(const m of VF.mgs)if(vis(m.X))vfMG(m,t);
   // les hommes

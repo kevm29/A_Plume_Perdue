@@ -242,19 +242,20 @@ function stepPlay(dt){
   if(!left&&!right&&!held&&P.onGround&&!G.sim){P.idle=(P.idle||0)+dt;if(P.idle>60){unlock('a82');if(((P.idle-60)%2.6)<dt)bubble(P.x+P.w/2+14,P.y-10,'Zzz','#6a5a48')}}else P.idle=0;
   if(S.run.wasLow&&(S.run.wear||0)===0){S.run.wasLow=false;unlock('a24')}
   const MD=mechMods();
-  const dir=MD.noInput?0:(right?1:0)-(left?1:0);
+  if(P.stun>0)P.stun-=dt;if(P.fallThru>0)P.fallThru-=dt;
+  const dir=(MD.noInput||P.stun>0)?0:(right?1:0)-(left?1:0);
   if(dir)P.facing=dir;
   if(dir){P.vx+=dir*(P.onGround?ACC:AIRACC)*dt;P.vx=clamp(P.vx,-MD.run,MD.run)}
   else{const f=(P.onGround?FRIC:FRIC*.35)*dt;P.vx=Math.abs(P.vx)<=f?0:P.vx-Math.sign(P.vx)*f}
   P.coyote=P.onGround?.1:P.coyote-dt;P.jumpBuf-=dt;
-  if(P.jumpBuf>0&&!MD.noInput){
+  if(P.jumpBuf>0&&!MD.noInput&&!(P.stun>0)){
     if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;P.jumpN=(P.jumpN||0)+1;SFX.jump()}
     else if(P.flaps<(MD.maxFlaps||MAXFLAPS)&&!P.torn&&!MD.noFly&&P.stam>=STAM_FLAP){P.vy=-(MD.flapV||FLAPV);P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;P.jumpN=(P.jumpN||0)+1;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
     else if(P.flaps<(MD.maxFlaps||MAXFLAPS)&&!G.sim){P.jumpBuf=0;P.strain=.5;tone(160,.08,'triangle',.05)}
   }
   if(P.jumping&&!held&&P.vy<0){P.vy*=.5;P.jumping=false}
   P.vy+=GRAV*dt;
-  P.gliding=held&&P.vy>0&&!P.onGround&&!P.torn&&!MD.noFly&&P.stam>0;
+  P.gliding=held&&P.vy>0&&!P.onGround&&!P.torn&&!MD.noFly&&P.stam>0&&!(P.stun>0);
   if(P.gliding){P.vy=Math.min(P.vy,GLIDE);P.stam-=STAM_GLIDE*dt;if(P.stam<=0){P.stam=0;wingTorn()}}
   if(P.onGround&&!(P.mudCoat>0)){P.stam=Math.min(STAM_MAX,P.stam+STAM_REGEN*dt);if(P.torn&&P.stam>=STAM_RESUME)P.torn=false}
   if(P.strain>0)P.strain-=dt;
@@ -357,7 +358,7 @@ function respawn(){
     else{K.x=P.x-460;K.y=P.y-220;K.state=K.type==='buse'?'hover':'chase';K.pt=0}
   }
   if(L.auto&&L.auto.on){L.auto.x=Math.max(0,P.x-300);cam.x=L.auto.x}
-  P.stun=0;P.mud=0;actRespawn();
+  P.stun=0;P.fallThru=0;P.mud=0;actRespawn();
   parts.push({type:'ring',x:P.x+P.w/2,y:P.y+P.h/2,life:0,max:.4});
 }
 function gameOver(){

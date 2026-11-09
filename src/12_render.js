@@ -93,6 +93,8 @@ function drawEntities(t){
     ctx.save();if(!outd){ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowOffsetX=6;ctx.shadowOffsetY=7;ctx.shadowBlur=0}
     ctx.drawImage(rayC,P.x+P.w/2-SZ/2,P.y+P.h+lift-SZ*.72,SZ,SZ);
     ctx.restore();
+    // assommé : trois étoiles qui tournent au-dessus de la tête
+    if(P.stun>0){for(let k=0;k<3;k++){const a=G.t*7+k*2.09,sx=P.x+P.w/2+Math.cos(a)*14,sy=P.y-6+Math.sin(a)*4;ctx.fillStyle='#f0d060';ctx.beginPath();for(let j=0;j<10;j++){const rr2=j%2?2:5,b=j*Math.PI/5;ctx.lineTo(sx+Math.cos(b)*rr2,sy+Math.sin(b)*rr2)}ctx.closePath();ctx.fill()}}
     // robustesse des ailes : petite jauge au-dessus de Raymond, seulement quand elle n'est pas pleine
     if(!C&&P.stam<STAM_MAX-.5){const bx=P.x+P.w/2-18,by=P.y-16,k=P.stam/STAM_MAX,al=Math.min(1,(STAM_MAX-P.stam)/10);
       ctx.save();ctx.globalAlpha=al;ctx.fillStyle='rgba(14,12,18,.65)';rr(ctx,bx-2,by-2,40,8,4);ctx.fill();

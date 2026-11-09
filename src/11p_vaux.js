@@ -143,6 +143,9 @@ function vanUpdate(dt){
     if(s.out&&s.leaveT>1.3&&!s.said.go){s.said.go=1;say("Elle repart sans moi. Tant mieux : je n'ai rien signé.",3.4)}
     s.cam=clamp(s.rx-380,0,VAN.len-W+80);
     if(s.gone&&!s.said.sign&&s.rx>VAN.sign-700){s.said.sign=1;say("Une sortie. Quitter cette route avant qu'elle me ramène là-bas.",4)}
+    // la touffe d'herbe avant le panneau : on fouille dedans (action), pas d'invite à l'écran
+    {const a=L.acts.find(x=>x.style==='touffe'),tx=VAN.sign-170;if(a&&pressed.has('act')&&Math.abs(s.rx-tx)<40&&s.ry>=VAN.road-2){s.tuft=.6;if(!a.used){grantSecret(a,0);if(!G.sim)noise(.3,900,.12,'bandpass')}}}
+    if(s.tuft>0)s.tuft-=dt;
     if(s.gone&&s.rx>VAN.sign-30&&!V.won){V.won=true;winLevel()}
   }
 }
@@ -201,7 +204,7 @@ function vanRender(t){
   drawRaymond(ctx,s.rx,s.ry+(inT?by*1.4:0),{f:s.f,t,walk:Math.min(1,Math.abs(s.vx)/200)*(air?0:1),air,flap:s.flaps&&s.vy<0?.2:0,glide:s.stopped&&keys.has('jump')&&s.vy>0,wear:wear(),size:1.5,eyeClosed:s.closed});
   ctx.save();ctx.translate(ox,by*1.4);trailerFront(ctx,t);ctx.restore();
   // la sortie
-  if(s.stopped)vanSign(ctx,VAN.sign,t);
+  if(s.stopped){vanSign(ctx,VAN.sign,t);vanTuft(ctx,VAN.sign-170,VAN.road,t,s)}
   ctx.restore();
   // la pluie, les éclaboussures, le brouillard
   ctx.save();ctx.strokeStyle='rgba(190,205,228,.36)';ctx.lineWidth=1.1;ctx.beginPath();
@@ -210,6 +213,11 @@ function vanRender(t){
   if(s.fog>0){ctx.fillStyle='rgba(150,156,168,'+(s.fog*.55)+')';ctx.fillRect(0,0,W,H);const fg=ctx.createLinearGradient(0,300,0,460);fg.addColorStop(0,'rgba(170,176,188,0)');fg.addColorStop(.5,'rgba(170,176,188,'+s.fog*.45+')');fg.addColorStop(1,'rgba(170,176,188,0)');ctx.fillStyle=fg;ctx.fillRect(0,300,W,160)}
   if(s.white>0){ctx.fillStyle='rgba(245,247,255,'+Math.min(1,s.white)+')';ctx.fillRect(0,0,W,H)}
 }
+/* la touffe d'herbe du bas-côté (un secret) : elle frémit quand on y fouille */
+function vanTuft(g,x,y,t,s){const a=L.acts.find(q=>q.style==='touffe'),sh=(s.tuft||0)>0?Math.sin(t*50)*3:0;g.save();g.translate(x,y);
+  for(let k=0;k<17;k++){const u=k/16-.5,h=22+((k*7)%5)*5,bend=u*14+Math.sin(t*1.6+k)*1.5+sh;g.strokeStyle=k%3?'#4a6a32':'#5a7a3a';g.lineWidth=3;g.lineCap='round';g.beginPath();g.moveTo(u*30,2);g.quadraticCurveTo(u*30+bend*.4,-h*.6,u*30+bend,-h);g.stroke()}
+  if(a&&!a.used){g.strokeStyle='#d8b860';g.lineWidth=1.6;for(let k=0;k<3;k++){g.beginPath();g.moveTo(-6+k*6,0);g.lineTo(-4+k*6,-9-k*2);g.stroke()}}
+  g.lineCap='butt';g.restore()}
 /* la camionnette blanche d'un paysagiste : on voit l'arrière et le flanc, la cabine sort du cadre */
 function vanDraw(g,t,s){
   const x0=VAN.rear,top=236,bot=402;

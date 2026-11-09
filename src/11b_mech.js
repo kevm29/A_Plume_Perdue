@@ -48,7 +48,7 @@ function mechParse(L,ch,c,r,x,y,cx,cy,movers){
 function mechMoverInit(L,m){
   if(m.kind==='horse'){m.bx=m.c*T-10;m.by=m.r*T;m.amp=26;m.per=3;m.ph=(m.c*.8)%6;m.w=T+20;m.h=12}
   else if(m.kind==='balloon'){m.bx=m.c*T-6;m.by=m.r*T;m.amp=7;m.per=2.2;m.ph=(m.c*.5)%6;m.w=T+12;m.h=10;m.bouncy=1}
-  else if(m.kind==='bell'){m.px=m.c*T+T/2;m.py=m.r*T;m.len=86;m.amp=.58;m.per=3;m.ph=(m.c*.9)%6;m.w=60;m.h=10;m.rung=0}
+  else if(m.kind==='bell'){m.px=m.c*T+T/2;m.py=m.r*T;m.len=86;m.amp=.58;m.per=3.33;m.ph=(m.c*.9)%6;m.w=78;m.h=10;m.rung=0}   // tout le haut de la cloche porte ; 10 % plus lente
   else return false;
   mechMoverStep(m,0);m.dx=m.dy=0;return true;
 }
@@ -58,7 +58,7 @@ function mechMoverStep(m,dt){
   else if(m.kind==='balloon'){m.x=m.bx;m.y=m.by+Math.sin(m.t*Math.PI*2/m.per+m.ph)*m.amp}
   else if(m.kind==='bell'){
     const s=Math.sin(m.t*Math.PI*2/m.per+m.ph);m.theta=s*m.amp;
-    m.x=m.px+Math.sin(m.theta)*m.len-m.w/2;m.y=m.py+Math.cos(m.theta)*m.len-10;
+    m.x=m.px+Math.sin(m.theta)*m.len-m.w/2;m.y=m.py+Math.cos(m.theta)*m.len-12;
     // coup de cloche aux extrémités du balancement
     const atEnd=Math.abs(s)>.985;
     if(atEnd&&!m.rung){m.rung=1;m.wave=0;m.wx=m.px+Math.sin(m.theta)*(m.len+24);m.wy=m.py+Math.cos(m.theta)*(m.len+24);if(!G.sim&&Math.abs(m.wx-cam.x-W/2)<W)SFX.bell()}
@@ -180,7 +180,7 @@ function mechHit(hb){
   if(L.chaser&&L.chaser.hitP){L.chaser.hitP=false;return'drone'}
   for(const m of L.mines)if(m.boom){m.boom=false;if(Math.hypot(pcx-m.x,pcy-(m.y-10))<78)return'mine'}
   if(L.auto&&L.auto.on&&P.x<L.auto.x+4)return'storm';
-  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=.3;P.vx=(pcx>m.wx?1:-1)*130;P.vy=Math.min(P.vy,-90);P.onGround=false;P.onMover=null;if(!G.sim)SFX.flap()}}
+  for(const m of L.movers)if(m.kind==='bell'&&m.wave!=null&&P.onMover!==m){const r=30+m.wave*170,d=Math.hypot(pcx-m.wx,pcy-m.wy);if(r<95&&Math.abs(d-r)<12&&!(P.stun>0)){P.stun=1;P.fallThru=.3;P.vx=(pcx>m.wx?1:-1)*70;P.vy=Math.max(P.vy,160);P.onGround=false;P.onMover=null;if(!G.sim){SFX.flap();tone(1200,.4,'sine',.04,900)}}}
   return null;
 }
 /* ---------- poursuivants au sol (gardien au filet, balayeuse) ---------- */

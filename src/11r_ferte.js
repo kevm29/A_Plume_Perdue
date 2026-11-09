@@ -71,6 +71,7 @@ const FERTE={};
   for(let k=0;k<3;k++)for(let c=233+k*3;c<=235+k*3;c++)for(let r=9+k;r<FGR;r++)A[r][c]='#';
   FERTE.masks={26:[],14:[]};for(let c=230;c<=241;c++)for(let r=8;r<FGR;r++)if(A[r][c]==='#')FERTE.masks[26].push([c,r]);
   for(let c=206;c<=229;c++)FERTE.masks[26].push([c,8]);
+  for(let c=118;c<=121;c++)FERTE.masks[26].push([c,FGR]);   // la barque vide (dessinée à part)
   put(A,231,7,'C');put(B,232,11,'C');
   put(A,236,8,'o');put(B,238,10,'o');
   ents[26].push({k:'rat',c:248});
@@ -269,6 +270,7 @@ function drawFerteMid(t){
     for(const f of F.fish)if(f.on&&vis(f.x-30,f.x+30))fFish(g,f);
     if(vis(156*T,160*T)){fSign(g,152*T,FGR*T,'PONT FERMÉ','travaux · déviation');}
     if(vis(204*T,244*T)){fDeck(g,t);fRamp(g)}
+    if(vis(116*T,124*T))fRowboat(g,118*T,122*T,FGR*T,t);
     if(vis(30*T,34*T))fSign(g,31*T,FGR*T,"CLUB D'AVIRON","de la Marne");
     if(vis(255*T,259*T))fSign(g,257.2*T,FGR*T,'CAMPING','municipal ★★');
   }else{
@@ -439,6 +441,18 @@ function fertePonton(g,m){const x=m.x,y=m.y;g.save();g.fillStyle='#3a3026';g.beg
   fSpr(g,'pousse'+dir,200,230,100,215,bx,y+16,g2=>vxSoldier(g2,{x:0,y:0,s:7.5,f:dir,side:'uk',t:0,pose:Object.assign({},VX_P.stand,{lean:.3,nT:{x:4.2,y:1.4},fT:{x:3.4,y:1.8}}),noPouch:true,
     face:{skin:VX_SKIN[2],hair:VX_HAIR[3],stache:'thin',helmet:'tommy',ex:'worry'}}));
   g.strokeStyle='#6a4a2a';g.lineWidth=2.4;g.beginPath();g.moveTo(bx+dir*10,y-20);g.lineTo(bx+dir*60,y+40);g.stroke();
+  g.restore()}
+/* une barque vide, amarrée : bordé à clins, plat-bord, tolets, les avirons rentrés ; elle tangue à peine */
+function fRowboat(g,x0,x1,y,t){const L4=x1-x0,b=Math.sin(t*1.3)*1.2;g.save();g.translate(0,b);
+  g.fillStyle='rgba(20,40,40,.35)';g.beginPath();g.ellipse((x0+x1)/2,y+16,L4/2+6,5,0,0,7);g.fill();
+  g.fillStyle='#6a4a2e';g.beginPath();g.moveTo(x0-10,y-8);g.quadraticCurveTo(x0+4,y+20,x0+30,y+24);g.lineTo(x1-36,y+24);g.quadraticCurveTo(x1+2,y+20,x1+14,y-14);g.lineTo(x1+8,y-2);g.lineTo(x0-4,y+2);g.closePath();g.fill();
+  g.strokeStyle='rgba(30,18,8,.45)';g.lineWidth=1.2;for(const k of[7,13,19]){g.beginPath();g.moveTo(x0+2+k*.3,y+k-4);g.quadraticCurveTo(x0+40,y+k+3,(x0+x1)/2,y+k+2);g.quadraticCurveTo(x1-30,y+k+2,x1+4-k*.4,y+k-10);g.stroke()}
+  g.fillStyle='#8a6440';g.beginPath();g.moveTo(x0-10,y-8);g.quadraticCurveTo((x0+x1)/2,y+2,x1+14,y-14);g.lineTo(x1+12,y-9);g.quadraticCurveTo((x0+x1)/2,y+6,x0-8,y-3);g.closePath();g.fill();
+  g.fillStyle='#a88458';g.fillRect(x0+4,y-2,L4-14,3);
+  g.fillStyle='#3a3a3a';for(const ox of[.38,.62]){g.fillRect(x0+L4*ox-2,y-8,4,7)}
+  g.strokeStyle='#b89a6a';g.lineWidth=3;g.beginPath();g.moveTo(x0+12,y-6);g.lineTo(x1-12,y-12);g.stroke();g.fillStyle='#b89a6a';g.beginPath();g.ellipse(x1-8,y-12,10,3,-.1,0,7);g.fill();
+  g.strokeStyle='#c8b890';g.lineWidth=1.4;g.beginPath();g.moveTo(x0-8,y-6);g.quadraticCurveTo(x0-40,y+4,x0-60,y+30);g.stroke();
+  g.fillStyle='rgba(230,245,240,.4)';for(let k=0;k<3;k++){const ph=(t*.6+k/3)%1;g.fillRect(x0+ph*L4,y+22,14,1.5)}
   g.restore()}
 function fSappers(g,t){const y=FGR*T;
   const list=[{c:163,f:1,act:'hammer',sk:1},{c:169,f:-1,act:'rope',sk:5},{c:197,f:1,act:'hammer',sk:3},{c:203,f:-1,act:'look',sk:6}];

@@ -42,7 +42,7 @@ const CRECY={};
   block(104,104,11,'barriere');put(107,10,'o');
   block(110,112,9,'muret');put(111,6,'o');put(111,8,'Y');put(107,11,'T');
   block(117,117,11,'barriere');
-  block(122,126,10,'voiture',{col:'#c8402a'});put(124,8,'o');
+  block(122,126,10,'voiture',{col:'#c8402a'});put(124,6,'o');   // au-dessus du chat, hors de portée de sa patte
   put(131,9,'o');put(135,10,'o');
   block(139,139,11,'barriere',{chien:1});
   put(141,11,'C');
@@ -54,7 +54,7 @@ const CRECY={};
   block(179,179,11,'barriere');
   put(182,11,'C');
   block(186,186,11,'poubelles');put(189,10,'o');
-  block(192,196,10,'voiture',{col:'#3a6a9a'});put(194,8,'o');
+  block(192,196,10,'voiture',{col:'#3a6a9a'});put(194,6,'o');
   plat(204,209,8,'=');put(206,7,'o');put(208,7,'o');   // l'étendoir
   put(212,10,'o');
   put(215,11,'C');
@@ -103,6 +103,7 @@ function wheelPlace(W0,movers,dt){W0.a+=W0.w*dt;
 function crecyStep(dt){const C=L.crecy;if(!C)return;C.t+=dt;C.flash=Math.max(0,C.flash-dt*1.4);
   L.exit=C.era===14?null:C.exit0;
   if(C.era===14&&P.x+P.w/2<240.6*T)crecySet(26,true);
+  crecyPigStep();
   {const tb=document.getElementById('tb');if(tb)tb.classList.toggle('ferte',P.x>241*T)}
   wheelPlace(C.wheel,L.movers,dt);
   // une pale qui plonge sous l'eau emporte Raymond
@@ -110,7 +111,7 @@ function crecyStep(dt){const C=L.crecy;if(!C)return;C.t+=dt;C.flash=Math.max(0,C
   const px=P.x+P.w/2;
   // les chiens
   for(const d of C.dogs){if(C.era===14&&d.kx>230*T)continue;const tx=clamp(px,d.kx-d.R,d.kx+d.R),inRange=Math.abs(px-d.kx)<d.R+160&&P.y>8*T,sees=Math.sign(px-d.x)===d.f||Math.abs(px-d.x)<26;d.alert=Math.max(0,(d.alert||0)-dt);if(inRange&&(sees||d.alert>0)&&!P.dead)d.alert=1.4;const near=d.alert>0&&inRange;
-    const goal=near?tx:d.kx+Math.sin(C.t*.6+d.kx)*d.R*.3;const sp=near?260:60;d.x+=clamp(goal-d.x,-sp*dt,sp*dt);d.f=goal>d.x+2?1:goal<d.x-2?-1:d.f;d.run=Math.abs(goal-d.x)>4;
+    const goal=near?tx:d.kx+Math.sin(C.t*.32+d.kx)*d.R*.8;const sp=near?260:46,mv=clamp(goal-d.x,-sp*dt,sp*dt);d.x+=mv;if(Math.abs(mv)>.02)d.f=Math.sign(mv);d.run=Math.abs(mv)>.02;   // il se retourne pour aller et venir (plus de marche arrière)
     if(near){d.bark-=dt;if(d.bark<=0){d.bark=.55;if(!G.sim){tone(d.size<1?620:260,.09,'square',.05,d.size<1?480:180);bubble(d.x+d.f*20,CGR*T-60*d.size,'Wouf !','#6a3a22')}}}}
   // le chat sur son muret : un coup de patte quand on passe trop près
   for(const k of C.cats){k.cool-=dt;if(k.sw>0)k.sw-=dt;if(k.cool<=0&&Math.abs(px-k.x)<70&&P.y<k.y+20){k.sw=.45;k.cool=1.4;if(!G.sim)noise(.15,2400,.06,'bandpass')}}
@@ -339,7 +340,10 @@ function cCat(g,k,t){// un chat assis, tourné vers la droite : il cligne, il gu
   g.restore()}
 function cDog(g,d,t){const s=d.size,b=CGR*T,x=d.x;g.save();
   // la chaîne, du collier au piquet de la niche
-  g.strokeStyle='#8a8a8a';g.lineWidth=2;g.setLineDash([4,2]);g.beginPath();g.moveTo(d.kx,b-6);const mx=(d.kx+x)/2,sag=Math.max(0,d.R-Math.abs(x-d.kx))*.12;g.quadraticCurveTo(mx,b-2+sag*.2,x-d.f*10*s,b-26*s);g.stroke();g.setLineDash([]);
+  {const mx=(d.kx+x)/2,sag=Math.max(0,d.R-Math.abs(x-d.kx))*.12,ex=x-d.f*10*s,ey=b-26*s;   // la chaîne : maillons sombres et reflets, bien visible jusque dans l'herbe
+   g.strokeStyle='#2a2a2e';g.lineWidth=4;g.beginPath();g.moveTo(d.kx,b-8);g.quadraticCurveTo(mx,b-4+sag*.2,ex,ey);g.stroke();
+   g.strokeStyle='#c8ccd2';g.lineWidth=2.2;g.setLineDash([5,3]);g.beginPath();g.moveTo(d.kx,b-8);g.quadraticCurveTo(mx,b-4+sag*.2,ex,ey);g.stroke();g.setLineDash([]);
+   g.fillStyle='#3a3a3e';g.fillRect(d.kx-3,b-14,6,14);g.fillStyle='#c8ccd2';g.beginPath();g.arc(d.kx,b-10,3,0,7);g.fill()}
   g.translate(x,b);g.scale(d.f*s,s);const run=d.run?Math.sin(t*16):0;
   g.fillStyle=s<1?'#e8d8b8':'#6a4a2a';g.beginPath();g.ellipse(0,-22,24,12,0,0,7);g.fill();
   g.strokeStyle=g.fillStyle;g.lineWidth=6;g.lineCap='round';for(const[lx,ph]of[[-16,0],[-8,Math.PI],[10,Math.PI],[17,0]]){g.beginPath();g.moveTo(lx,-16);g.lineTo(lx+Math.sin(t*16+ph)*(d.run?7:0),-2);g.stroke()}
@@ -459,9 +463,20 @@ function cDuck(g,m){const t=G.t,x=m.x,y=m.y;if(Math.abs(m.dx)>.01)m.dir=m.dx>0?1
   g.fillStyle='rgba(230,245,240,.5)';g.beginPath();g.ellipse(0,12,32,3,0,0,7);g.fill();g.restore()}
 
 /* ---------- le souvenir : la maison Fontaine en 1914, le pigeonnier, les pigeons ---------- */
-function crecySet(era,quiet){const C=L.crecy;if(C.era===era)return;C.era=era;MUS_OLD=era===14;C.flash=quiet?.5:1;
+function crecySet(era,quiet){const C=L.crecy;if(C.era===era)return;C.era=era;
+  for(const[c,r]of CRECY_PIGEONNIER)L.g[r][c]=era===14?'t':'.';MUS_OLD=era===14;C.flash=quiet?.5:1;
   if(!G.sim&&!quiet){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Le pigeonnier ! Il est là, tout blanc, et les copains tournent autour. Septembre 1914 : je rentre de la Marne avec le pli de Lucien.",5)}}
+/* le pigeonnier de 1914 : deux cordons et la planche d'envol, où l'on peut se poser */
+const CRECY_PIGEONNIER=[[253,10],[254,10],[255,10],[256,10],[253,8],[254,8],[255,8],[256,8],[254,6],[255,6]];
+const CRECY_PIG_CARDS=[
+  {t:/*v2*/"Raymond se souvient. En septembre 1914, il était rentré de la Marne avec, roulés dans sa bague, les plans des lignes allemandes. Ces plans devaient parvenir aux Anglais.",minT:1.2},
+  {t:/*v2*/"C'est ici, sur cette planche d'envol, que Marguerite les lui avait retirés de la patte. Elle les avait portés aussitôt au père de Lucien, le gendarme Vasseur, qui faisait remonter les messages du pigeonnier jusqu'à l'état-major.",minT:1.2},
+  {t:/*v2*/"Raymond se dit que c'est ce jour-là qu'il avait gagné son premier grade.",minT:1}];
+function crecyPigStep(){const C=L.crecy;if(!C||C.era!==14||G.sim)return;const px=P.x+P.w/2;
+  if(!C.said.noms&&px>249*T){C.said.noms=1;say(/*v2*/"Fernand ! Pâquerette ! Vous êtes là-haut, les anciens… Attendez-moi, je monte !",4)}
+  if(!C.said.haut&&P.onGround&&!P.dead&&Math.abs(P.y+P.h-6*T)<3&&px>254*T&&px<256*T){C.said.haut=1;G.quip=null;G.quipQ=[];
+    G.state='intro';G.cards=CRECY_PIG_CARDS;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';G.fade=1}}}
 function crecySwitch(){const C=L.crecy;if(!C||P.dead)return;if(P.x<241*T&&C.era===26)return;crecySet(C.era===26?14:26)}
 function crecyOverlay(t){const C=L.crecy;if(!C)return;
   if(C.era===14){const fc=ferteFogTex();ctx.save();const ox=((t*14+cam.x*.15)%fc.fog.width+fc.fog.width)%fc.fog.width;ctx.drawImage(fc.fog,-ox,0,fc.fog.width,H);ctx.drawImage(fc.fog,fc.fog.width-ox,0,fc.fog.width,H);ctx.drawImage(fc.vig,0,0,W,H);
@@ -479,14 +494,14 @@ function cFontaine14(g,t){const b=CGR*T,x=246*T,C=L.crecy;g.save();
   // le pigeonnier, à la place du garage : tour carrée enduite, toit à quatre pans, boulins, plage d'envol, girouette
   const px=x+w+30,pw=150,ph=230;g.fillStyle='#ece2c8';g.fillRect(px,b-ph,pw,ph);g.fillStyle='rgba(120,100,70,.12)';g.fillRect(px+pw-22,b-ph,22,ph);
   g.fillStyle='#d8ccb0';for(const cx of[px,px+pw-16])for(let y=b-ph;y<b;y+=26)g.fillRect(cx,y,16,22);
-  g.fillStyle='#b8ac90';g.fillRect(px-6,b-ph+70,pw+12,8);g.fillRect(px-6,b-ph+140,pw+12,8);
-  for(const row of[b-ph+40,b-ph+108])for(let k=0;k<4;k++){const bx=px+22+k*30;g.fillStyle='#2a2a2a';g.beginPath();g.arc(bx,row,8,Math.PI,0);g.fill();g.fillRect(bx-8,row,16,8);g.fillStyle='#c8bc9c';g.fillRect(bx-12,row+8,24,4)}
+  g.fillStyle='#b8ac90';g.fillRect(px-6,b-ph+70,pw+12,8);g.fillRect(px-6,b-ph+150,pw+12,8);
+  for(const row of[b-ph+40,b-ph+116])for(let k=0;k<4;k++){const bx=px+22+k*30;g.fillStyle='#2a2a2a';g.beginPath();g.arc(bx,row,8,Math.PI,0);g.fill();g.fillRect(bx-8,row,16,8);g.fillStyle='#c8bc9c';g.fillRect(bx-12,row+8,24,4)}
   g.fillStyle='#5a3a24';rr(g,px+pw/2-22,b-80,44,80,3);g.fill();
   g.fillStyle='#8a4a34';poly(g,[px-20,b-ph,px+pw/2,b-ph-110,px+pw+20,b-ph]);g.fill();g.fillStyle='rgba(0,0,0,.15)';poly(g,[px+pw/2,b-ph-110,px+pw+20,b-ph,px+pw/2+10,b-ph]);g.fill();
-  g.fillStyle='#e8dcc0';g.fillRect(px+pw/2-20,b-ph-46,40,26);g.fillStyle='#2a2a2a';g.fillRect(px+pw/2-12,b-ph-40,24,20);g.fillStyle='#b8ac90';g.fillRect(px+pw/2-30,b-ph-22,60,5);
+  g.fillStyle='#e8dcc0';g.fillRect(px+pw/2-20,b-ph-36,40,26);g.fillStyle='#2a2a2a';g.fillRect(px+pw/2-12,b-ph-30,24,20);g.fillStyle='#b8ac90';g.fillRect(px+pw/2-32,b-ph-10,64,6);
   g.strokeStyle='#3a3a3a';g.lineWidth=2;g.beginPath();g.moveTo(px+pw/2,b-ph-110);g.lineTo(px+pw/2,b-ph-150);g.stroke();const vv=Math.sin(t*.7)*.4;g.fillStyle='#3a3a3a';g.save();g.translate(px+pw/2,b-ph-146);g.rotate(vv);poly(g,[-18,0,14,-3,18,0,14,3]);g.fill();g.restore();
   // les pigeons posés sur la plage d'envol et le faîtage, et ceux qui tournent autour
-  for(let k=0;k<4;k++)cPig(g,px+pw/2-26+k*16,b-ph-22,k%2?1:-1,t+k,false);
+  for(let k=0;k<4;k++)if(k!==1&&k!==2)cPig(g,px+pw/2-26+k*16,b-ph-10,k%2?1:-1,t+k,false);
   for(let k=0;k<3;k++)cPig(g,px+30+k*40,b-ph+66,k%2?1:-1,t+k*2,false);
   for(const d of C.doves){d.a+=d.sp*1/60;const cx=px+pw/2+Math.cos(d.a)*(d.r+60),cy=b-ph-120+d.y*.3+Math.sin(d.a*1.3)*40;cPig(g,cx,cy,Math.sin(d.a)>0?-1:1,t*3+d.r,true)}
   // la cour : le sac de grain (secret), une auge
@@ -498,6 +513,7 @@ function cPig(g,x,y,f,t,fly){g.save();g.translate(x,y);g.scale(f,1);g.fillStyle=
   g.restore()}
 /* les secrets du niveau, dessinés à la main */
 function cSecrets(g,t){const C=L.crecy;if(!C)return;
+  if(C.era===26)cMailbox(g,229*T+20,CGR*T,'BLANC');   // (le secret est maintenant dans la boîte des Garnier)
   {const a=C.nain,x=a.x,b=a.y;g.save();if(a.used){const u=Math.min(1,a.t/.35);g.translate(x,b);g.rotate(u*Math.PI/2*.94);g.translate(-x,-b)}cGnome(g,x,b);g.restore()}
   {const a0=C.linge,a={x:a0.sx!=null?a0.sx-6:a0.x,y:a0.y,t:a0.t,used:a0.used};if(a.used){const u=Math.min(1,a.t/.5);if(u<1){g.fillStyle='#f2f0e6';g.beginPath();g.arc(a.x+6,a.y+6+u*26,3,0,7);g.fill()}else{g.fillStyle='rgba(240,240,230,.95)';g.beginPath();g.arc(a.x+8,a.y+34,6,0,7);g.arc(a.x+12,a.y+38,4,0,7);g.arc(a.x+4,a.y+40,3,0,7);g.fill();g.fillStyle='rgba(120,110,80,.5)';g.beginPath();g.arc(a.x+9,a.y+35,2,0,7);g.fill()}}}
   if(C.era===14){const a=C.grain,x=a.x,b=a.y;g.save();g.fillStyle='#c8b080';g.beginPath();g.moveTo(x-16,b);g.quadraticCurveTo(x-20,b-30,x-10,b-40);g.lineTo(x+10,b-40);g.quadraticCurveTo(x+20,b-30,x+16,b);g.closePath();g.fill();g.strokeStyle='#8a6a3a';g.lineWidth=1.5;g.beginPath();g.moveTo(x-10,b-38);g.lineTo(x+10,b-38);g.stroke();

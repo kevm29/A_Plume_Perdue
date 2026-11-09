@@ -78,10 +78,12 @@ function comblesPost(Lv){
   // les chieurs se tiennent au bout de leur poutre, la queue dans le vide
   C.chieurs=[{x:27.7*T,y:7*T,per:3.1,t:0},{x:101.7*T,y:3*T,per:2.7,t:1.2},{x:155.7*T,y:2*T,per:3.4,t:.6}].map(o=>Object.assign(o,{lift:0}));
   const pig=(k,a,b,y,o)=>Object.assign({k,a:a*T,b:b*T,y0:y*T,x:a*T,y:y*T,f:1,st:'walk',t:0,beg:0,home:(a+b)/2*T},o||{});
-  C.pig=[pig('moignon',13.6,18.6,18),pig('deplume',77.3,82.6,18),pig('gros',84.5,91,20,{h:100}),pig('moignon',142.5,146,8),pig('gros',150.6,155,7,{h:80,t:2}),pig('deplume',184.3,191.6,15),pig('moignon',192.4,196,4)];
+  C.pig=[pig('moignon',13.6,18.6,18),pig('deplume',77.3,82.6,18),pig('gros',84.5,89,20,{h:100}),pig('moignon',142.5,146,8),pig('gros',150.6,155,7,{h:80,t:2}),pig('deplume',184.3,191.6,15),pig('moignon',192.4,196,4)];
   C.webs=[];
   // les poutres qui changent avec l'époque
-  C.dyn=CB.beams.filter(b=>b.e!=='b').map(b=>Object.assign({},b,{st:'ok',t:0,deb:[]}));
+  // (les poutres vermoulues sont coupées en tronçons : chacun ne cède que si on s'y pose, l'un après l'autre)
+  C.dyn=[];for(const b of CB.beams){if(b.e==='b')continue;const frag=b.e==='f'||b.e==='o',n=b.c1-b.c0+1,sz=!frag?n:n<=2?1:2;
+    for(let c=b.c0;c<=b.c1;c+=sz)C.dyn.push(Object.assign({},b,{c0:c,c1:Math.min(b.c1,c+sz-1),st:'ok',t:0,deb:[],seg:frag&&n>1}))}
   Lv.acts=Lv.acts||[];
   C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Vasseur. Il a fini ses jours ici, au calme. Il y a pire."]};
   C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Vasseur montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
@@ -102,7 +104,7 @@ function comblesApplyEra(Lv,era){const C=Lv.cb;C.era=era;
 function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Septembre 1914. La charpente sent le bois neuf… presque. Il y a des poutres que je ne connaissais pas.",4.2)}}
-function comblesRespawn(){const C=L.cb;if(!C)return;C.drops=[];C.grace=1;C.talk=null;for(const o of C.owls){o.st='perch';o.x=o.hx;o.y=o.hy;o.cool=1.5}for(const p of C.pig)if(p.k==='deplume'){p.x=p.home;p.st='walk'}
+function comblesRespawn(){const C=L.cb;if(!C)return;C.drops=[];C.grace=1;C.talk=null;for(const o of C.owls){o.st='perch';o.x=o.hx;o.y=o.hy;o.cool=1.5}for(const p of C.pig)if(p.k==='deplume'){p.x=p.home;p.st='walk';p.chase=0;p.rt=0}
   for(const b of C.dyn)if(b.st!=='ok'){b.st='ok';b.deb=[];for(let c=b.c0;c<=b.c1;c++)L.g[b.r][c]=cbActive(b,C.era)?'=':'.'}}
 /* la lumière : le soleil entre et sort des nuages */
 function cbLum(t){return clamp(.62+.38*Math.sin(t*.21)+.18*Math.sin(t*.53+1.3),.15,1)}
@@ -145,7 +147,8 @@ function comblesStep(dt){const C=L.cb;if(!C)return;C.t+=dt;if(C.grace>0)C.grace-
       if(u<1.6){o.st='walk';o.x=o.a+Math.sin(u*1.8)*10;o.y=o.y0;o.f=1}else if(u<3){o.st='fly';const v=(u-1.6)/1.4;o.x=lerp(o.a,o.b,v);o.y=o.y0-Math.sin(v*Math.PI)*o.h;o.f=1}
       else if(u<4.6){o.st='walk';o.x=o.b+Math.sin((u-3)*1.8)*10;o.y=o.y0;o.f=-1}else{o.st='fly';const v=(u-4.6)/1.4;o.x=lerp(o.b,o.a,v);o.y=o.y0-Math.sin(v*Math.PI)*o.h;o.f=-1}
       if(!P.dead&&C.grace<=0&&overlap(hb,{x:o.x-18,y:o.y-32,w:36,h:30}))hit='sauteur'}
-    else if(o.k==='deplume'){const dx=pcx-o.x;if(Math.abs(dx)<300&&Math.abs(P.y+P.h-o.y0)<60&&!P.dead){o.st='run';o.f=Math.sign(dx)||1;o.x+=o.f*190*dt}else{o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*24*dt}
+    else if(o.k==='deplume'){const dx=pcx-o.x,see=Math.abs(dx)<300&&Math.abs(P.y+P.h-o.y0)<60&&!P.dead&&(o.chase||Math.sign(dx)===o.f);
+      if(see){o.chase=1;o.rt=(o.rt||0)+dt;o.f=Math.sign(dx)||1;if((o.rt%2)<1){o.st='run';o.x+=o.f*190*dt}else o.st='stand'}else{o.chase=0;o.rt=0;o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*24*dt}
       o.x=clamp(o.x,o.a,o.b);if(o.st==='run'&&!o.cried&&!G.sim){o.cried=1;bubble(o.x,o.y0-40,'Krrr ! Rrou-wesh !','#6a4a4a');if(!C.said.genz){C.said.genz=1;setTimeout(()=>{if(L.cb===C)say("Ah, la génération Z. Génération zéro, oui. Pas un pli porté de leur vie, et ça vous fonce dessus.",4.4)},900)}}
       if(!P.dead&&C.grace<=0&&overlap(hb,{x:o.x-12,y:o.y-24,w:24,h:22}))hit='pigeonDeplume'}
     else{o.x+=o.f*22*dt;if(o.x<o.a){o.x=o.a;o.f=1}if(o.x>o.b){o.x=o.b;o.f=-1}o.y=o.y0;o.beg=Math.max(0,o.beg-dt);o.st=o.beg>1.4?'beg':'walk';

@@ -165,10 +165,12 @@ function drawFlyer(g,kind,x,y,t,dir){
     g.fillStyle='#4a3b26';g.beginPath();g.ellipse(0,0,2.5,7.5,0,0,7);g.fill();
     g.strokeStyle='#4a3b26';g.lineWidth=.8;g.beginPath();g.moveTo(-1,-6);g.quadraticCurveTo(-4,-12,-8,-13);g.moveTo(1,-6);g.quadraticCurveTo(4,-12,8,-13);g.stroke();
   }else if(kind==='crow'||kind==='bat'||kind==='gull'){
-    const fl=Math.sin(t*(kind==='bat'?20:12)),col=kind==='crow'?((typeof L!=='undefined'&&L&&L.def&&THEMES[L.def.theme]&&THEMES[L.def.theme].crowCol)||'#1a1a20'):kind==='bat'?'#2a2230':'#e8e8e4',wing=kind==='gull'?'#b8bcc4':col;
+    if(kind==='bat'){g.scale(1.3,1.3);const hl=g.createRadialGradient(0,0,2,0,0,26);hl.addColorStop(0,'rgba(210,200,230,.32)');hl.addColorStop(1,'rgba(210,200,230,0)');g.fillStyle=hl;g.beginPath();g.arc(0,0,26,0,7);g.fill()}   // chauve-souris : un halo pâle et un liseré, pour la voir dans le noir
+    const fl=Math.sin(t*(kind==='bat'?20:12)),col=kind==='crow'?((typeof L!=='undefined'&&L&&L.def&&THEMES[L.def.theme]&&THEMES[L.def.theme].crowCol)||'#1a1a20'):kind==='bat'?'#2a2230':'#e8e8e4',wing=kind==='gull'?'#b8bcc4':kind==='bat'?'#4e4262':col;
     g.fillStyle=wing;g.beginPath();g.moveTo(-4,-2);g.quadraticCurveTo(-12,-6-fl*12,-20,-2-fl*14);g.quadraticCurveTo(-12,0,-4,3);g.fill();
     g.beginPath();g.moveTo(4,-2);g.quadraticCurveTo(10,-6-fl*12,18,-2-fl*14);g.quadraticCurveTo(10,0,4,3);g.fill();
-    if(kind==='bat'){g.fillStyle=col;g.beginPath();g.ellipse(0,0,5,6,0,0,7);g.fill();poly(g,[-3,-5,-4,-10,-1,-6]);g.fill();poly(g,[3,-5,4,-10,1,-6]);g.fill();g.fillStyle='#d8302a';g.fillRect(-2.5,-3,1.5,1.5);g.fillRect(1,-3,1.5,1.5)}
+    if(kind==='bat'){g.strokeStyle='rgba(220,210,240,.75)';g.lineWidth=1;g.beginPath();g.moveTo(-4,-2);g.quadraticCurveTo(-12,-6-fl*12,-20,-2-fl*14);g.moveTo(4,-2);g.quadraticCurveTo(10,-6-fl*12,18,-2-fl*14);g.stroke();
+      g.fillStyle=col;g.beginPath();g.ellipse(0,0,5,6,0,0,7);g.fill();poly(g,[-3,-5,-4,-10,-1,-6]);g.fill();poly(g,[3,-5,4,-10,1,-6]);g.fill();g.fillStyle='rgba(255,80,60,.45)';g.beginPath();g.arc(-1.8,-2.3,2.6,0,7);g.arc(1.8,-2.3,2.6,0,7);g.fill();g.fillStyle='#ff5a40';g.fillRect(-2.6,-3,1.8,1.8);g.fillRect(.9,-3,1.8,1.8)}
     else{g.fillStyle=col;g.beginPath();g.ellipse(0,1,10,5,0,0,7);g.fill();g.beginPath();g.arc(9,-1,4.5,0,7);g.fill();g.fillStyle=kind==='gull'?'#e0b030':'#2a2a2a';poly(g,[12,-2,19,0,12,1.5]);g.fill();g.fillStyle=kind==='gull'?'#111':'#e9dfc7';g.beginPath();g.arc(10,-2,1,0,7);g.fill();g.fillStyle=col;poly(g,[-9,0,-16,-3,-15,4]);g.fill()}
   }else if(kind==='pie'){
     // la pie : noire et blanche, longue queue à reflets verts

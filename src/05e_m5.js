@@ -23,7 +23,7 @@ LEVELS.push({w:4,name:"Le cimetière",theme:'cemetery',exit:'tomb',exitLabel:"",
  hints:[],quips:[],signs:[],
  segs:[]  // construits par 11w_cimetiere.js
 });
-const SECRETS={3:[116,9],11:[36,19],14:[110,9],15:[260,11],16:[229,11]};
+const SECRETS={3:[116,9],11:[36,19],15:[260,11]};
 LEVELS.forEach((l,i)=>{if(SECRETS[i])l.secretAt=SECRETS[i]});
 /* une seule médaille par mission : au 1-1 (la première vie), puis au deuxième niveau de chaque mission */
 LEVELS.forEach((l,i)=>{l.medalOn=i===0||(i>=4&&i%4===1)});

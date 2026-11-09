@@ -124,7 +124,9 @@ function gareStep(dt){
       if(u<2){o.st='walk';o.x=A+Math.sin(u*1.6)*14;o.y=F;o.f=1}else if(u<3.5){o.st='fly';const v=(u-2)/1.5;o.x=A+(B-A)*v;o.y=F-Math.sin(v*Math.PI)*150;o.f=1}
       else if(u<5.5){o.st='walk';o.x=B+Math.sin((u-3.5)*1.6)*14;o.y=F;o.f=-1}else{o.st='fly';const v=(u-5.5)/1.5;o.x=B+(A-B)*v;o.y=F-Math.sin(v*Math.PI)*150;o.f=-1}}
     else if(o.k==='deplume'){// court vers Raymond, ne vole pas
-      if(near<320&&P.y+P.h>F-120){o.st='run';o.f=Math.sign(dx)||1;o.x+=o.f*205*dt}else{o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*25*dt}
+      // il ne poursuit que s'il voit Raymond (devant lui), et par à-coups : il court une seconde, s'arrête une seconde
+      const see=near<320&&P.y+P.h>F-120&&!P.dead&&(o.chase||Math.sign(dx)===o.f);
+      if(see){o.chase=1;o.rt=(o.rt||0)+dt;o.f=Math.sign(dx)||1;if((o.rt%2)<1){o.st='run';o.x+=o.f*205*dt}else o.st='stand'}else{o.chase=0;o.rt=0;o.st='walk';o.f=Math.sin(o.t*.5)>0?1:-1;o.x+=o.f*25*dt}
       o.x=clamp(o.x,o.home-7*T,o.home+7*T);if(near<160&&!S2.said.dep&&!G.sim){S2.said.dep=1;bubble(o.x,F-40,'Kroûû !','#6a4a4a')}}
     else{// le pigeon aux moignons : il boitille de gauche à droite et demande l'aumône ; inoffensif
       o.st='walk';o.f=Math.sin(o.t*.4)>0?1:-1;o.x+=o.f*16*dt;o.x=clamp(o.x,o.home-120,o.home+120);
@@ -141,7 +143,7 @@ function gareRespawn(){
   const S2=L.gare;if(!S2)return;S2.grace=2;const cx=P.cp.x;
   if(S2.van.on)gareVehicleSet(S2.van,-9999,false);S2.vanT=Math.max(S2.vanT,3);S2.warn=0;
   for(const ln of S2.lanes){if(ln.st!=='idle'){ln.st='idle';ln.t=0;gareVehicleSet(ln.m,-9999,false)}ln.d=1.5}
-  for(const o of S2.pig)if(o.k==='deplume'){o.x=o.home;o.st='walk'}
+  for(const o of S2.pig)if(o.k==='deplume'){o.x=o.home;o.st='walk';o.chase=0;o.rt=0}
   for(const p of S2.pass)if(Math.abs(p.x-cx)<220)p.x=clamp(cx+(p.x<cx?-1:1)*240,126*T,152*T);
   S2.seeds.length=0;
 }

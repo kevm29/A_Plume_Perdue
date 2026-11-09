@@ -36,6 +36,13 @@ function actPost(L){
   if(L.def.poopAt){const[c,r]=L.def.poopAt;L.acts.push({kind:'secret',style:'poop',x:c*T+T/2,y:(r+1)*T,rx:200,open:0,t:0,used:false,noStraw:true,q:["Copains de toit. On ne se refait pas."]})}
   if(L.def.tiroirAt){const[c,r]=L.def.tiroirAt;L.acts.push({kind:'secret',style:'tiroir',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false,
     q:["Un meuble d'entomologiste. Cent tiroirs de papillons épinglés… et un seul de paille. On dirait qu'on m'attendait."]})}
+  // 4-3 : la touffe d'herbe au bord de la bande d'arrêt d'urgence, avant le panneau de sortie (fouillée dans la scène finale) ;
+  // et quatre pailles posées dans le ciel du vol (coordonnées du vol)
+  if(L.def.vaux){L.acts.push({kind:'secret',style:'touffe',x:-9999,y:-9999,open:0,t:0,used:false,q:[/*v2*/"Une touffe d'herbe au bord de l'autoroute… et dedans, de la paille. Quelqu'un l'avait cachée là pour le prochain pigeon perdu."]});
+    for(const[x,y]of[[-2000,130],[-5200,130],[-8440,130],[-10540,165]])L.corn.push({x,y,vf:1,taken:false,ph:x*.01})}
+  // 5-1 : la boîte aux lettres Garnier (en 2026) : sauter, puis action quand on est à sa hauteur
+  if(L.def.crecy)L.acts.push({kind:'secret',style:'garnier',x:246*T-28,y:CGR*T,hy:CGR*T-70,open:0,t:0,used:false,when:()=>L.crecy&&L.crecy.era===26,
+    q:[/*v2*/"Une lettre pour les Garnier… non : de la paille, roulée dans une vieille enveloppe. Le facteur ne passe plus, mais les pigeons, si."]});
   if(L.def.secretAt){const[c,r]=L.def.secretAt;L.acts.push({kind:'secret',x:c*T+T/2,y:(r+1)*T,open:0,t:0,used:false})}
   for(const a of L.acts)if(a.kind==='secret'){a.style=a.style||SECRET_STYLE[L.def.theme]||'crate';if(a.style==='case')a.locked=true}
 }
@@ -56,6 +63,7 @@ function nearAct(){
   if(hiddenNow()&&!P.hideIn)for(const g of L.guards)if(!(g.tangle>0)&&Math.abs(g.x+g.w/2-pcx)<70&&Math.abs(g.y+g.h-pb)<34)return{type:'tangle',o:g};
   for(const a of L.acts){if(a.kind==='stash'||(a.kind==='lever'&&a.used))continue;if(a.when&&!a.when())continue;
     if(a.style==='helmet'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<36&&Math.abs(P.y+P.h/2-(a.y-92))<52)return{type:'secret',o:a};continue}
+    if(a.style==='garnier'){if(!a.used&&!P.onGround&&Math.abs(a.x-pcx)<26&&Math.abs(a.hy-(P.y+P.h/2))<28)return{type:'secret',o:a};continue}
     if(a.style==='wc'){if(!P.onGround&&Math.abs(a.x-pcx)<18&&Math.abs(a.hy-(P.y+P.h/2))<24)return{type:'secret',o:a};continue}
     if(a.style==='poop'){if(!a.used&&P.onGround&&Math.abs(a.x-pcx)<a.rx&&Math.abs(a.y-pb)<20)return{type:'secret',o:a};continue}
     if(a.style==='linge'){if(!a.used&&Math.abs(a.x-pcx)<a.rx&&Math.abs(a.y-pb)<24)return{type:'secret',o:a};continue}
