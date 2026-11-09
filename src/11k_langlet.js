@@ -431,19 +431,12 @@ function drawLangletMid(t){
   lgStreet(t,false);
 }
 function drawTouriste(g,x,F,f,mb,st,t){
-  const k=mb.k,small=k==='enfant',s=small?.68:1,walk=st==='walk'?Math.sin(t*6+mb.ph):0;g.save();g.translate(x,F);g.scale(f*s,s);
-  const coat={guide:'#c8302a',photo:'#3a6a9a',sac:'#5a7a3a',chapeau:'#e0c060',enfant:'#e07a3a'}[k]||'#5a5a5a';
-  g.strokeStyle='#2a2c34';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(0,-46);g.lineTo(walk*10,-4);g.moveTo(0,-46);g.lineTo(-walk*10,-4);g.stroke();
-  g.fillStyle=coat;rr(g,-12,-94,24,52,8);g.fill();if(k==='sac'){g.fillStyle='#3a4a2a';rr(g,-22,-88,12,30,4);g.fill()}
-  g.fillStyle='#e8c8a8';g.beginPath();g.arc(2,-104,10,0,7);g.fill();g.fillStyle=k==='chapeau'?'#f0ece0':'#3a2a1a';
-  if(k==='chapeau'){g.fillRect(-12,-112,28,4);g.fillRect(-6,-122,16,10)}else{g.beginPath();g.arc(2,-108,10,Math.PI,0);g.fill()}
-  g.fillStyle='#111';g.beginPath();g.arc(7,-105,1.3,0,7);g.fill();
-  g.strokeStyle=coat;g.lineWidth=6;
-  if(k==='guide'){g.beginPath();g.moveTo(6,-86);g.lineTo(14,-120);g.stroke();g.strokeStyle='#2a2a2a';g.lineWidth=2;g.beginPath();g.moveTo(14,-120);g.lineTo(14,-150);g.stroke();g.fillStyle='#f0d040';poly(g,[14,-150,36,-144,14,-136]);g.fill()}
-  else if((k==='photo'||k==='chapeau')&&st==='photo'){g.beginPath();g.moveTo(6,-86);g.lineTo(14,-102);g.stroke();g.fillStyle='#1a1a1e';g.fillRect(10,-110,14,10);if(Math.sin(t*9+mb.ph)>.92){g.fillStyle='rgba(255,255,240,.9)';g.beginPath();g.arc(24,-106,8,0,7);g.fill()}}
-  else{g.beginPath();g.moveTo(6,-86);g.lineTo(8+walk*4,-56);g.stroke()}
-  g.lineCap='butt';g.restore();
-}
+  const k=mb.k,small=k==='enfant',walk=st==='walk';
+  const p=mb.fk||(mb.fk=fkMake(Math.round((mb.ph||0)*991)+(mb.dx|0)+5,{coat:{guide:'#c8302a',photo:'#3a6a9a',sac:'#5a7a3a',chapeau:'#e0c060',enfant:'#e07a3a'}[k]||'#5a5a5a',hat:k==='chapeau'?'paille':k==='guide'?'casquette':null,old:small?false:undefined,h:small?76:undefined}));
+  if(k==='sac'){g.fillStyle='#3a4a2a';rr(g,x-f*20-6,F-96*(p.h/120),12,30,4);g.fill()}
+  if(k==='guide')fkDraw(g,p,x,F,t,'hand',{f,hx:14,hy:-124,hold:(g2,hx,hy)=>{g2.strokeStyle='#2a2a2a';g2.lineWidth=2;g2.beginPath();g2.moveTo(hx,hy);g2.lineTo(hx,hy-34);g2.stroke();g2.fillStyle='#f0d040';poly(g2,[hx,hy-34,hx+22,hy-28,hx,hy-20]);g2.fill()}});
+  else if((k==='photo'||k==='chapeau')&&st==='photo')fkDraw(g,p,x,F,t,'hand',{f,hx:16,hy:-112,bend:[20,-92],hold:(g2,hx,hy)=>{g2.fillStyle='#1a1a1e';g2.fillRect(hx-4,hy-6,14,10);if(Math.sin(t*9+mb.ph)>.92){g2.fillStyle='rgba(255,255,240,.9)';g2.beginPath();g2.arc(hx+10,hy-2,8,0,7);g2.fill()}}});
+  else fkDraw(g,p,x,F,t,walk?'walk':'stand',{f,w:t*6+(mb.ph||0)})}
 function drawTram3(g,m,t){// le tram de Reims : nez arrondi en tulipe, couleur vive, caisse blanche, larges vitres
   const x=m.x,w=m.w,h=m.vh,F=LG.BASE,y=F-h,f=m.dir;g.save();
   g.fillStyle='#ecebe6';rr(g,x+30,y,w-60,h-16,8);g.fill();g.fillStyle='rgba(0,0,0,.08)';g.fillRect(x+30,y+h-30,w-60,14);

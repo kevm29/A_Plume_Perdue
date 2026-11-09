@@ -29,6 +29,7 @@ const ACH=[
  ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
  ['c1','E','Instinct de pie',"Chiper dix clefs aux gardiens."],
  ['a70','S','Terminus, tout le monde descend',"Au cours Langlet, monter sur un tramway après la rue Guillaume-de-Machault et rester sur son toit jusqu'au tout début de la rue."],
+ ['a72','X',/*v2*/'Voyeur',/*v2*/"Sur l'aire de Gueux, ouvrir la porte d'un cabinet occupé."],
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
  ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond : de nouveaux modes apparaissent dans les paramètres."],
@@ -37,7 +38,7 @@ const ACH=[
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=46;   // tous les secrets du jeu (vérifié niveau par niveau)
+const SECRET_TOTAL=47;   // tous les secrets du jeu (vérifié niveau par niveau)
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;

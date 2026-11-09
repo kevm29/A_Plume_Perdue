@@ -775,7 +775,7 @@ function plFace(g,p,t,dark,talk){const sk=mix(p.skin,'#2a2020',dark*.6),hr=mix(p
   g.fillStyle=sk;g.beginPath();g.moveTo(11.5,-118);g.quadraticCurveTo(16,-112.5,12,-111);g.closePath();g.fill();
   g.strokeStyle=shade(sk,-.25);g.lineWidth=.8;g.beginPath();g.moveTo(13.5,-113.5);g.quadraticCurveTo(15,-111.6,12.2,-111.2);g.stroke();
   // l'œil (il cligne), le sourcil
-  const sur=(p.surp||0)>0,blink=!sur&&((t*.9+p.ph*1.7)%4.2)<.13;
+  const sur=(p.surp||0)>0,blink=!sur&&(p.sleep||((t*.9+p.ph*1.7)%4.2)<.13);
   if(blink){g.strokeStyle='#2a1a14';g.lineWidth=1;g.beginPath();g.moveTo(5.6,-115.6);g.lineTo(9.4,-115.6);g.stroke()}
   else{g.fillStyle='#f6f2ea';g.beginPath();g.ellipse(7.6,-116,2.5,sur?3:2,0,0,7);g.fill();g.fillStyle='#2a1a14';g.beginPath();g.arc(8.6,-116,1.25,0,7);g.fill();g.fillStyle='rgba(255,255,255,.8)';g.fillRect(8.8,-116.9,.6,.6)}
   g.strokeStyle=hr;g.lineWidth=1.3;g.lineCap='round';g.beginPath();g.moveTo(5,-119.6+p.brow*.4-(sur?2.4:0));g.lineTo(10,-120.4-p.brow*.5-(sur?3:0));g.stroke();

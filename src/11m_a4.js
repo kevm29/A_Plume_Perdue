@@ -57,15 +57,17 @@ function a4BuildFront(Lv){const D=Lv.def.a4,ox=D.jamX-200,wpx=Lv.wpx+40-ox,hpx=R
    g.fillStyle='#fff';g.font='bold 16px '+F_DISP;g.textAlign='center';g.fillText('PÉAGE DE THILLOIS',(a+b)/2,180);
    for(const x of[a+40,b-40]){g.fillStyle='#3a3e46';g.fillRect(x-6,196,12,GY-196)}
    g.fillStyle='rgba(255,250,230,.8)';for(let x=a+30;x<b-20;x+=60)g.fillRect(x,196,30,4);
-   const[c0,c1]=D.booth;g.fillStyle='#c8c4b8';g.fillRect(c0,GY-120,c1-c0,120);g.fillStyle='#e0a020';for(let y=GY-20;y<GY;y+=10)for(let x=c0;x<c1;x+=20)g.fillRect(x+((y/10|0)%2?10:0),y,10,10);
-   g.fillStyle='#e8e4d8';g.fillRect(c0+10,GY-220,c1-c0-20,100);g.fillStyle='rgba(255,230,160,.85)';g.fillRect(c0+18,GY-210,c1-c0-36,50);g.fillStyle='#2a2e36';g.fillRect(c0+4,GY-232,c1-c0-8,14);
-   g.fillStyle='#d83020';g.fillRect(c1-6,GY-110,90,8);for(let x=c1;x<c1+84;x+=24){g.fillStyle='#fff';g.fillRect(x,GY-110,12,8)}}
+   a4Booth(g,D.booth,GY)}
   // les travaux : plots, camionnettes orange (gyrophares en direct), panneaux
   for(const x of D.cones){const cx=x+20,b=GY;g.fillStyle='#e8601c';poly(g,[cx-12,b-2,cx-4,b-38,cx+4,b-38,cx+12,b-2]);g.fill();g.fillStyle='#f0f0e8';g.fillRect(cx-8,b-26,16,6);g.fillStyle='#2a2a2a';g.fillRect(cx-16,b-4,32,4)}
   for(const[a,b]of D.vans)a4Van(g,a,b,GY);
-  {const sx=12900;g.fillStyle='#e8c020';poly(g,[sx,GY-150,sx+46,GY-70,sx-46,GY-70]);g.fill();g.fillStyle='#1a1a1a';g.font='bold 22px '+F_DISP;g.textAlign='center';g.fillText('!',sx,GY-84);g.fillStyle='#2a2c30';g.fillRect(sx-3,GY-70,6,70)}
+  a4WorkSign(g,12990,GY);
   // le camion-benne : cabine et châssis (la benne est dessinée en direct)
-  {const t=D.tar;g.fillStyle='#d8c020';rr(g,t.x1,GY-160,t.c1-t.x1,140,10);g.fill();g.fillStyle='#2a3440';g.fillRect(t.x1+70,GY-150,74,50);g.fillStyle='#3a3a3e';g.fillRect(t.x0,GY-60,t.c1-t.x0,30);
+  {const t=D.tar;const cx=t.x1,cw=t.c1-t.x1,ct=GY-160;g.fillStyle='#d8b818';rr(g,cx,ct,cw,136,12);g.fill();g.fillStyle='#b89810';g.fillRect(cx,ct+86,cw,50);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(cx+8,ct+4,cw-20,5);
+   g.fillStyle='#1c2430';rr(g,cx+60,ct+12,cw-70,48,6);g.fill();g.fillStyle='rgba(150,180,220,.22)';poly(g,[cx+70,ct+16,cx+86,ct+16,cx+74,ct+56,cx+64,ct+56]);g.fill();
+   g.strokeStyle='rgba(0,0,0,.3)';g.lineWidth=2;g.strokeRect(cx+8,ct+10,46,108);g.fillStyle='#2a2a2e';g.fillRect(cx+42,ct+66,10,4);g.fillStyle='#2a2a2e';g.fillRect(cx-6,ct+20,6,30);
+   g.fillStyle='rgba(0,0,0,.35)';for(let k=0;k<4;k++)g.fillRect(cx+cw-34,ct+76+k*8,28,4);g.fillStyle='#fff4c0';g.fillRect(cx+cw-8,ct+108,8,12);g.fillStyle='#2a2a2e';g.fillRect(cx+cw-12,ct+126,16,10);g.fillRect(cx+20,ct+128,30,6);
+   g.fillStyle='#2a2c30';g.fillRect(cx+cw/2-12,ct-8,24,8);g.fillStyle='#ffa020';g.beginPath();g.arc(cx+cw/2,ct-10,9,Math.PI,0);g.fill();g.fillStyle='#2a2a2e';g.fillRect(t.x0,GY-80,t.x1-t.x0,34);g.fillStyle='#3a3a3e';g.fillRect(t.x0,GY-80,t.x1-t.x0,6);g.fillRect(t.x0,GY-52,t.c1-t.x0,16);g.fillStyle='#1a1a1c';for(let x=t.x0+30;x<t.x1;x+=60)g.fillRect(x,GY-74,8,28);
    for(const wx of[t.x0+60,t.x0+200,t.c1-60]){g.fillStyle='#141416';g.beginPath();g.arc(wx,GY-20,22,0,7);g.fill();g.fillStyle='#5a5a5e';g.beginPath();g.arc(wx,GY-20,9,0,7);g.fill()}}
   // le goudron frais sous le rouleau
   {const[a,b]=D.roller;g.fillStyle='#141416';g.fillRect(a-60,GY-4,b-a+120,6)}
@@ -112,7 +114,7 @@ function a4Vehicle(g,x0,x1,k,h,GY){const w=x1-x0;
     g.fillStyle='#fff3c8';g.fillRect(x1-6,GY-46,6,10);g.fillStyle='#2a2a2e';g.fillRect(x0-2,GY-20,w+4,7);
     for(const wx of[x0+60,x1-70]){g.fillStyle='#0a0a0c';g.beginPath();g.arc(wx,GY-16,22,Math.PI,0);g.fill();a4Wheel(g,wx,GY-15,17,wx*.1)}}}
 /* un poids lourd (semi-remorque) de hauteur h, cabine aussi haute que la remorque */
-function a4TruckBody(g,x,y,w,h,col,label,wa){const GY=y+h,cw=Math.min(118,w*.27),tw=w-cw-6,cd=A4.CAB;
+function a4TruckBody(g,x,y,w,h,col,label,wa,cd0){const GY=y+h,cw=Math.min(118,w*.27),tw=w-cw-6,cd=cd0!=null?cd0:A4.CAB;
   // remorque : caisse claire, nervures, bandeau, inscription
   g.fillStyle='#dcdcd4';rr(g,x,y,tw,h-34,5);g.fill();g.fillStyle='rgba(0,0,0,.08)';for(let k=x+36;k<x+tw-10;k+=36)g.fillRect(k,y+4,2,h-42);
   g.fillStyle=col;g.fillRect(x,y+h-56,tw,8);g.fillStyle='rgba(0,0,0,.42)';g.font='bold '+Math.round(h*.085)+'px '+F_DISP;g.textAlign='center';g.fillText(label,x+tw/2,y+h*.36);
@@ -125,6 +127,37 @@ function a4TruckBody(g,x,y,w,h,col,label,wa){const GY=y+h,cw=Math.min(118,w*.27)
   g.fillStyle='#fff4c0';g.fillRect(cx+cw-7,y+h-46,7,12);g.fillStyle='#2a2a2e';g.fillRect(cx-4,y+h-22,cw+6,8);
   for(const wx of[x+50,x+104,x+tw-70,cx+cw-40]){g.fillStyle='#0a0a0c';g.beginPath();g.arc(wx,GY-17,22,Math.PI,0);g.fill();a4Wheel(g,wx,GY-15,16,wa)}}
 
+/* la cabine de péage : socle bardé, guichet vitré éclairé (le péagiste dedans), auvent ; la borne automatique et sa barrière */
+function a4Booth(g,[c0,c1],GY){const w=c1-c0;
+  // le socle (on peut s'y poser) : panneaux de bardage, chevrons jaunes et noirs au pied
+  g.fillStyle='#b8b6ae';g.fillRect(c0,GY-120,w,120);g.fillStyle='#a4a29a';for(let x=c0+30;x<c1;x+=30)g.fillRect(x,GY-114,2,90);
+  g.fillStyle='#d4d2ca';g.fillRect(c0-4,GY-124,w+8,8);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(c0,GY-116,w,4);
+  g.fillStyle='#1a1a1a';g.fillRect(c0,GY-24,w,24);g.fillStyle='#e8b020';for(let x=c0-24;x<c1;x+=24){g.save();g.beginPath();g.rect(c0,GY-24,w,24);g.clip();poly(g,[x,GY,x+12,GY-24,x+24,GY-24,x+12,GY]);g.fill();g.restore()}
+  // le guichet : montants, grande vitre éclairée, le péagiste, la tablette
+  const y0=GY-232,y1=GY-124;g.fillStyle='#e8e6e0';g.fillRect(c0+6,y0,w-12,y1-y0);
+  const gl=g.createLinearGradient(0,y0+14,0,y1-10);gl.addColorStop(0,'#f6dc9a');gl.addColorStop(1,'#d8a856');g.fillStyle=gl;g.fillRect(c0+14,y0+16,w-28,y1-y0-34);
+  {const px=c0+w*.42,py=y1-18;g.fillStyle='#3a4a6a';rr(g,px-12,py-46,24,46,7);g.fill();g.fillStyle='#e0b890';g.beginPath();g.arc(px+1,py-54,9,0,7);g.fill();g.fillStyle='#3a2a1a';g.beginPath();g.arc(px,py-57,9.5,Math.PI*1.05,Math.PI*2);g.fill();
+   g.fillStyle='#2a2a2e';rr(g,px+14,py-30,20,14,2);g.fill();g.fillStyle='#7ac8e8';g.fillRect(px+16,py-28,16,9)}
+  g.fillStyle='rgba(255,255,255,.28)';poly(g,[c0+20,y0+18,c0+40,y0+18,c0+24,y1-20,c0+16,y1-20]);g.fill();
+  g.fillStyle='#8a8880';g.fillRect(c0+6,y0,6,y1-y0);g.fillRect(c1-12,y0,6,y1-y0);g.fillRect(c0+6,y1-18,w-12,6);g.fillStyle='#c8c6be';g.fillRect(c0+10,y1-20,w-20,4);
+  // l'auvent : bandeau rouge et blanc, feu de voie vert
+  g.fillStyle='#2a2e36';g.fillRect(c0-10,y0-18,w+20,18);g.fillStyle='#d83020';g.fillRect(c0-10,y0-4,w+20,6);g.fillStyle='#f0ece4';for(let x=c0-10;x<c1+10;x+=20)g.fillRect(x,y0-4,10,6);
+  g.fillStyle='#14161a';rr(g,c0+w/2-14,y0-40,28,22,4);g.fill();g.fillStyle='#4ae070';g.beginPath();g.arc(c0+w/2,y0-29,7,0,7);g.fill();g.fillStyle='rgba(74,224,112,.25)';g.beginPath();g.arc(c0+w/2,y0-29,14,0,7);g.fill();
+  // la borne automatique : écran, fente, bouton du ticket ; la barrière part d'elle
+  const bx=c1+8;g.fillStyle='#3a5a8a';rr(g,bx,GY-150,30,150,6);g.fill();g.fillStyle='#2a4670';g.fillRect(bx+24,GY-146,6,146);
+  g.fillStyle='#14161a';g.fillRect(bx+4,GY-140,22,16);g.fillStyle='#6ab0e0';g.fillRect(bx+6,GY-138,18,12);g.fillStyle='#e8c040';g.beginPath();g.arc(bx+15,GY-108,5,0,7);g.fill();
+  g.fillStyle='#14161a';g.fillRect(bx+6,GY-94,18,3);g.fillRect(bx+6,GY-80,18,3);g.fillStyle='#f0ece4';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText('TICKET',bx+15,GY-64);
+  g.fillStyle='#2a2c30';g.fillRect(bx+30,GY-116,14,18);g.fillStyle='#d83020';g.fillRect(bx+44,GY-110,78,8);for(let x=bx+50;x<bx+120;x+=24){g.fillStyle='#fff';g.fillRect(x,GY-110,12,8)}
+  g.fillStyle='#d83020';g.beginPath();g.arc(bx+122,GY-106,4,0,7);g.fill()}
+/* le panneau de chantier : triangle à bord rouge sur fond jaune (signalisation temporaire), pictogramme du cantonnier, chevalet et lests */
+function a4WorkSign(g,x,GY){const top=GY-170,s=46;
+  g.strokeStyle='#4a4c52';g.lineWidth=4;g.beginPath();g.moveTo(x-30,GY-2);g.lineTo(x-6,top+70);g.moveTo(x+30,GY-2);g.lineTo(x+6,top+70);g.moveTo(x-24,GY-26);g.lineTo(x+24,GY-26);g.stroke();
+  g.fillStyle='#5a4a32';for(const dx of[-34,26]){rr(g,x+dx-4,GY-12,16,12,4);g.fill()}
+  g.lineJoin='round';g.fillStyle='#c8201a';poly(g,[x,top,x+s,top+80,x-s,top+80]);g.fill();g.fillStyle='#f2c820';poly(g,[x,top+13,x+s-12,top+73,x-s+12,top+73]);g.fill();
+  g.fillStyle='#1a1a1a';g.beginPath();g.arc(x-4,top+36,4.5,0,7);g.fill();poly(g,[x-8,top+42,x+2,top+42,x+6,top+58,x+12,top+68,x+6,top+68,x,top+60,x-6,top+68,x-12,top+68,x-6,top+56]);g.fill();
+  g.strokeStyle='#1a1a1a';g.lineWidth=2.4;g.beginPath();g.moveTo(x+1,top+46);g.lineTo(x+14,top+52);g.lineTo(x+20,top+68);g.stroke();g.fillRect(x+12,top+64,14,5);
+  g.fillStyle='#1a1a1a';poly(g,[x+16,top+60,x+30,top+68,x+16,top+68]);g.fill();
+  g.fillStyle='#2a2c30';g.fillRect(x-7,top-14,14,12);g.fillStyle='#ffa020';g.beginPath();g.arc(x,top-16,8,Math.PI,0);g.fill();g.lineJoin='miter'}
 function a4Van(g,a,b,GY){const top=GY-3*T;g.fillStyle='#e8701c';rr(g,a,top,b-a-40,3*T-14,8);g.fill();rr(g,b-60,top+30,60,3*T-44,10);g.fill();g.fillStyle='#1c2430';g.fillRect(b-52,top+40,40,30);
   for(let x=a+6;x<b-60;x+=28){g.fillStyle=(x/28|0)%2?'#f0f0e8':'#d83020';poly(g,[x,GY-30,x+14,GY-30,x+28,GY-16,x+14,GY-16]);g.fill()}
   g.fillStyle='#1a1a1a';g.font='bold 12px '+F_DISP;g.textAlign='center';g.fillText('AUTOROUTES',a+(b-a-40)/2,top+40);
@@ -269,9 +302,16 @@ function drawA4Mid(t){const S=L.a4;if(!S)return;const g=ctx,D=L.def.a4,GY=D.G0*T
   for(const[dx,f]of[[12030,1],[12575,-1]])if(dx>a0&&dx<a1)a4Driver(g,dx,GY,f,t);
   for(const o of S.objs)a4Obj(g,o);
   // la benne qui se lève et le goudron qui coule
-  {const tr=D.tar;if(tr.x1>a0&&tr.x0<a1){const ang=S.bedA*.95,px=tr.x0,py=GY-3*T+2;g.save();g.translate(px,py);g.rotate(-ang);g.fillStyle='#c8b020';g.fillRect(0,-40,tr.x1-tr.x0-6,40);g.fillStyle='#a89018';for(let x=20;x<tr.x1-tr.x0-20;x+=50)g.fillRect(x,-40,6,40);
-      g.fillStyle='#141416';g.fillRect(4,-46,tr.x1-tr.x0-16,8);g.restore();
-      if(S.bedA>.5){g.fillStyle='#141416';const w=12+Math.sin(t*20)*2;g.fillRect(px-w,py,w,GY-py);g.beginPath();g.ellipse(px-20,GY-4,60,10,0,0,7);g.fill();g.fillStyle='rgba(200,200,200,.25)';for(let k=0;k<4;k++){const ph=(t*.8+k/4)%1;g.beginPath();g.arc(px-30+k*12,GY-20-ph*60,5+ph*10,0,7);g.fill()}}}}
+  {const tr=D.tar;if(tr.x1>a0&&tr.x0<a1){const ang=S.bedA*.95,px=tr.x0,py=GY-2*T,L4=tr.x1-tr.x0-4;
+      // le vérin, sous la benne levée
+      if(ang>.02){const ex=px+L4*.62*Math.cos(ang),ey=py-L4*.62*Math.sin(ang);g.strokeStyle='#5a5a60';g.lineWidth=10;g.beginPath();g.moveTo(px+L4*.55,py);g.lineTo(ex,ey);g.stroke();g.strokeStyle='#c8ccd2';g.lineWidth=5;g.beginPath();g.moveTo(px+L4*.55,py);g.lineTo(px+L4*.55+(ex-px-L4*.55)*.55,py+(ey-py)*.55);g.stroke()}
+      // la benne : caisse pleine, nervures, rebord, ridelle arrière, le goudron qui dépasse
+      g.save();g.translate(px,py);g.rotate(-ang);
+      g.fillStyle='#d8b818';g.fillRect(0,-40,L4,40);g.fillStyle='#b89810';for(let x=24;x<L4-10;x+=46)g.fillRect(x,-40,7,40);
+      g.fillStyle='#e8cc30';g.fillRect(0,-40,L4,5);g.fillStyle='#a08010';g.fillRect(0,-6,L4,6);g.fillStyle='#8a7010';g.fillRect(-4,-44,8,44);
+      g.fillStyle='#141416';g.beginPath();g.moveTo(6,-40);g.quadraticCurveTo(L4*.3,-48,L4*.5,-44);g.quadraticCurveTo(L4*.75,-50,L4-8,-40);g.closePath();g.fill();
+      g.fillStyle='#2a2a2e';g.fillRect(L4-8,-56,10,56);g.restore();
+      if(S.bedA>.5){g.fillStyle='#141416';const w=12+Math.sin(t*20)*2;g.fillRect(px-w,py-4,w,GY-py+4);g.beginPath();g.ellipse(px-20,GY-4,60,10,0,0,7);g.fill();g.fillStyle='rgba(200,200,200,.25)';for(let k=0;k<4;k++){const ph=(t*.8+k/4)%1;g.beginPath();g.arc(px-30+k*12,GY-20-ph*60,5+ph*10,0,7);g.fill()}}}}
   // le rouleau compresseur
   {const Rl=S.roll;if(Rl.x>a0-200&&Rl.x<a1)a4Roller(g,Rl.x,GY,t,Rl.dir)}
   // les ouvriers
@@ -281,11 +321,7 @@ function drawA4Mid(t){const S=L.a4;if(!S)return;const g=ctx,D=L.def.a4,GY=D.G0*T
     if(b.on){const an=t*7;g.fillStyle='rgba(255,150,30,.35)';poly(g,[b.x,y-14,b.x+Math.cos(an)*260,y-14+Math.sin(an)*60-30,b.x+Math.cos(an+.3)*260,y-14+Math.sin(an+.3)*60-30]);g.fill()}}
 }
 function a4DrawTruck(g,m,t){a4TruckBody(g,m.x,m.y,m.w,m.vh,m.col,'TRANSPORTS FONTAINE & FILS',m.wa)}
-function a4Driver(g,x,GY,f,t){g.save();g.translate(x,GY);g.scale(f,1);const sh=Math.sin(t*9)*3;
-  g.strokeStyle='#2a2c34';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(-4,-46);g.lineTo(-6,-4);g.moveTo(4,-46);g.lineTo(6,-4);g.stroke();
-  g.fillStyle=f>0?'#5a3a6a':'#3a5a3a';rr(g,-12,-94,24,52,8);g.fill();g.fillStyle='#e8c8a8';g.beginPath();g.arc(2,-104,10,0,7);g.fill();g.fillStyle='#3a2a1a';g.beginPath();g.arc(2,-108,10,Math.PI,0);g.fill();
-  g.fillStyle='#c83a2a';g.beginPath();g.ellipse(9,-100,3,2+Math.abs(sh)*.4,0,0,7);g.fill();
-  g.strokeStyle=f>0?'#5a3a6a':'#3a5a3a';g.lineWidth=6;g.beginPath();g.moveTo(6,-86);g.lineTo(18,-112+sh);g.moveTo(-6,-86);g.lineTo(-16,-108-sh);g.stroke();g.lineCap='butt';g.restore()}
+function a4Driver(g,x,GY,f,t){const k='a4d'+x;const p=L[k]||(L[k]=fkMake(x,{fem:false,old:false,coat:f>0?'#5a3a6a':'#3a5a3a',hat:null}));p.brow=-1.4;fkDraw(g,p,x,GY,t,'up',{f})}
 function a4Obj(g,o){g.save();g.translate(o.x,o.y);g.rotate(o.rot);
   if(o.k==='shoe'){g.fillStyle='#3a2a1a';rr(g,-10,-4,20,8,3);g.fill();g.fillRect(-10,-9,8,6)}
   else if(o.k==='bottle'){g.fillStyle='rgba(120,200,160,.85)';rr(g,-4,-11,8,18,3);g.fill();g.fillRect(-2,-15,4,5)}
@@ -300,13 +336,8 @@ function a4Roller(g,x,GY,t,dir){g.save();g.translate(x,GY);
   // les deux cylindres
   for(const[cx,r]of[[24,38],[124,30]]){g.fillStyle='#5a5c62';g.beginPath();g.arc(cx,-r,r,0,7);g.fill();g.save();g.translate(cx,-r);g.rotate(x*.05);g.strokeStyle='#3a3c42';g.lineWidth=2;for(let k=0;k<3;k++){g.rotate(Math.PI/3);g.beginPath();g.moveTo(-r+4,0);g.lineTo(r-4,0);g.stroke()}g.restore()}
   g.fillStyle='#ff8a10';g.beginPath();g.arc(80,-108,5,Math.PI,0);g.fill();g.restore()}
-function a4Worker(g,x,GY,t,up,seed){g.save();g.translate(x,GY);const f=(seed/45|0)%2?1:-1;g.scale(f,1);
-  g.strokeStyle='#2a3a6a';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(-4,-46);g.lineTo(-5,-4);g.moveTo(4,-46);g.lineTo(5,-4);g.stroke();
-  g.fillStyle='#e8701c';rr(g,-12,-94,24,52,8);g.fill();g.fillStyle='#e8f0d0';g.fillRect(-12,-76,24,4);g.fillRect(-12,-60,24,4);
-  g.fillStyle='#d8b898';g.beginPath();g.arc(2,-104,10,0,7);g.fill();g.fillStyle='#f0d020';g.beginPath();g.arc(2,-108,11,Math.PI,0);g.fill();g.fillRect(-10,-109,24,3);
-  g.strokeStyle='#e8701c';g.lineWidth=6;if(up){g.beginPath();g.moveTo(6,-86);g.lineTo(14,-124+Math.sin(t*14)*4);g.moveTo(-6,-86);g.lineTo(-14,-122-Math.sin(t*14)*4);g.stroke()}
-  else{g.beginPath();g.moveTo(6,-86);g.lineTo(12+Math.sin(t*2+seed)*3,-66);g.moveTo(-6,-86);g.lineTo(-8,-58);g.stroke();g.fillStyle='#f0f0e8';g.fillRect(10,-70,5,7)}
-  g.lineCap='butt';g.restore()}
+function a4Worker(g,x,GY,t,up,seed){const k='a4w'+x;const p=L[k]||(L[k]=fkMake(seed,{old:false,vest:true,hat:'casque',coat:'#2a3a6a',leg:'#2a3a6a',tie:null,scarf:null}));const f=(seed/45|0)%2?1:-1;
+  fkDraw(g,p,x,GY,t,up?'up':'talk',{f,talk:!up&&Math.sin(t*.8+seed)>0})}
 function a4Hog(g,x,GY,t){g.save();g.translate(x,GY);g.scale(-1,1);const b=Math.abs(Math.sin(t*20))*2;
   g.fillStyle='#5a4a3a';g.beginPath();g.ellipse(0,-10-b,14,9,0,Math.PI,0);g.fill();g.strokeStyle='#3a2a1a';g.lineWidth=1.2;for(let k=-12;k<12;k+=3){g.beginPath();g.moveTo(k,-10-b);g.lineTo(k-3,-19-b);g.stroke()}
   g.fillStyle='#c8a888';g.beginPath();g.ellipse(13,-7-b,6,4,0,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.arc(18,-7-b,1.5,0,7);g.fill();g.restore()}

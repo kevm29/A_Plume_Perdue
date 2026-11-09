@@ -6,7 +6,7 @@ function drawSecretProp(g,a,t){
   const x=a.x,y=a.y,o=a.open||0,st=a.style;
   if(st==='tente'||st==='seau'||st==='nain'||st==='linge'||st==='grain'||st==='niche'||st==='bague'||st==='graffiti'||st==='canif'||st==='grossecaisse')return;
   if(st==='bal'){cMailbox(g,a.x,a.y,'BLANC');return}
-  if(st==='poop'||st==='tyre'||st==='engine'||st==='beacon'||st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips'||st==='coffee'||st==='salad'||st==='fridge')return;
+  if(st==='poop'||st==='tyre'||st==='engine'||st==='beacon'||st==='bed'||st==='barge'||st==='tractor'||st==='lamp'||st==='fiente'||st==='autom'||st==='sac'||st==='chips'||st==='coffee'||st==='salad'||st==='fridge'||st==='wc')return;
   if(st==='stump'){drawOldStump(g,a,t);return}
   if(st==='tiroir'){drawTiroir(g,a,t);return}
   if(st==='vane'){drawVane(g,a,t);return}
@@ -104,7 +104,7 @@ function drawGate(g,gt,t){
 function drawActPrompt(t){
   if(P.dead||G.cut||G.tombSeq)return;
   const n=nearAct();if(!n)return;
-  let x,y;if(n.type==='tangle'||n.type==='secret'||n.type==='carton'||n.type==='hide'){return}else{x=n.o.x;y=n.o.y-74}
+  let x,y;if(n.type==='tangle'||n.type==='secret'||n.type==='carton'||n.type==='hide'||n.type==='beacon'){return}   // jamais de « E » sur ce qui mène à un secretelse{x=n.o.x;y=n.o.y-74}
   const b=Math.sin(t*5)*2;
   ctx.save();ctx.translate(x,y+b);
   ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();

@@ -248,8 +248,8 @@ function stepPlay(dt){
   else{const f=(P.onGround?FRIC:FRIC*.35)*dt;P.vx=Math.abs(P.vx)<=f?0:P.vx-Math.sign(P.vx)*f}
   P.coyote=P.onGround?.1:P.coyote-dt;P.jumpBuf-=dt;
   if(P.jumpBuf>0&&!MD.noInput){
-    if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;SFX.jump()}
-    else if(P.flaps<(MD.maxFlaps||MAXFLAPS)&&!P.torn&&!MD.noFly&&P.stam>=STAM_FLAP){P.vy=-(MD.flapV||FLAPV);P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
+    if(P.coyote>0){P.vy=-MD.jump;P.coyote=0;P.jumpBuf=0;P.onGround=false;P.onMover=null;P.jumping=true;P.sx=.82;P.sy=1.2;P.jumpN=(P.jumpN||0)+1;SFX.jump()}
+    else if(P.flaps<(MD.maxFlaps||MAXFLAPS)&&!P.torn&&!MD.noFly&&P.stam>=STAM_FLAP){P.vy=-(MD.flapV||FLAPV);P.flaps++;P.stam-=STAM_FLAP;P.jumpBuf=0;P.flapT=.3;P.jumping=false;P.jumpN=(P.jumpN||0)+1;SFX.flap();puff(P.x+P.w/2-P.facing*8,P.y+12,3,false);if(P.stam<=0)wingTorn()}
     else if(P.flaps<(MD.maxFlaps||MAXFLAPS)&&!G.sim){P.jumpBuf=0;P.strain=.5;tone(160,.08,'triangle',.05)}
   }
   if(P.jumping&&!held&&P.vy<0){P.vy*=.5;P.jumping=false}

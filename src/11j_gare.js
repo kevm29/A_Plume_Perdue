@@ -203,11 +203,9 @@ function drawGareMid(t){
   // l'annonce de la fourgonnette : gyrophare au bord de l'écran
   if(S2.warn&&!S2.van.on){const a=.5+.5*Math.sin(t*18);g.fillStyle='rgba(255,170,40,'+(.35*a)+')';g.beginPath();g.ellipse(cam.x+W,F-60,90,70,0,0,7);g.fill()}
 }
-function drawQueuer(g,x,F,coat,skin,t,i){
-  const br=Math.sin(t*1.3)*1;g.fillStyle='#24262c';g.fillRect(x-8,F-50,7,50);g.fillRect(x+1,F-50,7,50);g.fillStyle=coat;rr(g,x-12,F-104+br,24,58,8);g.fill();
-  g.fillStyle=skin;g.beginPath();g.arc(x,F-114+br,10,0,7);g.fill();g.fillStyle=['#3a2a1a','#d8d0c8','#6a3a1a','#1a1a1a'][i];g.beginPath();g.arc(x,F-118+br,10,Math.PI,0);g.fill();
-  if(i===1){g.fillStyle='#1a1a1e';rr(g,x+8,F-92,6,10,2);g.fill()}if(i===3){g.fillStyle='#e8e4d8';g.fillRect(x+6,F-86,14,10)}
-}
+function drawQueuer(g,x,F,coat,skin,t,i){const k='gq'+i;const p=L[k]||(L[k]=fkMake(600+i,{coat,skin,fem:i===2,old:i===1}));
+  const hold=i===1?(g2,hx,hy)=>{g2.fillStyle='#1a1a1e';rr(g2,hx-3,hy-12,7,12,2);g2.fill()}:i===3?(g2,hx,hy)=>{g2.fillStyle='#e8e4d8';g2.fillRect(hx-2,hy-10,14,10)}:null;
+  fkDraw(g,p,x,F,t,i===1?'hand':'stand',{f:-1,hx:14,hy:-104,bend:[18,-80],hold})}
 function drawShop(g,[c0,c1],label,col,t){
   const x0=c0*T,x1=(c1+1)*T,top=8*T,F=GR.FL;if(x1<cam.x-100||x0>cam.x+W+100)return;
   g.fillStyle='#e8dcc0';g.fillRect(x0,top,x1-x0,F-top);g.fillStyle=col;g.fillRect(x0-6,top-4,x1-x0+12,26);g.fillStyle='#f4ecd8';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText(label,(x0+x1)/2,top+14);
@@ -231,20 +229,12 @@ function drawBuffet(g,[c0,c1],t){
   {const px=x1+80;g.fillStyle='#3a3e44';g.fillRect(px,F-170,4,170);g.fillStyle='#b8302a';poly(g,[px-64,F-150,px+2,F-176,px+68,F-150]);g.fill();g.fillStyle='#f0ece4';for(let k=-3;k<3;k++)poly(g,[px+k*22,F-150,px+k*22+11,F-158,px+k*22+22,F-150]),g.fill()}
 }
 function drawPassant(g,p,F,t){
-  const x=p.x,f=p.dir,ph=t*7*p.sp/70+p.ph,st=Math.sin(ph);
-  const coat={valise:'#7a3a4a',sac:'#3a5a7a',costume:'#2a2e3a',touriste:'#c8a040'}[p.k],skin={valise:'#e8c8a8',sac:'#c89878',costume:'#e0b896',touriste:'#f0d0b0'}[p.k];
-  // la valise à roulettes, derrière
+  const x=p.x,f=p.dir,ph=t*7*p.sp/70+p.ph;
+  const pp=p.fk||(p.fk=fkMake(Math.round(p.ph*997)+3,{coat:{valise:'#7a3a4a',sac:'#3a5a7a',costume:'#2a2e3a',touriste:'#c8a040'}[p.k],tie:p.k==='costume'?'#8a2a2a':null,hat:p.k==='touriste'?'paille':undefined}));
+  // la valise à roulettes, derrière ; le sac à dos
   if(p.k!=='sac'){const bx=x-f*30;g.strokeStyle='#2a2a2e';g.lineWidth=2;g.beginPath();g.moveTo(x-f*8,F-58);g.lineTo(bx,F-38);g.stroke();g.fillStyle=p.k==='costume'?'#1e1e24':p.k==='touriste'?'#3a8ac8':'#b84a3a';rr(g,bx-11,F-40,22,34,4);g.fill();g.fillStyle='#1a1a1a';g.beginPath();g.arc(bx-6,F-3,3,0,7);g.arc(bx+6,F-3,3,0,7);g.fill()}
-  g.strokeStyle='#24262c';g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(x,F-50);g.lineTo(x+st*10,F-4);g.moveTo(x,F-50);g.lineTo(x-st*10,F-4);g.stroke();
-  g.fillStyle=coat;rr(g,x-12,F-104,24,58,8);g.fill();if(p.k==='sac'){g.fillStyle='#4a6a3a';rr(g,x-f*16-8,F-98,14,34,5);g.fill()}
-  g.fillStyle=skin;g.beginPath();g.arc(x+f*2,F-114,10,0,7);g.fill();g.fillStyle=p.k==='touriste'?'#e8e0c8':'#3a2a1a';g.beginPath();g.arc(x+f*2,F-118,10,Math.PI,0);g.fill();if(p.k==='touriste'){g.fillRect(x-12,F-121,26,3)}
-  g.fillStyle='#111';g.beginPath();g.arc(x+f*7,F-115,1.3,0,7);g.fill();
-  // les bras : le long du corps, ou qui moulinent en l'air
-  g.strokeStyle=coat;g.lineWidth=6;
-  if(p.wave>0){const w=Math.sin(t*22)*.6;for(const s of[-1,1]){g.beginPath();g.moveTo(x+s*8,F-96);g.lineTo(x+s*(18+Math.cos(w)*6),F-132-Math.sin(w*s)*10);g.lineTo(x+s*(10+w*12),F-166);g.stroke()}}
-  else{g.beginPath();g.moveTo(x+f*6,F-96);g.lineTo(x+f*8+st*4,F-60);g.stroke()}
-  g.lineCap='butt';
-}
+  else{g.fillStyle='#4a6a3a';rr(g,x-f*18-8,F-100,16,36,5);g.fill()}
+  fkDraw(g,pp,x,F,t,p.wave>0?'up':'walk',{f,w:ph})}
 function drawGareVehicle(g,m,t){
   const x=m.x,w=m.w,h=m.vh,F=GR.FL,y=F-h;
   if(m.kind==='van'){// fourgonnette de ravitaillement, gyrophare orange, caisson
