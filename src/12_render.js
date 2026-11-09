@@ -194,6 +194,8 @@ function renderHUD(){
   // Super-Raymond et Dieu-Pigeon : paille illimitée
   if(S.infinite){ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
   ctx.restore();
+  // touche G : nom du mode qui vient d'être choisi, au centre, quelques instants
+  if(G.modeFlash){const F=G.modeFlash;F.t+=1/60;const a=Math.min(1,F.t*5,(1.8-F.t)*3);if(a<=0)G.modeFlash=null;else{ctx.save();ctx.globalAlpha=a;ctx.textAlign='center';ctx.font='26px '+F_DISP;ctx.fillStyle='rgba(12,10,16,.7)';rr(ctx,W/2-130,H*.42-34,260,48,10);ctx.fill();ctx.fillStyle='#d9a441';ctx.fillText(F.txt,W/2,H*.42);ctx.restore()}}
   // panneau d'aide puis réplique
   let qy=64;
   G.hintA=lerp(G.hintA,G.hintI>=0?1:0,.15);

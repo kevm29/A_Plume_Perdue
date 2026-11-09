@@ -15,6 +15,9 @@ function modeHash(s,seed=7413){let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let
   h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0)}
 function applyMode(){if(!MODES.some(m=>m.k===S.mode))S.mode='normal';S.infinite=S.mode==='super'||S.mode==='dieu';S.god=S.mode==='dieu'}
 function modesVisible(){return MODES.filter(m=>!m.hidden||S.modesShown||S.mode===m.k)}
+/* touche G : en Super-Raymond, passer en Dieu-Pigeon ; un nouvel appui revient en Super-Raymond */
+function godSwap(){if(S.mode!=='super'&&S.mode!=='dieu')return;S.mode=S.mode==='super'?'dieu':'super';applyMode();if(typeof VF!=='undefined'&&VF)VF.god=S.god;save();
+  G.modeFlash={t:0,txt:S.mode==='dieu'?/*v2*/'Dieu-Pigeon':/*v2*/'Super-Raymond'};SFX.tick()}
 /* la touche B (changer d'époque) n'existe qu'une fois le 4-3 terminé */
 function eraKeyOn(){return S.unlocked>=15}
 function openSettings(){G.state='settings';G.setSel=0;G.codeEntry=null;G.setMsg=null;G.fade=1}
@@ -73,7 +76,7 @@ function renderSettings(t){
   // touches
   {let y=318;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText('TOUCHES',W/2,y);y+=24;
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
-    if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
+    if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['G',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=19}}
   // retour
   {const y=H-28,sel=rows[G.setSel]==='back';ctx.textAlign='center';ctx.font=(sel?'21px ':'19px ')+F_DISP;ctx.fillStyle=sel?'#f2e8cf':'rgba(233,223,199,.65)';ctx.fillText('Retour',W/2,y);G.setBoxes.push({r:'back',x:W/2-60,y:y-24,w:120,h:32})}

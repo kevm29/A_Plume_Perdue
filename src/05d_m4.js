@@ -7,9 +7,12 @@ LEVELS.push((()=>{
   for(let c=0;c<RW;c++)for(let r=G0;r<RR;r++)g[r][c]='#';
   const block=(x0,x1,h)=>{for(let c=Math.floor(x0/T0);c<=Math.floor((x1-1)/T0);c++)for(let r=G0-h;r<G0;r++)g[r][c]='X'};
   // l'embouteillage : [x0,x1,genre,hauteur en cases]
-  const jam=[[9800,10020,'car',2],[10060,10340,'van',3],[10380,10600,'car',2],[10640,11080,'truck',4],[11120,11340,'car',2],[11380,11780,'bus',4],[11820,11990,'car',2],
-             [12080,12230,'carB',2],[12280,12520,'carA',2]];
-  for(const[x0,x1,,h]of jam)block(x0,x1,h);
+  // (calés sur la grille : la silhouette dessinée suit exactement les cases, pour qu'on ne marche pas dans le vide)
+  const jam=[[9800,10040,'car',2],[10080,10360,'van',3],[10400,10640,'car',2],[10680,11120,'truck',4],[11160,11400,'car',2],[11440,11800,'bus',4],[11840,12000,'car',2],
+             [12080,12240,'carB',2],[12280,12520,'carA',2]];
+  for(const[x0,x1,k,h]of jam){block(x0,x1,h);const c0=x0/T0,c1=x1/T0-1,low=r=>{g[r][c0]='.'};
+    if(k.startsWith('car')){for(const c of[c0,c1])g[G0-2][c]='.'}          // le capot et le coffre : une case de haut
+    else if(k==='van')g[G0-3][c1]='.'}                                      // le nez de la camionnette : deux cases
   g[G0-1][Math.floor(12240/T0)]='X';                       // le moteur à nu de la voiture qui a percuté (on peut s'y poser)
   block(12640,12760,3);                                     // l'îlot de la cabine de péage
   // les travaux : plots, camionnettes, camion-benne (le châssis ; la benne est animée), cabine
@@ -18,9 +21,9 @@ LEVELS.push((()=>{
   block(14400,14700,2);block(14700,14860,4);
   // rats, corbeaux, cartels, paille, médaille, départ, sortie
   for(const[c,a,b]of[[336,332,344],[402,398,407]]){g[G0-1][c]='k';g[G0-1][a]='|';g[G0-1][b]='|'}
-  for(const[c,r,ch]of[[252,7,'m'],[268,5,'n'],[284,8,'m'],[300,6,'n']])g[r][c]=ch;
-  for(const c of[74,134,194,236,322,358,372,412])g[G0-1][c]='C';
-  for(const[c,r]of[[20,9],[48,12],[90,12],[110,9],[150,12],[170,9],[214,12],[248,9],[262,10],[278,8],[306,10],[330,12],[349,9],[380,12],[396,12],[418,12],[428,12]])g[r][c]='o';
+  for(const[c,r,ch]of[[252,7,'m'],[268,5,'n'],[284,4,'m'],[300,6,'n']])g[r][c]=ch;   // (le corbeau au-dessus du car scolaire vole assez haut pour qu'on passe dessous)
+  for(const c of[226,322,358,372,412])g[G0-1][c]='C';   // pas de fanion après les ponts ; celui de l'embouteillage, avant le camion arrêté
+  for(const[c,r]of[[20,7],[48,12],[90,12],[110,7],[150,12],[170,7],[214,12],[248,9],[262,10],[278,8],[306,10],[330,12],[349,9],[380,12],[396,12],[418,12],[428,12]])g[r][c]='o';
   g[7][289]='*';g[G0-1][3]='S';g[G0-1][434]='E';
   return {w:3,name:"L'autoroute vers l'Ouest",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.62,
     a4:{G0,bridges:[[2400,2760],[4800,5160],[7200,7560]],jamX:9800,jam,booth:[12640,12760],canopy:[12420,13020],vans,cones,tar:{x0:14400,x1:14700,c1:14860},

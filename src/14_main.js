@@ -9,7 +9,7 @@ addEventListener('keydown',e=>{
   const a=KMAP[e.code];
   if(a){for(const k of a){if(!keys.has(k))pressed.add(k);keys.add(k)}e.preventDefault()}
   const k=(e.key||'').toLowerCase();
-  if(!e.repeat){if(k==='m')toggleMute();if(k==='r')pressed.add('restart')}
+  if(!e.repeat){if(k==='m')toggleMute();if(k==='r')pressed.add('restart');if(k==='g')godSwap()}
 });
 addEventListener('keyup',e=>{const a=KMAP[e.code];if(a)for(const k of a)keys.delete(k)});
 addEventListener('blur',()=>keys.clear());
