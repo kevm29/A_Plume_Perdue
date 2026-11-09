@@ -25,7 +25,7 @@ LEVELS.push((()=>{
   for(const c of[226,322,358,372,412])g[G0-1][c]='C';   // pas de fanion après les ponts ; celui de l'embouteillage, avant le camion arrêté
   for(const[c,r]of[[20,7],[48,12],[90,12],[110,7],[150,12],[170,7],[214,12],[248,9],[262,10],[278,8],[306,10],[330,12],[349,9],[380,12],[396,12],[418,12],[428,12]])g[r][c]='o';
   g[7][289]='*';g[G0-1][3]='S';g[G0-1][434]='E';
-  return {w:3,name:"L'autoroute vers l'Ouest",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.62,
+  return {w:3,name:"L'autoroute vers l'Ouest",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.38,
     a4:{G0,bridges:[[2400,2760],[4800,5160],[7200,7560]],jamX:9800,jam,booth:[12640,12760],canopy:[12420,13020],vans,cones,tar:{x0:14400,x1:14700,c1:14860},
         roller:[15020,15820],workers:[16300,16345,16392],tyre:4990,engine:12260,exitX:17360},
     start:"Sur le dos d'un camion, en pleine nuit, à toute allure vers l'ouest. Le règlement n'a rien prévu : c'est donc autorisé.",

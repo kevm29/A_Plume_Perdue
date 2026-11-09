@@ -269,7 +269,7 @@ function stepPlay(dt){
   moveY(P,P.vy*dt);
   if(P.y<0){P.y=0;if(P.vy<0)P.vy=0}
   if(P.vy>=0&&!P.onGround){
-    for(const m of L.movers){const b=P.y+P.h;if(P.x+P.w>m.x+2&&P.x<m.x+(m.kind==='truck'?m.w-40:m.w)-2&&prevB<=m.y+Math.max(0,-m.dy)+1.5&&b>=m.y){P.y=m.y-P.h;P.vy=0;P.onGround=true;P.onMover=m;break}}
+    for(const m of L.movers){const b=P.y+P.h;if(P.x+P.w>m.x+2&&P.x<m.x+(m.colW||(m.kind==='truck'?m.w-40:m.w))-2&&prevB<=m.y+Math.max(0,-m.dy)+1.5&&b>=m.y){P.y=m.y-P.h;P.vy=0;P.onGround=true;P.onMover=m;break}}
   }
   if(P.onGround){P.flaps=0;P.jumping=false;if(!wasG&&vyBefore>280){P.sx=1.2;P.sy=.8;SFX.land();for(let i=0;i<5;i++)parts.push({type:'dust',x:P.x+P.w/2+(rnd()-.5)*20,y:P.y+P.h,vx:(rnd()-.5)*80,vy:-rnd()*40,life:0,max:.5})}}
   {const mk=mechAfterMove(dt,vyBefore);if(mk)return die(mk)}

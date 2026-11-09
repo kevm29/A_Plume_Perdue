@@ -1613,7 +1613,7 @@ LEVELS.push((()=>{
   for(const c of[226,322,358,372,412])g[G0-1][c]='C';   // pas de fanion après les ponts ; celui de l'embouteillage, avant le camion arrêté
   for(const[c,r]of[[20,7],[48,12],[90,12],[110,7],[150,12],[170,7],[214,12],[248,9],[262,10],[278,8],[306,10],[330,12],[349,9],[380,12],[396,12],[418,12],[428,12]])g[r][c]='o';
   g[7][289]='*';g[G0-1][3]='S';g[G0-1][434]='E';
-  return {w:3,name:"L'autoroute vers l'Ouest",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.62,
+  return {w:3,name:"L'autoroute vers l'Ouest",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.38,
     a4:{G0,bridges:[[2400,2760],[4800,5160],[7200,7560]],jamX:9800,jam,booth:[12640,12760],canopy:[12420,13020],vans,cones,tar:{x0:14400,x1:14700,c1:14860},
         roller:[15020,15820],workers:[16300,16345,16392],tyre:4990,engine:12260,exitX:17360},
     start:"Sur le dos d'un camion, en pleine nuit, à toute allure vers l'ouest. Le règlement n'a rien prévu : c'est donc autorisé.",
@@ -4112,7 +4112,7 @@ function stepPlay(dt){
   moveY(P,P.vy*dt);
   if(P.y<0){P.y=0;if(P.vy<0)P.vy=0}
   if(P.vy>=0&&!P.onGround){
-    for(const m of L.movers){const b=P.y+P.h;if(P.x+P.w>m.x+2&&P.x<m.x+(m.kind==='truck'?m.w-40:m.w)-2&&prevB<=m.y+Math.max(0,-m.dy)+1.5&&b>=m.y){P.y=m.y-P.h;P.vy=0;P.onGround=true;P.onMover=m;break}}
+    for(const m of L.movers){const b=P.y+P.h;if(P.x+P.w>m.x+2&&P.x<m.x+(m.colW||(m.kind==='truck'?m.w-40:m.w))-2&&prevB<=m.y+Math.max(0,-m.dy)+1.5&&b>=m.y){P.y=m.y-P.h;P.vy=0;P.onGround=true;P.onMover=m;break}}
   }
   if(P.onGround){P.flaps=0;P.jumping=false;if(!wasG&&vyBefore>280){P.sx=1.2;P.sy=.8;SFX.land();for(let i=0;i<5;i++)parts.push({type:'dust',x:P.x+P.w/2+(rnd()-.5)*20,y:P.y+P.h,vx:(rnd()-.5)*80,vy:-rnd()*40,life:0,max:.5})}}
   {const mk=mechAfterMove(dt,vyBefore);if(mk)return die(mk)}
@@ -8200,7 +8200,8 @@ function drawTowerMid(g,S,t){if(!S.bells||cam.x<FT.CAM-400)return;
    ========================================================= */
 THEMES.a4={outdoor:true,far:'sky',horizon:'road',sky:['#04060d','#0c1222','#1a2236'],celestial:'moon',stars:true,fog:'#10141f',dark:.58,weather:'night',
   floor:'#26262a',floorTop:'#4a4a52',type:'stone',x:'none',d:'drape',shelf:'girder',spike:'spikes',spikeCol:'#3a3e46',spikeBase:'#2a2c32',walker:'rat',flyer:'crow',crowCol:'#6e7380',awning:'#2f5a7a',props:[],noFore:true};
-const A4={TRUCK_V:380,TW:470,TH:222,DECK:340,DTOP:262,FENCE:36,EVERY:3.5};
+const A4={TRUCK_V:380,TW:470,TH:190,DECK:354,DTOP:298,FENCE:150,EVERY:5,CAB:14,CW:118};
+const A4_TRW=A4.TW-A4.CW;   // remorque + attelage ; la cabine, un peu plus basse, est une plateforme à part
 /* lampadaires : tous les 640 px, sauf là où ils gêneraient un panneau ou un pont ; un des lampadaires grésille */
 function a4Lamps(Lv){if(Lv.a4LampList)return Lv.a4LampList;const D=Lv.def.a4,out=[];
   for(let x=300;x<Lv.wpx;x+=640){if(D.bridges.some(([a,b])=>x>a-160&&x<b+160||Math.abs(x-(a-1300+80))<300))continue;if(Math.abs(x-(D.exitX-160))<320)continue;out.push({x,blink:out.length===6})}
@@ -8301,13 +8302,13 @@ function a4Vehicle(g,x0,x1,k,h,GY){const w=x1-x0;
     g.fillStyle='#fff3c8';g.fillRect(x1-6,GY-46,6,10);g.fillStyle='#2a2a2e';g.fillRect(x0-2,GY-20,w+4,7);
     for(const wx of[x0+60,x1-70]){g.fillStyle='#0a0a0c';g.beginPath();g.arc(wx,GY-16,22,Math.PI,0);g.fill();a4Wheel(g,wx,GY-15,17,wx*.1)}}}
 /* un poids lourd (semi-remorque) de hauteur h, cabine aussi haute que la remorque */
-function a4TruckBody(g,x,y,w,h,col,label,wa){const GY=y+h,cw=Math.min(118,w*.27),tw=w-cw-6;
+function a4TruckBody(g,x,y,w,h,col,label,wa){const GY=y+h,cw=Math.min(118,w*.27),tw=w-cw-6,cd=A4.CAB;
   // remorque : caisse claire, nervures, bandeau, inscription
   g.fillStyle='#dcdcd4';rr(g,x,y,tw,h-34,5);g.fill();g.fillStyle='rgba(0,0,0,.08)';for(let k=x+36;k<x+tw-10;k+=36)g.fillRect(k,y+4,2,h-42);
   g.fillStyle=col;g.fillRect(x,y+h-56,tw,8);g.fillStyle='rgba(0,0,0,.42)';g.font='bold '+Math.round(h*.085)+'px '+F_DISP;g.textAlign='center';g.fillText(label,x+tw/2,y+h*.36);
   g.fillStyle='#2a2a2e';g.fillRect(x,y+h-34,tw+cw,10);g.fillStyle='#ff3020';g.fillRect(x-2,y+h-52,6,12);
-  // cabine : toit au niveau de la remorque, déflecteur, pare-brise, rétroviseur, calandre
-  const cx=x+tw+6;g.fillStyle=col;rr(g,cx,y,cw,h-18,10);g.fill();g.fillStyle='rgba(255,255,255,.12)';g.fillRect(cx+6,y+4,cw-12,4);
+  // cabine : un peu plus basse que la remorque, pare-brise, rétroviseur, calandre
+  const cx=x+tw+6;y+=cd;h-=cd;g.fillStyle=col;rr(g,cx,y,cw,h-18,10);g.fill();g.fillStyle='rgba(255,255,255,.12)';g.fillRect(cx+6,y+4,cw-12,4);
   g.fillStyle='#1a2230';rr(g,cx+cw*.42,y+h*.18,cw*.5,h*.26,6);g.fill();g.fillStyle='rgba(150,180,220,.2)';g.fillRect(cx+cw*.46,y+h*.2,6,h*.22);
   g.fillStyle='rgba(0,0,0,.25)';g.fillRect(cx+6,y+h*.2,cw*.3,h*.3);g.fillStyle='#2a2a2e';g.fillRect(cx+cw-4,y+h*.2,6,h*.16);
   g.fillStyle='rgba(0,0,0,.35)';for(let k=0;k<4;k++)g.fillRect(cx+cw-26,y+h*.56+k*8,22,4);
@@ -8331,7 +8332,10 @@ function a4Post(Lv){const D=Lv.def.a4;if(!D)return;
   Lv.acts.push({kind:'secret',style:'beacon',x:S.beacons[1].x,y:D.G0*T-3*T,i:1,open:0,t:0,used:false,noStraw:true,q:["Et de deux. La nuit redevient la nuit. Au génie, on appelait ça « camoufler les feux »."]});
   Lv.acts.push({kind:'secret',style:'engine',x:D.engine+10,y:D.G0*T-T,open:0,t:0,used:false,q:["Une bille dans le moteur… et de la paille qui sort. Ça fumait déjà : je viens de leur éviter un incendie. Personne ne dit merci, évidemment."]});
 }
-function a4Truck(Lv,x){const m={axis:'g',kind:'a4truck',wa:0,x,y:Lv.def.a4.G0*T-A4.TH,w:A4.TW,h:14,vh:A4.TH,dx:0,dy:0,v:A4.TRUCK_V,on:true,col:pick(['#c8302a','#2a5a9a','#e0e0d8','#3a7a4a','#d8a020'])};Lv.movers.push(m);return m}
+function a4Truck(Lv,x){const m={axis:'g',kind:'a4truck',wa:0,x,y:Lv.def.a4.G0*T-A4.TH,w:A4.TW,colW:A4_TRW,h:14,vh:A4.TH,dx:0,dy:0,v:A4.TRUCK_V,on:true,col:pick(['#c8302a','#2a5a9a','#e0e0d8','#3a7a4a','#d8a020'])};
+  m.cab={axis:'g',kind:'a4cab',par:m,x:x+A4_TRW,y:m.y+A4.CAB,w:A4.CW,h:14,dx:0,dy:0,on:true};Lv.movers.push(m,m.cab);return m}
+function a4Prune(){L.movers=L.movers.filter(m=>m.kind==='a4truck'?m.on:m.kind==='a4cab'?m.par.on:true)}
+const a4Riding=m=>P.onMover===m||P.onMover===m.cab;
 function a4PlaceOnTruck(m){P.x=m.x+m.w*.55;P.y=m.y-P.h;P.vx=P.vy=0;P.onGround=true;P.onMover=m;P.lastGY=P.y}
 function a4Step(dt){const S=L.a4;if(!S)return;const D=L.def.a4,GY=D.G0*T,hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6},pcx=P.x+P.w/2,pcy=P.y+P.h/2;let hit=null;
   if(!S.started){S.started=1;a4PlaceOnTruck(S.startTruck)}
@@ -8339,17 +8343,18 @@ function a4Step(dt){const S=L.a4;if(!S)return;const D=L.def.a4,GY=D.G0*T,hb={x:P
   {const vis=m=>m.x<cam.x+W+60&&m.x+m.w>cam.x-60;let lim=D.jamX-6;
    const order=S.trucks.filter(m=>m.on).sort((a,b)=>b.x-a.x);
    for(const m of order){const px=m.x;
-     if(m.stopped){lim=m.x-40;m.dx=0;continue}
+     if(m.stopped){lim=m.x-40;m.dx=m.cab.dx=0;continue}
      if(m.x+m.w>lim-30){m.v=Math.max(0,m.v-900*dt);if(m.x+m.w>=lim){m.x=lim-m.w;m.v=0;m.stopped=1;lim=m.x-40}}
-     m.x+=m.v*dt;m.dx=m.x-px;m.wa=(m.wa||0)+m.dx/15;
+     m.x+=m.v*dt;m.dx=m.x-px;m.wa=(m.wa||0)+m.dx/15;m.cab.x=m.x+A4_TRW;m.cab.dx=m.dx;
      if(!m.stopped)lim=Math.min(lim,m.x-40)}
-   for(const m of S.trucks){if(!m.on||P.onMover===m)continue;
+   for(const m of S.trucks){if(!m.on||a4Riding(m))continue;
      const gone=m.stopped?!vis(m):(m.x>cam.x+W+300||m.x+m.w<cam.x-1100-A4.TW);
      if(gone){m.on=false;m.y=99999}}
-   S.trucks=S.trucks.filter(m=>m.on);L.movers=L.movers.filter(m=>m.kind!=='a4truck'||m.on);
-   for(const m of S.trucks)if(!P.dead&&P.onMover!==m&&overlap(hb,{x:m.x+8,y:m.y+10,w:m.w-16,h:m.vh-10}))hit='camion'}
+   S.trucks=S.trucks.filter(m=>m.on);a4Prune();
+   for(const m of S.trucks)if(!P.dead&&!a4Riding(m)&&(overlap(hb,{x:m.x+8,y:m.y+A4.CAB+8,w:A4_TRW-8,h:m.vh-A4.CAB-8})||overlap(hb,{x:m.cab.x,y:m.cab.y+10,w:A4.CW-8,h:m.vh-A4.CAB-10})))hit='camion'}
   // les ponts : sur le toit d'un camion, on s'y écrase ; on ne peut pas sauter par-dessus (grillage)
-  for(const[a,b]of D.bridges)if(!P.dead&&pcx>a-8&&pcx<b+8&&P.y+4<A4.DECK){hit='pont';break}
+  // (sur le toit, la tête touche le tablier : l'espace au-dessus du camion est plus petit qu'un pigeon ; sur la cabine aussi)
+  for(const[a,b]of D.bridges)if(!P.dead&&pcx>a-8&&pcx<b+8&&(P.y+4<A4.DECK||(P.onMover&&P.onMover.kind==='a4cab'))){hit='pont';break}
   // un camion toutes les 3,5 s, derrière l'écran, jusqu'à l'approche de l'embouteillage
   {S.spawnT-=dt;if(S.spawnT<=0){S.spawnT=A4.EVERY;const sx=cam.x-520-A4.TW;
      if(pcx<D.jamX-1200&&S.grace<=0&&!S.trucks.some(m=>!m.stopped&&Math.abs(m.x-sx)<700)){const m=a4Truck(L,sx);S.trucks.push(m);
@@ -8390,7 +8395,7 @@ function a4Respawn(){const S=L.a4;if(!S)return;const D=L.def.a4;S.grace=2.2;S.ob
   // avant le premier pont : on repart sur un camion ; ensuite, à pied (le camion suivant arrive à son rythme)
   if(P.cp.x<D.bridges[0][0]){for(const m of S.trucks){m.on=false;m.y=99999}S.trucks=[];const m=a4Truck(L,P.cp.x-A4.TW*.55);S.trucks.push(m);a4PlaceOnTruck(m)}
   else for(const m of S.trucks)if(Math.abs(m.x-P.x)<1100||m.stopped){m.on=false;m.y=99999}
-  S.trucks=S.trucks.filter(m=>m.on);L.movers=L.movers.filter(m=>m.kind!=='a4truck'||m.on)}
+  S.trucks=S.trucks.filter(m=>m.on);a4Prune()}
 /* actions : les gyrophares, le pneu, le moteur */
 function a4Act(a){const S=L.a4;if(!S)return false;
   if(a.style==='beacon'){const b=S.beacons[a.i];if(!b.on){if(!G.sim)say("Celui-là, c'est fait. J'en vois un autre au loin.",2.4);return true}
