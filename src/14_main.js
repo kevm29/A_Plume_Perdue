@@ -60,7 +60,7 @@ function update(dt){
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
-      if(pressed.has('era')&&!G.cut&&L.s16)s16Switch();
+      if(pressed.has('era')&&!G.cut&&(L.s16||L.zr16))s16Switch();
       if(L.cb&&L.cb.end&&(pressed.has('act')||pressed.has('jump')))comblesSkip();
       if(L.pl&&L.pl.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))placeSkip();
       if(L.cm&&L.cm.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))cmSkip();

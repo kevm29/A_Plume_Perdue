@@ -13686,7 +13686,7 @@ function cmOverlay(t){const C=L.cm;if(!C)return;const cx=Math.round(cam.x),cy=Ma
    Et la tranchée de 2-1, en mars 1916, se joue : Raymond s'échappe du panier (action), passe par les sapes en sautant
    et en volant pour que Lucien ne le remette pas au panier, fouille deux musettes (des graines : le secret ; la médaille),
    puis le dernier soldat sort un petit filet : un intertitre, et l'on revient en 2026.
-   Les souvenirs se déclenchent d'eux-mêmes la première fois ; ensuite, la touche d'époque les rejoue (si elle est connue).
+   Ces souvenirs ne se voient qu'avec la touche d'époque (B), donc seulement une fois le 4-4 fait : rien ne se déclenche tout seul.
    ========================================================= */
 const LUC_FACE={skin:'#ecc8a6',hair:'#cfae6a',stache:'croc',beardCol:'#b8954e',helmet:'adrian',ex:'sad',young:1,stubble:.35,eye:'#3f78b8',tired:1,look:[.75,.3]};
 const S16_MATES=[{skin:VX_SKIN[3],hair:VX_HAIR[0],stache:'walrus',helmet:'adrian',ex:'neutral',stubble:.7},{skin:VX_SKIN[1],hair:VX_HAIR[4],stache:'up',helmet:'adrian',ex:'neutral',stubble:.5,beard:1},{skin:VX_SKIN[5],hair:VX_HAIR[2],helmet:'adrian',ex:'neutral',stubble:.8}];
@@ -13828,12 +13828,9 @@ function s16Enter(){const S=L.s16;s16Swap(16);S.done.tr=1;s16Cage();cam.x=clamp(
 function s16Leave(){const S=L.s16;s16Swap(26);S.caged=false;S.luc=null;P.x=250*T;P.y=18*T-P.h;P.vx=P.vy=0;P.onGround=false;P.lastGY=P.y;G.state='play';G.fade=1;
   say(/*v2*/"Le filet, les mains de Lucien, le panier. Il avait eu plus peur que moi.",4)}
 function s16Step(dt){
-  if(L.zr16){const Z=L.zr16,pc=P.x+P.w/2;if(!Z.done.gaz&&P.onGround&&!P.dead&&pc>139*T&&pc<147*T){Z.done.gaz=1;svStart('gaz')}return}
+  if(L.zr16)return;
   const S=L.s16;if(!S)return;if(S.flash>0)S.flash-=dt*1.6;const pc=P.x+P.w/2;
-  if(S.era===26){if(P.dead)return;
-    for(const k of['route','bois'])if(!S.done[k]&&P.onGround&&pc>S16[k][0]*T&&pc<S16[k][1]*T){S.done[k]=1;svStart(k);return}
-    if(!S.done.tr&&P.onGround&&pc>S16.tr[0]*T&&pc<S16.tr[1]*T)s16Enter();
-    return}
+  if(S.era===26)return;
   // ---- 1916 ----
   const lu=S.luc;
   if(S.caged){P.x=S16.cage.c*T+T/2-P.w/2;P.y=S16.cage.r*T-P.h-8;P.vx=P.vy=0}
@@ -13864,7 +13861,9 @@ function s16Act(){const Q=L.s16;if(!Q||Q.era!==16||P.dead)return;const lu=Q.luc,
     if(m.k==='seeds'){if(!Q.seeds.used)grantSecret(Q.seeds,m.y-30)}
     else{const md=L.medal;if(md&&!md.taken){md.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();S.run.medals[G.li]=true;save();say(/*v2*/"Dans la musette de Castagnet, sous le tabac : une médaille. Il me la prête, dit-il. Je la lui rendrai après la guerre.",4.4)}}}}
 function s16Respawn(){const S=L.s16;if(!S||S.era!==16)return;s16Cage();S.net=null}
-function s16Switch(){const S=L.s16;if(!S||P.dead)return;const pc=P.x+P.w/2;
+function s16Switch(){if(P.dead||SV)return;const pc=P.x+P.w/2;
+  if(L.zr16){if(pc>133*T&&pc<153*T)svStart('gaz');return}
+  const S=L.s16;if(!S)return;
   if(S.era===26){if(pc>S16.route[0]*T&&pc<S16.route[1]*T)return svStart('route');if(pc>S16.bois[0]*T&&pc<S16.bois[1]*T)return svStart('bois');if(pc>S16.tr[0]*T-80&&pc<S16.tr[1]*T)return s16Enter()}}
 /* dessin de la tranchée de 1916 : planches, étais, sacs, la cagna, les musettes, les soldats, Lucien, le panier, le filet */
 function drawS16Mid(t){const S=L.s16;if(!S||S.era!==16)return;const g=ctx;
@@ -14751,7 +14750,7 @@ function update(dt){
       if(pressed.has('era')&&!G.cut&&L.ferte)ferteSwitch();
       if(pressed.has('era')&&!G.cut&&L.crecy)crecySwitch();
       if(pressed.has('era')&&!G.cut&&L.cb)comblesSwitch();
-      if(pressed.has('era')&&!G.cut&&L.s16)s16Switch();
+      if(pressed.has('era')&&!G.cut&&(L.s16||L.zr16))s16Switch();
       if(L.cb&&L.cb.end&&(pressed.has('act')||pressed.has('jump')))comblesSkip();
       if(L.pl&&L.pl.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))placeSkip();
       if(L.cm&&L.cm.seq&&(pressed.has('act')||pressed.has('jump')||pressed.has('ok')))cmSkip();
