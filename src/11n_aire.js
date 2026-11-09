@@ -40,9 +40,9 @@ function airCar(g,x0,x1,col,GY,o){o=o||{};const L4=x1-x0,dk=shade(col,-.32),lt=s
     g.fillStyle='#8a8e96';g.beginPath();g.arc(wx,GY-17,8,0,7);g.fill();g.fillStyle='#5a5e66';for(let k=0;k<5;k++){const a=k*1.256;g.beginPath();g.arc(wx+Math.cos(a)*5,GY-17+Math.sin(a)*5,1.5,0,7);g.fill()}}}
 /* une pompe : corps crème, bandeau, écran, deux pistolets dans leur étui, flexibles */
 function airPump(g,x,GY,band){g.fillStyle='#d8d2c4';rr(g,x,GY-104,64,96,6);g.fill();g.fillStyle=band;g.fillRect(x,GY-104,64,16);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x+52,GY-88,12,80);
-  g.fillStyle='#14181c';g.fillRect(x+8,GY-82,48,22);g.fillStyle='#7ae07a';g.font='bold 9px '+F_DISP;g.textAlign='right';g.fillText('42,80',x+52,GY-73);g.fillText('1,879',x+52,GY-64);
+  g.fillStyle='#14181c';g.fillRect(x+8,GY-82,48,22);g.fillStyle='#7ae07a';g.font='bold 9px '+F_DISP;g.textAlign='right';g.fillText('84,31',x+52,GY-73);g.fillText('2,489',x+52,GY-64);
   g.fillStyle='#2a2c30';for(const[k,c]of[[0,'#e0c020'],[1,'#2a8a3a']]){g.fillRect(x+10+k*26,GY-54,16,22);g.fillStyle=c;g.fillRect(x+12+k*26,GY-52,12,6);g.fillStyle='#2a2c30'}
-  g.fillStyle='#f0ece4';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText(/*v2*/'GAZOLE',x+18,GY-24);g.fillText(/*v2*/'SP 95',x+44,GY-24);
+  g.fillStyle='#f0ece4';g.font='bold 6px '+F_DISP;g.textAlign='center';g.fillText(/*v2*/'GAZOLE',x+18,GY-24);g.fillText(/*v2*/'SP95-E10',x+44,GY-24);
   g.strokeStyle='#1a1a1a';g.lineWidth=3;g.beginPath();g.moveTo(x+60,GY-50);g.quadraticCurveTo(x+76,GY-20,x+64,GY-12);g.stroke();
   g.fillStyle='#8a8478';g.fillRect(x-8,GY-8,80,8)}
 /* un camion garé de biais, au fond du parking (on voit le flanc et l'arrière de la remorque) */
@@ -65,18 +65,19 @@ function aireBuild(Lv){
     g.fillStyle='#1a1c22';g.fillRect(a,GY-40,b-a,40);g.fillStyle='#3a3e46';g.fillRect(a,GY-38,b-a,5)};
   outside(0,AIN.IN0);outside(AIN.IN1,wpx);
   // le parking des poids lourds, au fond : marquages en épi, camions garés en bataille
-  {g.fillStyle='#16181e';g.fillRect(AIN.IN1+100,GY-60,wpx-AIN.IN1-100,24);g.strokeStyle='rgba(220,220,200,.25)';g.lineWidth=2;for(let x=AIN.IN1+120;x<wpx;x+=90){g.beginPath();g.moveTo(x,GY-36);g.lineTo(x+40,GY-60);g.stroke()}
+  {g.fillStyle='#16181e';g.fillRect(AIN.IN1+100,GY-60,wpx-AIN.IN1-100,24);g.strokeStyle='rgba(220,220,200,.25)';g.lineWidth=2;for(let x=AIN.IN1+120;x<wpx;x+=90){g.beginPath();g.moveTo(x,GY-36);g.lineTo(x+120,GY-60);g.stroke()}
    const cols=['#c8302a','#2a5a9a','#e0e0d8','#3a7a4a','#d8a020','#5a5a62'];let i=0;for(let x=AIN.IN1+260;x<wpx-200;x+=340+((i*97)%120)){if(i%4!==3)airAngledTruck(g,x,GY-40,mix(cols[i%6],'#0a0c14',.45),.62);i++}}
   for(const x of AIR_PARK_LAMPS)airPolePark(g,x,GY);
   // la station : le totem des prix
-  {const x=560;g.fillStyle='#2a2e36';g.fillRect(x-4,GY-300,8,300);rr(g,x-34,GY-330,68,150,6);g.fill();g.fillStyle='#e0c040';g.fillRect(x-34,GY-330,68,22);
-   g.fillStyle='#1a1a1a';g.font='bold 10px '+F_DISP;g.textAlign='center';g.fillText(/*v2*/'CARBURANTS',x,GY-315);
-   for(const[k,lb,pr]of[[0,/*v2*/'GAZOLE','1,879'],[1,/*v2*/'SP 95','1,949'],[2,/*v2*/'SP 98','2,019']]){const y=GY-296+k*36;g.fillStyle='#f0ece4';g.font='bold 9px '+F_DISP;g.textAlign='left';g.fillText(lb,x-28,y+8);g.fillStyle='#ff9a30';g.font='bold 15px '+F_DISP;g.textAlign='right';g.fillText(pr,x+30,y+26)}}
+  // (prix d'autoroute d'octobre 2026 : un peu au-dessus des moyennes nationales, gazole ≈ 2,35 €, SP95-E10 ≈ 2,14 €, SP98 ≈ 2,23 €)
+  {const x=560;g.fillStyle='#2a2e36';g.fillRect(x-4,GY-300,8,300);rr(g,x-46,GY-334,92,154,6);g.fill();g.fillStyle='#e0c040';g.fillRect(x-46,GY-334,92,24);
+   g.fillStyle='#1a1a1a';g.font='bold 9px '+F_DISP;g.textAlign='center';g.fillText(/*v2*/'CARBURANTS',x,GY-318);
+   for(const[k,lb,pr]of[[0,/*v2*/'GAZOLE','2,489'],[1,/*v2*/'SP95-E10','2,299'],[2,/*v2*/'SP98','2,389']]){const y=GY-302+k*38;g.fillStyle='#f0ece4';g.font='bold 9px '+F_DISP;g.textAlign='left';g.fillText(lb,x-38,y+10);g.fillStyle='#ff9a30';g.font='bold 15px '+F_DISP;g.textAlign='right';g.fillText(pr,x+38,y+28)}}
   // l'auvent : dalle, bandeau blanc et jaune, sous-face éclairée, piliers habillés ; on peut marcher dessus
-  {const[a,b]=AIN.CAN;g.fillStyle='#6a6e74';g.fillRect(a-6,78,b-a+12,10);g.fillStyle='#e8e8e2';g.fillRect(a,88,b-a,62);g.fillStyle='#e0b828';g.fillRect(a,108,b-a,22);g.fillStyle='#c89818';g.fillRect(a,128,b-a,3);
-   g.fillStyle='#1a1a1a';g.font='bold 15px '+F_DISP;g.textAlign='center';for(const x of[a+220,b-220])g.fillText(/*v2*/'STATION — 24 h / 24',x,124);
-   g.fillStyle='#9ea2a8';g.fillRect(a,150,b-a,20);g.fillStyle='rgba(255,252,235,.95)';for(let x=a+60;x<b-60;x+=150)g.fillRect(x,166,70,5);
-   for(const x of[720,1130,1640]){g.fillStyle='#c8ccd0';g.fillRect(x-17,170,34,GY-170);g.fillStyle='rgba(0,0,0,.16)';g.fillRect(x+6,170,11,GY-170);g.fillStyle='#e0b828';g.fillRect(x-17,GY-60,34,8);g.fillStyle='#2a2c30';g.fillRect(x-17,GY-12,34,12)}
+  {const[a,b]=AIN.CAN;g.fillStyle='#6a6e74';g.fillRect(a-6,118,b-a+12,10);g.fillStyle='#e8e8e2';g.fillRect(a,128,b-a,62);g.fillStyle='#e0b828';g.fillRect(a,148,b-a,22);g.fillStyle='#c89818';g.fillRect(a,168,b-a,3);
+   g.fillStyle='#1a1a1a';g.font='bold 15px '+F_DISP;g.textAlign='center';for(const x of[a+220,b-220])g.fillText(/*v2*/'STATION — 24 h / 24',x,164);
+   g.fillStyle='#9ea2a8';g.fillRect(a,190,b-a,20);g.fillStyle='rgba(255,252,235,.95)';for(let x=a+60;x<b-60;x+=150)g.fillRect(x,206,70,5);
+   for(const x of[720,1130,1640]){g.fillStyle='#c8ccd0';g.fillRect(x-17,210,34,GY-210);g.fillStyle='rgba(0,0,0,.16)';g.fillRect(x+6,210,11,GY-210);g.fillStyle='#e0b828';g.fillRect(x-17,GY-60,34,8);g.fillStyle='#2a2c30';g.fillRect(x-17,GY-12,34,12)}
    g.fillStyle='#c83a2a';rr(g,1122,GY-150,16,30,4);g.fill();g.fillStyle='#2a2a2a';g.fillRect(1126,GY-156,8,6)}
   // les îlots et les pompes
   for(const[p0,band]of[[860,'#2a8a3a'],[1180,'#d8a020']]){g.fillStyle='#b8b4a8';g.fillRect(p0-40,GY-10,150,10);g.fillStyle='#e0b828';g.fillRect(p0-40,GY-12,150,3);airPump(g,p0,GY,band);
@@ -171,7 +172,12 @@ function aireBuild(Lv){
    frame(9820,250,100,80,(x,y,w,h)=>{g.fillStyle='#c8d8e8';g.fillRect(x,y,w,h);g.fillStyle='#2a5a8a';g.fillRect(x,y+h-20,w,20);g.fillStyle='#e8e4d8';g.fillRect(x+20,y+30,60,22);g.fillStyle='#c83a2a';g.fillRect(x+70,y+22,10,10)});
    frame(10420,240,120,90,(x,y,w,h)=>{g.fillStyle='#e8d890';g.fillRect(x,y,w,h);g.fillStyle='#c8a848';for(let k=0;k<4;k++){g.beginPath();g.moveTo(x+20+k*26,y+h-10);g.lineTo(x+26+k*26,y+30);g.lineTo(x+32+k*26,y+h-10);g.fill()}});
    for(const x of D.tables){const cx=x+60;g.strokeStyle='#3a3a3e';g.lineWidth=2;g.beginPath();g.moveTo(cx,CEIL+40);g.lineTo(cx,GY-230);g.stroke();g.fillStyle='#2a5a4a';g.beginPath();g.moveTo(cx-26,GY-206);g.quadraticCurveTo(cx,GY-246,cx+26,GY-206);g.closePath();g.fill();g.fillStyle='#ffe8a8';g.fillRect(cx-20,GY-208,40,3)}
-   for(const x of[8560,9200,9800,10380]){g.fillStyle='#7a5a3a';rr(g,x-24,GY-60,48,60,5);g.fill();g.fillStyle='#5a3e26';g.fillRect(x-24,GY-60,48,6);
+   // deux portes de service et deux chariots-étagères de débarrassage
+   for(const x of AIR_SALLE.doors){g.fillStyle='#7a5a44';g.fillRect(x-36,GY-176,72,176);g.fillStyle='#8a6a52';g.fillRect(x-30,GY-170,60,170);g.fillStyle='rgba(255,255,255,.25)';rr(g,x-14,GY-150,28,28,14);g.fill();g.fillStyle='#14181e';rr(g,x-11,GY-147,22,22,11);g.fill();
+     g.fillStyle='#c8ccd2';g.fillRect(x-30,GY-90,60,6);g.fillStyle='#2a2a2e';g.fillRect(x-20,GY-196,40,14);g.fillStyle='#f0ece4';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText(/*v2*/'PRIVÉ',x,GY-186)}
+   for(const x of AIR_SALLE.racks){g.fillStyle='#9aa0a8';g.fillRect(x-40,GY-150,6,146);g.fillRect(x+34,GY-150,6,146);for(let k=0;k<6;k++){const y=GY-140+k*22;g.fillStyle='#b8bec6';g.fillRect(x-40,y,80,3);g.fillStyle=['#c8a060','#a8c8d8','#e8e4d8','#d88a5a'][k%4];g.fillRect(x-34,y-6,68,6);if(k%2){g.fillStyle='#f4f2ec';g.beginPath();g.ellipse(x-10,y-7,9,3,0,0,7);g.fill()}}
+     g.fillStyle='#2a2a2e';for(const dx of[-34,34]){g.beginPath();g.arc(x+dx,GY-4,4,0,7);g.fill()}g.fillStyle='#2a6a5a';g.fillRect(x-30,GY-170,60,16);g.fillStyle='#fff';g.font='bold 7px '+F_DISP;g.textAlign='center';g.fillText(/*v2*/'PLATEAUX',x,GY-159)}
+   for(const x of[9200,9800]){g.fillStyle='#7a5a3a';rr(g,x-24,GY-60,48,60,5);g.fill();g.fillStyle='#5a3e26';g.fillRect(x-24,GY-60,48,6);
      for(let k=0;k<11;k++){const a=-Math.PI*.95+k*Math.PI*.09,l=60+(k%3)*18;g.strokeStyle=k%2?'#3a7a3a':'#4a8a40';g.lineWidth=7;g.beginPath();g.moveTo(x,GY-58);g.quadraticCurveTo(x+Math.cos(a)*l*.5,GY-60+Math.sin(a)*l*.9,x+Math.cos(a)*l,GY-58+Math.sin(a)*l*.7);g.stroke()}}
    for(const x of D.tables){g.fillStyle='#f0ece0';g.fillRect(x-4,GY-84,128,8);g.fillStyle='#e0d8c4';poly(g,[x-4,GY-76,x+124,GY-76,x+118,GY-56,x+2,GY-56]);g.fill();g.fillStyle='#c83a2a';g.fillRect(x-4,GY-78,128,2);
      g.fillStyle='#5a4030';g.fillRect(x+54,GY-56,12,56);g.fillRect(x+28,GY-5,64,5);
@@ -194,7 +200,7 @@ function aireBuild(Lv){
     g.fillStyle='rgba(200,225,245,.45)';poly(g,[x+2,y0+4,x+38,y0+4,x+30,y0+50,x-6,y0+50]);g.fill();g.strokeStyle='#8a9098';g.lineWidth=3;g.beginPath();g.moveTo(x+2,y0+4);g.lineTo(x+38,y0+4);g.lineTo(x+30,y0+50);g.lineTo(x-6,y0+50);g.closePath();g.stroke();
     g.fillStyle='#a8a090';g.fillRect(AIN.IN1,CEIL-6,30,GY-CEIL+6);for(let k=0;k<60;k++){g.fillStyle='rgba(0,0,0,.08)';g.fillRect(AIN.IN1+R()*28,CEIL+R()*(GY-CEIL),3,2)}g.fillStyle='#6a6458';g.fillRect(AIN.IN1+26,CEIL-6,4,GY-CEIL+6)}}
   // ---- dehors, derrière : les deux camions garés (dessinés comme sur l'autoroute) ----
-  for(const[a,b,col,lab]of[[13400,13840,'#2a5a9a',/*v2*/'FRIGORIFIQUE'],[15800,16240,'#c82a22','TRANSPORTS FONTAINE & FILS']])a4TruckBody(g,a,GY-120,b-a,120,col,lab,0,0);
+  for(const[a,b,col,lab]of[[13400,13840,'#2a5a9a',/*v2*/'FRIGORIFIQUE'],[15800,16240,'#c82a22','TRANSPORTS FONTAINE & FILS']])a4TruckBody(g,a,GY-200,b-a,200,col,lab,0,0);
   return c;
 }
 
@@ -204,7 +210,8 @@ function airePost(Lv){const D=Lv.def.aire;if(!D)return;const GY=D.G0*T;
     doorOpen:0,jump:D.jumpers.map(([a,b,y,h],i)=>({a,b,y0:y,h,t:i*2.1,x:a,y,f:1,st:'walk',k:'gros'})),beg:{x:D.beggar[0],f:1,t:0,y:GY,k:'moignon',st:'walk',beg:0},
     cash:D.cashiers.map(([a,b,top],i)=>({a,b,top,x:(a+b)/2,st:'idle',t:0,f:-1,seen:false,p:fkMake(41+i,{fem:true,coat:'#c83a2a',hat:null,apron:null})})),
     cust:D.customers.map((x,i)=>({x,p:fkMake(7+i*3,{bag:i?'cabas':null})})),
-    tables:D.tables.map((x,i)=>({x,on:0,hit:0,p:[fkMake(100+i*2,DINERS[i*2%DINERS.length]),fkMake(101+i*2,DINERS[(i*2+1)%DINERS.length])]})),
+    tables:D.tables.map((x,i)=>({x,on:0,hit:0,p:[fkMake(100+i*2,Object.assign({h:134+(i%3)*4},DINERS[i*2%DINERS.length])),fkMake(101+i*2,Object.assign({h:132+(i%2)*6},DINERS[(i*2+1)%DINERS.length]))]})),
+    cart:{x:AIR_SALLE.route[0],dir:-1,st:'walk',t:0,p:fkMake(512,{fem:true,old:false,coat:'#3a6a8a',apron:'#e8e4d8',hat:null})},
     pump:{x:1262,p:fkMake(77,{fem:false,old:false,coat:'#5a5a62',hat:'casquette',tie:null}),near:0},
     wc:{open:0,t:0,said:0},wcMan:fkMake(303,{fem:false,old:false,coat:'#e8e4d8',leg:'#2a3a5a',tie:'#8a2a2a',hat:null,glass:true}),
     said:{},grace:0,coffee:0,fridgeOpen:1,jn:0,mosq:[]};
@@ -216,8 +223,10 @@ function airePost(Lv){const D=Lv.def.aire;if(!D)return;const GY=D.G0*T;
   Lv.acts.push({kind:'secret',style:'salad',x:D.salad,y:GY-3*T,open:0,t:0,used:false,noStraw:false,q:["Une petite fiente dans la salade. Elle sera meilleure comme ça. Au front, on appelait ça l'assaisonnement de la ligne."]});
   Lv.acts.push({kind:'secret',style:'fridge',x:D.fridge,y:GY-T,open:0,t:0,used:false,q:["On ne laisse pas la porte du frigo ouverte. C'est dans le règlement de toutes les cuisines du monde."]});
   // la poignée du cabinet occupé : on saute dessus (pas de touche d'action : l'acte est hors de portée de « E »)
-  Lv.acts.push({kind:'secret',style:'wc',x:AIN.WC0+AIN.WCBUSY*AIN.WCW+80,y:-9999,open:0,t:0,used:false,q:[/*v2*/"Pardon, monsieur ! Je cherchais la sortie. Je n'ai rien vu : de toute façon, c'était flou."]});
+  Lv.acts.push({kind:'secret',style:'wc',x:AIN.WC0+AIN.WCBUSY*AIN.WCW+80,y:-9999,hy:GY-86,open:0,t:0,used:false,q:[/*v2*/"Pardon, monsieur ! Je cherchais la sortie. Je n'ai rien vu : de toute façon, c'était flou."]});
 }
+/* la salle : deux portes de service, deux chariots de débarrassage ; la dame au chariot va de l'un à l'autre */
+const AIR_SALLE={doors:[8130,10880],racks:[8560,10400],route:[8560,8130]};
 /* les dîneurs : des tenues différentes (routier, costume, randonneuse, grand-mère, cuisinier en pause, ouvrier…) */
 const DINERS=[{hat:'casquette',coat:'#3a5a3a'},{fem:true,coat:'#a84a6a',scarf:'#e0b020'},{tie:'#2a3a6a',coat:'#2a2e3a',glass:true},{fem:true,old:true,hat:'paille',coat:'#7a6a52'},
   {coat:'#f0ece4',hat:'toque',apron:null},{vest:true,hat:null,coat:'#3a4a6a'},{fem:true,coat:'#3a6a8a',hat:'bonnet'},{old:true,coat:'#5a4a3a',hat:'beret',must:true},{coat:'#b85a3a',hat:null},{fem:true,coat:'#6a4a7a',glass:true}];
@@ -225,7 +234,9 @@ function aireAct(a){const S=L.aire;if(!S)return false;
   if(a.style==='coffee'&&!a.used){S.coffee=1;grantSecret(a,a.y-60);return true}
   if(a.style==='salad'&&!a.used){grantSecret(a,a.y-20);if(!G.sim)noise(.2,500,.1,'lowpass');return true}
   if(a.style==='fridge'&&!a.used){S.fridgeOpen=0;grantSecret(a,a.y-40);if(!G.sim){noise(.15,300,.3,'lowpass');tone(140,.12,'sine',.08)}return true}
-  if(a.style==='wc')return true;
+  if(a.style==='wc'){const w=S.wc,GY=L.def.aire.G0*T;if(w.open>0)return true;w.open=1;w.t=0;
+    if(!G.sim){noise(.1,1200,.2,'bandpass');bubble(a.x-30,GY-190,pick([/*v2*/'Occupé !!!',/*v2*/'Fermez cette porte !',/*v2*/'Au secours ! Un pigeon !']),'#6a2a2a');tone(880,.3,'sawtooth',.06);tone(1040,.4,'sawtooth',.05,null,.12)}
+    if(!a.used){grantSecret(a,a.hy-30);unlock('a72')}return true}
   return false}
 const aireInside=x=>x>AIN.IN0-20&&x<AIN.IN1;
 function aireStep(dt){const S=L.aire;if(!S)return;const D=L.def.aire,GY=D.G0*T,hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6},pcx=P.x+P.w/2,pcy=P.y+P.h/2;let hit=null;
@@ -236,14 +247,14 @@ function aireStep(dt){const S=L.aire;if(!S)return;const D=L.def.aire,GY=D.G0*T,h
    if(!S.said.porte&&!G.sim&&pcx>D.door[0]-260&&pcx<D.door[0]&&P.onGround){S.said.porte=1;say("Une porte qui s'ouvre toute seule… mais pas pour les pigeons. Le petit œil, là-haut : il faut qu'il me voie passer.",4.2)}}
   // les chiens : réveillés par un saut, ils courent ; devant un obstacle, ils s'assoient et aboient tant qu'ils voient Raymond
   for(const d of S.dogs){d.t+=dt;const dcx=d.x+d.w/2,dx=pcx-dcx;
-    const sees=!P.dead&&pcx>d.a-120&&pcx<d.b+120&&Math.abs(dx)<640&&!aireInside(pcx)&&!(d.win&&pcx<D.window+40);
+    const sees=!P.dead&&pcx>d.a-120&&pcx<d.b+120&&Math.abs(dx)<640&&!aireInside(pcx);
     if(d.st==='sleep'){const near=Math.abs(dx)<360&&Math.abs(pcy-d.y)<280&&sees;
-      if((jumped&&near)||(d.win&&pcx>D.window+50&&pcx<d.b&&P.onGround)){d.st='wake';d.t=0;if(!G.sim){tone(220,.15,'sawtooth',.08);tone(180,.2,'sawtooth',.08,null,.18);bubble(dcx,d.y-20,'Ouaf ! Ouaf !','#4a3a2a')}}continue}
+      if(jumped&&near){d.st='wake';d.t=0;if(!G.sim){tone(220,.15,'sawtooth',.08);tone(180,.2,'sawtooth',.08,null,.18);bubble(dcx,d.y-20,'Ouaf ! Ouaf !','#4a3a2a')}}continue}
     if(d.st==='wake'){d.f=Math.sign(dx)||d.f;if(d.t>.6){d.st='chase';d.t=0}continue}
     if(sees)d.lost=0;else d.lost+=dt;
     if(d.st!=='back'&&d.lost>1.6){d.st='back';d.t=0;if(!G.sim)bubble(dcx,d.y-20,'Grrr…','#4a3a2a')}
     let want=0;
-    if(d.st==='back'){const h=d.home-30-d.x;want=Math.abs(h)<4?0:Math.sign(h);if(!want){d.st='sleep';d.vx=0;d.f=d.f0;continue}if(sees&&jumped&&Math.abs(dx)<360){d.st='chase';d.lost=0}}
+    if(d.st==='back'){const h=d.home-30-d.x;want=Math.abs(h)<4?0:Math.sign(h);if(want)d.f=want;if(!want){d.st='sleep';d.vx=0;d.f=d.f0;continue}if(sees&&jumped&&Math.abs(dx)<360){d.st='chase';d.lost=0}}
     else{const reach=P.y+P.h>GY-46;d.f=Math.sign(dx)||d.f;want=(Math.abs(dx)<(reach?6:26))?0:d.f;
       if(want&&((d.f>0&&d.x>=d.b-2)||(d.f<0&&d.x<=d.a-18)))want=0}
     const sp=d.st==='back'?120:265,ox=d.x;d.vx=want*sp;
@@ -280,18 +291,24 @@ function aireStep(dt){const S=L.aire;if(!S)return;const D=L.def.aire,GY=D.G0*T,h
     else if(w.st==='strike'){if(!P.dead&&Math.abs(w.x+w.f*20-pcx)<44&&P.y+P.h<=w.top+2&&P.y+P.h>w.top-80)hit='caissiere';if(w.t>.15){w.st='cool';w.t=0}}}
   // les ventilateurs du plafond : leurs pales coupent
   for(let x=AIN.IN0+300;x<AIN.IN1-100;x+=520)if(!P.dead&&Math.abs(pcx-x)<64&&Math.abs(pcy-AIN.FANY)<16)hit='ventilo';
+  // la fiente va dans n'importe quelle salade : le secret suit Raymond le long du bar
+  {const[a,b]=D.hood,sa=L.acts.find(x=>x.style==='salad');if(sa&&!sa.used)sa.x=clamp(pcx,a+20,b-20)}
   // la hotte du bar à salades : des pics anti-pigeons sur le dessus
   {const[a,b]=D.hood;if(!P.dead&&overlap(hb,{x:a,y:7*T-18,w:b-a,h:16}))hit='spikes'}
   // la salle : les dîneurs tapent sur la table où Raymond s'est posé ; et on ne les touche pas
   for(const tb of S.tables){const on=P.onGround&&pcx>tb.x&&pcx<tb.x+120&&Math.abs(P.y+P.h-(GY-2*T))<3;if(on){tb.on+=dt;if(tb.on>.55&&tb.hit<=0){tb.hit=.3;tb.on=0;if(!G.sim){noise(.12,400,.3,'lowpass');G.shake=Math.max(G.shake||0,2);bubble(tb.x+60,GY-150,pick(['Bam !','Dégage !','Sur la table ?!']),'#2a2420')}}}else tb.on=0;
     if(tb.hit>0){tb.hit-=dt;if(on&&!P.dead)hit='dineur'}
     for(const cx of[tb.x-20,tb.x+140])if(!P.dead&&overlap(hb,{x:cx-12,y:GY-104,w:24,h:104}))hit='dineur2'}
+  // la dame au chariot : du chariot de débarrassage à la porte, elle entre, ressort une seconde après, et repart
+  {const c=S.cart,[ra,da]=AIR_SALLE.route;c.t+=dt;
+   if(c.st==='walk'){const goal=c.dir<0?da:ra;c.x+=c.dir*70*dt;if((c.dir<0&&c.x<=goal)||(c.dir>0&&c.x>=goal)){c.x=goal;c.st=c.dir<0?'in':'load';c.t=0}}
+   else if(c.st==='in'&&c.t>1){c.st='walk';c.dir=1;c.t=0}
+   else if(c.st==='load'&&c.t>2.2){c.st='walk';c.dir=-1;c.t=0}
+   if(c.st!=='in'&&!P.dead){const bx=c.x-c.dir*58;if(overlap(hb,{x:c.x-12,y:GY-126,w:24,h:126})||overlap(hb,{x:bx-30,y:GY-80,w:60,h:80}))hit='chariot'}}
   // les toilettes : la poignée du cabinet occupé (on saute dessus) ouvre la porte
   {const w=S.wc,hx=AIN.WC0+AIN.WCBUSY*AIN.WCW+80,hy=GY-86;w.t+=dt;
    if(w.open>0){w.open=Math.max(0,w.open-dt/3.4);if(w.open<=0&&!G.sim)noise(.12,600,.25,'lowpass')}
-   if(w.open<=0&&!P.onGround&&overlap(hb,{x:hx-8,y:hy-8,w:18,h:16})){w.open=1;w.t=0;
-     if(!G.sim){noise(.1,1200,.2,'bandpass');bubble(hx-30,GY-190,pick([/*v2*/'Occupé !!!',/*v2*/'Fermez cette porte !',/*v2*/'Au secours ! Un pigeon !']),'#6a2a2a');tone(880,.3,'sawtooth',.06);tone(1040,.4,'sawtooth',.05,null,.12)}
-     const a=L.acts.find(x=>x.style==='wc');if(a&&!a.used){grantSecret(a,hy-30);unlock('a72')}}}
+}
   // la fenêtre des toilettes
   if(!S.said.fenetre&&!G.sim&&pcx>D.window-200&&P.y<8*T){S.said.fenetre=1;say("La fenêtre des toilettes. La sortie des artistes, et des pigeons.",3.4)}
   if(!S.said.camion&&!G.sim&&pcx>15500){S.said.camion=1;say("Un camion qui chauffe son moteur. Si je suis dessus quand il part, je quitte l'aire.",3.8)}
@@ -302,7 +319,7 @@ function aireAfterMove(){if(G.aireHit){const k=G.aireHit;G.aireHit=null;return k
 function aireRespawn(){const S=L.aire;if(!S)return;S.grace=1.6;S.jn=P.jumpN||0;for(const d of S.dogs){d.st='sleep';d.x=d.home-30;d.y=L.def.aire.G0*T-34;d.vx=d.vy=0;d.lost=0}for(const w of S.cash){w.st='idle';w.seen=false}for(const tb of S.tables){tb.on=0;tb.hit=0}S.wc.open=0}
 function aireLights(){const S=L.aire;if(!S)return[];const D=L.def.aire,GY=D.G0*T,out=[];
   for(const x of AIR_PARK_LAMPS)out.push({x:x+50,y:GY-226,r:240,i:.8,warm:1});
-  for(let x=AIN.CAN[0]+90;x<AIN.CAN[1];x+=150)out.push({x,y:172,r:250,i:.95});
+  for(let x=AIN.CAN[0]+90;x<AIN.CAN[1];x+=150)out.push({x,y:212,r:250,i:.95});
   for(const[x,r]of AIN.LAMPS)out.push({x,y:r*T+20,r:280,i:1,warm:1});
   for(let x=AIN.IN0+120;x<AIN.IN1;x+=240)out.push({x,y:300,r:330,i:1});
   for(const x of D.tables)out.push({x:x+60,y:GY-206,r:170,i:.6,warm:1});
@@ -349,17 +366,22 @@ function drawAireMid(t){const S=L.aire;if(!S)return;const g=ctx,D=L.def.aire,GY=
   const binder=(g2,hx,hy)=>{g2.fillStyle='#2a4a8a';g2.save();g2.translate(hx,hy);g2.rotate(-.3);g2.fillRect(-4,-14,18,22);g2.fillStyle='#e8e4d8';g2.fillRect(-2,-12,3,18);g2.restore()};
   for(const w of S.cash)if(vis(w.x)){g.save();g.beginPath();g.rect(w.x-80,0,160,GY-84);g.clip();fkDraw(g,w.p,w.x,GY-26,t,w.st==='wind'?'wind':w.st==='strike'?'strike':'stand',{f:w.f,hold:w.st==='wind'||w.st==='strike'?binder:null});g.restore()}
   // dîneurs assis
-  for(const tb of S.tables)if(vis(tb.x))tb.p.forEach((p,k)=>{const cx=k?tb.x+140:tb.x-20,f=k?-1:1;aireChair(g,cx,GY,f);fkDraw(g,p,cx,GY,t,tb.hit>0?'sitbang':'sit',{f,eat:1,hold:(g2,hx,hy)=>{g2.fillStyle='#c8a060';g2.fillRect(hx-2,hy-3,10,3)}})});
+  for(const tb of S.tables)if(vis(tb.x))tb.p.forEach((p,k)=>{const cx=k?tb.x+140:tb.x-20,f=k?-1:1;aireChair(g,cx,GY,f);fkDraw(g,p,cx,GY,t,tb.hit>0?'sitbang':'sit',{f,eat:1,table:1,hold:(g2,hx,hy)=>{g2.fillStyle='#c8a060';g2.fillRect(hx-2,hy-3,10,3)}})});
+  // la dame au chariot (elle le tire derrière elle) ; à la porte, elle disparaît une seconde
+  {const c=S.cart;if(vis(c.x)&&c.st!=='in'){const bx=c.x-c.dir*58;g.fillStyle='#9aa0a8';g.fillRect(bx-30,GY-84,4,78);g.fillRect(bx+26,GY-84,4,78);for(let k=0;k<3;k++){g.fillStyle='#b8bec6';g.fillRect(bx-30,GY-84+k*26,60,3);g.fillStyle=['#c8a060','#a8c8d8','#e8e4d8'][k];g.fillRect(bx-26,GY-90+k*26,52,6)}
+     g.fillStyle='#2a2a2e';g.beginPath();g.arc(bx-26,GY-4,4,0,7);g.arc(bx+26,GY-4,4,0,7);g.fill();
+     fkDraw(g,c.p,c.x,GY,t,c.st==='walk'?'walk':'stand',{f:c.dir,w:t*7,noFront:c.st==='walk'});if(c.st==='walk'){g.strokeStyle=c.p.coat;g.lineWidth=6;g.lineCap='round';g.beginPath();g.moveTo(c.x-c.dir*4,GY-104);g.lineTo(bx+c.dir*30,GY-80);g.stroke();g.lineCap='butt'}}}
   // le café qui coule
   if(S.coffee&&vis(D.coffee)){g.fillStyle='#3a1e0e';g.fillRect(D.coffee-2,GY-60,4,58+Math.sin(t*20));g.beginPath();g.ellipse(D.coffee+10,GY-1,70,4,0,0,7);g.fill();g.fillStyle='rgba(255,230,200,.25)';g.fillRect(D.coffee-2,GY-60,1,58);g.fillStyle='rgba(240,230,220,.3)';for(let k=0;k<3;k++){const ph=(t*.5+k/3)%1;g.beginPath();g.arc(D.coffee-10+k*14,GY-10-ph*40,4+ph*6,0,7);g.fill()}}
   // les pics de la hotte
   {const[a,b]=D.hood;if(b>a0&&a<a1){g.fillStyle='#2a2c32';g.fillRect(a,7*T-4,b-a,4);g.strokeStyle='#c8ced6';g.lineWidth=1.4;for(let x=a+3;x<b;x+=5){g.beginPath();g.moveTo(x,7*T-4);g.lineTo(x+Math.sin(x)*2,7*T-18);g.stroke()}}}
   // la porte de la vitrine restée ouverte
-  if(vis(D.fridge)){g.fillStyle='rgba(210,235,250,.65)';g.strokeStyle='#8a9098';g.lineWidth=2;if(S.fridgeOpen){poly(g,[D.fridge-50,8*T,D.fridge-50,GY-T,D.fridge+20,GY-T-20,D.fridge+20,8*T+20]);g.fill();g.stroke();g.fillStyle='rgba(200,230,255,.25)';for(let k=0;k<3;k++){const ph=(t*.4+k/3)%1;g.beginPath();g.arc(D.fridge-10+k*12,GY-T-10-ph*20,8,0,7);g.fill()}}}
+  if(vis(D.fridge)){const h=D.fridge,e=h-74;if(S.fridgeOpen){g.fillStyle='rgba(210,235,250,.5)';poly(g,[h,8*T,h,GY-T,e,GY-T+14,e,8*T-14]);g.fill();g.strokeStyle='#8a9098';g.lineWidth=6;g.stroke();
+      g.fillStyle='#c8ccd2';g.fillRect(e+8,8*T+50,4,74);g.fillStyle='rgba(255,255,255,.35)';poly(g,[h-14,8*T+6,h-24,8*T+4,e+20,GY-T,e+30,GY-T+2]);g.fill();g.fillStyle='rgba(200,230,255,.25)';for(let k=0;k<3;k++){const ph=(t*.4+k/3)%1;g.beginPath();g.arc(D.fridge-10+k*12,GY-T-10-ph*20,8,0,7);g.fill()}}}
   // le dernier camion : il chauffe, fume
   if(vis(16200))for(let k=0;k<4;k++){const ph=(t*.9+k/4)%1;g.fillStyle='rgba(160,160,160,'+(.35*(1-ph))+')';g.beginPath();g.arc(15790-ph*30,GY-30-ph*40,5+ph*12,0,7);g.fill()}
 }
-function aireChair(g,x,GY,f){g.save();g.translate(x,GY);g.scale(f,1);g.fillStyle='#4a3a2e';g.fillRect(-14,-36,30,6);g.fillRect(-14,-82,6,50);g.fillRect(-12,-30,4,30);g.fillRect(12,-30,4,30);g.fillStyle='#6a5444';g.fillRect(-16,-80,4,40);g.restore()}
+function aireChair(g,x,GY,f){g.save();g.translate(x,GY);g.scale(f,1);g.fillStyle='#4a3a2e';g.fillRect(-14,-40,30,6);g.fillRect(-14,-90,6,54);g.fillRect(-12,-34,4,34);g.fillRect(12,-34,4,34);g.fillStyle='#6a5444';g.fillRect(-16,-88,4,44);g.restore()}
 /* un chien errant : endormi (roulé), assis qui aboie, ou qui court */
 function aireDog(g,d,t){const x=d.x+d.w/2,y=d.y+d.h,f=d.f,run=d.st==='chase'||d.st==='back',sl=d.st==='sleep',sit=d.st==='sit'||d.st==='wake',ph=run?t*16:0;g.save();g.translate(x,y);g.scale(f,1);
   const fur='#8a6a4a',dark='#5a4030',light='#b89a72';

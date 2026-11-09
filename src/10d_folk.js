@@ -62,8 +62,9 @@ function fkDraw(g,p,x,base,t,pose,o){o=o||{};const s=(p.h||116)/120,f=o.f||1;g.s
   else if(pose==='strike'){fkArm(g,p,28,-76);if(o.hold)o.hold(g,28,-76)}
   else if(pose==='wind'){fkArm(g,p,8,-128);if(o.hold)o.hold(g,8,-128)}
   else if(pose==='fill'){fkArm(g,p,26,-74,[18,-92]);g.fillStyle='#1a1a1a';rr(g,22,-80,16,8,2);g.fill();g.fillRect(36,-78,10,3);g.strokeStyle='#1a1a1a';g.lineWidth=3;g.beginPath();g.moveTo(24,-74);g.quadraticCurveTo(10,-40,o.hose||-30,-60);g.stroke()}
-  else if(pose==='sitbang'){const b=Math.abs(Math.sin(t*30))*8;fkArm(g,p,26,-58-b)}
-  else if(sit){const e=o.eat?Math.max(0,Math.sin(t*1.4+p.ph)):0;fkArm(g,p,20,-66-e*30,[16,-80]);if(o.hold)o.hold(g,20,-66-e*30)}
+  else if(pose==='sitbang'){const b=Math.abs(Math.sin(t*30))*12;fkArm(g,p,30,-86-b,[20,-100])}
+  else if(sit&&o.table){const e=o.eat?Math.max(0,Math.sin(t*1.4+p.ph)):0;fkArm(g,p,24-e*6,-92-e*16,[18,-84]);if(o.hold)o.hold(g,24-e*6,-92-e*16)}
+  else if(sit){fkArm(g,p,20,-66,[16,-80]);if(o.hold)o.hold(g,20,-66)}
   else if(pose==='talk'){const gs=Math.sin(t*2.6+p.ph);fkArm(g,p,20+gs*3,-90-Math.max(0,gs)*8,[16,-82])}
   else{fkArm(g,p,9+walk*6,-60);if(o.hold)o.hold(g,9+walk*6,-60)}
   g.restore()}

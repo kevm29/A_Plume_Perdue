@@ -136,8 +136,8 @@ function a4Booth(g,[c0,c1],GY){const w=c1-c0;
   // le guichet : montants, grande vitre éclairée, le péagiste, la tablette
   const y0=GY-232,y1=GY-124;g.fillStyle='#e8e6e0';g.fillRect(c0+6,y0,w-12,y1-y0);
   const gl=g.createLinearGradient(0,y0+14,0,y1-10);gl.addColorStop(0,'#f6dc9a');gl.addColorStop(1,'#d8a856');g.fillStyle=gl;g.fillRect(c0+14,y0+16,w-28,y1-y0-34);
-  {const px=c0+w*.42,py=y1-18;g.fillStyle='#3a4a6a';rr(g,px-12,py-46,24,46,7);g.fill();g.fillStyle='#e0b890';g.beginPath();g.arc(px+1,py-54,9,0,7);g.fill();g.fillStyle='#3a2a1a';g.beginPath();g.arc(px,py-57,9.5,Math.PI*1.05,Math.PI*2);g.fill();
-   g.fillStyle='#2a2a2e';rr(g,px+14,py-30,20,14,2);g.fill();g.fillStyle='#7ac8e8';g.fillRect(px+16,py-28,16,9)}
+  {const px=c0+w*.4,py=y1-18;g.save();g.beginPath();g.rect(c0+14,y0+16,w-28,y1-y0-34);g.clip();fkDraw(g,fkMake(12700,{fem:false,old:false,coat:'#3a4a6a',hat:null,tie:'#8a2a2a'}),px,y0+150,0,'stand',{f:1});g.restore();
+   g.fillStyle='#2a2a2e';rr(g,px+18,py-30,20,14,2);g.fill();g.fillStyle='#7ac8e8';g.fillRect(px+20,py-28,16,9)}
   g.fillStyle='rgba(255,255,255,.28)';poly(g,[c0+20,y0+18,c0+40,y0+18,c0+24,y1-20,c0+16,y1-20]);g.fill();
   g.fillStyle='#8a8880';g.fillRect(c0+6,y0,6,y1-y0);g.fillRect(c1-12,y0,6,y1-y0);g.fillRect(c0+6,y1-18,w-12,6);g.fillStyle='#c8c6be';g.fillRect(c0+10,y1-20,w-20,4);
   // l'auvent : bandeau rouge et blanc, feu de voie vert
@@ -195,6 +195,8 @@ function a4Step(dt){const S=L.a4;if(!S)return;const D=L.def.a4,GY=D.G0*T,hb={x:P
      if(gone){m.on=false;m.y=99999}}
    S.trucks=S.trucks.filter(m=>m.on);a4Prune();
    for(const m of S.trucks)if(!P.dead&&!a4Riding(m)&&(overlap(hb,{x:m.x+8,y:m.y+A4.CAB+8,w:A4_TRW-8,h:m.vh-A4.CAB-8})||overlap(hb,{x:m.cab.x,y:m.cab.y+10,w:A4.CW-8,h:m.vh-A4.CAB-10})))hit='camion'}
+  // de la cabine vers l'arrière : on remonte d'une marche sur la remorque (au lieu de tomber dedans)
+  if(P.onMover&&P.onMover.kind==='a4cab'&&P.x+P.w/2<P.onMover.x+2){const m=P.onMover.par;P.onMover=m;P.y=m.y-P.h;P.vy=0;P.onGround=true}
   // les ponts : sur le toit d'un camion, on s'y écrase ; on ne peut pas sauter par-dessus (grillage)
   // (sur le toit, la tête touche le tablier : l'espace au-dessus du camion est plus petit qu'un pigeon ; sur la cabine aussi)
   for(const[a,b]of D.bridges)if(!P.dead&&pcx>a-8&&pcx<b+8&&(P.y+4<A4.DECK||(P.onMover&&P.onMover.kind==='a4cab'))){hit='pont';break}

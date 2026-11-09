@@ -17,6 +17,7 @@ const DEATH_Q={
   dineur:["Bam, sur la table. J'étais dessous la main.","Les dîneurs n'aiment pas les pigeons au milieu du plat du jour."],
   ventilo:[/*v2*/"Les pales du ventilateur. Une hélice, comme sur les aéroplanes de l'escadrille. Sauf que celle-là ne m'emmène nulle part.",/*v2*/"Fauché par un ventilateur. On m'avait dit de me méfier des moulins."],
   pompiste:[/*v2*/"Le monsieur de la pompe m'a chassé d'un revers de pistolet. Ça sentait le gasoil jusqu'au bout des plumes.",/*v2*/"On ne passe pas entre un homme et son plein. C'est sacré, apparemment."],
+  chariot:[/*v2*/"Renversé par le chariot des plateaux sales. Mourir sous une pile d'assiettes : la gloire n'est plus ce qu'elle était.",/*v2*/"La dame au chariot ne regarde pas où elle va. Moi non plus, apparemment."],
   dineur2:[/*v2*/"J'ai frôlé un dîneur. Il a sursauté, sa fourchette aussi, et c'est moi qui l'ai prise.",/*v2*/"On ne bouscule pas les gens qui mangent. Même au front, la soupe était sacrée."],
   mendiant:["Il m'a demandé une miette. J'ai voulu passer. Il s'est accroché à mes plumes.","Bousculé par un mendiant. Il n'avait rien, et maintenant moi non plus."],
   crachat:["Une gargouille m'a craché dessus. Huit cents ans de pratique.","Douché par une gargouille. On apprend l'humilité, à Reims."],

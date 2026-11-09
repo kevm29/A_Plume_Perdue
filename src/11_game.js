@@ -267,7 +267,7 @@ function stepPlay(dt){
   const wasG=P.onGround,vyBefore=P.vy,prevB=P.y+P.h;
   P.onGround=false;P.onMover=null;
   moveY(P,P.vy*dt);
-  if(P.y<0){P.y=0;if(P.vy<0)P.vy=0}
+  {const top=(L.def.camMin||0)-160;if(P.y<top){P.y=top;if(P.vy<0)P.vy=0}}
   if(P.vy>=0&&!P.onGround){
     for(const m of L.movers){const b=P.y+P.h;if(P.x+P.w>m.x+2&&P.x<m.x+(m.colW||(m.kind==='truck'?m.w-40:m.w))-2&&prevB<=m.y+Math.max(0,-m.dy)+1.5&&b>=m.y){P.y=m.y-P.h;P.vy=0;P.onGround=true;P.onMover=m;break}}
   }
@@ -424,6 +424,6 @@ function updateCamera(dt){
   let ty=P.lastGY-H*(L.def.camYAt?L.def.camYAt(P.x):(L.def.camY||.5));
   if(P.y-ty<40)ty=P.y-40;if(P.y+P.h-ty>H-50)ty=P.y+P.h-H+50;
   if(P.ride)ty=P.y-H*.42;
-  ty=clamp(ty,0,ROWS*T-H);
+  ty=clamp(ty,L.def.camMin||0,ROWS*T-H);
   const k=1-Math.exp(-dt*5);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k;
 }
