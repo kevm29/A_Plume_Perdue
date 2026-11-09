@@ -294,7 +294,7 @@ function stepPlay(dt){
   for(const k of L.corn)if(!k.taken&&cornOn(k)&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
     if((S.run.wear||0)>0){S.run.wear--;save();P.sx=1.15;P.sy=1.15;puff(pc.x,pc.y,6,true);if(!G.tuftSaid){G.tuftSaid=true;say(pick(TUFT_Q),3.4)}}}
   if(medalVis()&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();S.run.medals[G.li]=true;save();say(pick(MEDAL_Q),3.6)}
-  for(const cp of L.cps)if(!cp.on&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y};SFX.check()}
+  for(const cp of L.cps)if(!cp.on&&!(cp.era&&L.cb&&cp.era!==L.cb.era)&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y,era:cp.era};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;

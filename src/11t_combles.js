@@ -18,44 +18,45 @@ const CB={};
   const g=Array.from({length:CBR},()=>Array(CBW).fill('.'));
   const fill=(c0,c1,r0,r1,ch)=>{for(let c=c0;c<=c1;c++)for(let r=r0;r<=r1;r++)g[r][c]=ch};
   const put=(c,r,ch)=>{g[r][c]=ch};
-  // les poutres : b = toujours là ; n = 2026 seulement ; f = vermoulue en 2026, saine en 1914 ; o = 1914 seulement, vermoulue ; p = 1914 seulement, saine
+  // les poutres : b = toujours là ; n = 2026 seulement ; r = saine en 2026, vermoulue en 1914 ; f = vermoulue en 2026, saine en 1914 ; o = 1914 seulement, vermoulue ; p = 1914 seulement, saine
   const B=[];const bm=(c0,c1,r,e)=>{B.push({c0,c1,r,e:e||'b'});if(!e||e==='b')for(let c=c0;c<=c1;c++)g[r][c]='='};
   // le toit, les pignons, le palier de l'escalier
   fill(0,CBW-1,0,0,'#');fill(0,1,0,CBR-1,'X');fill(CBW-3,CBW-1,0,CBR-1,'X');fill(2,4,20,CBR-1,'X');
   /* A · la nef, côté ouest */
-  put(3,19,'S');put(6,19,'h');
-  bm(6,11,20);bm(13,19,18);bm(23,25,15);bm(26,28,15,'f');bm(21,30,11);bm(23,27,7);bm(30,34,16);
+  put(3,19,'S');
+  bm(6,11,20);bm(13,19,18);bm(23,25,15);bm(26,28,15,'f');bm(21,30,11);bm(23,27,7,'f');bm(30,34,16);
   bm(19,24,22,'n');                                   // sous la toile W1
   bm(9,12,15,'o');bm(4,7,12,'o');bm(8,11,9,'o');bm(3,6,6,'o');bm(8,13,3,'p');   // 1914 : tout en haut à gauche
   put(8,19,'k');
   for(const[c,r]of[[9,19],[15,17],[17,17],[24,14],[27,14],[23,10],[26,10],[29,10],[32,15],[10,14],[5,11],[9,8],[4,5],[10,2],[12,2]])put(c,r,'o');
   /* B · la charpente : on monte */
-  bm(36,39,17);bm(41,44,14,'f');bm(46,48,11);bm(50,53,9);bm(54,64,6);bm(59,62,3);
+  bm(36,39,17,'f');bm(41,44,14,'f');bm(46,48,11);bm(50,53,9,'p');bm(54,64,6);bm(59,62,3);   // la poutre 50-53 n'existe qu'en 1914 : passage obligé
   bm(43,48,22,'n');                                   // sous la toile W2
   bm(37,40,8,'o');bm(33,36,4,'p');                    // 1914 : un perchoir de plus
   put(52,8,'C');put(44,8,'m');
   for(const[c,r]of[[37,16],[42,13],[44,13],[47,10],[51,8],[56,5],[60,5],[63,5],[38,7],[34,3],[35,3]])put(c,r,'o');
   /* C · la descente */
-  bm(66,69,10);bm(71,75,14);bm(77,82,18);bm(84,92,20);
-  bm(62,67,22,'n');                                   // sous la toile W3
+  bm(66,69,10);bm(71,75,14,'f');bm(77,82,18);bm(84,92,20);
+  bm(62,67,22,'r');bm(64,67,17,'o');                  // sous la toile W3 ; en 1914, une planche pour remonter                                   // sous la toile W3
   put(72,13,'k');put(70,11,'m');put(84,15,'n');put(91,19,'C');
   for(const[c,r]of[[67,9],[68,9],[72,12],[74,12],[78,17],[80,17],[86,19],[88,19]])put(c,r,'o');
   /* D · la chambre des cloches (son plancher, troué) */
   fill(93,94,1,16,'X');fill(126,127,7,CBR-1,'X');fill(126,127,1,1,'X');
-  bm(95,101,21);bm(104,107,21);bm(111,118,21);bm(121,125,21);
+  bm(95,101,21);bm(104,107,21,'f');bm(111,118,21);bm(121,125,21);
   bm(96,99,17);put(102,11,'I');bm(105,107,10);put(110,5,'I');bm(113,116,7);put(119,1,'I');bm(122,125,4);bm(99,101,3);
   put(104,15,'m');put(116,12,'m');put(124,3,'C');
   for(const[c,r]of[[97,16],[98,16],[102,9],[106,9],[110,3],[114,6],[115,6],[121,2],[123,3]])put(c,r,'o');
   /* E · le comble du chœur */
-  bm(128,134,5);bm(135,140,7,'f');bm(138,142,2);bm(142,146,8);bm(150,155,7);bm(151,155,2);bm(157,160,9);bm(162,166,11);bm(169,172,13);
+  bm(128,134,5);bm(135,140,7,'f');bm(138,142,2);bm(142,146,8);bm(150,155,7,'p');bm(151,155,2);bm(157,160,9);bm(162,166,11,'n');bm(169,172,13,'f');   // 150-155 : 1914 seulement ; 162-166 : 2026 seulement
   bm(130,136,16);bm(139,145,19);bm(156,161,18);bm(164,168,16);          // le chemin du bas, pour qui est tombé
   bm(146,151,22,'n');                                 // sous la toile W4
   put(158,8,'C');put(132,15,'k');put(164,10,'k');
   for(const[c,r]of[[129,4],[131,4],[133,4],[137,6],[139,6],[143,7],[145,7],[152,6],[154,6],[163,10],[170,12],[133,15],[141,18],[158,17],[166,15]])put(c,r,'o');
   /* F · vers le trou du toit */
-  bm(175,178,10);bm(180,182,8,'f');bm(184,188,6);bm(189,193,2);bm(192,196,4);bm(199,203,3);
+  bm(175,178,10);bm(180,182,8,'f');bm(184,188,6,'f');bm(189,193,2);bm(192,196,4);bm(199,203,3);
   bm(176,180,17);bm(184,191,15);bm(186,188,11);
-  bm(189,194,22,'n');                                 // sous la toile W5
+  bm(189,194,22,'r');bm(192,195,18,'o');              // sous la toile W5 ; en 1914, une planche pour remonter
+  bm(197,201,19,'p');                                 // en 1914, tout en bas à droite : le canif
   put(178,15,'m');put(187,14,'k');
   for(const[c,r]of[[176,9],[178,9],[181,7],[185,5],[187,5],[193,3],[195,3],[200,2],[202,2],[186,10],[189,14],[178,16]])put(c,r,'o');
   // le trou dans le toit (2026)
@@ -80,31 +81,45 @@ function comblesPost(Lv){
   const pig=(k,a,b,y,o)=>Object.assign({k,a:a*T,b:b*T,y0:y*T,x:a*T,y:y*T,f:1,st:'walk',t:0,beg:0,home:(a+b)/2*T},o||{});
   C.pig=[pig('moignon',13.6,18.6,18),pig('deplume',77.3,82.6,18),pig('gros',84.5,89,20,{h:100}),pig('moignon',142.5,146,8),pig('gros',150.6,155,7,{h:80,t:2}),pig('deplume',184.3,191.6,15),pig('moignon',192.4,196,4)];
   C.webs=[];
+  // chaque bête posée sur une poutre d'une seule époque n'existe qu'à cette époque ; chaque paille appartient à une époque
+  const eraAt=(x,y)=>{const c=Math.floor(x/T),r=Math.round(y/T);for(const b of CB.beams)if(b.r===r&&c>=b.c0-1&&c<=b.c1+1)return b.e==='n'?26:(b.e==='o'||b.e==='p')?14:0;return 0};
+  for(const o of Lv.rats)o.era=eraAt(o.x+o.w/2,o.y+o.h);for(const o of C.pig)o.era=eraAt(o.home,o.y0);for(const o of C.owls)o.era=eraAt(o.hx,o.hy);
+  for(const o of C.squirrels)o.era=eraAt((o.a+o.b)/2,o.y);for(const o of C.chieurs)o.era=eraAt(o.x,o.y);
+  C.all={rats:Lv.rats.slice(),pig:C.pig,owls:C.owls,squirrels:C.squirrels,chieurs:C.chieurs};
+  {const free=[],n={14:0,26:0};for(const k of Lv.corn){const c=Math.floor(k.x/T),r=Math.floor(k.y/T);let e=null;
+     for(const b of CB.beams)if(c>=b.c0-1&&c<=b.c1+1&&b.r>r&&b.r<=r+3&&(!e||b.r<e.r))e=b;
+     k.era=e&&e.e==='n'?26:e&&(e.e==='o'||e.e==='p')?14:0;if(k.era)n[k.era]++;else free.push(k)}
+   // les pailles des poutres communes : réparties pour que chaque époque en ait autant, en alternant le long du niveau
+   free.sort((a,b)=>a.x-b.x);let need26=Math.max(0,Math.round(Lv.corn.length/2)-n[26]),i=0;
+   for(const k of free){const left=free.length-i;k.era=(need26>=left||(need26>0&&i%2===0))?26:14;if(k.era===26)need26--;i++}}
+  // les fanions : la moitié en 1914, la moitié en 2026
+  for(const cp of Lv.cps){const c=Math.round(cp.x/T);cp.era=c<70?14:c<110?26:c<140?14:26}
   // les poutres qui changent avec l'époque
   // (les poutres vermoulues sont coupées en tronçons : chacun ne cède que si on s'y pose, l'un après l'autre)
-  C.dyn=[];for(const b of CB.beams){if(b.e==='b')continue;const frag=b.e==='f'||b.e==='o',n=b.c1-b.c0+1,sz=!frag?n:n<=2?1:2;
+  C.dyn=[];for(const b of CB.beams){if(b.e==='b')continue;const frag=b.e==='f'||b.e==='o'||b.e==='r',n=b.c1-b.c0+1,sz=!frag?n:n<=2?1:2;
     for(let c=b.c0;c<=b.c1;c+=sz)C.dyn.push(Object.assign({},b,{c0:c,c1:Math.min(b.c1,c+sz-1),st:'ok',t:0,deb:[],seg:frag&&n>1}))}
   Lv.acts=Lv.acts||[];
   C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Vasseur. Il a fini ses jours ici, au calme. Il y a pire."]};
   C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Vasseur montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
-  C.canif={kind:'secret',style:'canif',x:11.5*T,y:3*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:["Un canif oublié sur la poutre, tout en haut. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
+  C.canif={kind:'secret',style:'canif',x:199.5*T,y:19*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:[/*v2*/"Un canif oublié sur une poutre, tout en bas. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
   Lv.acts.push(C.bague,C.graf,C.canif);
-  // la médaille de la mission : en 1914, tout en haut à gauche, au bout de la poutre du canif
+  // la médaille de la mission : en 1914, tout en haut à gauche
   Lv.medal={x:8.6*T,y:2.45*T,taken:false,era:14};
   C.motes=Array.from({length:70},(_,i)=>({r:i%CB.rays.length,u:(i*.137)%1,v:(i*.618)%1,s:.6+(i%5)*.3}));
   comblesApplyEra(Lv,26);
 }
 /* l'époque : quelles poutres, quelles toiles, le trou du toit */
-function cbActive(b,era){return era===26?(b.e==='n'||b.e==='f'):(b.e==='f'||b.e==='o'||b.e==='p')}
-function cbFragile(b,era){return era===26?b.e==='f':b.e==='o'}
+function cbActive(b,era){return b.e==='r'||(era===26?(b.e==='n'||b.e==='f'):(b.e==='f'||b.e==='o'||b.e==='p'))}
+function cbFragile(b,era){return era===26?b.e==='f':(b.e==='o'||b.e==='r')}
 function comblesApplyEra(Lv,era){const C=Lv.cb;C.era=era;
+  if(C.all){const f=a=>a.filter(o=>!o.era||o.era===era);Lv.rats=f(C.all.rats);C.pig=f(C.all.pig);C.owls=f(C.all.owls);C.squirrels=f(C.all.squirrels);C.chieurs=f(C.all.chieurs)}
   for(const b of C.dyn){b.st='ok';b.t=0;b.deb=[];for(let c=b.c0;c<=b.c1;c++)Lv.g[b.r][c]=cbActive(b,era)?'=':'.'}
   for(let c=200;c<=204;c++)Lv.g[0][c]=era===26?'.':'#';
   C.webs=(era===26?CB.webs26:CB.webs14).map(([x,y,w,h])=>({x:x*T,y:y*T,w:w*T,h:h*T,shake:0}))}
 function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Septembre 1914. La charpente sent le bois neuf… presque. Il y a des poutres que je ne connaissais pas.",4.2)}}
-function comblesRespawn(){const C=L.cb;if(!C)return;C.drops=[];C.grace=1;C.talk=null;for(const o of C.owls){o.st='perch';o.x=o.hx;o.y=o.hy;o.cool=1.5}for(const p of C.pig)if(p.k==='deplume'){p.x=p.home;p.st='walk';p.chase=0;p.rt=0}
+function comblesRespawn(){const C=L.cb;if(!C)return;{const e=(P.cp&&P.cp.era)||26;if(e!==C.era){comblesApplyEra(L,e);MUS_OLD=e===14}}C.drops=[];C.grace=1;C.talk=null;for(const o of C.owls){o.st='perch';o.x=o.hx;o.y=o.hy;o.cool=1.5}for(const p of C.pig)if(p.k==='deplume'){p.x=p.home;p.st='walk';p.chase=0;p.rt=0}
   for(const b of C.dyn)if(b.st!=='ok'){b.st='ok';b.deb=[];for(let c=b.c0;c<=b.c1;c++)L.g[b.r][c]=cbActive(b,C.era)?'=':'.'}}
 /* la lumière : le soleil entre et sort des nuages */
 function cbLum(t){return clamp(.62+.38*Math.sin(t*.21)+.18*Math.sin(t*.53+1.3),.15,1)}

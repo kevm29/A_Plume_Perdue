@@ -121,7 +121,7 @@ function fertePost(Lv){
     q:["Deux têtes rentrent, zzzip, la tente se ferme. Et devant, sur le tapis de sol, de la paille. Le camping, c'est la tranchée sans les obus."]};Lv.acts.push(F.tent);
   F.seau={kind:'secret',style:'seau',x:27*T-26,y:FGR*T,open:0,t:0,used:false,q:["Dans le seau du pêcheur : trois gardons, et de la paille pour les garder au frais. Je prends la paille. Les gardons, ce n'est pas mon rayon."]};Lv.acts.push(F.seau);
 }
-function cornOn(k){return!(k.era&&L.ferte&&k.era!==L.ferte.era)&&!(k.pass&&L.pl&&k.pass!==L.pl.pass)}
+function cornOn(k){return!(k.era&&L.ferte&&k.era!==L.ferte.era)&&!(k.era&&L.cb&&k.era!==L.cb.era)&&!(k.pass&&L.pl&&k.pass!==L.pl.pass)}
 /* les calques de 1914 (fond, plan moyen, tuiles) */
 function ferteLayers(){
   const F=L.ferte;if(!F)return;
