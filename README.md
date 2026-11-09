@@ -80,3 +80,7 @@ Le scénario complet, y compris la fin, est dans [`docs/histoire.md`](docs/histo
 - La musique et les bruitages sont synthétisés en direct avec la Web Audio API : un morceau par lieu, plus un morceau de poursuite.
 - Le code source est découpé dans `src/` (moteur, décors, personnages, niveaux, textes, musique). `./build.sh` les assemble dans `index.html`, qui reste le seul fichier à distribuer.
 - Une version Windows (.exe, via Electron) est prévue dans un dossier `windows/`.
+
+## Textes à réviser (tag v2)
+
+Tout texte ajouté après la relecture complète du 9 novembre 2026 est précédé du commentaire `/*v2*/` dans le code. `grep -rn "/\*v2\*/" src` les liste tous.
