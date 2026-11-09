@@ -19,7 +19,7 @@ const ACH=[
  ['a15','P','Le pot de fleurs',"Voir la fin du jeu."],
  ['a17','P','Article 4 bis',"Lire les vingt morceaux de la lettre."],
  ['a24','C','Rembourré à neuf',"Revenir à cinq crans pleins après être descendu au dernier."],
- ['a26','C','Bardé de décorations',"Trouver les cinq médailles dans une même partie."],
+ ['a26','C','Bardé de décorations',/*v2*/"Trouver les six médailles dans une même partie."],
  ['a30','C',"Rien ne m'échappe","Trouver tous les secrets du jeu."],
  ['a35','C','Mission parfaite',"Tout trouver dans une mission."],
  ['a49','D','Recousu de travers',"Perdre la tête une première fois."],
@@ -55,7 +55,7 @@ function achMission(w){
   let pts=0,mx=0,acc=0;for(let k=w*4;k<w*4+4;k++){const o=S.run.stats[k];if(o){pts+=o.points||0;mx+=o.max||1;acc+=o.deaths||0}else{acc+=99;mx+=1}}
   if(pts>=mx)unlock('a35');if(acc===0)unlock('a12');
   if(w===4){unlock('a9');if(!S.run.headLost&&!S.run.usedInf)unlock('a10');if(!S.run.anyAccroc&&!S.run.usedInf)unlock('a11')}
-  if(Object.keys(S.run.medals||{}).length>=5)unlock('a26');
+  if(Object.keys(S.run.medals||{}).length>=6)unlock('a26');   // cinq médailles de mission + celle de la tranchée de 1916 (2-1)
 }
 
 /* ---------- médailles : une par succès, dessinée une fois puis mise en cache ---------- */
