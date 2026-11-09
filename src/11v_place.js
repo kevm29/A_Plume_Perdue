@@ -252,7 +252,7 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
     once('grill',pcx>51*T,"Des grillades. Le cuisinier a plus peur de son feu que moi.",3.4);
     once('bal',pcx>61*T,"Un orchestre ! Lucien dansait si mal. Marguerite riait si fort.",3.8);
     once('manege',pcx>112*T,"Des chevaux de bois ! Comme à la foire de Coulommiers. Ils tournent, ils montent, ils descendent.",4)}
-  if(S2.pass===2){once('pig',pcx<110*T,"Les pigeons du coin ont pris les toits. Ils ne partagent pas.",3.4);once('chat',pcx<19*T,"Un chat sur le toit du marchand de miel. Article 3 : en cas de chat… le contourner, par le haut.",4)}
+  if(S2.pass===2){once('pig',pcx<110*T,"Les pigeons du coin ont pris les toits. Ils ne partagent pas.",3.4);once('chat',pcx<19*T,"Un chat sur le toit du marchand de miel. Toujours à bouffer, ceux-là !",4)}
   if(S2.pass===3){once('vide',pcx>58*T,"Les musiciens sont partis. Les marchands remballent. Et toujours pas de Marguerite.",3.8);once('hibou',pcx>98*T,"Un hibou. Il a l'œil sur moi. Les deux yeux, même.",3.4)}
   // fin du passage
   if(!S2.seq&&!P.dead&&(S2.dir>0?pcx>S2.endX:pcx<S2.endX)){if(S2.pass<4)S2.seq={k:'pass',t:0,next:S2.pass+1};else S2.seq={k:'end',t:0,x0:P.x};P.vx=0;G.quip=null;G.quipQ=[]}

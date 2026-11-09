@@ -30,9 +30,9 @@ function museeHide(a){
 }
 const MUSEE_SEQ={
   1:[[0,'say',"Les gars ! Filez d'ici, il y a des Allemands dans l'abri, je les ai vus !",3],[2.7,'coo',"Rrrou ! Rou-rou-rou !"],[4.3,'say',"Ils ne comprennent pas le pigeon. On ne l'apprend jamais, à l'armée.",3.2]],
-  2:[[0,'say',"Des Allemands ! Ils ne bougent presque pas. Et ils ont la peau en cire… La faim, sûrement.",3.4]],
-  3:[[0,'say',"Repliez-vous ! L'ennemi est juste en face, dans l'autre tranchée !",3],[2.7,'coo',"ROU ! Rrrou-rou !"],[4.3,'say',"Rien. Ils ne bougent pas d'une plume. Des braves… ou des sourds.",3.2]],
-  4:[[0,'say',"Celui-là écrit une lettre, à la bougie. Je connais ça : j'en porte une.",3.4]]};
+  2:[[0,'say',"Des Allemands ! Ils ne bougent presque pas. Et ils ont le teint blafard… La faim, sûrement.",3.4]],
+  3:[[0,'say',"Repliez-vous ! L'ennemi est juste en face, dans l'autre tranchée !",3],[2.7,'coo',"ROU ! Rrrou-rou !"],[4.3,'say',"Rien. Ils ne bougent pas d'une plume. Des braves… ou des sourds. Quelle idée de mettre des sourds au front !",3.2]],
+  4:[[0,'say',"Celui-là écrit une lettre, à la bougie. Je connais ça : j'en porte une. Lucien…",3.4]]};
 function museeStep(dt){
   const M=L.musee;if(!M)return;const pcx=P.x+P.w/2,pfy=P.y+P.h;
   for(const c of M.cups){c.anim=Math.max(0,c.anim-dt);c.open=c.anim>0?Math.sin((1-c.anim/.5)*Math.PI):0}

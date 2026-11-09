@@ -165,11 +165,11 @@ function comblesStep(dt){const C=L.cb;if(!C)return;C.t+=dt;if(C.grace>0)C.grace-
   const once=(k,c,txt,d)=>{if(!C.said[k]&&c&&!C.talk){C.said[k]=1;say(txt,d||3.8)}};
   once('ronge',pcx>24*T&&C.era===26,"Des planches vermoulues. Elles ont l'air solides. Elles l'ont l'air seulement.",3.6);
   once('poutres',pcx>35*T,"Pas de plancher, pas de fond. De poutre en poutre, comme les écureuils. Le règlement n'a rien prévu pour les écureuils.",4.4);
-  once('soleil',pcx>66*T,"Le soleil passe entre les tuiles. Dans ses rayons, la poussière tombe comme la neige de 1916.",4);
+  once('soleil',pcx>66*T,"Le soleil passe entre les tuiles. Dans ses rayons, la poussière tombe comme la neige à une autre époque.",4);
   once('cloches',pcx>95*T,"La chambre des cloches. Elles sonnent pour quelqu'un. Pas pour moi, j'espère.",3.6);
   once('choeur',pcx>129*T,"Le comble du chœur. Ça monte encore. Il doit bien y avoir un trou dans ce toit.",3.6);
   once('trou',pcx>186*T&&C.era===26,"De la lumière, là-haut. Un trou dans la charpente. On sort toujours par le haut.",3.6);
-  once('trou14',pcx>196*T&&C.era===14,"En 1914, le toit tenait encore. Il faudra revenir en 2026 pour sortir.",3.6);
+  once('trou14',pcx>196*T&&C.era===14,"En 1914, le toit tenait encore. Qu'en est-il aujourd'hui ?",3.6);
 }
 function comblesAfterMove(){const C=L.cb;if(!C)return null;if(C.hit){const h=C.hit;C.hit=null;return h}if(P.y>CBR*T)return'voute';return null}
 /* ---------- la fin : sur le toit, la commune, le bal ---------- */

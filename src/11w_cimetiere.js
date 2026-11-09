@@ -123,7 +123,7 @@ function cmRespawn(){const C=L.cm;if(!C)return;C.hit=null;for(const o of C.owls)
 
 /* ---------- le monument aux morts : on s'approche des noms ---------- */
 const CM_MEM_LINES=[[0,"Le monument aux morts. « Hommage des enfants de Crécy à leurs aînés morts pour la patrie. »",4.6],
-  [4.8,"Vasseur… Lucien.",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré.",4.4],[14.8,"Marguerite doit être plus loin.",3]];
+  [4.8,"Vasseur… Lucien…",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré. Mon pauvre Lucien…",4.4],[14.8,"Marguerite ne doit plus être très loin…",3]];
 function cmNameXY(){// la place du nom de Lucien sur la plaque de droite
   const i=CM_NAMES.findIndex(n=>n[0]==='VASSEUR'),half=Math.ceil(CM_NAMES.length/2),j=i-half;return[CMX.mem.x+58,234+j*8.2]}
 function cmSeqStep(dt){const C=L.cm,q=C.seq;q.t+=dt;G.lt+=dt;P.vx=0;P.vy=Math.min(MAXFALL,P.vy+GRAV*dt);P.onGround=false;moveY(P,P.vy*dt);P.facing=1;

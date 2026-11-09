@@ -207,7 +207,7 @@ function buseBurn(K,dt){
   if(K.state==='burn'){K.bt+=dt;K.vy=Math.min(500,(K.vy||0)+900*dt);K.x+=K.vx*dt*.4;K.y+=K.vy*dt;if(K.floor&&K.y+K.h>K.floor){K.y=K.floor-K.h;K.vy=0;K.vx*=.9}
     if(!G.sim&&rnd()<.6)parts.push({type:'dust',x:K.x+K.w/2+(rnd()-.5)*20,y:K.y,vx:(rnd()-.5)*40,vy:-60-rnd()*60,life:0,max:.9});
     if(K.bt>1.8){K.state='dead';G.chase=false;setSong(songKey(G.li));
-      if(!G.sim)sayQueue([["RAYMOND","Elle a pris feu comme une botte de foin. Comme… de la paille ?",4.2],["RAYMOND","Les buses, ça ne brûle pas comme ça. Si ?",3.6]])}
+}
     return true}
   if(K.state==='dead')return true;
   // quand Raymond dépasse le braséro, la buse fond sur lui... et plonge dans le feu

@@ -114,7 +114,7 @@ function a4Step(dt){const S=L.a4;if(!S)return;const D=L.def.a4,GY=D.G0*T,hb={x:P
      const c=Math.floor(o.x/T),r=Math.floor((o.y+6)/T);if(o.vy>0&&isSolid(c,r)&&o.b<2){o.y=r*T-6;o.vy=-(420+rnd()*200);o.vx=(rnd()-.5)*520;o.b++}
      if(!P.dead&&Math.abs(o.x-pcx)<14&&Math.abs(o.y-pcy)<16)hit='objet'}
    S.objs=S.objs.filter(o=>o.y<GY+40&&o.y>-200);
-   if(!S.said.jam&&!G.sim&&pcx>D.jamX-300){S.said.jam=1;say("Tout le monde est arrêté. Le péage de Thillois. Ils paient pour avancer, et ils n'avancent pas.",4)}
+   if(!S.said.jam&&!G.sim&&pcx>D.jamX-300){S.said.jam=1;say("Tout le monde est arrêté. Le péage de Thillois ? Ils paient pour avancer ? Et ils n'avancent pas… Je ne comprends pas le but !",4)}
    if(!S.said.acc&&!G.sim&&pcx>11700){S.said.acc=1;say("Un accrochage, devant. Ils s'envoient leurs affaires à la figure. On se croirait dans une tranchée.",4)}}
   // le camion-benne : la benne se lève (et verse le goudron), redescend ; levée, elle barre le passage
   {const t=D.tar,u=G.lt%7,ang=u<2.2?0:u<3?(u-2.2)/.8:u<6.2?1:1-(u-6.2)/.8;S.bedA=ang;const up=ang>.25;
@@ -142,13 +142,13 @@ function a4Respawn(){const S=L.a4;if(!S)return;const D=L.def.a4;S.grace=2.2;S.ob
   else for(const m of S.trucks)if(!m.stopped&&Math.abs(m.x-P.x)<900){m.on=false;m.y=99999}}
 /* actions : les gyrophares, le pneu, le moteur */
 function a4Act(a){const S=L.a4;if(!S)return false;
-  if(a.style==='beacon'){const b=S.beacons[a.i];if(!b.on){if(!G.sim)say("Celui-là, c'est fait.",2.4);return true}
+  if(a.style==='beacon'){const b=S.beacons[a.i];if(!b.on){if(!G.sim)say("Celui-là, c'est fait. J'en vois un autre au loin.",2.4);return true}
     b.on=false;if(!G.sim){tone(880,.06,'square',.05);noise(.15,2600,.1,'highpass')}const other=S.beacons[1-a.i];
     if(other.on){if(!G.sim)say(a.i===0?"Ah… Ça fait du bien aux yeux. J'ai failli faire une crise d'épilepsie.":"Un de moins. Il en reste un, là-bas, qui clignote encore.",3.8)}
     else{const sec=L.acts.find(x=>x.kind==='secret'&&x.style==='beacon');if(sec&&!sec.used)grantSecret(sec,sec.y-30)}
     return true}
   if(a.style==='tyre'){if(a.used)return false;grantSecret(a,a.y-30);S.hog={x:a.x-10,t:0};
-    if(!G.sim){noise(.3,900,.12,'bandpass');setTimeout(()=>say("Un hérisson ! Non… non, pas par là ! Pas sur l'autoroute ! Vous faites tous la même bêtise, et vous finissez en tapis sous les pneus !",4.6),500)}return true}
+    if(!G.sim){noise(.3,900,.12,'bandpass');setTimeout(()=>say("Un hérisson ! Non… non, pas par là ! Pas sur l'autoroute ! Vous faites tous la même connerie, et vous finissez en tapis sous les pneus !",4.6),500)}return true}
   if(a.style==='engine'){if(a.used)return false;S.drops=S.drops||[];grantSecret(a,a.y-30);if(!G.sim)noise(.25,500,.1,'lowpass');return true}
   return false}
 function a4Lights(){const S=L.a4;if(!S)return[];const D=L.def.a4,GY=D.G0*T,out=[];

@@ -48,7 +48,7 @@ Chaque niveau terminé révèle un fragment, mais Raymond ne lit les quatre morc
 | 1 | *Fort de Vaux, le 2 juin 1916.* Marguerite, je t'écris cette lettre pour te rassurer et te dire qu'ici, tout va bien. | Je l'ai vu l'écrire, cette lettre. Dire que tout va bien, c'est un doux euphémisme… |
 | 2 | … Nous sommes en surnombre et nous repoussons les Allemands. | Il me semble pourtant les avoir survolés en partant ! |
 | 3 | … Je vois une issue à cette guerre sans fin… | Quel était son plan, pour dire cela ? La veille encore, le commandant disait que ça durerait ! |
-| 4 | … mais je ne vois pas mon retour auprès de toi. | Mais… je respecte le règlement : je ne lis pas la suite ! |
+| 4 | … mais je ne vois pas mon retour auprès de toi. | Mais… ? Je respecte le règlement : je ne lirai pas la suite ! |
 | 5 | … C'est fini entre nous. Je ne reviendrai pas à Crécy-la-Chapelle. | Par pigeon ? Il rompt par pigeon ? Moi qui pensais transporter des plans de bataille ! |
 | 6 | … Épouse le fils Garnier. Il a deux vaches, une charrette, et il a été réformé. | Il la quitte et il lui choisit son remplaçant. De quel droit ! Un réformé, en plus. |
 | 7 | … Si cela peut t'aider, brûle mes lettres, oublie mon nom… | Il ne l'a donc jamais aimée… Les hommes sont compliqués. Les pigeons, non. |

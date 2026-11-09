@@ -448,7 +448,7 @@ const DEATH_Q={
   pigeon:["Bousculé par un pigeon de la ville. Aucune solidarité entre collègues.","Il m'a donné un coup de bec. Moi, un décoré !"],
   hedgehog:["Un hérisson. Je l'ai pris pour un tas de barbelés. Erreur de débutant."],
   goose:["Une oie. Plus dangereuse qu'un régiment de uhlans.","L'oie a gagné. L'oie gagne toujours."],
-  cat:["Le chat. Toujours le chat.","Il m'a recraché. Même Bijou me trouve fade.","Note pour le règlement : ajouter un article sur les chats."],
+  cat:["Le chat. Toujours le chat.","Il m'a recraché. Même Bijou me trouve fade.","Article 3 : en cas de chat, courir. J'aurais dû le relire."],
   moth:["Les mites m'ont grignoté la cuisse. Elles appellent ça un buffet.","Tineola bisselliella. Petit nom, gros appétit."],
   crow:["Un corbeau. Ils ont toujours été du côté de l'ennemi.","Le corbeau m'a pris pour son déjeuner. Il a été déçu."],
   gull:["Une mouette. À Reims. Elle s'est perdue, ou c'est moi."],
@@ -509,7 +509,7 @@ const DEATH_Q={
   drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
 };
 const TUFT_Q=["De la paille. Bizarre, je me sens tout de suite plus épais.","Tiens, de la paille. Je ne sais pas pourquoi, ça me fait du bien.","Encore de la paille. Je ne comprends pas, mais je ne me plains pas."];
-const MEDAL_Q=["Une médaille du mérite colombophile. On me reconnaît enfin.","Une médaille. Je l'épinglerai à côté de l'autre. J'en avais une autre, non ?","Décoré. Le règlement prévoit un grain de maïs en plus. Je le réclamerai."];
+const MEDAL_Q=["Une médaille du mérite colombophile. J'adore être reconnu !","Une médaille. Je l'épinglerai à côté de l'autre. J'en avais une autre, non ?","Décoré. Le règlement prévoit un grain de maïs en plus. Je le réclamerai."];
 
 const INTRO=[
   {t:"Vittoncourt, Moselle. Octobre 2026.\nLe petit musée communal n'a plus les moyens d'ouvrir."},
@@ -660,15 +660,15 @@ const LETTERS_SRC=[
  {date:"Fort de Vaux, le 2 juin 1916.",text:"Marguerite, je t'écris cette lettre pour te rassurer et te dire qu'ici, tout va bien.",comment:"Je l'ai vu l'écrire, cette lettre. Dire que tout va bien, c'est un doux euphémisme…"},
  {text:"Nous sommes en surnombre et nous repoussons les Allemands.",comment:"Il me semble pourtant les avoir survolés en partant !"},
  {text:"Je vois une issue à cette guerre sans fin…",comment:"Quel était son plan, pour dire cela ? La veille encore, le commandant disait que ça durerait !"},
- {text:"mais je ne vois pas mon retour auprès de toi.",comment:"Mais… je respecte le règlement : je ne lis pas la suite !"},
+ {text:"… mais je ne vois pas mon retour auprès de toi.",comment:"Mais… ?\nJe respecte le règlement : je ne lirai pas la suite !"},
  {text:"C'est fini entre nous. Je ne reviendrai pas à Crécy-la-Chapelle.",comment:"Par pigeon ? Il rompt par pigeon ? Moi qui pensais transporter des plans de bataille !"},
  {text:"Épouse le fils Garnier. Il a deux vaches, une charrette, et il a été réformé.",comment:"Il la quitte et il lui choisit son remplaçant. De quel droit ! Un réformé, en plus."},
  {text:"Si cela peut t'aider, brûle mes lettres, oublie mon nom…",comment:"Il ne l'a donc jamais aimée… Les hommes sont compliqués. Les pigeons, non."},
- {text:"dis-toi que je n'ai jamais aimé ni ton rire au bal du 14 Juillet, ni tes robes bleues.",comment:"Il critique même ses toilettes. Je ne livre pas une lettre, je livre une gifle."},
+ {text:"… dis-toi que je n'ai jamais aimé ni ton rire au bal du 14 Juillet, ni tes robes bleues.",comment:"Il critique même ses toilettes. Je ne livre pas une lettre, je livre une gifle."},
  {text:"Ne garde rien de moi, pas même les photographies. Surtout pas les photographies.",comment:"Une goutte de pluie. Il ne devait plus être très étanche, le fort !",fx:'blot'},
  {text:"Ne pleure pas pour moi. Le fils Garnier saura te consoler. ~Ce n'est plus à moi de le faire.~",comment:"On ne raye pas une phrase qu'on ne pense pas."},
  {text:"Rends le chien à mon père et déménage…",comment:"Le chien ! Qu'est-ce qu'on en a à faire, du chien, quand tu la mets à la porte de chez elle ?"},
- {text:"le fils Garnier a bien de quoi t'héberger.",comment:"Quel goujat ! Et qui va-t-il ramener à sa place ? J'avais tant de respect pour mon maître…"},
+ {text:"… le fils Garnier a bien de quoi t'héberger.",comment:"Quel goujat ! Et qui va-t-il ramener à sa place ? J'avais tant de respect pour mon maître…"},
  {text:"Amuse-toi bien. Il saura sûrement mieux danser que moi.",comment:"Si la danse était un critère, le bal du dimanche serait désert !"},
  /* verso : l'humidité de l'orage (4-3) fait apparaître ce qui était écrit au dos */
  {pre:"Raymond retourne la lettre.\nL'humidité laisse entrevoir une suite à moitié effacée.",text:"Marguerite, tu te doutes bien que je ne te quitte pas parce que je ne t'aime plus.",comment:"Quel revirement de situation !",fx:'verso'},
@@ -694,7 +694,7 @@ LEVELS.push({w:0,name:"La vitrine",theme:'vitrine',exit:'door',seed:11,
         ["FIG. 5 — LE BEC","E : Tirer une poignée, ouvrir un tiroir, chiper ce qui dépasse. Un pigeon a un bec : qu'il s'en serve."],
         ["FIG. 6 — LE VOL PLANÉ","Battre des ailes au plus haut, puis maintenir le saut en tombant. Planer use l'aile aussi : quand la jauge est vide, on tombe. Dignité non incluse."],
         ["FIG. 7 — LA MITE","Tineola bisselliella. Elle suit toujours le même trajet, au même rythme. C'est pour ça que j'aime les mites."]],
- quips:["Le plancher est défoncé. Un obus, sûrement. Ils tombent jusqu'ici, maintenant.","Des meubles sous des draps. On a évacué en vitesse. L'ennemi doit être tout proche.","Une mite. Ça grignote les uniformes et les pigeons. Méfiance."],
+ quips:["Le plancher est défoncé. Un obus, sûrement. Ils tombent jusqu'ici, maintenant ?","Des meubles sous des draps. On a évacué en vitesse. L'ennemi doit être tout proche.","Une mite. Ça grignote les uniformes et les pigeons. Méfiance."],
  signs:["RÉSERVE|Accès interdit au public"],
  segs:[`
 ........l.....
@@ -795,7 +795,7 @@ LEVELS.push({w:0,name:"La galerie des insectes",tiroirAt:[64,4],sheetBase:0,them
  start:"Des papillons épinglés par centaines. Et quelqu'un qui marche, là-bas, avec une lampe.",
  hints:[["FIG. 8 — LE GARDIEN DE NUIT","Il fait sa ronde avec sa lampe. Il ne va pas aimer s'il croise un pigeon dans le noir !"],
         ["FIG. 9 — L'ÉPINGLE","Redoutable. Le pigeon qui s'y frotte y laisse des plumes. Au sens propre."]],
- quips:["Une sentinelle. Il ne m'a pas vu. Les sentinelles ne voient jamais les pigeons.","Un plafond hérissé d'épingles. Interdiction de battre des ailes. Je déteste les règlements que je n'ai pas écrits.","Des mites. Encore des mites. Partout. Le musée se fait dévorer de l'intérieur, et moi avec."],
+ quips:["Une sentinelle. Il ne m'a pas vu. Les sentinelles ne voient jamais les pigeons.","Un plafond hérissé d'épingles. Interdiction de battre des ailes. Je déteste les règlements que je n'ai pas écrits.","Des mites. Encore des mites. Toujours des mites. Le musée se fait dévorer de l'intérieur, et moi avec."],
  stashQuips:["Un carton creux. Et de la paille dedans. Finalement, la réserve, c'est un peu chez moi."],
  signs:["GALERIE D'ENTOMOLOGIE|Don du docteur Laffont"],
  segs:[SEG_START_FLAT,`
@@ -874,7 +874,7 @@ LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:3
  stashQuips:["Une planche cachée au-dessus du mammouth. Et de la paille. Quelqu'un a de l'humour, dans ce musée.","Un carton éventré. Le gardien n'a pas regardé dedans. Le gardien ne regarde jamais dans les cartons."],
  dark:{base:.9,period:3.4},
  start:"Un escalier. Là-haut, il fait noir comme dans un abri. Heureusement qu'il y a de l'orage.",
- chaseQuip:"Le gardien ! Il a pris un filet à papillons. Il me prend pour un papillon. Courir !",
+ chaseQuip:"Le gardien ! Il a pris un filet à papillons. Il me prend pour un papillon. COURIIIIR !",
  hints:[["FIG. 10 — L'ORAGE","Dans le noir, chaque éclair montre le chemin. Bien regarder, puis sauter."],
         ["FIG. 11 — LE DIABLE","Chariot de déménageur. Monter dessus. Ne pas lui demander où il va."]],
  quips:["Un éléphant en plâtre. L'arrière ne manque de rien, à ce que je vois.","Une étiquette sur l'éléphant : « Lot n° 3, adjugé ». Ils vendent tout. Il doit y avoir une guerre à payer.","Encore lui. La sentinelle ne dort donc jamais ?"],
@@ -1026,7 +1026,7 @@ LEVELS.push({w:0,name:"La loge du gardien",sheetBase:8,theme:'loge',exit:'window
  dark:{base:.86,period:3.8},
  start:"Une loge de concierge. Ça sent la soupe froide et la croquette.",
  hints:[["FIG. 12 — LE CHAT DU GARDIEN","Il fait semblant de dormir. Quand ses yeux s'ouvrent, ne plus bouger d'une plume : s'il voit bouger, il bondit."]],
- quips:["La gamelle dit BIJOU. Rien de bon ne peut sortir d'un chat qui s'appelle Bijou.","Des yeux qui brillent dans le noir. Un chat. Ne pas bouger. Surtout ne pas bouger.","La fenêtre est ouverte. L'air frais. La liberté. Et l'orage."],
+ quips:["La gamelle dit BIJOU. Rien de bon ne peut sortir d'un chat qui s'appelle Bijou.","Des yeux qui brillent dans le noir. Un chat. Ne pas bouger. Surtout ne pas bouger.","La fenêtre est ouverte. L'air frais. La liberté. Et… le vent !"],
  signs:["LOGE DU GARDIEN|Frapper fort"],
  segs:[`
 ....l...
@@ -1111,7 +1111,7 @@ LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SU
         "Des panneaux « DANGER » plantés dans l'herbe. Le génie n'a pas fini son travail.",
         "Une tranchée. Tondue, propre, silencieuse. Qui a eu le temps de faire le ménage ?",
         "Un rat de tranchée. Eux, ils n'ont jamais quitté le front.",
-        "Ce bois, derrière… On dirait le bois Fumin. J'y suis passé en juin, avec un message du fort. Les arbres ont repoussé, mais le terrain, je le reconnais.",
+        "Ce bois, derrière… On dirait le bois Fumin. Les arbres ont repoussé, mais le terrain, je le reconnais.",
         "Encore un chat. Ils ont donc des chats partout, à l'arrière ?",
         "Ils ont déjà érigé une stèle pour nos héros ?"],
  signs:["commune:VERDUN"],
@@ -1243,7 +1243,7 @@ LEVELS.push((()=>{
            "Ça sent la vase et le gasoil. La Meuse n'est pas loin.",
            "Des péniches ! Ils sont fous de passer par ici en cette période. La Meuse, c'est la ligne de front !",
            "La rive d'en face, à pattes sèches. Le règlement ne dit rien des péniches : donc c'est autorisé.",
-           "Le foin s'envole tout seul… Ce n'est plus du vent, c'est un tourbillon !"],
+           "Le foin s'envole tout seul… Ce n'est plus du vent, c'est une tornade !"],
     signs:["commune:BRAS-SUR-MEUSE"],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
@@ -1359,7 +1359,7 @@ LEVELS.push((()=>{
     hints:[],
     quips:["Des tranchées… sous un toit. L'ennemi a même mis la guerre à l'abri.",
            "Le no man's land, en plus petit. Personne ne tire. Je n'aime pas ça du tout.",
-           "Une meurtrière ouverte, là-haut ! L'air du soir. Je file avant que tout ce monde se réveille."],
+           "Une meurtrière ouverte, là-haut ! L'air du soir. Je file avant que tout ce monde ne se réveille."],
     signs:["ABRI DU MORT-HOMME|Unterstand Toter Mann · 1916","TRANCHÉES|Schützengräben"],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
@@ -1409,7 +1409,7 @@ LEVELS.push((()=>{
     hints:[],
     quips:["Je n'en peux plus. C'est trop dangereux, là-haut : je descends entre les wagons.",
            "Des voyageurs. Chacun regarde sa petite plaque lumineuse et personne ne se parle. Ils doivent être en deuil.",
-           "« Interdit aux animaux. » Je suis un militaire, moi.",
+           "« Interdit aux animaux. » Je suis un militaire, moi, pas un simple animal.",
            "Revoilà les pylônes. Et un rat clandestin. On voyage en bonne compagnie."],
     segs:[{z:'train',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
@@ -1540,8 +1540,8 @@ LEVELS.push((()=>{
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,
     vaneAt:[7,4],lingeAt:[129,9],
     bigRat:{x:24.5*T,trig:25*T},chaseEnd:303*T,
-    chaseQuip:"Un rat blanc, gros comme un chat, les yeux rouges… et il me fixe. Règlement, article 192 bis : en cas de rat géant, courir.",
-    chaseEndQuip:"Il s'arrête net au coin de la rue. Devant la cathédrale, même les rats ont leurs limites.",
+    chaseQuip:"Un rat blanc, gros comme un chat, les yeux rouges… et il me fixe. Règlement, article 192 bis : en cas de rat géant : COURIIR !",
+    chaseEndQuip:"Il s'arrête net au coin de la rue. Devant la cathédrale, même les rats ont peur du courroux divin.",
     awnSpans:AWN,awnBounce:1.1,
     langlet:{facades:F,trees:[50,68,100,136,186,214,232,262,288],lamps:[30,92,150,200,256,296],bollards:[270,302],shelter:131,
       groups:[{c:72,a:64,b:100,n:6},{c:252,a:244,b:290,n:5}]},
@@ -1549,7 +1549,7 @@ LEVELS.push((()=>{
     hints:[],
     quips:["« Cours Jean-Baptiste Langlet. » Le maire ! Il doit être bien sûr de lui, pour donner son propre nom à une rue.",
            "Le Crédit Lyonnais, toujours debout. Les obus passent, les banques restent.",
-           "La cathédrale. Je l'ai vue brûler, en 1914. Elle tient encore debout. Moi aussi, à peu près."],
+           "La cathédrale. Je l'ai vue brûler, en 1914. Elle tient encore debout ? C'est un miracle !"],
     segs:[{z:'cours',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
 /* 3-4 · La cathédrale : l'escalade de la façade, au soleil couchant (d'après le schéma) — 11l_facade.js
@@ -3921,10 +3921,10 @@ function die(kind,tiles){
   const spec=DEATH_Q[kind];say(spec&&rnd()<.65?pick(spec):pick(DEATH_Q.any),3.6);
 }
 const TORN_Q=["Mon aile gauche vient de déposer un préavis de grève.","Ça craque aux coutures. Des coutures ? Depuis quand j'ai des coutures, moi ?","Elle se décroche ! Non. Si. Presque. Ne plus bouger d'une plume.",
- "Une aile cousue au fil de 1916. Il a de la bouteille, le fil.","Si je perds une aile, je deviens un pigeon de salon. Quelle déchéance.","Repos, l'aile. C'est un ordre. Elle n'obéit plus à personne.",
+ "Une aile après plusieurs missions. Ça tire !","Si je perds une aile, je deviens un pigeon de salon. Quelle déchéance.","Repos, l'aile. C'est un ordre. Elle n'obéit plus à personne.",
  "J'entends un petit « crac ». J'espère que c'est le plancher.","Pour un oiseau voyageur, je voyage beaucoup à pied, ces temps-ci."];
 function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;unlock('a68');tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});
-  if(!G.tornSaid){G.tornSaid=true;G.tornT=G.t;say("L'aile tire sur ses coutures. Si je force encore, elle se décroche. Me poser, et attendre.",4)}
+  if(!G.tornSaid){G.tornSaid=true;G.tornT=G.t;say("L'aile tire dur ! Si je force encore, elle se décroche. Me poser, et attendre.",4)}
   else if(G.t-(G.tornT||0)>8&&rnd()<.6){G.tornT=G.t;say(pick(TORN_Q),3.6)}}
 function winLevel(){if(G.sim){G.simWin=true;return}if(G.li===2)unlock('a56');G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
 
@@ -4477,7 +4477,7 @@ function buseBurn(K,dt){
   if(K.state==='burn'){K.bt+=dt;K.vy=Math.min(500,(K.vy||0)+900*dt);K.x+=K.vx*dt*.4;K.y+=K.vy*dt;if(K.floor&&K.y+K.h>K.floor){K.y=K.floor-K.h;K.vy=0;K.vx*=.9}
     if(!G.sim&&rnd()<.6)parts.push({type:'dust',x:K.x+K.w/2+(rnd()-.5)*20,y:K.y,vx:(rnd()-.5)*40,vy:-60-rnd()*60,life:0,max:.9});
     if(K.bt>1.8){K.state='dead';G.chase=false;setSong(songKey(G.li));
-      if(!G.sim)sayQueue([["RAYMOND","Elle a pris feu comme une botte de foin. Comme… de la paille ?",4.2],["RAYMOND","Les buses, ça ne brûle pas comme ça. Si ?",3.6]])}
+}
     return true}
   if(K.state==='dead')return true;
   // quand Raymond dépasse le braséro, la buse fond sur lui... et plonge dans le feu
@@ -4576,7 +4576,7 @@ function tryAct(){
     // le drap sous lequel on se cachait lui tombe dessus : Raymond est à découvert
     const g=n.o,c=coverHere();g.tangle=1.1;g.sweep=0;if(c){c.gone=true;c.on=g;sheetSeen(c)}
     unlock('a53');if(!G.sim)achKey();
-    if(!G.sim){SFX.flap();noise(.35,700,.25,'bandpass');bubble(g.x+g.w/2,g.y-16,'Hé ! Qui a éteint ?','#2a3a5a');if(!G.tangleSaid){G.tangleSaid=true;say("Le drap sur la tête. Il va être de très mauvaise humeur en sortant de là. Filer.",3.8)}}
+    if(!G.sim){SFX.flap();noise(.35,700,.25,'bandpass');bubble(g.x+g.w/2,g.y-16,'Hé ! Qui a éteint ?','#2a3a5a');if(!G.tangleSaid){G.tangleSaid=true;say("Le drap sur la tête. Il va être de très mauvaise humeur en sortant de là. FILER !!",3.8)}}
     return;
   }
   const a=n.o;
@@ -4584,7 +4584,7 @@ function tryAct(){
     // le carton FRAGILE qui a libéré Raymond : trois coups de bec pour l'ouvrir
     if(a.step>=3){if(!G.sim)say("Une enclume. Dans un carton FRAGILE. Le règlement ne prévoit pas ce cas.",3);return}
     a.step++;if(L.carton)L.carton.step=a.step;
-    if(!G.sim){noise(.25,2600,.18,'highpass');if(a.step===1)say("Du scotch. Du bon scotch d'avant-guerre. Il résiste.",3);else if(a.step===2)say("Les rabats. Du papier journal froissé… de 1931.",3)}
+    if(!G.sim){noise(.25,2600,.18,'highpass');if(a.step===1)say("Du scotch. Du bon scotch d'avant-guerre. Il résiste.",3);else if(a.step===2)say("Les rabats. Du papier journal froissé…",3)}
     if(a.step===3){grantSecret(a,a.y-40);if(!G.sim)sayQueue([['RAYMOND',"De la paille de calage. Et au fond… une enclume de cordonnier.",3.6],['RAYMOND',"Étiquetée « FRAGILE ». Voilà donc ce qui m'a libéré.",3.6]])}
     return}
   if(L.a4&&(a.kind==='beacon'||a.kind==='secret')&&a4Act(a))return;
@@ -5532,7 +5532,7 @@ function marinierStep(ln){
   const once=(k,c,f)=>{if(!ev[k]&&c){ev[k]=1;f()}};
   mzSet();const bow=ln.n*ln.C-ln.U,m=marinierZ(ln,bow),hd=mp(m.xo,L.meuse.yD-96,m.z);
   once('b1',ev.t>.95,()=>{bubble(hd[0],hd[1],"Qui c'est qui me bombarde ?!",'#2a3a5a');tone(220,.18,'sawtooth',.04,160)});
-  once('b2',ev.t>2.3,()=>bubble(hd[0],hd[1],'Un pigeon ! En novembre !','#2a3a5a'));
+  once('b2',ev.t>2.3,()=>bubble(hd[0],hd[1],'Un pigeon ! En novembre ! Qu\'est-ce que je raconte, il n\'y a jamais eu de saison !','#2a3a5a'));
   once('b3',ev.t>3.5,()=>noise(.15,900,.12,'bandpass'));
   once('q',ev.t>4.6&&!L.meuse.door.used,()=>say("Il a laissé la porte ouverte. Un marinier, ça ne ferme jamais rien : ça vit dehors.",3.6));
 }
@@ -5561,7 +5561,7 @@ function meuseAfterMove(dt){
     for(const c of L.rats)c.charge=0;
     const fl=R.th>=M.thF0&&R.th<=M.thF1;let v;
     if(fl){const d=(keys.has('right')?1:0)-(keys.has('left')?1:0);v=d>0?235:d<0?-95:80;if(d)P.facing=d;
-      if(!M.said.float&&!G.sim){M.said.float=1;say("Je vole sans battre des ailes ! Entre des moulins qui coupent tout. ← → pour choisir le moment.",3.6)}}
+      if(!M.said.float&&!G.sim){M.said.float=1;say("Je vole sans battre des ailes ! Entre des moulins qui coupent tout. AU SECOUUURS !!",3.6)}}
     else v=R.th<M.thF0?360:300;
     const a=vPathOf(V,R.th),b=vPathOf(V,R.th+.001),dl=Math.hypot(b.x-a.x,b.y-a.y)/.001||1;
     R.th+=v*dt/dl;if(fl&&R.th<M.thF0)R.th=M.thF0;
@@ -5939,7 +5939,7 @@ function zrStep(dt){
     if(c.kind==='boar'&&!Z.said.boar){Z.said.boar=1;say("Plouf. Le sanglier a pris le trou d'obus pour une souille. Il y restera.",3.4)}}}}
   if(Z.bh){const l0=Z.bh.lamps[Z.bh.lamps.length-1],used=Z.lampAct.used;l0.i=used?.75:(((G.lt*7)%5<2.2||(G.lt*13)%7<1)?.75:0);
     if(used&&Z.lampAct.anim&&!Z.decoy){Z.decoy={x:l0.x,y:Z.bh.b-96,t:0};if(!G.sim){SFX.caw()}
-      const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Les corbeaux, eux, ne disent jamais merci.",3.6),500)}}}
+      const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Bonne chance, le corback !",3.6),500)}}}
   // le corbeau s'ébroue un instant au-dessus de la lanterne, puis file vers la gauche (le drone a le temps de faire sa pirouette)
   if(Z.decoy){const d=Z.decoy;d.t+=dt;if(d.t<.8){d.x-=40*dt;d.y-=50*dt}else{d.x-=Math.min(430,120+(d.t-.8)*700)*dt;d.y-=Math.max(0,30-d.t*8)*dt+Math.sin(d.t*5)*.6}
     if(d.x<cam.x-1600)Z.decoy=null}
@@ -6143,9 +6143,9 @@ function museeHide(a){
 }
 const MUSEE_SEQ={
   1:[[0,'say',"Les gars ! Filez d'ici, il y a des Allemands dans l'abri, je les ai vus !",3],[2.7,'coo',"Rrrou ! Rou-rou-rou !"],[4.3,'say',"Ils ne comprennent pas le pigeon. On ne l'apprend jamais, à l'armée.",3.2]],
-  2:[[0,'say',"Des Allemands ! Ils ne bougent presque pas. Et ils ont la peau en cire… La faim, sûrement.",3.4]],
-  3:[[0,'say',"Repliez-vous ! L'ennemi est juste en face, dans l'autre tranchée !",3],[2.7,'coo',"ROU ! Rrrou-rou !"],[4.3,'say',"Rien. Ils ne bougent pas d'une plume. Des braves… ou des sourds.",3.2]],
-  4:[[0,'say',"Celui-là écrit une lettre, à la bougie. Je connais ça : j'en porte une.",3.4]]};
+  2:[[0,'say',"Des Allemands ! Ils ne bougent presque pas. Et ils ont le teint blafard… La faim, sûrement.",3.4]],
+  3:[[0,'say',"Repliez-vous ! L'ennemi est juste en face, dans l'autre tranchée !",3],[2.7,'coo',"ROU ! Rrrou-rou !"],[4.3,'say',"Rien. Ils ne bougent pas d'une plume. Des braves… ou des sourds. Quelle idée de mettre des sourds au front !",3.2]],
+  4:[[0,'say',"Celui-là écrit une lettre, à la bougie. Je connais ça : j'en porte une. Lucien…",3.4]]};
 function museeStep(dt){
   const M=L.musee;if(!M)return;const pcx=P.x+P.w/2,pfy=P.y+P.h;
   for(const c of M.cups){c.anim=Math.max(0,c.anim-dt);c.open=c.anim>0?Math.sin((1-c.anim/.5)*Math.PI):0}
@@ -6446,7 +6446,7 @@ function trainStep(dt){
   // la motrice : carillon, annonce, freinage
   if(!Tn.w7&&pcx>Tn.loco&&!P.dead){Tn.w7=true;Tn.dt=0;if(!G.sim){[[659,0],[523,.32],[784,.64]].forEach(([f,d])=>tone(f,.5,'sine',.09,null,d));
       setTimeout(()=>bubble(Tn.loco+17*T,TRN.ROOF-40,"« …notre train entre en gare de R… »",'#3a4a6a'),1200);
-      setTimeout(()=>say("En gare de quoi ? Le vent a mangé la moitié du nom.",3.4),3400)}}
+      setTimeout(()=>say("En gare de quoi ? Le vent a mangé la moitié du nom. Reims, je crois !",3.4),3400)}}
 }
 /* au retour sur un cartel : un court répit, pas de pylône sur le nez */
 function trainRespawn(){const Tn=L.train;Tn.grace=1.8;Tn.pyl=Tn.pyl.filter(p=>Math.abs(p.x-P.x)>900);Tn.spawnT=Math.max(Tn.spawnT,2.4);Tn.proj.length=0;
@@ -8036,7 +8036,7 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
   const say1=(k,cond,txt,d)=>{if(!S.said[k]&&cond&&!G.sim){S.said[k]=1;say(txt,d||4.2)}};
   say1('door',P.onGround&&Math.abs(pcx-FC.AX)<70&&P.y+P.h>FC.G-10,"Fermée. Évidemment : toute une journée de route pour arriver à l'heure où l'on ferme. Pas un sacristain, pas une âme. Bon… il reste la façade. On grimpe.",5);
   say1('ange',P.onGround&&pcx<520&&P.y+P.h<FC.G-40,"L'ange qui sourit. En 1914, l'incendie lui a fait tomber la tête. On la lui a recollée. On a ça en commun.");
-  say1('rose',P.onGround&&P.y+P.h<=fcY(43)+2,"La grande rose. Quand la charpente a brûlé, les vitraux ont fondu comme du sucre. Ceux-là sont neufs, ou presque.");
+  say1('rose',P.onGround&&P.y+P.h<=fcY(43)+2,"La grande rose. Quand la charpente a brûlé, les vitraux ont fondu comme du sucre. Ceux-là semblent neufs, ou presque.");
   say1('rois',P.onGround&&P.y+P.h<=fcY(29)+2&&pcx>700&&pcx<1180,"La galerie des rois. Cinquante-six gaillards couronnés qui regardent passer les siècles. Et maintenant, un pigeon.");
   say1('tour',P.onGround&&P.y+P.h<=fcY(21)+2&&pcx>1150,"La tour sud. Une fenêtre entrouverte, juste là… Ça sent le bronze et la corde de cloche.");
 }
@@ -8292,7 +8292,7 @@ function a4Step(dt){const S=L.a4;if(!S)return;const D=L.def.a4,GY=D.G0*T,hb={x:P
      const c=Math.floor(o.x/T),r=Math.floor((o.y+6)/T);if(o.vy>0&&isSolid(c,r)&&o.b<2){o.y=r*T-6;o.vy=-(420+rnd()*200);o.vx=(rnd()-.5)*520;o.b++}
      if(!P.dead&&Math.abs(o.x-pcx)<14&&Math.abs(o.y-pcy)<16)hit='objet'}
    S.objs=S.objs.filter(o=>o.y<GY+40&&o.y>-200);
-   if(!S.said.jam&&!G.sim&&pcx>D.jamX-300){S.said.jam=1;say("Tout le monde est arrêté. Le péage de Thillois. Ils paient pour avancer, et ils n'avancent pas.",4)}
+   if(!S.said.jam&&!G.sim&&pcx>D.jamX-300){S.said.jam=1;say("Tout le monde est arrêté. Le péage de Thillois ? Ils paient pour avancer ? Et ils n'avancent pas… Je ne comprends pas le but !",4)}
    if(!S.said.acc&&!G.sim&&pcx>11700){S.said.acc=1;say("Un accrochage, devant. Ils s'envoient leurs affaires à la figure. On se croirait dans une tranchée.",4)}}
   // le camion-benne : la benne se lève (et verse le goudron), redescend ; levée, elle barre le passage
   {const t=D.tar,u=G.lt%7,ang=u<2.2?0:u<3?(u-2.2)/.8:u<6.2?1:1-(u-6.2)/.8;S.bedA=ang;const up=ang>.25;
@@ -8320,13 +8320,13 @@ function a4Respawn(){const S=L.a4;if(!S)return;const D=L.def.a4;S.grace=2.2;S.ob
   else for(const m of S.trucks)if(!m.stopped&&Math.abs(m.x-P.x)<900){m.on=false;m.y=99999}}
 /* actions : les gyrophares, le pneu, le moteur */
 function a4Act(a){const S=L.a4;if(!S)return false;
-  if(a.style==='beacon'){const b=S.beacons[a.i];if(!b.on){if(!G.sim)say("Celui-là, c'est fait.",2.4);return true}
+  if(a.style==='beacon'){const b=S.beacons[a.i];if(!b.on){if(!G.sim)say("Celui-là, c'est fait. J'en vois un autre au loin.",2.4);return true}
     b.on=false;if(!G.sim){tone(880,.06,'square',.05);noise(.15,2600,.1,'highpass')}const other=S.beacons[1-a.i];
     if(other.on){if(!G.sim)say(a.i===0?"Ah… Ça fait du bien aux yeux. J'ai failli faire une crise d'épilepsie.":"Un de moins. Il en reste un, là-bas, qui clignote encore.",3.8)}
     else{const sec=L.acts.find(x=>x.kind==='secret'&&x.style==='beacon');if(sec&&!sec.used)grantSecret(sec,sec.y-30)}
     return true}
   if(a.style==='tyre'){if(a.used)return false;grantSecret(a,a.y-30);S.hog={x:a.x-10,t:0};
-    if(!G.sim){noise(.3,900,.12,'bandpass');setTimeout(()=>say("Un hérisson ! Non… non, pas par là ! Pas sur l'autoroute ! Vous faites tous la même bêtise, et vous finissez en tapis sous les pneus !",4.6),500)}return true}
+    if(!G.sim){noise(.3,900,.12,'bandpass');setTimeout(()=>say("Un hérisson ! Non… non, pas par là ! Pas sur l'autoroute ! Vous faites tous la même connerie, et vous finissez en tapis sous les pneus !",4.6),500)}return true}
   if(a.style==='engine'){if(a.used)return false;S.drops=S.drops||[];grantSecret(a,a.y-30);if(!G.sim)noise(.25,500,.1,'lowpass');return true}
   return false}
 function a4Lights(){const S=L.a4;if(!S)return[];const D=L.def.a4,GY=D.G0*T,out=[];
@@ -9158,7 +9158,7 @@ function vanUpdate(dt){
     if(s.k<5&&V.t>=s.flashes[s.k]){s.k++;const big=s.k===5;V.flash=Math.max(V.flash,big?1.25:.75);s.bolt={x:120+rnd()*720,t:0,seed:(rnd()*1e6)|0};if(!G.sim)setTimeout(()=>SFX.thunder(big?1.3:.9),big?60:380);
       if(s.k===2)say("L'orage. Comme au fort. Je n'aime pas l'orage.",3.6);
       if(s.k===3)say("Du brouillard, maintenant. Sur une route. On n'y voit plus rien… comme là-bas.",4);
-      if(s.k===4)say("Le tonnerre. On dirait le canon. Je connais ce bruit-là.",3.6);
+      if(s.k===4)say("Le tonnerre. On dirait le canon. Je reconnais ce bruit-là.",3.6);
       if(big){s.white=.01;s.closed=true}}
     if(s.k>=3)s.fog=Math.min(.78,s.fog+dt*.16);
     if(s.white>0){s.white+=dt*.9;if(s.white>=1&&!V.out)vxFadeTo(()=>vxCardGo('cart',()=>vxGo('cart')),.5)}
@@ -9647,7 +9647,7 @@ function yardUpdate(dt){const s=V.s;s.walk+=dt;
   s.boomT-=dt;if(s.boomT<=0){s.boomT=1+rnd()*2.4;s.booms.push({x:rnd()*W,y:250+rnd()*60,t:0});if(!G.sim)noise(1.2,90+rnd()*60,.35,'lowpass')}
   for(const b of s.booms)b.t+=dt;s.booms=s.booms.filter(b=>b.t<1.4);
   if(!s.said.a&&V.t>1){s.said.a=1;say("Allez, Raymond. Tout droit vers l'ouest, et ne te retourne pas.",3.8,'LUCIEN')}
-  if(!s.said.b&&V.t>5){s.said.b=1;say("Va chez Marguerite. Toi, au moins, tu sauras rentrer.",3.6,'LUCIEN')}
+  if(!s.said.b&&V.t>5){s.said.b=1;say("Va chez Marguerite. Toi, au moins, tu pourras rentrer.",3.6,'LUCIEN')}
   if(s.throwT<0&&V.t>8.4){s.throwT=0}
   if(s.throwT>=0){s.throwT+=dt;
     if(!s.bird&&s.throwT>1.05){const h=s.hands||{x:420,y:300};s.bird={x:h.x,y:h.y,vx:-230,vy:-250,t:0};if(!G.sim){SFX.flap();setTimeout(()=>SFX.flap(),120)}for(let k=0;k<5;k++)V.parts.push({k:'feather',x:h.x,y:h.y,vx:(rnd()-.5)*120,vy:-rnd()*100,g:120,drag:2,life:0,max:1.6,rot:rnd()*6,vr:(rnd()-.5)*6})}
@@ -10324,7 +10324,7 @@ function ferteSwitch(){
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);noise(1.6,260,.22,'lowpass',.05);tone(to===14?392:523,.5,'sine',.05,to===14?262:784,.02);if(to===14)setTimeout(()=>SFX.thunder(.25),120)}
   for(let i=0;i<18;i++){const a=rnd()*Math.PI*2,s=40+rnd()*120;parts.push({type:'dust',x:P.x+P.w/2,y:P.y+P.h/2,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0,max:.7+rnd()*.5})}
   if(to===14&&!F.said.first){F.said.first=1;say("Septembre 1914. La même rivière, mais l'air sent la poudre. J'y étais : soldat de 1re classe Raymond, matricule 7413. Ma première mission.",5)}
-  else if(to===26&&!F.said.back){F.said.back=1;say("Retour au présent. Les camping-cars ont remplacé les fourgons. C'est un progrès, je suppose.",3.8)}
+  else if(to===26&&!F.said.back){F.said.back=1;say("Retour au présent, je divague.",3.8)}
 }
 function ferteRespawn(){const F=L.ferte;if(!F)return;ferteSet(P.cp&&P.cp.era||26);F.flash=.6;F.flashC=F.era;for(const s of F.gerbes){s.st='idle'}F.grace=1.2}
 
@@ -11595,11 +11595,11 @@ function comblesStep(dt){const C=L.cb;if(!C)return;C.t+=dt;if(C.grace>0)C.grace-
   const once=(k,c,txt,d)=>{if(!C.said[k]&&c&&!C.talk){C.said[k]=1;say(txt,d||3.8)}};
   once('ronge',pcx>24*T&&C.era===26,"Des planches vermoulues. Elles ont l'air solides. Elles l'ont l'air seulement.",3.6);
   once('poutres',pcx>35*T,"Pas de plancher, pas de fond. De poutre en poutre, comme les écureuils. Le règlement n'a rien prévu pour les écureuils.",4.4);
-  once('soleil',pcx>66*T,"Le soleil passe entre les tuiles. Dans ses rayons, la poussière tombe comme la neige de 1916.",4);
+  once('soleil',pcx>66*T,"Le soleil passe entre les tuiles. Dans ses rayons, la poussière tombe comme la neige à une autre époque.",4);
   once('cloches',pcx>95*T,"La chambre des cloches. Elles sonnent pour quelqu'un. Pas pour moi, j'espère.",3.6);
   once('choeur',pcx>129*T,"Le comble du chœur. Ça monte encore. Il doit bien y avoir un trou dans ce toit.",3.6);
   once('trou',pcx>186*T&&C.era===26,"De la lumière, là-haut. Un trou dans la charpente. On sort toujours par le haut.",3.6);
-  once('trou14',pcx>196*T&&C.era===14,"En 1914, le toit tenait encore. Il faudra revenir en 2026 pour sortir.",3.6);
+  once('trou14',pcx>196*T&&C.era===14,"En 1914, le toit tenait encore. Qu'en est-il aujourd'hui ?",3.6);
 }
 function comblesAfterMove(){const C=L.cb;if(!C)return null;if(C.hit){const h=C.hit;C.hit=null;return h}if(P.y>CBR*T)return'voute';return null}
 /* ---------- la fin : sur le toit, la commune, le bal ---------- */
@@ -12094,7 +12094,7 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
     once('grill',pcx>51*T,"Des grillades. Le cuisinier a plus peur de son feu que moi.",3.4);
     once('bal',pcx>61*T,"Un orchestre ! Lucien dansait si mal. Marguerite riait si fort.",3.8);
     once('manege',pcx>112*T,"Des chevaux de bois ! Comme à la foire de Coulommiers. Ils tournent, ils montent, ils descendent.",4)}
-  if(S2.pass===2){once('pig',pcx<110*T,"Les pigeons du coin ont pris les toits. Ils ne partagent pas.",3.4);once('chat',pcx<19*T,"Un chat sur le toit du marchand de miel. Article 3 : en cas de chat… le contourner, par le haut.",4)}
+  if(S2.pass===2){once('pig',pcx<110*T,"Les pigeons du coin ont pris les toits. Ils ne partagent pas.",3.4);once('chat',pcx<19*T,"Un chat sur le toit du marchand de miel. Toujours à bouffer, ceux-là !",4)}
   if(S2.pass===3){once('vide',pcx>58*T,"Les musiciens sont partis. Les marchands remballent. Et toujours pas de Marguerite.",3.8);once('hibou',pcx>98*T,"Un hibou. Il a l'œil sur moi. Les deux yeux, même.",3.4)}
   // fin du passage
   if(!S2.seq&&!P.dead&&(S2.dir>0?pcx>S2.endX:pcx<S2.endX)){if(S2.pass<4)S2.seq={k:'pass',t:0,next:S2.pass+1};else S2.seq={k:'end',t:0,x0:P.x};P.vx=0;G.quip=null;G.quipQ=[]}
@@ -12909,7 +12909,7 @@ function cmRespawn(){const C=L.cm;if(!C)return;C.hit=null;for(const o of C.owls)
 
 /* ---------- le monument aux morts : on s'approche des noms ---------- */
 const CM_MEM_LINES=[[0,"Le monument aux morts. « Hommage des enfants de Crécy à leurs aînés morts pour la patrie. »",4.6],
-  [4.8,"Vasseur… Lucien.",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré.",4.4],[14.8,"Marguerite doit être plus loin.",3]];
+  [4.8,"Vasseur… Lucien…",3.2],[8.2,"Lucien. Son nom est gravé là, avec les autres. Lui non plus n'est jamais rentré. Mon pauvre Lucien…",4.4],[14.8,"Marguerite ne doit plus être très loin…",3]];
 function cmNameXY(){// la place du nom de Lucien sur la plaque de droite
   const i=CM_NAMES.findIndex(n=>n[0]==='VASSEUR'),half=Math.ceil(CM_NAMES.length/2),j=i-half;return[CMX.mem.x+58,234+j*8.2]}
 function cmSeqStep(dt){const C=L.cm,q=C.seq;q.t+=dt;G.lt+=dt;P.vx=0;P.vy=Math.min(MAXFALL,P.vy+GRAV*dt);P.onGround=false;moveY(P,P.vy*dt);P.facing=1;
@@ -13765,7 +13765,7 @@ function tokens(text){const out=[];let on=false;
   for(const line of text.split('\n').map((l,k)=>[l,k])){if(line[1]>0)out.push({w:'',br:true});
     for(const w of line[0].split(' ')){if(!w)continue;const st=w.startsWith('~');if(st)on=true;const s=on;if(w.replace(/[.,!?…]+$/,'').endsWith('~'))on=false;out.push({w:w.replace(/~/g,''),s})}}
   return out}
-function letterToks(li){const l=LEVELS[li].letter;return tokens((li===0||l.pre?'':'… ')+l.text)}
+function letterToks(li){const l=LEVELS[li].letter;return tokens(l.text)}
 function renderLetter(t){
   if(G.LE.mode==='short'){renderLevelDone(t);return}
   const LE=G.LE,def=LEVELS[LE.li],fx=def.letter.fx;

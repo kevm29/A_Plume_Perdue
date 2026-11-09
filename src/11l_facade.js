@@ -337,7 +337,7 @@ function facadeStep(dt){const S=L.fc;if(!S)return;const hb={x:P.x+3,y:P.y+4,w:P.
   const say1=(k,cond,txt,d)=>{if(!S.said[k]&&cond&&!G.sim){S.said[k]=1;say(txt,d||4.2)}};
   say1('door',P.onGround&&Math.abs(pcx-FC.AX)<70&&P.y+P.h>FC.G-10,"Fermée. Évidemment : toute une journée de route pour arriver à l'heure où l'on ferme. Pas un sacristain, pas une âme. Bon… il reste la façade. On grimpe.",5);
   say1('ange',P.onGround&&pcx<520&&P.y+P.h<FC.G-40,"L'ange qui sourit. En 1914, l'incendie lui a fait tomber la tête. On la lui a recollée. On a ça en commun.");
-  say1('rose',P.onGround&&P.y+P.h<=fcY(43)+2,"La grande rose. Quand la charpente a brûlé, les vitraux ont fondu comme du sucre. Ceux-là sont neufs, ou presque.");
+  say1('rose',P.onGround&&P.y+P.h<=fcY(43)+2,"La grande rose. Quand la charpente a brûlé, les vitraux ont fondu comme du sucre. Ceux-là semblent neufs, ou presque.");
   say1('rois',P.onGround&&P.y+P.h<=fcY(29)+2&&pcx>700&&pcx<1180,"La galerie des rois. Cinquante-six gaillards couronnés qui regardent passer les siècles. Et maintenant, un pigeon.");
   say1('tour',P.onGround&&P.y+P.h<=fcY(21)+2&&pcx>1150,"La tour sud. Une fenêtre entrouverte, juste là… Ça sent le bronze et la corde de cloche.");
 }

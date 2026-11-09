@@ -12,7 +12,7 @@ LEVELS.push({w:1,name:"Le sentier",theme:'verdun',exit:'post',exitLabel:"BRAS-SU
         "Des panneaux « DANGER » plantés dans l'herbe. Le génie n'a pas fini son travail.",
         "Une tranchée. Tondue, propre, silencieuse. Qui a eu le temps de faire le ménage ?",
         "Un rat de tranchée. Eux, ils n'ont jamais quitté le front.",
-        "Ce bois, derrière… On dirait le bois Fumin. J'y suis passé en juin, avec un message du fort. Les arbres ont repoussé, mais le terrain, je le reconnais.",
+        "Ce bois, derrière… On dirait le bois Fumin. Les arbres ont repoussé, mais le terrain, je le reconnais.",
         "Encore un chat. Ils ont donc des chats partout, à l'arrière ?",
         "Ils ont déjà érigé une stèle pour nos héros ?"],
  signs:["commune:VERDUN"],
@@ -144,7 +144,7 @@ LEVELS.push((()=>{
            "Ça sent la vase et le gasoil. La Meuse n'est pas loin.",
            "Des péniches ! Ils sont fous de passer par ici en cette période. La Meuse, c'est la ligne de front !",
            "La rive d'en face, à pattes sèches. Le règlement ne dit rien des péniches : donc c'est autorisé.",
-           "Le foin s'envole tout seul… Ce n'est plus du vent, c'est un tourbillon !"],
+           "Le foin s'envole tout seul… Ce n'est plus du vent, c'est une tornade !"],
     signs:["commune:BRAS-SUR-MEUSE"],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());
@@ -260,7 +260,7 @@ LEVELS.push((()=>{
     hints:[],
     quips:["Des tranchées… sous un toit. L'ennemi a même mis la guerre à l'abri.",
            "Le no man's land, en plus petit. Personne ne tire. Je n'aime pas ça du tout.",
-           "Une meurtrière ouverte, là-haut ! L'air du soir. Je file avant que tout ce monde se réveille."],
+           "Une meurtrière ouverte, là-haut ! L'air du soir. Je file avant que tout ce monde ne se réveille."],
     signs:["ABRI DU MORT-HOMME|Unterstand Toter Mann · 1916","TRANCHÉES|Schützengräben"],
     segs:zones.map(([z,a,b])=>({z,s:'\n'+g.map(r=>r.slice(a,b+1).join('')).join('\n')}))};
 })());

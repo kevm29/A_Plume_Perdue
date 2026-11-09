@@ -129,7 +129,7 @@ function marinierStep(ln){
   const once=(k,c,f)=>{if(!ev[k]&&c){ev[k]=1;f()}};
   mzSet();const bow=ln.n*ln.C-ln.U,m=marinierZ(ln,bow),hd=mp(m.xo,L.meuse.yD-96,m.z);
   once('b1',ev.t>.95,()=>{bubble(hd[0],hd[1],"Qui c'est qui me bombarde ?!",'#2a3a5a');tone(220,.18,'sawtooth',.04,160)});
-  once('b2',ev.t>2.3,()=>bubble(hd[0],hd[1],'Un pigeon ! En novembre !','#2a3a5a'));
+  once('b2',ev.t>2.3,()=>bubble(hd[0],hd[1],'Un pigeon ! En novembre ! Qu\'est-ce que je raconte, il n\'y a jamais eu de saison !','#2a3a5a'));
   once('b3',ev.t>3.5,()=>noise(.15,900,.12,'bandpass'));
   once('q',ev.t>4.6&&!L.meuse.door.used,()=>say("Il a laissé la porte ouverte. Un marinier, ça ne ferme jamais rien : ça vit dehors.",3.6));
 }
@@ -158,7 +158,7 @@ function meuseAfterMove(dt){
     for(const c of L.rats)c.charge=0;
     const fl=R.th>=M.thF0&&R.th<=M.thF1;let v;
     if(fl){const d=(keys.has('right')?1:0)-(keys.has('left')?1:0);v=d>0?235:d<0?-95:80;if(d)P.facing=d;
-      if(!M.said.float&&!G.sim){M.said.float=1;say("Je vole sans battre des ailes ! Entre des moulins qui coupent tout. ← → pour choisir le moment.",3.6)}}
+      if(!M.said.float&&!G.sim){M.said.float=1;say("Je vole sans battre des ailes ! Entre des moulins qui coupent tout. AU SECOUUURS !!",3.6)}}
     else v=R.th<M.thF0?360:300;
     const a=vPathOf(V,R.th),b=vPathOf(V,R.th+.001),dl=Math.hypot(b.x-a.x,b.y-a.y)/.001||1;
     R.th+=v*dt/dl;if(fl&&R.th<M.thF0)R.th=M.thF0;

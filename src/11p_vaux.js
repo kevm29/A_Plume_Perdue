@@ -106,7 +106,7 @@ function vanUpdate(dt){
     if(s.k<5&&V.t>=s.flashes[s.k]){s.k++;const big=s.k===5;V.flash=Math.max(V.flash,big?1.25:.75);s.bolt={x:120+rnd()*720,t:0,seed:(rnd()*1e6)|0};if(!G.sim)setTimeout(()=>SFX.thunder(big?1.3:.9),big?60:380);
       if(s.k===2)say("L'orage. Comme au fort. Je n'aime pas l'orage.",3.6);
       if(s.k===3)say("Du brouillard, maintenant. Sur une route. On n'y voit plus rien… comme là-bas.",4);
-      if(s.k===4)say("Le tonnerre. On dirait le canon. Je connais ce bruit-là.",3.6);
+      if(s.k===4)say("Le tonnerre. On dirait le canon. Je reconnais ce bruit-là.",3.6);
       if(big){s.white=.01;s.closed=true}}
     if(s.k>=3)s.fog=Math.min(.78,s.fog+dt*.16);
     if(s.white>0){s.white+=dt*.9;if(s.white>=1&&!V.out)vxFadeTo(()=>vxCardGo('cart',()=>vxGo('cart')),.5)}
@@ -595,7 +595,7 @@ function yardUpdate(dt){const s=V.s;s.walk+=dt;
   s.boomT-=dt;if(s.boomT<=0){s.boomT=1+rnd()*2.4;s.booms.push({x:rnd()*W,y:250+rnd()*60,t:0});if(!G.sim)noise(1.2,90+rnd()*60,.35,'lowpass')}
   for(const b of s.booms)b.t+=dt;s.booms=s.booms.filter(b=>b.t<1.4);
   if(!s.said.a&&V.t>1){s.said.a=1;say("Allez, Raymond. Tout droit vers l'ouest, et ne te retourne pas.",3.8,'LUCIEN')}
-  if(!s.said.b&&V.t>5){s.said.b=1;say("Va chez Marguerite. Toi, au moins, tu sauras rentrer.",3.6,'LUCIEN')}
+  if(!s.said.b&&V.t>5){s.said.b=1;say("Va chez Marguerite. Toi, au moins, tu pourras rentrer.",3.6,'LUCIEN')}
   if(s.throwT<0&&V.t>8.4){s.throwT=0}
   if(s.throwT>=0){s.throwT+=dt;
     if(!s.bird&&s.throwT>1.05){const h=s.hands||{x:420,y:300};s.bird={x:h.x,y:h.y,vx:-230,vy:-250,t:0};if(!G.sim){SFX.flap();setTimeout(()=>SFX.flap(),120)}for(let k=0;k<5;k++)V.parts.push({k:'feather',x:h.x,y:h.y,vx:(rnd()-.5)*120,vy:-rnd()*100,g:120,drag:2,life:0,max:1.6,rot:rnd()*6,vr:(rnd()-.5)*6})}

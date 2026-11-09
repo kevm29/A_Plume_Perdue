@@ -37,7 +37,7 @@ const DEATH_Q={
   pigeon:["Bousculé par un pigeon de la ville. Aucune solidarité entre collègues.","Il m'a donné un coup de bec. Moi, un décoré !"],
   hedgehog:["Un hérisson. Je l'ai pris pour un tas de barbelés. Erreur de débutant."],
   goose:["Une oie. Plus dangereuse qu'un régiment de uhlans.","L'oie a gagné. L'oie gagne toujours."],
-  cat:["Le chat. Toujours le chat.","Il m'a recraché. Même Bijou me trouve fade.","Note pour le règlement : ajouter un article sur les chats."],
+  cat:["Le chat. Toujours le chat.","Il m'a recraché. Même Bijou me trouve fade.","Article 3 : en cas de chat, courir. J'aurais dû le relire."],
   moth:["Les mites m'ont grignoté la cuisse. Elles appellent ça un buffet.","Tineola bisselliella. Petit nom, gros appétit."],
   crow:["Un corbeau. Ils ont toujours été du côté de l'ennemi.","Le corbeau m'a pris pour son déjeuner. Il a été déçu."],
   gull:["Une mouette. À Reims. Elle s'est perdue, ou c'est moi."],
@@ -98,7 +98,7 @@ const DEATH_Q={
   drown:["De l'eau partout. Je coule comme une pierre. D'habitude, un pigeon, ça flotte. Bizarre."]
 };
 const TUFT_Q=["De la paille. Bizarre, je me sens tout de suite plus épais.","Tiens, de la paille. Je ne sais pas pourquoi, ça me fait du bien.","Encore de la paille. Je ne comprends pas, mais je ne me plains pas."];
-const MEDAL_Q=["Une médaille du mérite colombophile. On me reconnaît enfin.","Une médaille. Je l'épinglerai à côté de l'autre. J'en avais une autre, non ?","Décoré. Le règlement prévoit un grain de maïs en plus. Je le réclamerai."];
+const MEDAL_Q=["Une médaille du mérite colombophile. J'adore être reconnu !","Une médaille. Je l'épinglerai à côté de l'autre. J'en avais une autre, non ?","Décoré. Le règlement prévoit un grain de maïs en plus. Je le réclamerai."];
 
 const INTRO=[
   {t:"Vittoncourt, Moselle. Octobre 2026.\nLe petit musée communal n'a plus les moyens d'ouvrir."},

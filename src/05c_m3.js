@@ -42,7 +42,7 @@ LEVELS.push((()=>{
     hints:[],
     quips:["Je n'en peux plus. C'est trop dangereux, là-haut : je descends entre les wagons.",
            "Des voyageurs. Chacun regarde sa petite plaque lumineuse et personne ne se parle. Ils doivent être en deuil.",
-           "« Interdit aux animaux. » Je suis un militaire, moi.",
+           "« Interdit aux animaux. » Je suis un militaire, moi, pas un simple animal.",
            "Revoilà les pylônes. Et un rat clandestin. On voyage en bonne compagnie."],
     segs:[{z:'train',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
@@ -173,8 +173,8 @@ LEVELS.push((()=>{
   return {w:2,name:"Le cours Langlet",theme:'langlet',exit:'post',exitLabel:"CATHÉDRALE",seed:97,rows:RR,camY:.6,
     vaneAt:[7,4],lingeAt:[129,9],
     bigRat:{x:24.5*T,trig:25*T},chaseEnd:303*T,
-    chaseQuip:"Un rat blanc, gros comme un chat, les yeux rouges… et il me fixe. Règlement, article 192 bis : en cas de rat géant, courir.",
-    chaseEndQuip:"Il s'arrête net au coin de la rue. Devant la cathédrale, même les rats ont leurs limites.",
+    chaseQuip:"Un rat blanc, gros comme un chat, les yeux rouges… et il me fixe. Règlement, article 192 bis : en cas de rat géant : COURIIR !",
+    chaseEndQuip:"Il s'arrête net au coin de la rue. Devant la cathédrale, même les rats ont peur du courroux divin.",
     awnSpans:AWN,awnBounce:1.1,
     langlet:{facades:F,trees:[50,68,100,136,186,214,232,262,288],lamps:[30,92,150,200,256,296],bollards:[270,302],shelter:131,
       groups:[{c:72,a:64,b:100,n:6},{c:252,a:244,b:290,n:5}]},
@@ -182,7 +182,7 @@ LEVELS.push((()=>{
     hints:[],
     quips:["« Cours Jean-Baptiste Langlet. » Le maire ! Il doit être bien sûr de lui, pour donner son propre nom à une rue.",
            "Le Crédit Lyonnais, toujours debout. Les obus passent, les banques restent.",
-           "La cathédrale. Je l'ai vue brûler, en 1914. Elle tient encore debout. Moi aussi, à peu près."],
+           "La cathédrale. Je l'ai vue brûler, en 1914. Elle tient encore debout ? C'est un miracle !"],
     segs:[{z:'cours',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
 /* 3-4 · La cathédrale : l'escalade de la façade, au soleil couchant (d'après le schéma) — 11l_facade.js

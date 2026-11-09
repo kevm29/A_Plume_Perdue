@@ -343,7 +343,7 @@ function tokens(text){const out=[];let on=false;
   for(const line of text.split('\n').map((l,k)=>[l,k])){if(line[1]>0)out.push({w:'',br:true});
     for(const w of line[0].split(' ')){if(!w)continue;const st=w.startsWith('~');if(st)on=true;const s=on;if(w.replace(/[.,!?…]+$/,'').endsWith('~'))on=false;out.push({w:w.replace(/~/g,''),s})}}
   return out}
-function letterToks(li){const l=LEVELS[li].letter;return tokens((li===0||l.pre?'':'… ')+l.text)}
+function letterToks(li){const l=LEVELS[li].letter;return tokens(l.text)}
 function renderLetter(t){
   if(G.LE.mode==='short'){renderLevelDone(t);return}
   const LE=G.LE,def=LEVELS[LE.li],fx=def.letter.fx;

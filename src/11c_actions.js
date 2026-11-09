@@ -68,7 +68,7 @@ function tryAct(){
     // le drap sous lequel on se cachait lui tombe dessus : Raymond est à découvert
     const g=n.o,c=coverHere();g.tangle=1.1;g.sweep=0;if(c){c.gone=true;c.on=g;sheetSeen(c)}
     unlock('a53');if(!G.sim)achKey();
-    if(!G.sim){SFX.flap();noise(.35,700,.25,'bandpass');bubble(g.x+g.w/2,g.y-16,'Hé ! Qui a éteint ?','#2a3a5a');if(!G.tangleSaid){G.tangleSaid=true;say("Le drap sur la tête. Il va être de très mauvaise humeur en sortant de là. Filer.",3.8)}}
+    if(!G.sim){SFX.flap();noise(.35,700,.25,'bandpass');bubble(g.x+g.w/2,g.y-16,'Hé ! Qui a éteint ?','#2a3a5a');if(!G.tangleSaid){G.tangleSaid=true;say("Le drap sur la tête. Il va être de très mauvaise humeur en sortant de là. FILER !!",3.8)}}
     return;
   }
   const a=n.o;
@@ -76,7 +76,7 @@ function tryAct(){
     // le carton FRAGILE qui a libéré Raymond : trois coups de bec pour l'ouvrir
     if(a.step>=3){if(!G.sim)say("Une enclume. Dans un carton FRAGILE. Le règlement ne prévoit pas ce cas.",3);return}
     a.step++;if(L.carton)L.carton.step=a.step;
-    if(!G.sim){noise(.25,2600,.18,'highpass');if(a.step===1)say("Du scotch. Du bon scotch d'avant-guerre. Il résiste.",3);else if(a.step===2)say("Les rabats. Du papier journal froissé… de 1931.",3)}
+    if(!G.sim){noise(.25,2600,.18,'highpass');if(a.step===1)say("Du scotch. Du bon scotch d'avant-guerre. Il résiste.",3);else if(a.step===2)say("Les rabats. Du papier journal froissé…",3)}
     if(a.step===3){grantSecret(a,a.y-40);if(!G.sim)sayQueue([['RAYMOND',"De la paille de calage. Et au fond… une enclume de cordonnier.",3.6],['RAYMOND',"Étiquetée « FRAGILE ». Voilà donc ce qui m'a libéré.",3.6]])}
     return}
   if(L.a4&&(a.kind==='beacon'||a.kind==='secret')&&a4Act(a))return;

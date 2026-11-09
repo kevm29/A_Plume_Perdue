@@ -155,7 +155,7 @@ function ferteSwitch(){
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);noise(1.6,260,.22,'lowpass',.05);tone(to===14?392:523,.5,'sine',.05,to===14?262:784,.02);if(to===14)setTimeout(()=>SFX.thunder(.25),120)}
   for(let i=0;i<18;i++){const a=rnd()*Math.PI*2,s=40+rnd()*120;parts.push({type:'dust',x:P.x+P.w/2,y:P.y+P.h/2,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0,max:.7+rnd()*.5})}
   if(to===14&&!F.said.first){F.said.first=1;say("Septembre 1914. La même rivière, mais l'air sent la poudre. J'y étais : soldat de 1re classe Raymond, matricule 7413. Ma première mission.",5)}
-  else if(to===26&&!F.said.back){F.said.back=1;say("Retour au présent. Les camping-cars ont remplacé les fourgons. C'est un progrès, je suppose.",3.8)}
+  else if(to===26&&!F.said.back){F.said.back=1;say("Retour au présent, je divague.",3.8)}
 }
 function ferteRespawn(){const F=L.ferte;if(!F)return;ferteSet(P.cp&&P.cp.era||26);F.flash=.6;F.flashC=F.era;for(const s of F.gerbes){s.st='idle'}F.grace=1.2}
 

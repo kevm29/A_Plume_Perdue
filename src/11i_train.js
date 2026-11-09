@@ -111,7 +111,7 @@ function trainStep(dt){
   // la motrice : carillon, annonce, freinage
   if(!Tn.w7&&pcx>Tn.loco&&!P.dead){Tn.w7=true;Tn.dt=0;if(!G.sim){[[659,0],[523,.32],[784,.64]].forEach(([f,d])=>tone(f,.5,'sine',.09,null,d));
       setTimeout(()=>bubble(Tn.loco+17*T,TRN.ROOF-40,"« …notre train entre en gare de R… »",'#3a4a6a'),1200);
-      setTimeout(()=>say("En gare de quoi ? Le vent a mangé la moitié du nom.",3.4),3400)}}
+      setTimeout(()=>say("En gare de quoi ? Le vent a mangé la moitié du nom. Reims, je crois !",3.4),3400)}}
 }
 /* au retour sur un cartel : un court répit, pas de pylône sur le nez */
 function trainRespawn(){const Tn=L.train;Tn.grace=1.8;Tn.pyl=Tn.pyl.filter(p=>Math.abs(p.x-P.x)>900);Tn.spawnT=Math.max(Tn.spawnT,2.4);Tn.proj.length=0;
