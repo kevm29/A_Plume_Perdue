@@ -4554,6 +4554,7 @@ function applyGot(i){
   G.corn=n;
   if(gt.m&&L.medal){L.medal.taken=true;G.medal=true}
   let k=0;for(const a of L.acts)if(isSecretAct(a)){a.sid=k++;if(gt.sec.includes(a.sid)){a.used=true;if(a.kind==='carton')a.step=3}}
+  if(L.def.vaux){L.vfSid=k++;if(gt.sec.includes(L.vfSid))L.vfSecret=true}  // 4-3 : fienter sur un soldat allemand pendant le vol
   L.secretTotal=k;G.key=false;
 }
 
@@ -4844,7 +4845,7 @@ const ACH=[
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=45;   // tous les secrets du jeu (vérifié niveau par niveau)
+const SECRET_TOTAL=46;   // tous les secrets du jeu (vérifié niveau par niveau)
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -9861,7 +9862,9 @@ function vfUpdate(dt){
   for(const p of s.poops){p.vy+=1100*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
     for(const m of VF.people){if(m.side==='fr'||m.splat)continue;const hx=m.hx,hy=m.hy;if(hx==null)continue;if(Math.abs(p.x-hx)<9&&Math.abs(p.y-hy)<8){m.splat=true;m.wipe=1.8;p.dead=1;
       vxBubble(hx,hy-30,pick(['Scheiße!','Igitt!','Verdammte Taube!','Mein Helm!','Pfui Teufel!']),'#3a3a2a',1.8);if(!G.sim)noise(.08,600,.15,'lowpass');
-      if(!s.said.poop){s.said.poop=1;say("Un vrai, celui-là. Et en plein sur le casque. Le règlement appelle ça de l'artillerie d'appoint.",4)}break}}
+      {const q="Un vrai, celui-là. Et en plein sur le casque. Le règlement appelle ça de l'artillerie d'appoint.";
+       if(L.vfSid!=null&&!L.vfSecret&&!G.sim){L.vfSecret=true;s.said.poop=1;grantSecret({sid:L.vfSid,x:-9999,q:[q]},-9999)}
+       else if(!s.said.poop){s.said.poop=1;say(q,4)}}break}}
     if(!p.dead&&p.y>vfGround(p.x)){p.dead=1;s.splats.push({x:p.x,y:vfGround(p.x),t:0})}}
   s.poops=s.poops.filter(p=>!p.dead);for(const q of s.splats)q.t+=dt;s.splats=s.splats.filter(q=>q.t<8);
   vfHazards(dt);

@@ -46,6 +46,7 @@ function applyGot(i){
   G.corn=n;
   if(gt.m&&L.medal){L.medal.taken=true;G.medal=true}
   let k=0;for(const a of L.acts)if(isSecretAct(a)){a.sid=k++;if(gt.sec.includes(a.sid)){a.used=true;if(a.kind==='carton')a.step=3}}
+  if(L.def.vaux){L.vfSid=k++;if(gt.sec.includes(L.vfSid))L.vfSecret=true}  // 4-3 : fienter sur un soldat allemand pendant le vol
   L.secretTotal=k;G.key=false;
 }
 
