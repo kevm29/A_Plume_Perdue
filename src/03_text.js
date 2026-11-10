@@ -62,6 +62,7 @@ const DEATH_Q={
   blade:["Coupé net par un moulin. Le meunier ne s'est même pas excusé.","Fauché par une aile de moulin. Je pensais les miennes plus solides.","Haché menu, comme du tabac de troupe."],
   obus:["Un obus qui dépassait à peine. Il attendait quelqu'un. Il n'a pas raté son tour.","Le nez d'un obus. Il a suffi d'une patte. Le génie aurait dû passer avant moi.","Boum. Rouillé comme il était, c'était un vieux de la vieille. De quelle guerre date-t-il ?"],
   trou:["Tombé dans un trou d'obus. L'eau y croupit, et moi avec.","Un trou d'obus plein d'eau. Le ciel s'y reflétait si bien que je n'ai pas vu le fond."],
+  file:[/*v2*/"Un coup de pied dans la file d'attente. On ne double pas les gens qui attendent leur sandwich.",/*v2*/"Pas sur les gens, sur les bagages. C'était pourtant simple."],
   fourgonnette:["Renversé par la fourgonnette du ravitaillement. Livré avec les sandwichs.","Une voiture sur un quai. Je ne l'avais pas prévue, celle-là."],
   voiture:["Écrasé sur le cours de la Gare. Il fallait monter dessus, pas passer devant.","Une automobile. Même pas un cheval pour avoir pitié."],
   passant:["Un voyageur m'a balayé du revers de la main. Comme une miette.","Pris dans les roulettes d'une valise. Quelle fin."],

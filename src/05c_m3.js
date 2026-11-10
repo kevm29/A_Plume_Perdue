@@ -65,9 +65,9 @@ LEVELS.push((()=>{
   for(let c=53;c<=61;c++)put(c,6,'=');put(54,5,'^');put(55,5,'^');put(59,5,'^');put(60,5,'^');put(57,3,'v');   // une poutre de la verrière, ses pics anti-pigeons, le nid au milieu
   put(63,11,'k');put(60,11,'|');put(68,11,'|');
   corn([22,8],[33,10],[41,8],[49,10],[57,8],[65,10],[71,8],[76,10]);
-  put(79,11,'C');   // après la zone de la fourgonnette
+  put(79,11,'X');put(79,10,'C');   // après la zone de la fourgonnette : un sac posé là, le premier bagage de la file
   /* --- la file, la sandwicherie, le kiosque, le buffet --- */
-  put(81,11,'X');put(84,11,'X');box(86,86,10,11,'X');
+  put(82,11,'X');box(85,85,10,11,'X');   // les bagages de la file : on passe de l'un à l'autre
   box(88,94,8,11,'X');put(90,7,'^');put(91,7,'^');put(93,5,'v');
   box(97,101,7,11,'X');put(99,6,'^');put(101,4,'v');
   put(103,11,'k');
@@ -75,7 +75,7 @@ LEVELS.push((()=>{
   box(105,112,6,11,'X');put(108,5,'^');put(110,5,'^');put(111,2,'v');
   for(let c=114;c<=115;c++)put(c,10,'=');
   put(93,4,'m');put(113,5,'m');
-  corn([82,9],[86,8],[92,6],[96,9],[99,4],[102,10],[104,6],[107,4],[111,4],[115,8]);
+  corn([82,10],[85,8],[92,6],[96,9],[99,4],[102,10],[104,6],[107,4],[111,4],[115,8]);
   put(104,2,'*');
   /* --- le parvis, la route, le square --- */
   put(123,11,'C');box(133,133,11,11,'X');box(148,148,11,11,'X');
@@ -88,7 +88,7 @@ LEVELS.push((()=>{
   put(247,11,'E');
   for(const[c,r]of[[18,11],[80,11],[121,11],[157,11],[183,11],[200,11]])put(c,r,'q');
   const zones=[['quai',0,116],['hall',117,121],['parvis',122,158],['route',159,178],['parc',179,RW-1]];
-  return {w:2,name:"La gare",theme:'gare',exit:'post',exitLabel:"PLACE D'ERLON",seed:83,rows:RR,
+  return {w:2,name:"La gare",theme:'gare',exit:'post',exitLabel:/*v2*/"COURS LANGLET",seed:83,rows:RR,
     zoneTh:{quai:{type:'platform',floor:'#7a746a',floorTop:'#a8a090',x:'none'},hall:{type:'stone',floor:'#8a8478',floorTop:'#b8b0a2'},
       parvis:{type:'stone',floor:'#9a9284',floorTop:'#cfc6b2',x:'none'},route:{type:'asphalt',floor:'#6a6c72',floorTop:'#7a7c82'},parc:{type:'earth',floor:'#5c4630',floorTop:'#6c9a38',x:'none'}},
     zoneProps:{quai:['bench','clockPost','vending','bench'],hall:[],parvis:['lampPost','binPark'],route:[],parc:['flowerbed','binPark','lampPost']},

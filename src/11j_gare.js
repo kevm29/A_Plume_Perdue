@@ -10,7 +10,7 @@
 THEMES.gare={outdoor:true,far:'gareReims',horizon:'gareReims',sky:['#78a8d8','#bcd4e8','#eee6d2'],celestial:'none',fog:'#c8d0d6',dark:0,weather:'none',
   floor:'#7a746a',floorTop:'#a8a090',type:'platform',x:'luggage',d:'drape',shelf:'girder',spike:'spikes',spikeCol:'#3a3e46',spikeBase:'#2a2c32',walker:'rat',flyer:'crow',awning:'#b8302a',
   props:['bench','clockPost','vending']};
-const GR={FL:12*T};
+const GR={FL:12*T,Q:[80.9,83.9,86.9,88.45]};   // la file : chacun entre deux bagages
 
 /* ---------- plans de fond (en cache) ---------- */
 function gareFX(L,col,pf){return (col*T-W/2)*pf+W/2}
@@ -66,7 +66,17 @@ function gareMid(L,g,wpx,R){
   {const a=fx(122),b=fx(178);for(let x=a+30;x<b;x+=180){g.fillStyle='#2a2e34';g.fillRect(x,330,5,270);g.beginPath();g.ellipse(x+2,326,12,6,0,0,7);g.fill()}
     for(let x=a+100;x<b;x+=400){g.strokeStyle='#5a5e66';g.lineWidth=3;for(let k=0;k<4;k++){g.beginPath();g.arc(x+k*22,560,10,Math.PI,0);g.stroke()}}}
   // les grands arbres du square
-  {const a=fx(176),b=wpx;for(let x=a;x<b;x+=150+R()*80){const h=200+R()*80;g.fillStyle='#4a3424';g.fillRect(x-6,600-h*.6,12,h*.6);for(let k=0;k<6;k++){g.fillStyle=pick(['#4a7a3a','#3e6a32','#5a8a42']);g.beginPath();g.ellipse(x+(R()-.5)*90,600-h+R()*70,50+R()*30,40+R()*20,0,0,7);g.fill()}}}
+  {const a=fx(174),b=wpx;
+    // le rang du fond, plus petit et plus pâle ; puis le rang de devant : des tilleuls et des marronniers, troncs et couronnes
+    const tree=(x,h,s,haze)=>{const Rt=mulberry(x|0),dk=haze?'#5a7a52':'#2e5222',md=haze?'#6e8e62':'#3e6a2a',lt=haze?'#84a272':'#5e8e38',hl=haze?'#98b484':'#7aa848';
+      g.fillStyle=haze?'#6a6052':'#4a3424';g.beginPath();g.moveTo(x-8*s,600);g.quadraticCurveTo(x-5*s,600-h*.3,x-4*s,600-h*.6);g.lineTo(x+4*s,600-h*.6);g.quadraticCurveTo(x+5*s,600-h*.3,x+9*s,600);g.fill();
+      g.strokeStyle=g.fillStyle;g.lineWidth=4*s;for(const d of[-1,1]){g.beginPath();g.moveTo(x,600-h*.52);g.quadraticCurveTo(x+d*14*s,600-h*.62,x+d*28*s,600-h*.72);g.stroke()}
+      const cy=600-h*.78,rw=58*s,rh=h*.26;
+      for(const[c,n,r0]of[[dk,9,.5],[md,12,.38],[lt,10,.28],[hl,6,.16]])for(let k=0;k<n;k++){const an=Rt()*6.28,d=Math.sqrt(Rt())*(c===hl?.5:.75);g.fillStyle=c;g.beginPath();
+        g.arc(x+Math.cos(an)*rw*d-(c===hl||c===lt?rw*.12:0),cy+Math.sin(an)*rh*d-(c===hl?rh*.25:c===lt?rh*.12:0),rw*r0*(.8+Rt()*.4),0,7);g.fill()}};
+    for(let x=a+70;x<b;x+=150+R()*60)tree(x,190+R()*40,.75,true);
+    for(let x=a+20;x<b;x+=170+R()*70)tree(x,260+R()*60,1+R()*.15,false);
+    g.fillStyle='#4a7a32';g.fillRect(a,592,b-a,10);for(let x=a;x<b;x+=26){g.fillStyle='#3e6a2a';g.beginPath();g.ellipse(x+13,594,16,9,0,0,7);g.fill()}}
   g.fillStyle='rgba(200,208,214,.12)';g.fillRect(0,0,wpx,600);
 }
 
@@ -133,6 +143,8 @@ function gareStep(dt){
       o.beg=Math.max(0,o.beg-dt);if(near<230&&o.beg<=0&&!G.sim){o.beg=2.8;bubble(o.x,F-44,pick(["Une graine, pour un ancien combattant ?","Pitié, camarade…","Rien qu'une miette…"]),'#6a5a48')}}
     if(!P.dead&&o.k!=='moignon'&&overlap(hb,{x:o.x-(o.k==='gros'?16:12),y:o.y-(o.k==='gros'?30:24),w:o.k==='gros'?32:24,h:o.k==='gros'?28:22}))G.gareHit=o.k==='gros'?'pigeonGros':'pigeonDeplume'}
   S2.pig=S2.pig.filter(o=>o.y>-200);
+  // la file d'attente : on ne touche pas les gens, on passe par les bagages
+  if(!P.dead)for(const c of GR.Q)if(overlap(hb,{x:c*T-11,y:F-112,w:22,h:112}))G.gareHit='file';
   if(S2.grace>0){S2.grace-=dt;G.gareHit=null}
   // la graine crachée ne rate jamais sa cible
   for(let i=S2.seeds.length-1;i>=0;i--){const s=S2.seeds[i],tx=pcx,ty=P.y+P.h/2,d=Math.hypot(tx-s.x,ty-s.y)||1;s.x+=(tx-s.x)/d*520*dt;s.y+=(ty-s.y)/d*520*dt;
@@ -180,12 +192,12 @@ function drawGareMid(t){
       if(kind==='roll'){rr(g,x+T/2-w/2,y-h,w,h,5);g.fill();g.fillStyle='rgba(0,0,0,.18)';for(let k=1;k<4;k++)g.fillRect(x+T/2-w/2+k*w/4,y-h+4,2,h-8);g.fillStyle='#2a2a2e';g.fillRect(x+T/2-8,y-h-12,2,12);g.fillRect(x+T/2+6,y-h-12,2,12);g.fillRect(x+T/2-8,y-h-14,16,3);g.beginPath();g.arc(x+T/2-w/2+5,y-2,3,0,7);g.arc(x+T/2+w/2-5,y-2,3,0,7);g.fill()}
       else if(kind==='bag'){g.beginPath();g.ellipse(x+T/2,y-h/2,w/2,h/2,0,0,7);g.fill();g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=2;g.beginPath();g.arc(x+T/2,y-h+4,9,Math.PI,0);g.stroke();g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x+T/2-w/2+6,y-h/2-2,w-12,3)}
       else{rr(g,x+T/2-w/2,y-h,w,h,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x+T/2-w/2,y-h/2-1,w,3);g.fillStyle='#c8a050';g.fillRect(x+T/2-4,y-h-4,8,4);g.fillStyle='#e8e0cc';g.fillRect(x+T/2-w/2+5,y-h+6,10,6)}};
-    v(81,11,30,40,'#b8302a','roll');v(84,11,40,30,'#3a6a4a','bag');v(86,11,38,40,'#2a4a7a','hard');v(86,10,32,40,'#c8a878','hard');
+    v(79,11,36,26,'#6a4a3a','bag');v(82,11,30,40,'#b8302a','roll');v(85,11,38,40,'#2a4a7a','hard');v(85,10,32,40,'#c8a878','hard');
     for(const c of[238,239,243]){const x=c*T;if(!vis(x,x+T))continue;for(let k=0;k<4;k++){g.fillStyle=k%2?'#3e6a32':'#4a7a3a';g.beginPath();g.ellipse(x+8+k*8,F-16-(k%2)*6,14,18,0,0,7);g.fill()}g.fillStyle='rgba(255,255,255,.1)';g.beginPath();g.ellipse(x+16,F-28,6,4,0,0,7);g.fill()}}
   // la file d'attente
-  {const[a,b]=D.queue;if(vis(a*T,b*T)){[[80.4,'#3a4a6a','#e0c0a0'],[82.6,'#7a3a3a','#c89878'],[85.2,'#4a5a3a','#e8c8a8'],[87.3,'#2a2a30','#a87858']].forEach(([c,coat,skin],i)=>drawQueuer(g,c*T,F,coat,skin,t+i*1.7,i))}}
+  {const[a,b]=D.queue;if(vis(a*T,b*T)){[[GR.Q[0],'#3a4a6a','#e0c0a0'],[GR.Q[1],'#7a3a3a','#c89878'],[GR.Q[2],'#4a5a3a','#e8c8a8'],[GR.Q[3],'#2a2a30','#a87858']].forEach(([c,coat,skin],i)=>{if(i<3)drawQueuer(g,c*T,F,coat,skin,t+i*1.7,i)})}}
   // la sandwicherie, le kiosque, le buffet
-  drawShop(g,D.shop,'SANDWICHS · BOISSONS','#2a5a4a',t);drawKiosk(g,D.kiosk,t);drawBuffet(g,D.resto,t);
+  drawShop(g,D.shop,'SANDWICHS · BOISSONS','#2a5a4a',t);if(vis(GR.Q[3]*T-40,GR.Q[3]*T+40))drawQueuer(g,GR.Q[3]*T,F,'#2a2a30','#a87858',t+3*1.7,3);drawKiosk(g,D.kiosk,t);drawBuffet(g,D.resto,t);
   // les jardinières du parvis
   for(const c of[133,148]){const x=c*T;if(!vis(x,x+T))continue;g.fillStyle='#b8b0a0';g.fillRect(x-4,F-T,T+8,T);g.fillStyle='#a49c8c';g.fillRect(x-4,F-T,T+8,5);
     for(let k=0;k<5;k++){g.fillStyle=k%2?'#4a7a3a':'#3e6a32';g.beginPath();g.ellipse(x+4+k*8,F-T-6-(k%3)*4,10,12,0,0,7);g.fill()}}
@@ -207,13 +219,36 @@ function drawGareMid(t){
 }
 function drawQueuer(g,x,F,coat,skin,t,i){const k='gq'+i;const p=L[k]||(L[k]=fkMake(600+i,{coat,skin,fem:i===2,old:i===1}));
   const hold=i===1?(g2,hx,hy)=>{g2.fillStyle='#1a1a1e';rr(g2,hx-3,hy-12,7,12,2);g2.fill()}:i===3?(g2,hx,hy)=>{g2.fillStyle='#e8e4d8';g2.fillRect(hx-2,hy-10,14,10)}:null;
-  fkDraw(g,p,x,F,t,i===1?'hand':'stand',{f:-1,hx:14,hy:-104,bend:[18,-80],hold})}
+  fkDraw(g,p,x,F,t,i===1?'hand':'stand',{f:1,hx:14,hy:-104,bend:[18,-80],hold})}
 function drawShop(g,[c0,c1],label,col,t){
-  const x0=c0*T,x1=(c1+1)*T,top=8*T,F=GR.FL;if(x1<cam.x-100||x0>cam.x+W+100)return;
-  g.fillStyle='#e8dcc0';g.fillRect(x0,top,x1-x0,F-top);g.fillStyle=col;g.fillRect(x0-6,top-4,x1-x0+12,26);g.fillStyle='#f4ecd8';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText(label,(x0+x1)/2,top+14);
-  g.fillStyle='rgba(180,210,230,.6)';g.fillRect(x0+10,top+34,x1-x0-20,74);g.fillStyle='#c8a060';for(let k=0;k<7;k++){rr(g,x0+20+k*36,top+82,28,12,5);g.fill()}g.fillStyle='#8a5a3a';for(let k=0;k<6;k++){g.fillRect(x0+24+k*40,top+52,24,8)}
-  g.fillStyle='#6a4a32';g.fillRect(x0,F-46,x1-x0,46);g.fillStyle='#2a2a2e';g.fillRect(x0+20,F-60,30,14);g.fillStyle='#f0ece0';for(let k=0;k<3;k++)poly(g,[x1-50+k*10,F-46,x1-48+k*10,F-56,x1-42+k*10,F-56,x1-40+k*10,F-46]),g.fill();
-  g.fillStyle='#8a8e96';g.fillRect(x0-4,top-4,x1-x0+8,4);
+  const x0=c0*T,x1=(c1+1)*T,top=8*T,F=GR.FL,w=x1-x0;if(x1<cam.x-100||x0>cam.x+W+100)return;
+  // la caisse de la boutique : bois peint, montants, corniche
+  g.fillStyle='#e8dcc0';g.fillRect(x0,top,w,F-top);g.fillStyle='#d8caa8';g.fillRect(x0,top,8,F-top);g.fillRect(x1-8,top,8,F-top);
+  // l'enseigne : un bandeau vert, un liseré doré, les lettres crème
+  g.fillStyle=col;g.fillRect(x0-6,top-6,w+12,30);g.strokeStyle='#d8b050';g.lineWidth=2;g.strokeRect(x0-2,top-2,w+4,22);
+  g.fillStyle='#f4ecd8';g.font='bold 12px '+F_DISP;g.textAlign='center';g.fillText(label,(x0+x1)/2,top+14);
+  // le store rayé, festonné
+  const sy=top+24;for(let k=0;k*20<w+12;k++){g.fillStyle=k%2?'#f4ecd8':col;g.fillRect(x0-6+k*20,sy,20,14)}
+  for(let k=0;k*20<w+12;k++){g.fillStyle=k%2?'#f4ecd8':col;g.beginPath();g.arc(x0+4+k*20,sy+14,10,0,Math.PI);g.fill()}
+  // l'intérieur : mur clair, étagères de bouteilles, machine à café, la lumière
+  const iy=sy+26,iyB=F-58;g.fillStyle='#f6ead0';g.fillRect(x0+12,iy,w-24,iyB-iy);
+  const gl=g.createLinearGradient(0,iy,0,iyB);gl.addColorStop(0,'rgba(255,240,200,.6)');gl.addColorStop(1,'rgba(200,170,120,.2)');g.fillStyle=gl;g.fillRect(x0+12,iy,w-24,iyB-iy);
+  g.fillStyle='#8a6a4a';g.fillRect(x0+16,iy+16,100,4);g.fillRect(x0+16,iy+40,100,4);
+  for(let k=0;k<7;k++){g.fillStyle=['#c83a2a','#2a6a3a','#e8b830','#3a5a9a'][k%4];rr(g,x0+20+k*14,iy+4,8,12,2);g.fill();g.fillStyle=['#e8b830','#c83a2a','#3a5a9a','#2a6a3a'][k%4];rr(g,x0+20+k*14,iy+28,8,12,2);g.fill()}
+  g.fillStyle='#3a3a3e';rr(g,x1-70,iy+8,40,46,4);g.fill();g.fillStyle='#8a8e96';g.fillRect(x1-64,iy+14,28,8);g.fillStyle='#e8e4dc';g.fillRect(x1-56,iy+40,10,10);
+  // l'ardoise des menus : des lignes de craie
+  g.fillStyle='#2a2e2c';rr(g,x0+124,iy+4,84,48,3);g.fill();g.strokeStyle='#8a6a4a';g.lineWidth=3;rr(g,x0+124,iy+4,84,48,3);g.stroke();
+  g.strokeStyle='rgba(240,236,224,.75)';g.lineWidth=1.5;for(let k=0;k<4;k++){g.beginPath();for(let x=x0+132;x<x0+184;x+=4)g.lineTo(x,iy+14+k*10+Math.sin(x*1.3+k)*1.2);g.stroke();g.beginPath();g.moveTo(x0+190,iy+14+k*10);g.lineTo(x0+200,iy+14+k*10);g.stroke()}
+  // le vendeur, derrière le comptoir : casquette, tablier ; il tend un sandwich au premier de la file
+  {const p=L.gqV||(L.gqV=fkMake(707,{coat:col,apron:'#f4f2ec',hat:'casquette',fem:false,old:false}));const vx=x0+64;g.save();g.beginPath();g.rect(x0+12,iy-4,w-24,iyB-iy+10);g.clip();
+   fkDraw(g,p,vx,F+14,t,'hand',{f:-1,hx:14,hy:-92,bend:[18,-76],hold:(g2,hx,hy)=>{g2.fillStyle='#d8a860';rr(g2,hx-14,hy-4,22,8,4);g2.fill();g2.fillStyle='#6a9a3a';g2.fillRect(hx-12,hy-5,18,2);g2.fillStyle='#e8a0a0';g2.fillRect(hx-12,hy-3,18,2)}});g.restore()}
+  // le comptoir : la vitrine réfrigérée et ses sandwichs, la caisse enregistreuse
+  g.fillStyle='rgba(200,230,240,.55)';rr(g,x0+18,iyB-26,w-36,28,4);g.fill();g.strokeStyle='rgba(255,255,255,.7)';g.lineWidth=1.5;rr(g,x0+18,iyB-26,w-36,28,4);g.stroke();
+  for(let k=0;k<8;k++){const sx=x0+26+k*30;g.fillStyle='#d8a860';rr(g,sx,iyB-12,24,9,4);g.fill();g.fillStyle=k%2?'#6a9a3a':'#e89090';g.fillRect(sx+2,iyB-13,20,2);g.fillStyle='rgba(255,255,255,.4)';g.fillRect(sx+3,iyB-11,14,1.5)}
+  g.fillStyle='#2a2a2e';rr(g,x1-48,iyB-22,26,16,3);g.fill();g.fillStyle='#8ad0a0';g.fillRect(x1-44,iyB-19,14,5);
+  g.fillStyle='#7a5234';g.fillRect(x0+6,iyB,w-12,F-iyB);g.fillStyle='#8a6240';g.fillRect(x0+6,iyB,w-12,6);
+  for(let x=x0+16;x<x1-16;x+=38){g.strokeStyle='rgba(40,24,12,.35)';g.lineWidth=2;g.strokeRect(x,iyB+12,30,F-iyB-18)}
+  g.fillStyle='#8a8e96';g.fillRect(x0-6,top-8,w+12,4);
 }
 function drawKiosk(g,[c0,c1],t){
   const x0=c0*T,x1=(c1+1)*T,top=7*T,F=GR.FL;if(x1<cam.x-100||x0>cam.x+W+100)return;
