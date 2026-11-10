@@ -84,6 +84,7 @@ function trainStep(dt){
   for(const pa of Tn.pass){pa.cool=Math.max(0,pa.cool-dt);pa.shock=Math.max(0,pa.shock-dt);
     if(pa.k==='empty'||pa.k==='sleep'||pa.k==='bagblue'||pa.k==='bagred')continue;
     const sees=inside3&&!P.dead&&!P.onGround&&P.y+P.h<TRN.FLOOR-34&&pcx>pa.x+18&&pcx<pa.x+86;
+    if(sees)Tn.everSeen=true;
     if(sees&&pa.cool<=0){pa.shock=1.4;pa.cool=3.2;pa.throwT=.28;if(!G.sim){bubble(pa.x+24,TRN.FLOOR-112,pick(["Aaah ! Un pigeon !","Mais c'est dégoûtant !","Au secours !","Un pigeon dans le train !","Ouste, sale bête !"]),'#2a3a5a');
       if(!Tn.said.seen){Tn.said.seen=1;setTimeout(()=>say("Ils me prennent pour un pigeon des villes. Au ras du sol, ils ne me voient pas.",3.6),900)}}}
     if(pa.throwT>=0){pa.throwT-=dt;if(pa.throwT<0){const k=pa.k==='paper'?'news':pa.k==='suit'?'ball':pa.k==='student'||pa.k==='phone'?'can':'ball';

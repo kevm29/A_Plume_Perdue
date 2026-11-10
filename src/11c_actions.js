@@ -103,7 +103,7 @@ function tryAct(){
   }
 }
 function grantSecret(a,py){
-  a.used=true;{const gt=gotOf(G.li);if(!gt.sec.includes(a.sid))gt.sec.push(a.sid)}achSecret(G.li,a.sid);if(a.style==='backdoor')unlock('a2');if(a.style==='fiente')achScheisse('musee');if(a.style==='vfpoop')achScheisse('vaux');
+  a.used=true;{const gt=gotOf(G.li);if(!gt.sec.includes(a.sid))gt.sec.push(a.sid)}achSecret(G.li,a.sid);if(a.style==='backdoor')unlock('a2');if(a.style==='fiente')achScheisse('musee');if(a.style==='tente')unlock('n21');if(a.style==='vfpoop')achScheisse('vaux');
   if(!a.noStraw&&(S.run.wear||0)>0){S.run.wear--;P.sx=1.15;P.sy=1.15}
   save();
   if(!G.sim){SFX.secret();if(a.noStraw)noise(.25,3200,.2,'highpass');else{setTimeout(()=>SFX.straw(),180);parts.push({type:'tuftpop',x:a.x,y:py,life:0,max:1.3});puff(a.x,py+4,8,true)}say(pick(a.q||SECRET_Q),3.8)}
@@ -155,7 +155,7 @@ function watchStep(w,dt,pcx,pcy){
     w.open=w.state==='open'?Math.min(1,(cyc-3.8)*6):w.state==='warn'?.18:0;
     const moving=Math.abs(P.vx)>35||!P.onGround;
     if(w.state==='open'&&w.open>.6&&!P.dead&&!G.cut&&moving&&Math.abs(w.x-pcx)<520&&Math.abs(w.y-pcy)<220&&!hiddenNow()){
-      w.mode='chase';w.ct=0;w.k={x:w.x-22,y:w.y-26,w:44,h:26,vx:0,vy:-380,onGround:false,f:pcx>w.x?1:-1};
+      w.mode='chase';L.catWoke=true;w.ct=0;w.k={x:w.x-22,y:w.y-26,w:44,h:26,vx:0,vy:-380,onGround:false,f:pcx>w.x?1:-1};
       if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),200)}
     }
     return;
@@ -230,7 +230,7 @@ function marbleHeard(m){
   for(const g of L.guards)if(!(g.tangle>0)&&!(g.sweep>0)&&Math.hypot(g.x+g.w/2-m.x,g.y+g.h-m.y)<R2+80){g.dir=Math.sign(m.x-(g.x+g.w/2))||g.dir;g.pause=1.2;g.noFlip=true;if(!G.sim)bubble(g.x+g.w/2,g.y-14,'Hein ?','#2a3a5a')}
   if(L.meuse)meuseMarble(m);
   if(L.gare)gareMarble(m);
-  for(const w of L.watchers)if((w.mode==='sit'||!w.mode)&&Math.hypot(w.x-m.x,w.y-m.y)<R2+120){w.seen=true;w.mode='chase';w.ct=0;w.k={x:w.x-22,y:w.y-26,w:44,h:26,vx:0,vy:-380,onGround:false,f:P.x>w.x?1:-1};if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),200)}}
+  for(const w of L.watchers)if((w.mode==='sit'||!w.mode)&&Math.hypot(w.x-m.x,w.y-m.y)<R2+120){w.seen=true;w.mode='chase';L.catWoke=true;w.ct=0;w.k={x:w.x-22,y:w.y-26,w:44,h:26,vx:0,vy:-380,onGround:false,f:P.x>w.x?1:-1};if(!G.sim){SFX.hiss();setTimeout(()=>meow(1),200)}}
 }
 function drawMarbles(){if(!L.marbles)return;for(const m of L.marbles){const x=m.x+m.w/2,y=m.y+m.h/2;ctx.save();
   ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x+2,m.y+m.h+1,4,1.5,0,0,7);ctx.fill();
@@ -279,6 +279,7 @@ function droneStep(K,dt,pcx,pcy){
   if(K.sp==='aim')K.sa=Math.atan2(pcy-ey,pcx-ex);else K.sa=Math.PI/2+Math.sin(K.t*1.4)*.55;
   let a=Math.atan2(pcy-ey,pcx-ex)-K.sa;a=Math.atan2(Math.sin(a),Math.cos(a));
   const inCone=!P.dead&&!fin&&Math.abs(a)<.3&&Math.hypot(pcx-ex,pcy-ey)<340&&!hiddenNow()&&droneLOS(ex,ey,pcx,pcy);
+  if(inCone)L.zrSeen=true;
   if(K.sp==='scan'){K.lock=inCone?(K.lock||0)+dt:Math.max(0,(K.lock||0)-dt*2);if(K.lock>.45){K.sp='aim';K.st=0;K.lock=0;if(!G.sim){tone(1500,.08,'square',.06);setTimeout(()=>tone(1500,.08,'square',.06),140)}}}
   else if(K.sp==='aim'){if(K.st>.75){K.sp='cool';K.st=0;K.fire=.25;if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>noise(.05,2400,.3,'highpass'),k*45)}if(inCone)K.hitP=true}}
   else if(K.sp==='cool'&&K.st>1.4){K.sp='scan';K.st=0}

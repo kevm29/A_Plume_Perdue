@@ -175,7 +175,7 @@ function comblesStep(dt){const C=L.cb;if(!C)return;C.t+=dt;if(C.grace>0)C.grace-
   if(C.talk&&!G.sim){const k=C.talk;k.t+=dt;const o=C.pig[0];
     if(k.k===0){k.k=1;say("Pardon, camarade ! Le pigeonnier Vasseur, au bout du village… Vous savez ce qu'il est devenu ?",4)}
     else if(k.k===1&&k.t>4.1){k.k=2;bubble(o.x,o.y-44,"Rrrou… krr… wesh… rrou-rrou ?",'#6a5a48')}
-    else if(k.k===2&&k.t>5.8){k.k=3;say("On ne leur a même pas appris à parler correctement. On ne comprend rien à ce qu'ils disent.",4.2)}
+    else if(k.k===2&&k.t>5.8){k.k=3;unlock('n25');say("On ne leur a même pas appris à parler correctement. On ne comprend rien à ce qu'ils disent.",4.2)}
     else if(k.k===3&&k.t>10.2)C.talk=null}
   // la sortie : le trou dans le toit (il n'existe pas en 1914)
   if(!C.end&&!P.dead&&C.era===26&&pcx>199.6*T&&pcx<205*T&&P.y<1.6*T){C.end={t:0,x0:P.x,y0:P.y,amb:0};P.vx=P.vy=0}

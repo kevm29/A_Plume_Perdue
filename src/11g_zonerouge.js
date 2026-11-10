@@ -55,7 +55,7 @@ function zrStep(dt){
     if(c.kind==='boar'&&!Z.said.boar){Z.said.boar=1;say("Plouf. Le sanglier a pris le trou d'obus pour une souille. Il y restera.",3.4)}}}}
   if(Z.bh){const l0=Z.bh.lamps[Z.bh.lamps.length-1],used=Z.lampAct.used;l0.i=used?.75:(((G.lt*7)%5<2.2||(G.lt*13)%7<1)?.75:0);
     if(used&&Z.lampAct.anim&&!Z.decoy){Z.decoy={x:l0.x,y:Z.bh.b-96,t:0};if(!G.sim){SFX.caw()}
-      const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Bonne chance, le corback !",3.6),500)}}}
+      const K=L.chaser;if(K&&K.type==='drone'&&K.state==='chase'){K.state='lure';if(!L.zrSeen)unlock('n07');if(!G.sim)setTimeout(()=>say("Le pigeon de fer part après le corbeau ! Il nous confond. Bonne chance, le corback !",3.6),500)}}}
   // le corbeau s'ébroue un instant au-dessus de la lanterne, puis file vers la gauche (le drone a le temps de faire sa pirouette)
   if(Z.decoy){const d=Z.decoy;d.t+=dt;if(d.t<.8){d.x-=40*dt;d.y-=50*dt}else{d.x-=Math.min(430,120+(d.t-.8)*700)*dt;d.y-=Math.max(0,30-d.t*8)*dt+Math.sin(d.t*5)*.6}
     if(d.x<cam.x-1600)Z.decoy=null}

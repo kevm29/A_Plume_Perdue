@@ -86,7 +86,7 @@ const TORN_Q=["Mon aile gauche vient de déposer un préavis de grève.","Ça cr
 function wingTorn(){P.torn=true;P.stam=0;if(G.sim)return;unlock('a68');tone(140,.25,'sawtooth',.05,90);parts.push({type:'straw',x:P.x+P.w/2,y:P.y+10,vx:-40,vy:-60,life:0,max:.8,rot:0,vr:6,len:6});
   if(!G.tornSaid){G.tornSaid=true;G.tornT=G.t;say("L'aile tire dur ! Si je force encore, elle se décroche. Me poser, et attendre.",4)}
   else if(G.t-(G.tornT||0)>8&&rnd()<.6){G.tornT=G.t;say(pick(TORN_Q),3.6)}}
-function winLevel(){if(G.sim){G.simWin=true;return}if(G.li===2)unlock('a56');G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
+function winLevel(){if(G.sim){G.simWin=true;return}if(G.li===2)unlock('a56');if(G.li===3&&!L.catWoke)unlock('r17');if(L.train&&L.train.pass&&!L.train.everSeen)unlock('r06');G.state='exiting';G.exitT=0;SFX.win();loopsOff()}
 
 /* ---------- scène d'ouverture : nuit d'orage, voleur, armoire, carton ---------- */
 function cutFlash(v,thunder){G.flash=Math.max(G.flash,v);if(!G.sim)setTimeout(()=>SFX.thunder(thunder),thunder>1?120:600)}
@@ -318,7 +318,7 @@ function stepChaser(K,dt,pcx,pcy){
   if(K.type==='guardnet'||K.type==='sweeper'){stepGroundChaser(K,dt,pcx,pcy);return}
   if(K.type==='cat'&&K.state==='gone'){K.vx=0;K.f=pcx>K.x?1:-1;return}
   if(K.type==='bigrat'&&(K.state==='gone'||K.state==='dead')){if(K.state==='gone'){K.x-=380*dt;K.f=-1;if(K.x<cam.x-200)K.state='dead'}return}
-  if((K.type==='bigrat'||K.type==='cat')&&K.state==='chase'&&L.def.chaseEnd&&pcx>L.def.chaseEnd){K.state='gone';G.chase=false;setSong(songKey(G.li));if(!G.sim)say(L.def.chaseEndQuip||'',3.8);return}
+  if((K.type==='bigrat'||K.type==='cat')&&K.state==='chase'&&L.def.chaseEnd&&pcx>L.def.chaseEnd){K.state='gone';if(L.crecy&&K.type==='cat')unlock('n23');G.chase=false;setSong(songKey(G.li));if(!G.sim)say(L.def.chaseEndQuip||'',3.8);return}
   if(K.type==='cat'||K.type==='bigrat'){
     if(K.state==='wake'){K.wakeT-=dt;if(K.wakeT<=0)K.state='chase'}
     if(K.state!=='chase')return;
@@ -348,7 +348,7 @@ function stepChaser(K,dt,pcx,pcy){
   }else if(K.state==='warn'){K.y-=40*dt;if(K.pt>.6){K.state='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*520;K.vy=dy/d*520;K.f=K.vx>=0?1:-1}}
   else if(K.state==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.9||K.y>ROWS*T-60){K.state='hover';K.pt=0}}
 }
-function respawn(){
+function respawn(){L.zrSeen=false;
   resetPlayer();P.wake=.35;if(L.gare)gareRespawn();if(L.train)trainRespawn();if(L.lg)langletRespawn();if(L.fc)facadeRespawn();if(L.a4)a4Respawn();if(L.aire)aireRespawn();if(L.ferte)ferteRespawn();if(L.cb)comblesRespawn();if(L.pl)placeRespawn();if(L.cm)cmRespawn();if(L.s16)s16Respawn();
   const K=L.chaser;
   if(K){
@@ -388,7 +388,8 @@ const WALK_CRY={rat:[null,()=>SFX.squeak()],boar:[null,()=>SFX.grunt()],piglet:[
 const FLY_CRY={crow:[null,()=>SFX.caw()],gull:[null,()=>tone(1500,.3,'sawtooth',.06,900)],bag:[null,()=>SFX.bag()],wasp:[null,()=>SFX.buzz()],bat:[null,()=>tone(4200,.12,'sine',.05,3600)],moth:[null,()=>SFX.flutter()]};
 function animalSounds(dt){
   const pcx=P.x+P.w/2,pcy=P.y+P.h/2;
-  for(const c of L.rats){c.sq-=dt;const d=Math.hypot(c.x-pcx,c.y-pcy);if(d<420&&c.sq<=0){const cr=WALK_CRY[c.kind];if(cr)cr[1]();c.sq=2.2+rnd()*2.6}}
+  for(const c of L.rats)if(c.kind==='rat'&&!P.onGround&&!P.dead){const cx=c.x+c.w/2,side=Math.sign(pcx-cx),above=P.y+P.h<c.y+2&&P.y+P.h>c.y-170;if(c.ps&&side&&side!==c.ps&&above&&!c.jumped){c.jumped=1.2;achRat()}if(side)c.ps=side}else if(c.kind==='rat'){c.ps=Math.sign(pcx-(c.x+c.w/2))}
+  for(const c of L.rats){if(c.jumped>0)c.jumped=Math.max(0,c.jumped-dt);c.sq-=dt;const d=Math.hypot(c.x-pcx,c.y-pcy);if(d<420&&c.sq<=0){const cr=WALK_CRY[c.kind];if(cr)cr[1]();c.sq=2.2+rnd()*2.6}}
   for(const m of L.moths){m.fl-=dt;if(m.near&&m.fl<=0){const cr=FLY_CRY[m.kind];if(cr)cr[1]();m.fl=m.kind==='moth'?.32:1.6+rnd()}}
   for(const b of L.bells){b.ring=Math.max(0,b.ring-dt*.5);b.ph+=dt;if(Math.abs(b.x-pcx)<420&&b.ring<=0&&rnd()<dt*.25){SFX.bell();b.ring=1}}
   const K=L.chaser,th=L.th;

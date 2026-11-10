@@ -163,7 +163,7 @@ function gareAfterMove(){if(G.gareHit){const k=G.gareHit;G.gareHit=null;return k
 /* la bille, au square : tous les pigeons s'envolent */
 function gareMarble(m){
   const S2=L.gare,D=L.def.gare;if(!S2||S2.fled)return;if(m.x<D.park[0]*T||m.x>D.park[1]*T)return;
-  S2.fled=true;for(const o of S2.pig){o.st='flee';o.vy=-120-rnd()*80;o.f=o.x<m.x?-1:1}
+  S2.fled=true;unlock('n11');for(const o of S2.pig){o.st='flee';o.vy=-120-rnd()*80;o.f=o.x<m.x?-1:1}
   if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>SFX.flap(),k*90);setTimeout(()=>say("Tous envolés au « toc » de ma crotte. Une crotte qui rebondit… Il faudra que je voie le vétérinaire du régiment.",4),1400)}
 }
 function gareStatueLine(){

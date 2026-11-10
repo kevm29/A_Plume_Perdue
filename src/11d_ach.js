@@ -6,7 +6,7 @@ const ACH=[
  ['a1','P','Matricule 7413, au rapport',"Terminer l'introduction."],
  ['a2','P','Finalement, on aurait pu sortir par là',"Ouvrir la porte par où le voleur est parti."],
  ['a3','P','Le bec, outil réglementaire',"Ouvrir le portillon du 1-1 en tirant la poignée."],
- ['a4','P','Fin de la remise',"Terminer la mission 1."],
+ ['a4','P',/*v2*/'Fini la remise',"Terminer la mission 1."],
  ['a5','P','Retour au front',"Terminer la mission 2."],
  ['a6','P','Le sacre',"Terminer la mission 3."],
  ['a7','P','Route nationale',"Terminer la mission 4."],
@@ -18,27 +18,41 @@ const ACH=[
  ['a13','P','Cent dix ans de retard',"Lire la banderole de la fête foraine."],
  ['a15','P','Le pot de fleurs',"Voir la fin du jeu."],
  ['a17','P','Article 4 bis',"Lire les vingt morceaux de la lettre."],
+ ['r14','P',/*v2*/"Sergent-chef",/*v2*/"Obtenir tous les autres succès."],
  ['a24','C','Rembourré à neuf',"Revenir à cinq crans pleins après être descendu au dernier."],
  ['a26','C','Bardé de décorations',/*v2*/"Trouver les six médailles dans une même partie."],
  ['a30','C',"Rien ne m'échappe","Trouver tous les secrets du jeu."],
  ['a35','C','Mission parfaite',"Tout trouver dans une mission."],
+ ['n38','C',/*v2*/"Le grenier est plein",/*v2*/"Ramasser toute la paille du jeu."],
  ['a49','D','Recousu de travers',"Perdre la tête une première fois."],
  ['a50','D','Depuis la remise',"Perdre la tête en mode difficile et tout recommencer."],
- ['a53','E','Fantôme du musée',"Jeter un drap sur la tête d'un gardien."],
+ ['a53','E',/*v2*/'Le fantôme du musée',"Jeter un drap sur la tête d'un gardien."],
  ['a54','E',"Bijou s'emmêle","Faire s'emmêler le chat dans un drap."],
  ['a56','E',"Le papillon s'est envolé","Échapper au gardien au filet."],
  ['c1','E','Instinct de pie',"Chiper dix clefs aux gardiens."],
  ['a70','S','Terminus, tout le monde descend',"Au cours Langlet, monter sur un tramway après la rue Guillaume-de-Machault et rester sur son toit jusqu'au tout début de la rue."],
+ ['n07','S',/*v2*/"Sous le feuillage",/*v2*/"Échapper au drone de la zone rouge sans jamais entrer dans son projecteur."],
+ ['n23','S',/*v2*/"Attention au chien",/*v2*/"Semer le chat blanc jusqu'à la pancarte « Attention au chien »."],
+ ['n33','S',/*v2*/"Ils ne m'ont pas vu",/*v2*/"Se cacher dans les cinq chapelles du cimetière."],
+ ['r06','S',/*v2*/"Clandestin",/*v2*/"Traverser l'intérieur du train sans être vu par un voyageur."],
  ['a73','X',/*v2*/'Frères d\'armes',/*v2*/"Dans la cathédrale de Reims en feu, en 1914, sortir avec Flocon et Gaston sains et saufs."],
  ['a72','X',/*v2*/'Voyeur',/*v2*/"Sur l'aire de Gueux, ouvrir la porte d'un cabinet occupé."],
  ['a74','X',/*v2*/'Scheisse',/*v2*/"Fienter sur l'officier allemand de l'abri du Mort-Homme et sur un soldat allemand pendant le vol depuis le fort de Vaux, en 1916."],
  ['a75','X',/*v2*/'Planqué',/*v2*/"Dans l'abri du Mort-Homme, se cacher une fois dans chacun des six placards."],
  ['a76','X',/*v2*/'Mémoire de pigeon',/*v2*/"Revivre avec la touche B les huit souvenirs : la route, le bois et la tranchée de 1916, le gaz du Mort-Homme, la cathédrale en feu, et le passé de la Marne, de Crécy et des combles."],
+ ['n11','X',/*v2*/"Tchao les nazes !",/*v2*/"Faire fuir tous les pigeons du parc en fientant sur la tête de Colbert."],
+ ['n21','X',/*v2*/"Zzzip",/*v2*/"Faire rentrer les deux campeurs dans leur tente."],
+ ['n25','X',/*v2*/"Génération Z",/*v2*/"Demander le chemin aux pigeons des combles."],
+ ['r10','X',/*v2*/"Seul au bal",/*v2*/"Rester trente secondes sur la scène pendant que l'orchestre joue."],
+ ['r16','X',/*v2*/"Wesh",/*v2*/"Se faire chasser d'un toit par les pigeons de la place."],
+ ['r18','X',/*v2*/"Le trampoline",/*v2*/"Rebondir dix fois de suite sur le trampoline de Crécy."],
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
  ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond : de nouveaux modes apparaissent dans les paramètres."],
  ['a82','X','Rrrou… ?',"Rester immobile une minute : Raymond s'endort."],
- ['a90','E','Les dessous du musée',"Voir ce qui se cache sous les treize draps de la mission 1."]
+ ['a90','E','Les dessous du musée',"Voir ce qui se cache sous les treize draps de la mission 1."],
+ ['n47','E',/*v2*/"Dératisé",/*v2*/"Sauter par-dessus cinquante rats."],
+ ['r17','E',/*v2*/"Bijou s'endort",/*v2*/"Traverser la loge sans réveiller le chat Bijou."],
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
@@ -47,6 +61,7 @@ function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
   st[id]=Date.now();save();
+  if(id!=='r14'&&ACH.every(a=>a[0]==='r14'||st[a[0]]))setTimeout(()=>unlock('r14'),1600);
   G.toasts=G.toasts||[];G.toasts.push({id,t:0});
   if(AC&&!S.muted){[523,659,784,1047].forEach((f,i)=>tone(f,.35,'triangle',.11,null,i*.09))}
 }
@@ -64,7 +79,19 @@ const ACH_PROG={
   a90:()=>[Object.keys(S.sheets||{}).length,13],
   a75:()=>[Object.keys(S.achStats.cups||{}).length,6],
   a74:()=>[Object.keys(S.achStats.scheisse||{}).length,2],
-  a76:()=>[B_SCENES.filter(x=>(S.achStats.bScenes||{})[x]).length,B_SCENES.length]};
+  a76:()=>[B_SCENES.filter(x=>(S.achStats.bScenes||{})[x]).length,B_SCENES.length],
+  n33:()=>[Object.keys(S.achStats.chap||{}).length,5],
+  n38:()=>strawAll(),
+  n47:()=>[S.achStats.rats||0,50],
+  r10:()=>[Math.floor((S.achStats.best||{}).stage||0),30],
+  r18:()=>[(S.achStats.best||{}).trampo||0,10],
+  r14:()=>[ACH.filter(a=>a[0]!=='r14'&&S.ach&&S.ach[a[0]]).length,ACH.length-1]};
+/* toute la paille du jeu : la meilleure récolte de chaque niveau, sur son total */
+function strawAll(){let d=0,n=0;for(let i=0;i<LEVELS.length;i++){const t=levelTotals(i).corn,b=S.best[i];n+=t;d+=Math.min(t,b?b.corn:0)}return[d,n]}
+function achStraw(){const[d,n]=strawAll();if(n&&d>=n)unlock('n38')}
+function achRat(){if(G.sim)return;achState();S.achStats.rats=(S.achStats.rats||0)+1;save();if(S.achStats.rats>=50)unlock('n47')}
+function achChapel(k,n){if(G.sim)return;achState();const o=S.achStats.chap=S.achStats.chap||{};if(o[k])return;o[k]=1;save();if(Object.keys(o).length>=n)unlock('n33')}
+function achBest(k,v){achState();const o=S.achStats.best=S.achStats.best||{};if(v>(o[k]||0)){o[k]=v;save()}}
 function achKey(){achState();S.achStats.keys=(S.achStats.keys||0)+1;save();if(S.achStats.keys>=10)unlock('c1')}
 function achLetter(li){achState();S.achStats.letters[li]=1;if(Object.keys(S.achStats.letters).length>=20)unlock('a17')}
 /* fin de mission (après la lettre) */
@@ -77,11 +104,11 @@ function achMission(w){
 }
 
 /* ---------- médailles : une par succès, dessinée une fois puis mise en cache ---------- */
-const ACH_HINT={a1:"Tout commence par une nuit d'orage.",a2:"Le voleur n'est pas sorti par la fenêtre.",a3:"Un pigeon a un bec. Qu'il s'en serve.",a4:"Sortir du musée.",a5:"Traverser les champs rouges.",a6:"Atteindre le sommet du clocher le plus haut de la région.",
+const ACH_HINT={a1:"Tout commence par une nuit d'orage.",a2:"Le voleur n'est pas sorti par la fenêtre.",a3:"Un pigeon a un bec. Qu'il s'en serve.",a4:"Sortir du musée.",a5:/*v2*/"Traverser les champs fleuris",a6:/*v2*/"Atteindre le sommet du clocher le plus haut.",
  a7:"Survivre à la route sans fin.",a8:"Arriver au village.",a9:"Remettre la lettre.",a10:"Arriver au bout sans jamais avoir besoin d'un empailleur.",a11:"Arriver au bout sans perdre un seul brin.",a12:"Quatre niveaux d'affilée sans un accroc.",
- a13:"Lire ce qui est écrit au-dessus de la fête.",a15:"Aller jusqu'au bout de l'histoire.",a17:"Tout lire, morceau par morceau.",a24:"Toucher le fond, puis remonter à neuf.",a26:"Une décoration par mission, dans la même partie.",
- a30:"Fouiller partout. Vraiment partout.",a35:"Ne rien laisser derrière soi pendant toute une mission.",a49:"Perdre la tête.",a50:"Perdre la tête en mode difficile.",a53:"Un drap, un gardien, un bec.",a54:"Un chat, un drap, un pigeon pressé.",
- a90:"Un chat, un gardien… et treize draps.",a56:"Le filet n'attrape pas tout.",c1:"Un gardien n'a jamais assez de clefs. Une pie, non plus.",a68:"Trop forcer sur ses coutures.",a81:"Regarder Raymond droit dans l'œil, avec insistance.",a82:"Ne rien faire du tout, assez longtemps."};
+ a13:"Lire ce qui est écrit au-dessus de la fête.",a15:"Aller jusqu'au bout de l'histoire.",a17:"Tout lire, morceau par morceau.",a24:"Toucher le fond, puis remonter à neuf.",a26:/*v2*/"Être multidécoré.",
+ a30:"Fouiller partout. Vraiment partout.",a35:"Ne rien laisser derrière soi pendant toute une mission.",a49:"Perdre la tête.",a50:"Perdre la tête en mode difficile.",a53:/*v2*/"Voir un fantôme au musée.",a54:/*v2*/"Des griffes dans un drap.",
+ a90:/*v2*/"Apprécier l'art.",a56:"Le filet n'attrape pas tout.",c1:/*v2*/"Que faire de toutes ces clefs ?",a68:"Trop forcer sur ses coutures.",a81:/*v2*/"Regarder Raymond droit dans l'œil.",a82:"Ne rien faire du tout, assez longtemps.",a70:/*v2*/"Faire du tourisme.",a73:/*v2*/"Sauver la fratrie.",a72:/*v2*/"Voir le petit oiseau.",a74:/*v2*/"Sus à l'ennemi !",a75:/*v2*/"Faire les placards.",a76:/*v2*/"Se souvenir de tout.",a71:/*v2*/"Se trouver une activité de groupe.",n07:/*v2*/"Les feuilles cachent mieux que la nuit.",n11:/*v2*/"Faire fuir les sans-dents.",n21:/*v2*/"Un coup de bec sur la toile.",n23:/*v2*/"Effrayer le chat.",n25:/*v2*/"Rrou… wesh…",n33:/*v2*/"Les grilles sont entrouvertes.",n38:/*v2*/"Tout. Partout.",n47:/*v2*/"Eviter les rongeurs.",r06:/*v2*/"Pile entre les sièges.",r10:/*v2*/"Marguerite adore la musique.",r14:/*v2*/"Tout. Absolument tout.",r16:/*v2*/"Ils ne partagent pas.",r17:/*v2*/"Pas un bruit.",r18:/*v2*/"Les jeux du fond du jardin."};
 // forme, métal, ruban [couleurs de bandes], emblème
 const ACH_MEDAL={
  a1:['round','bronze',['#2a3f6a','#e9dfc7','#2a3f6a']],a2:['shield','bronze',['#2f5a3a','#e9dfc7']],a3:['oval','bronze',['#a8322d','#c9a24a','#a8322d']],
@@ -92,7 +119,7 @@ const ACH_MEDAL={
  a24:['round','silver',['#c86a8a','#e9dfc7','#c86a8a']],a26:['star','silver',['#2a3f6a','#a8322d','#c9a24a','#a8322d','#2a3f6a']],a30:['rosette','gold',['#6a3a6a','#c9a24a','#6a3a6a']],
  a35:['laurel','gold',['#4f7a5a','#c9a24a','#4f7a5a']],a49:['cross','bronze',['#3a3a48','#a8322d','#3a3a48']],a50:['round','bronze',['#1a1a1a','#6a6a6a','#1a1a1a']],
  a53:['shield','bronze',['#e6e0d2','#2e3a58','#e6e0d2']],a54:['oval','bronze',['#1e1c22','#c8f060','#1e1c22']],a56:['rosette','bronze',['#d8d0bc','#8a6a3a','#d8d0bc']],
- a90:['oval','silver',['#e6e0d2','#5a3a24','#e6e0d2']],c1:['shield','silver',['#1a1a1a','#e9dfc7','#2a3f6a']],a68:['cross','silver',['#727b8f','#e9dfc7','#727b8f']],a81:['round','gold',['#d97a2a','#efe9df','#d97a2a']],a82:['oval','silver',['#1c2438','#e9dfc7','#1c2438']]};
+ a90:['oval','silver',['#e6e0d2','#5a3a24','#e6e0d2']],c1:['shield','silver',['#1a1a1a','#e9dfc7','#2a3f6a']],a68:['cross','silver',['#727b8f','#e9dfc7','#727b8f']],a81:['round','gold',['#d97a2a','#efe9df','#d97a2a']],a82:['oval','silver',['#1c2438','#e9dfc7','#1c2438']],n07:["shield", "silver", ["#2f5a3a", "#e9dfc7", "#2f5a3a"]],n11:["round", "bronze", ["#2a3f6a", "#e9dfc7", "#2a3f6a"]],n21:["oval", "bronze", ["#2f5a3a", "#e9dfc7", "#2f5a3a"]],n23:["shield", "silver", ["#3a3a48", "#e9dfc7", "#3a3a48"]],n25:["oval", "bronze", ["#c86a8a", "#e9dfc7", "#c86a8a"]],n33:["shield", "silver", ["#1c2438", "#e9dfc7", "#1c2438"]],n38:["star", "gold", ["#c9a24a", "#2a2420", "#c9a24a"]],n47:["round", "bronze", ["#3a3a48", "#e9dfc7", "#3a3a48"]],r06:["shield", "silver", ["#1a1a1a", "#6a6a6a", "#1a1a1a"]],r10:["rosette", "silver", ["#c86a8a", "#e9dfc7", "#c86a8a"]],r14:["star", "gold", ["#2a4a8a", "#efe6d0", "#b8302a"]],r16:["shield", "bronze", ["#c86a8a", "#e9dfc7", "#c86a8a"]],r17:["oval", "silver", ["#1a1a1a", "#6a6a6a", "#1a1a1a"]],r18:["round", "bronze", ["#5a8ac0", "#f4f2ea", "#5a8ac0"]],a70:["oval", "bronze", ["#3a6a8a", "#e9dfc7", "#3a6a8a"]],a71:["rosette", "bronze", ["#5a5a66", "#f0ebe0", "#5a5a66"]],a72:["shield", "bronze", ["#c86a8a", "#f4f2ea", "#c86a8a"]],a73:["cross", "silver", ["#a8322d", "#1a1a1a", "#a8322d", "#1a1a1a", "#a8322d"]],a74:["cross", "bronze", ["#5a6a52", "#1a1a1a", "#e9dfc7", "#1a1a1a", "#5a6a52"]],a75:["shield", "bronze", ["#6a4a2c", "#c9a24a", "#6a4a2c"]],a76:["rosette", "gold", ["#6a3a6a", "#e9dfc7", "#c9a24a", "#e9dfc7", "#6a3a6a"]]};
 const METAL={gold:['#fbeab0','#d6ad52','#8a6420','#4a3410'],silver:['#ffffff','#c8ccd4','#7c828c','#2e323a'],bronze:['#f6d0a4','#bd7e44','#7a4a22','#3a2210']};
 const achCache={};
 function drawAchMedal(g,x,y,id,on,s){
@@ -141,6 +168,35 @@ function paintMedal(g,id,on){
   // reflet
   g.save();g.globalAlpha=.25;g.fillStyle='#fff';g.beginPath();g.ellipse(-9,-12,7,3,-.7,0,7);g.fill();g.restore();
 }
+const ACH_GEN={
+ straw(g,i){g.strokeStyle='#e0b04e';g.lineWidth=1.3;for(const a of[-.35,-.12,.1,.3]){g.beginPath();g.moveTo(Math.sin(a)*2,10);g.lineTo(Math.sin(a)*14,-11);g.stroke()}g.strokeStyle=i;g.lineWidth=1.6;g.beginPath();g.moveTo(-6,3);g.lineTo(6,3);g.stroke()},
+ letter(g,i){g.fillStyle='#efe6d0';g.fillRect(-11,-7,22,14);g.strokeStyle=i;g.lineWidth=.9;g.strokeRect(-11,-7,22,14);g.beginPath();g.moveTo(-11,-7);g.lineTo(0,1);g.lineTo(11,-7);g.stroke()},
+ eye(g,i){g.fillStyle='#efe9df';g.beginPath();g.ellipse(0,0,11,6,0,0,7);g.fill();g.strokeStyle=i;g.lineWidth=1.2;g.stroke();g.fillStyle=i;g.beginPath();g.arc(0,0,3.6,0,7);g.fill()},
+ ghost(g,i){g.fillStyle='#f0ebe0';g.beginPath();g.moveTo(-8,10);g.quadraticCurveTo(-10,-11,0,-11);g.quadraticCurveTo(10,-11,8,10);for(let k=4;k>=0;k--)g.lineTo(-8+k*4,10-(k%2?3:0));g.closePath();g.fill();g.fillStyle=i;g.beginPath();g.arc(-3,-3,1.5,0,7);g.arc(3,-3,1.5,0,7);g.fill()},
+ rat(g,i){g.fillStyle=i;g.beginPath();g.ellipse(0,2,9,5,0,0,7);g.fill();g.beginPath();g.moveTo(8,1);g.lineTo(13,3);g.lineTo(8,5);g.fill();g.beginPath();g.arc(5,-3,2.4,0,7);g.fill();g.strokeStyle=i;g.lineWidth=1.2;g.beginPath();g.moveTo(-9,3);g.quadraticCurveTo(-14,0,-12,-6);g.stroke()},
+ cat(g,i){g.fillStyle=i;g.beginPath();g.arc(0,2,8,0,7);g.fill();poly(g,[-7,-2,-6,-11,-2,-6]);g.fill();poly(g,[7,-2,6,-11,2,-6]);g.fill();g.fillStyle='#c8f060';g.beginPath();g.ellipse(-3,1,1.8,1.3,0,0,7);g.ellipse(3,1,1.8,1.3,0,0,7);g.fill()},
+ owl(g,i){g.fillStyle=i;g.beginPath();g.ellipse(0,2,8,10,0,0,7);g.fill();poly(g,[-6,-6,-5,-12,-1,-7]);g.fill();poly(g,[6,-6,5,-12,1,-7]);g.fill();g.fillStyle='#ffcc33';g.beginPath();g.arc(-3,-2,2.6,0,7);g.arc(3,-2,2.6,0,7);g.fill()},
+ bell(g,i){g.fillStyle=i;g.beginPath();g.moveTo(-9,7);g.quadraticCurveTo(-8,-10,0,-10);g.quadraticCurveTo(8,-10,9,7);g.closePath();g.fill();g.fillRect(-11,7,22,2.5);g.beginPath();g.arc(0,11,2.4,0,7);g.fill()},
+ train(g,i){g.fillStyle=i;rr(g,-12,-7,24,13,3);g.fill();g.fillStyle='#efe6d0';g.fillRect(-9,-4,5,4);g.fillRect(-2,-4,5,4);g.fillRect(5,-4,4,4);g.fillStyle=i;g.beginPath();g.arc(-6,8,2.4,0,7);g.arc(6,8,2.4,0,7);g.fill()},
+ car(g,i){g.fillStyle=i;rr(g,-12,-2,24,8,2);g.fill();poly(g,[-7,-2,-4,-8,5,-8,8,-2]);g.fill();g.fillStyle='#efe6d0';g.fillRect(-3,-7,6,4);g.fillStyle=i;g.beginPath();g.arc(-7,7,2.6,0,7);g.arc(7,7,2.6,0,7);g.fill()},
+ umbrella(g,i){g.fillStyle=i;g.beginPath();g.arc(0,0,12,Math.PI,0);g.closePath();g.fill();g.strokeStyle=i;g.lineWidth=1.6;g.beginPath();g.moveTo(0,0);g.lineTo(0,10);g.arc(-2.5,10,2.5,0,Math.PI);g.stroke()},
+ tomb(g,i){g.fillStyle=i;g.beginPath();g.moveTo(-8,11);g.lineTo(-8,-4);g.quadraticCurveTo(0,-14,8,-4);g.lineTo(8,11);g.closePath();g.fill();g.fillStyle='#efe6d0';g.fillRect(-1,-6,2,8);g.fillRect(-4,-3,8,2)},
+ cross(g,i){g.fillStyle=i;g.fillRect(-2,-12,4,24);g.fillRect(-9,-6,18,4)},
+ heart(g,i){g.fillStyle='#a8322d';g.beginPath();g.moveTo(0,10);g.bezierCurveTo(-14,0,-8,-12,0,-5);g.bezierCurveTo(8,-12,14,0,0,10);g.fill()},
+ star(g,i){g.fillStyle=i;g.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k/10*Math.PI*2,r=k%2?4.5:11;g.lineTo(Math.cos(a)*r,Math.sin(a)*r)}g.closePath();g.fill()},
+ wing(g,i){g.fillStyle=i;g.beginPath();g.moveTo(9,-2);g.quadraticCurveTo(2,-12,-12,-6);g.quadraticCurveTo(-14,0,-10,4);g.quadraticCurveTo(0,6,9,2);g.closePath();g.fill()},
+ key(g,i){g.strokeStyle=i;g.lineWidth=2;g.beginPath();g.arc(-5,0,5,0,7);g.stroke();g.beginPath();g.moveTo(0,0);g.lineTo(12,0);g.moveTo(9,0);g.lineTo(9,4);g.moveTo(12,0);g.lineTo(12,4);g.stroke()},
+ nest(g,i){g.fillStyle='#8a6a3a';g.beginPath();g.ellipse(0,4,12,6,0,0,Math.PI);g.fill();g.fillStyle='#efe6d0';for(const x of[-4,0,4]){g.beginPath();g.ellipse(x,2,2.6,3.2,0,0,7);g.fill()}},
+ horse(g,i){g.fillStyle=i;g.beginPath();g.ellipse(0,2,9,4.5,0,0,7);g.fill();poly(g,[6,0,11,-8,13,-6,9,2]);g.fill();g.fillRect(-7,5,2,7);g.fillRect(5,5,2,7);g.strokeStyle='#e0b04e';g.lineWidth=1.4;g.beginPath();g.moveTo(0,-12);g.lineTo(0,-2);g.stroke()},
+ drum(g,i){g.fillStyle='#a8322d';g.fillRect(-11,-5,22,12);g.fillStyle='#efe6d0';g.beginPath();g.ellipse(0,-5,11,3.4,0,0,7);g.fill();g.strokeStyle=i;g.lineWidth=1;for(let k=-2;k<=2;k++){g.beginPath();g.moveTo(k*5,-2);g.lineTo(k*5+2.5,7);g.stroke()}},
+ tent(g,i){g.fillStyle=i;poly(g,[-12,9,0,-10,12,9]);g.fill();g.fillStyle='#efe6d0';poly(g,[-3,9,0,1,3,9]);g.fill()},
+ bridge(g,i){g.strokeStyle=i;g.lineWidth=2;g.beginPath();g.moveTo(-13,0);g.lineTo(13,0);g.stroke();g.beginPath();g.arc(-6,8,6,Math.PI,0);g.arc(6,8,6,Math.PI,0);g.stroke()},
+ clock(g,i){g.strokeStyle=i;g.lineWidth=1.6;g.beginPath();g.arc(0,0,10,0,7);g.stroke();g.beginPath();g.moveTo(0,0);g.lineTo(0,-7);g.moveTo(0,0);g.lineTo(5,2);g.stroke()},
+ cup(g,i){g.fillStyle=i;poly(g,[-8,-4,6,-4,4,8,-6,8]);g.fill();g.strokeStyle=i;g.lineWidth=1.6;g.beginPath();g.arc(7,1,3.4,-1.4,1.4);g.stroke();g.strokeStyle='#efe6d0';g.lineWidth=1;g.beginPath();g.moveTo(-2,-7);g.quadraticCurveTo(0,-10,-2,-13);g.stroke()},
+ lantern(g,i){g.fillStyle=i;g.fillRect(-5,-10,10,3);g.fillRect(-6,8,12,3);g.fillStyle='#ffcc55';g.fillRect(-4,-7,8,15);g.strokeStyle=i;g.lineWidth=1;g.strokeRect(-4,-7,8,15)},
+ pigeon(g,i,h){g.fillStyle=i;g.beginPath();g.arc(0,-2,7,0,7);g.fill();poly(g,[6,-3,11,-1,6,0]);g.fill();g.fillStyle=h;g.beginPath();g.arc(2,-3,1.5,0,7);g.fill();g.fillStyle=i;g.beginPath();g.ellipse(-2,8,7,4,0,0,7);g.fill()}
+};
+const txt=t=>(g,i)=>{g.fillStyle=i;g.font='bold '+(t.length>2?8:t.length>1?11:t==='•'?30:18)+'px '+F_DISP;g.textAlign='center';g.textBaseline='middle';g.fillText(t,0,1);g.textBaseline='alphabetic'};
 const EMB={
  a1(g,i){g.fillStyle=i;rr(g,-11,-7,22,13,3);g.globalAlpha=.25;g.fill();g.globalAlpha=1;g.strokeStyle=i;rr(g,-11,-7,22,13,3);g.stroke();g.beginPath();g.arc(-8,-4,1.2,0,7);g.fill();g.font='bold 7.5px '+F_DISP;g.textAlign='center';g.fillText('7413',1,2.8)},
  a2(g,i,h){g.fillStyle=i;g.fillRect(-7,-10,12,20);g.fillStyle=h;g.globalAlpha=.8;poly(g,[-7,-10,-1,-8,-1,12,-7,10]);g.fill();g.globalAlpha=1;g.strokeStyle=i;g.beginPath();g.moveTo(2,0);g.lineTo(11,0);g.moveTo(8,-3);g.lineTo(11,0);g.lineTo(8,3);g.stroke()},
@@ -170,7 +226,37 @@ const EMB={
  a68(g,i,h){g.fillStyle=i;g.beginPath();g.moveTo(8,-2);g.quadraticCurveTo(2,-12,-12,-6);g.quadraticCurveTo(-14,0,-10,4);g.quadraticCurveTo(0,6,8,2);g.closePath();g.fill();g.strokeStyle=h;g.lineWidth=.8;g.setLineDash([1.6,1.4]);g.beginPath();g.moveTo(7,1);g.quadraticCurveTo(-2,4,-10,2);g.stroke();g.setLineDash([]);g.strokeStyle='#e0b04e';for(let k=0;k<3;k++){g.beginPath();g.moveTo(-2+k*3,4);g.lineTo(-3+k*3,9+k);g.stroke()}},
  a81(g,i,h){g.fillStyle='#efe9df';g.beginPath();g.ellipse(-5,0,5,3.5,0,0,7);g.fill();g.fillStyle='#d97a2a';g.beginPath();g.arc(-5,0,2.6,0,7);g.fill();g.fillStyle='#111';g.beginPath();g.arc(-4.5,-.4,1.2,0,7);g.fill();g.strokeStyle=i;g.lineWidth=1.4;g.beginPath();g.moveTo(2,0);g.quadraticCurveTo(6,3,10,0);g.stroke()},
  a90(g,i){g.fillStyle='#f0ebe0';g.beginPath();g.moveTo(-10,10);g.quadraticCurveTo(-12,-12,0,-12);g.quadraticCurveTo(12,-12,10,10);g.closePath();g.fill();g.fillStyle='#2a2420';g.fillRect(-10,4,20,7);g.fillStyle=i;g.beginPath();g.arc(-4,-3,1.6,0,7);g.arc(4,-3,1.6,0,7);g.fill();g.fillStyle='#e05a6a';g.beginPath();g.ellipse(0,3,2.4,3.6,0,0,7);g.fill()},
- a82(g,i,h){g.fillStyle=h;g.beginPath();g.arc(-2,1,8,0,7);g.arc(1,-2,7,0,7,true);g.fill('evenodd');g.fillStyle=i;g.font='italic bold 6px '+F_BODY;g.textAlign='left';g.fillText('z',3,-3);g.font='italic bold 4.5px '+F_BODY;g.fillText('z',7,-7)}
+ a82(g,i,h){g.fillStyle=h;g.beginPath();g.arc(-2,1,8,0,7);g.arc(1,-2,7,0,7,true);g.fill('evenodd');g.fillStyle=i;g.font='italic bold 6px '+F_BODY;g.textAlign='left';g.fillText('z',3,-3);g.font='italic bold 4.5px '+F_BODY;g.fillText('z',7,-7)},
+ n07:ACH_GEN.eye,
+ n11:txt('•'),
+ n21:ACH_GEN.tent,
+ n23:ACH_GEN.cat,
+ n25:txt('Z'),
+ n33:ACH_GEN.ghost,
+ n38:ACH_GEN.straw,
+ n47:ACH_GEN.rat,
+ r06:ACH_GEN.train,
+ r10:ACH_GEN.drum,
+ r14:ACH_GEN.star,
+ r16:ACH_GEN.pigeon,
+ r17:ACH_GEN.cat,
+ r18:txt('↑'),
+ a70:ACH_GEN.train,
+ a71:ACH_GEN.pigeon,
+ a72:ACH_GEN.eye,
+ a76:ACH_GEN.clock,
+
+ // Frères d'armes : trois pigeons devant une flamme
+ a73(g,i,h){g.fillStyle='#d8682a';g.beginPath();g.moveTo(0,12);g.quadraticCurveTo(-12,6,-6,-6);g.quadraticCurveTo(-4,0,-1,-2);g.quadraticCurveTo(-3,-10,2,-14);g.quadraticCurveTo(1,-6,6,-4);g.quadraticCurveTo(11,4,0,12);g.fill();
+   g.fillStyle='#f4c860';g.beginPath();g.moveTo(0,10);g.quadraticCurveTo(-6,5,-2,-1);g.quadraticCurveTo(0,3,2,1);g.quadraticCurveTo(5,5,0,10);g.fill();
+   for(const[x,y,c]of[[-7,6,i],[7,6,i],[0,8,'#f4f2ea']]){g.fillStyle=c;g.beginPath();g.ellipse(x,y,4,2.4,0,0,7);g.fill();g.beginPath();g.arc(x+3,y-2,1.8,0,7);g.fill()}},
+ // Scheisse : le casque à pointe, et ce qui lui tombe dessus
+ a74(g,i,h){g.fillStyle=i;g.beginPath();g.moveTo(-11,6);g.quadraticCurveTo(-11,-6,0,-7);g.quadraticCurveTo(11,-6,11,6);g.closePath();g.fill();g.fillRect(-13,5,26,2.5);g.beginPath();g.moveTo(-2,-7);g.lineTo(0,-14);g.lineTo(2,-7);g.fill();
+   g.fillStyle='#f4f2ea';g.beginPath();g.moveTo(-6,-3);g.quadraticCurveTo(-3,-9,1,-5);g.quadraticCurveTo(5,-8,6,-2);g.quadraticCurveTo(7,2,4,1);g.lineTo(3,5);g.lineTo(1,1);g.quadraticCurveTo(-3,3,-6,-3);g.fill()},
+ // Planqué : le placard entrouvert, un œil dans l'ombre
+ a75(g,i,h){g.fillStyle=i;rr(g,-9,-12,18,24,2);g.fill();g.fillStyle=h;g.fillRect(-7,-10,6,20);g.fillStyle='#1a1410';g.fillRect(-1,-10,8,20);g.fillStyle=i;g.fillRect(3,-10,4,20);
+   g.fillStyle='#efe9df';g.beginPath();g.ellipse(1.5,-1,2.2,1.4,0,0,7);g.fill();g.fillStyle='#d97a2a';g.beginPath();g.arc(1.8,-1,.9,0,7);g.fill();g.fillStyle=h;g.beginPath();g.arc(-3,0,1,0,7);g.fill()},
+
 };
 /* bandeau « succès débloqué » */
 function renderToasts(dt){

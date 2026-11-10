@@ -93,7 +93,7 @@ function cmHidden(){const C=L.cm;if(!C||P.dead)return false;
 /* ---------- à chaque image ---------- */
 function cmStep(dt){const C=L.cm;if(!C)return;C.t+=dt;
   const pcx=P.x+P.w/2,pcy=P.y+P.h/2,hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6};let hit=null;
-  const hid=C.hid=cmHidden();
+  const hid=C.hid=cmHidden();if(hid)for(const q of C.chapels)if(P.x>=q.c0*T+10&&P.x+P.w<=(q.c1+1)*T-10&&P.y>=q.r0*T+6)achChapel(q.nom||q.c0,C.chapels.length);
   // les fantômes errent, sans voir personne ; celui qui est dans une chapelle, ils passent devant sans le sentir
   for(const gh of C.ghosts){gh.t+=dt;
     if(gh.pause>0)gh.pause-=dt;

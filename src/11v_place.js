@@ -167,6 +167,8 @@ function plCarPlace(Lv,dt){const S2=Lv.pl,C=PLX.car;S2.car.a+=S2.car.w*dt;
 function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
   const pcx=P.x+P.w/2,pcy=P.y+P.h/2,hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6},low=P.y+P.h>300;let hit=null;
   plCarPlace(L,dt);
+  // sur la scène pendant que l'orchestre joue (premier et deuxième tour)
+  {const on=S2.pass<=2&&P.onGround&&!P.dead&&Math.abs(P.y+P.h-10*T)<4&&pcx>PLX.stage.c0*T&&pcx<(PLX.stage.c1+1)*T;S2.stageT=on?(S2.stageT||0)+dt:0;if(on&&!G.sim){achBest('stage',Math.floor(S2.stageT));if(S2.stageT>=30)unlock('r10')}}
   // la musique de l'orchestre : plus fort près de la scène
   if(typeof mGain!=='undefined'&&mGain){const tg=S2.pass<=2?.05+.08*clamp(1-Math.abs(pcx-70*T)/2600,0,1):.1;S2.mus=lerp(S2.mus,tg,Math.min(1,dt*2));mGain.gain.value=S2.mus}
   // la foule
@@ -218,7 +220,7 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
     if(k.sw>0&&k.sw<.3&&!P.dead&&overlap(hb,{x:k.x-44,y:k.y-42,w:88,h:42}))hit='chatToit'}}
   // les pigeons des toits : ils chassent qui s'y pose, et sautent au passage de qui les survole
   for(const fl of S2.flocks){const x0=fl.c0*T,x1=(fl.c1+1)*T,over=pcx>x0-40&&pcx<x1+40&&P.y+P.h<=8*T+4&&!P.dead,onRoof=P.onGround&&!P.dead&&Math.abs(P.y+P.h-8*T)<3&&pcx>x0-6&&pcx<x1+6;
-    if(onRoof&&!fl.angry){fl.angry=1.6;if(!G.sim){SFX.coo();bubble((x0+x1)/2,8*T-60,pick(['Krrr ! Dégage !','Rrou ! Chez nous !','Wesh ! Pas ici !']),'#6a4a4a')}}
+    if(onRoof&&!fl.angry){fl.angry=1.6;unlock('r16');if(!G.sim){SFX.coo();bubble((x0+x1)/2,8*T-60,pick(['Krrr ! Dégage !','Rrou ! Chez nous !','Wesh ! Pas ici !']),'#6a4a4a')}}
     if(fl.angry>0)fl.angry-=dt;
     for(const b of fl.birds){b.t+=dt;b.cool-=dt;
       if(b.st==='hop'){b.vy+=1500*dt;b.y+=b.vy*dt;if(b.y>=b.y0){b.y=b.y0;b.vy=0;b.st='walk';b.cool=1.4}}
