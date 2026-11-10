@@ -86,15 +86,18 @@ function rfAmbient(dt){const s=RFS;for(const e of s.embers){e.t+=dt;e.vy+=-30*dt
   if(s.embers.length<120&&rnd()<dt*40){const c=(s.cam&&s.cam.x)||0,cy=(s.cam&&s.cam.y)||0;s.embers.push({x:c+rnd()*W,y:cy+H+10,vx:(rnd()-.5)*40,vy:-50-rnd()*80,t:0,max:3+rnd()*3})}}
 function rfLeave(){const s=RFS;RFS=null;MUS_OLD=false;
   const n=s.mates.filter(m=>m.alive).length,line=n===2?/*v2*/"On est sortis tous les trois. Derrière nous, la cathédrale brûlait comme une forge. Je ne l'ai jamais oubliée.":n===1?/*v2*/"On est sortis à deux. Derrière nous, la cathédrale brûlait. Je pense encore à celui qui est resté dedans.":/*v2*/"Je suis sorti seul. Derrière moi, la cathédrale brûlait, et mes camarades avec.";
-  G.state='intro';G.cards=RF_CARDS_OUT;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';G.fade=1;say(line,5)}}
+  G.state='intro';G.cards=RF_CARDS_OUT.concat([{t:rfOutCard(s.mates),minT:1.2}]);G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';G.fade=1;say(line,5)}}
 const RF_CARDS_IN=[
   {t:/*v2*/"Reims, le 19 septembre 1914. Depuis le matin, l'artillerie allemande bombarde la ville. Dans la nef de la cathédrale, on a étendu de la paille pour coucher des blessés allemands faits prisonniers.",minT:1.2},
   {t:/*v2*/"Vers trois heures de l'après-midi, les obus mettent le feu au toit. La charpente, une forêt de vieux chênes, s'embrase ; puis la paille de la nef prend feu à son tour.",minT:1.2},
   {t:/*v2*/"Raymond faisait la sieste dans les combles avec deux camarades du colombier militaire, Flocon et Gaston. Il se souvient de la chaleur qui l'a réveillé, et du bruit des poutres.",minT:1.2}];
+function rfOutCard(ms){const al=ms.filter(m=>m.alive);
+  if(al.length===2)return/*v2*/"Raymond, Flocon et Gaston se posent sur un toit de la rue et regardent brûler la cathédrale jusqu'à la nuit. Raymond se dit qu'ils s'en sont sortis tous les trois, et que ça tient du miracle.";
+  if(al.length===1){const v=al[0].n,d=ms.find(m=>!m.alive).n;return/*v2*/"Raymond et "+v+/*v2*/" se posent sur un toit de la rue, les plumes noires de suie. Ils regardent brûler la cathédrale sans un roucoulement. Raymond pense à "+d+/*v2*/", resté sous les poutres."}
+  return/*v2*/"Raymond se pose seul sur un toit de la rue et regarde brûler la cathédrale. Il pense à Flocon et à Gaston, restés sous les poutres."}
 const RF_CARDS_OUT=[
   {t:/*v2*/"La charpente a brûlé jusqu'à la nuit. Le plomb du toit a fondu, les vitraux ont éclaté, les statues de la façade ont été calcinées. L'ange au sourire y a perdu sa tête.",minT:1.2},
-  {t:/*v2*/"La cathédrale en feu a fait le tour du monde. Il a fallu près de vingt ans de travaux pour la relever : elle a été rendue au culte en 1938.",minT:1.2},
-  {t:/*v2*/"Raymond se dit que l'ange et lui ont quelque chose en commun : on les a recollés tous les deux.",minT:1.2}];
+  {t:/*v2*/"La cathédrale en feu a fait le tour du monde. Il a fallu près de vingt ans de travaux pour la relever : elle a été rendue au culte en 1938.",minT:1.2},];
 
 /* ---------- le décor (en cache) : la nef, les voûtes, la charpente, le portail ---------- */
 function rfBuild(){const TR=Math.min(RS,1),{layer:c,g}=mkLayer(RF.W*TR,RF.H*TR);g.scale(TR,TR);c.rs=TR;const R=mulberry(1914),B=RF.bay;RF.deco=[];
