@@ -219,7 +219,11 @@ function s16Switch(){if(P.dead||SV)return;const pc=P.x+P.w/2;
   if(S.era===26){if(pc>S16.route[0]*T&&pc<S16.route[1]*T)return svStart('route');if(pc>S16.bois[0]*T&&pc<S16.bois[1]*T)return svStart('bois');if(pc>S16.tr[0]*T-80&&pc<S16.tr[1]*T)return s16Enter()}}
 /* dessin de la tranchée de 1916 : planches, étais, sacs, la cagna, les musettes, les soldats, Lucien, le panier, le filet */
 /* le fond, derrière les tuiles : tout est sous terre — la paroi de la tranchée, la terre et le boisage des sapes */
-function drawS16Back(t){const S=L.s16;if(!S||S.era!==16)return;const g=ctx,R=mulberry(1916);
+function drawS16Back(t){const S=L.s16;if(!S||S.era!==16)return;
+  // peint une fois dans une image (les 160 mottes de terre et les planches ne bougent pas)
+  if(!S.backC){const c=mk(30*T,15*T),g2=c.getContext('2d');g2.translate(-232*T,-7.6*T);drawS16BackPaint(g2);S.backC=c}
+  ctx.drawImage(S.backC,232*T,7.6*T)}
+function drawS16BackPaint(g){const R=mulberry(1916);
   // la terre, partout derrière (on ne voit plus le paysage à travers la sape)
   g.fillStyle='#2a2018';g.fillRect(232*T,7.6*T,30*T,15*T);
   for(let k=0;k<160;k++){g.fillStyle=k%3?'rgba(70,52,36,.5)':'rgba(20,14,10,.5)';g.beginPath();g.ellipse(232*T+R()*30*T,8*T+R()*14*T,3+R()*8,2+R()*5,R()*3,0,7);g.fill()}

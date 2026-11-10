@@ -44,7 +44,7 @@ function update(dt){
   if(G.state!=='play'&&G.state!=='pause'&&G.state!=='confirm'&&G.state!=='exiting'&&typeof mGain!=='undefined'&&mGain&&mGain.gain.value!==.1)mGain.gain.value=.1;
   switch(G.state){
     case'title':handleMenu();break;
-    case'pause':if(pressed.has('esc')){G.state='play';break}handleMenu();break;
+    case'pause':if(pressed.has('esc')||homeClick()){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
     case'ach':handleAch();break;
@@ -53,7 +53,7 @@ function update(dt){
     case'levelend':handleLetter(dt);break;
     case'play':{
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
-      if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
+      if(homeClick()){G.state='pause';G.menuSel=0;break}
       if(vauxActive()){vauxUpdate(dt);break}
       if(svActive()){svUpdate(dt);break}
       if(rfActive()){rfUpdate(dt);break}
@@ -143,6 +143,8 @@ function vauxOverlays(){
   if(G.state==='confirm')renderConfirm();
   if(G.state==='exiting'){ctx.fillStyle='rgba(11,10,12,'+Math.min(1,G.exitT/1.1)+')';ctx.fillRect(0,0,W,H)}
 }
+/* le bouton maison du bandeau : la même chose qu'Échap (pause, puis reprise) */
+function homeClick(){const b=G.homeBox;return !!(G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)}
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
   G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}

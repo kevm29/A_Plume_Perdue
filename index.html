@@ -11268,7 +11268,8 @@ function fDecor(g,t,era,vis){const b=FGR*T;
   fForest(g,era,vis,b);
   if(era===14&&vis(266*T-60,307*T+60))fPoleLine(g,[266,279,292,307].map(c=>c*T),b);
   for(const[k,c]of FD[era]){const x=c*T;if(!vis(x-160,x+160))continue;
-    if(k==='platane')fPlane(g,x,b,era===14);else if(k==='grand'){g.save();g.translate(x,b);g.scale(1.5,1.5);fPlane(g,0,0,era===14);g.restore()}else if(k==='marronnier')fChestnut(g,b,t);else if(k==='saule')fWillow(g,x,b,t);else if(k==='peuplier'){for(let i=0;i<3;i++)fPoplarN(g,x+i*34-34,b,240+((c*7+i*13)%60))}
+    // les arbres sont dessinés une fois dans une image, puis recopiés (bien moins lourd à chaque image)
+    if(k==='platane')fSpr(g,'fd-plane'+era,260,330,130,318,x,b,g2=>fPlane(g2,0,0,era===14));else if(k==='grand')fSpr(g,'fd-grand'+era,380,490,190,474,x,b,g2=>{g2.scale(1.5,1.5);fPlane(g2,0,0,era===14)});else if(k==='marronnier')fChestnut(g,b,t);else if(k==='saule')fSpr(g,'fd-saule',360,400,180,390,x,b,g2=>fWillow(g2,0,0,0));else if(k==='peuplier'){for(let i=0;i<3;i++)fPoplarN(g,x+i*34-34,b,240+((c*7+i*13)%60))}
     else if(k==='brise')fPlane(g,x,b,true,true);
     else if(k==='roseaux')fReeds(g,x,b,t);else if(k==='banc')fBench(g,x,b);else if(k==='lampe')fLamp(g,x,b);
     else if(k==='pecheur')fFisher(g,x,b,t,c===27&&L.ferte?L.ferte.seau:null);else if(k==='canoes')fCanoes(g,x,b);else if(k==='tente')fTent(g,x,b,t,L.ferte&&L.ferte.tent);else if(k==='terrasse')fTerrace(g,x,b,t);else if(k==='velo')fBike(g,x,b);
@@ -11453,13 +11454,22 @@ function forestList(era){if(FFOREST[era])return FFOREST[era];const R=mulberry(er
     if(ok){const k=R();out.push({x:c*T+R()*20,row,v:k<.3?'grand':k<.5?'grand2':k<.68?'platane':k<.84?'peuplier':'saule',dy:row?0:-18-R()*14})}
     c+=row?1.6+R()*1.8:1.0+R()*1.1}}
   out.sort((a,b)=>a.row-b.row);return FFOREST[era]=out}
-function fForest(g,era,vis,b){const list=forestList(era),e14=era===14;let veiled=false;
-  for(const tr of list){if(tr.row===1&&!veiled){veiled=true;g.fillStyle=rgba(L.th.fog,e14?.45:.4);g.fillRect(cam.x-60,cam.y-60,W+120,b-cam.y+60+2)}
-    if(!vis(tr.x-230,tr.x+230))continue;
-    fSpr(g,'arbreB'+era+tr.v,460,520,230,505,tr.x,b+tr.dy,g2=>{
-      if(tr.v==='grand'){g2.scale(1.5,1.5);fPlane(g2,0,0,e14)}else if(tr.v==='grand2'){g2.scale(1.25,1.3);fPlane(g2,0,0,e14)}else if(tr.v==='platane')fPlane(g2,0,0,e14);
-      else if(tr.v==='peuplier'){fPoplarN(g2,-30,0,330);fPoplarN(g2,4,0,380);fPoplarN(g2,36,0,300)}else{g2.scale(1.3,1.3);fWillow(g2,0,0,0)}})}
-  if(!veiled){}}
+function fForestTree(g,tr,e14,b){
+  fSpr(g,'arbreB'+(e14?14:26)+tr.v,460,520,230,505,tr.x,b+tr.dy,g2=>{
+    if(tr.v==='grand'){g2.scale(1.5,1.5);fPlane(g2,0,0,e14)}else if(tr.v==='grand2'){g2.scale(1.25,1.3);fPlane(g2,0,0,e14)}else if(tr.v==='platane')fPlane(g2,0,0,e14);
+    else if(tr.v==='peuplier'){fPoplarN(g2,-30,0,330);fPoplarN(g2,4,0,380);fPoplarN(g2,36,0,300)}else{g2.scale(1.3,1.3);fWillow(g2,0,0,0)}})}
+/* la forêt est peinte une fois, par bandes de 1024 px, la première fois qu'elle entre dans l'écran ;
+   ensuite on ne recopie que la bande visible (des dizaines de grands arbres par image, c'était trop lourd) */
+const FOREST_CW=1024,FOREST_H=600;
+function fForest(g,era,vis,b){const F=L.ferte,e14=era===14,list=forestList(era),top=b-FOREST_H+20,veil=rgba(L.th.fog,e14?.45:.4);
+  const C=F.forestC||(F.forestC={});const k0=Math.floor((cam.x-240)/FOREST_CW),k1=Math.floor((cam.x+W+240)/FOREST_CW);
+  for(let k=k0;k<=k1;k++){if(k<0)continue;const key=era+':'+k;let c=C[key];
+    if(!c){const x0=k*FOREST_CW;c=mk(FOREST_CW,FOREST_H);const g2=c.getContext('2d');g2.translate(-x0,-top);let veiled=false;
+      for(const tr of list){if(tr.x<x0-240||tr.x>x0+FOREST_CW+240)continue;if(tr.row===1&&!veiled){veiled=true;g2.fillStyle=veil;g2.fillRect(x0-10,top,FOREST_CW+20,b-top+2)}fForestTree(g2,tr,e14,b)}
+      if(!veiled){g2.fillStyle=veil;g2.fillRect(x0-10,top,FOREST_CW+20,b-top+2)}C[key]=c}
+    g.drawImage(c,k*FOREST_CW,top)}
+  // le voile de brume au-dessus de la forêt (le ciel), comme avant
+  if(cam.y-60<top){g.fillStyle=veil;g.fillRect(cam.x-60,cam.y-60,W+120,top-(cam.y-60))}}
 
 /* =========================================================
    5-1 · LE PIGEONNIER — Crécy-la-Chapelle, la « Venise briarde », en plein jour
@@ -13826,7 +13836,8 @@ function cmOverlay(t){const C=L.cm;if(!C)return;const cx=Math.round(cam.x),cy=Ma
   // le pigeon fantôme, en haut de la stèle du fond
   if(129*T>x0v&&129*T<x1v)cmPigeonGhost(ctx,129*T,CMF-20-226,t);
   // les fantômes
-  for(const gh of C.ghosts){if(gh.x<x0v||gh.x>x1v)continue;const ph=(C.t+gh.ph*2.9)%7.1,talk=ph<3.1;  // 3,1 s de réplique, puis 4 s de silencecmGhostDraw(ctx,gh,t,.9,talk);
+  for(const gh of C.ghosts){if(gh.x<x0v||gh.x>x1v)continue;const ph=(C.t+gh.ph*2.9)%7.1,talk=ph<3.1;  // 3,1 s de réplique, puis 4 s de silence
+    cmGhostDraw(ctx,gh,t,.9,talk);
     if(talk&&!C.seq&&!G.tombSeq){const ba=Math.min(1,ph/.25,(3.1-ph)/.25);cmBubble(ctx,gh.x,gh.y-90,gh.line,ba)}}
   // Marguerite et Joseph
   {const pcx=P.x+P.w/2,a=G.tombSeq?.85:clamp((pcx-174*T)/(5*T),0,1)*.75;if(a>0)cmCouple(ctx,t,a)}
@@ -14059,7 +14070,11 @@ function s16Switch(){if(P.dead||SV)return;const pc=P.x+P.w/2;
   if(S.era===26){if(pc>S16.route[0]*T&&pc<S16.route[1]*T)return svStart('route');if(pc>S16.bois[0]*T&&pc<S16.bois[1]*T)return svStart('bois');if(pc>S16.tr[0]*T-80&&pc<S16.tr[1]*T)return s16Enter()}}
 /* dessin de la tranchée de 1916 : planches, étais, sacs, la cagna, les musettes, les soldats, Lucien, le panier, le filet */
 /* le fond, derrière les tuiles : tout est sous terre — la paroi de la tranchée, la terre et le boisage des sapes */
-function drawS16Back(t){const S=L.s16;if(!S||S.era!==16)return;const g=ctx,R=mulberry(1916);
+function drawS16Back(t){const S=L.s16;if(!S||S.era!==16)return;
+  // peint une fois dans une image (les 160 mottes de terre et les planches ne bougent pas)
+  if(!S.backC){const c=mk(30*T,15*T),g2=c.getContext('2d');g2.translate(-232*T,-7.6*T);drawS16BackPaint(g2);S.backC=c}
+  ctx.drawImage(S.backC,232*T,7.6*T)}
+function drawS16BackPaint(g){const R=mulberry(1916);
   // la terre, partout derrière (on ne voit plus le paysage à travers la sape)
   g.fillStyle='#2a2018';g.fillRect(232*T,7.6*T,30*T,15*T);
   for(let k=0;k<160;k++){g.fillStyle=k%3?'rgba(70,52,36,.5)':'rgba(20,14,10,.5)';g.beginPath();g.ellipse(232*T+R()*30*T,8*T+R()*14*T,3+R()*8,2+R()*5,R()*3,0,7);g.fill()}
@@ -15319,7 +15334,7 @@ function update(dt){
   if(G.state!=='play'&&G.state!=='pause'&&G.state!=='confirm'&&G.state!=='exiting'&&typeof mGain!=='undefined'&&mGain&&mGain.gain.value!==.1)mGain.gain.value=.1;
   switch(G.state){
     case'title':handleMenu();break;
-    case'pause':if(pressed.has('esc')){G.state='play';break}handleMenu();break;
+    case'pause':if(pressed.has('esc')||homeClick()){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
     case'ach':handleAch();break;
@@ -15328,7 +15343,7 @@ function update(dt){
     case'levelend':handleLetter(dt);break;
     case'play':{
       if(pressed.has('esc')){G.state='pause';G.menuSel=0;break}
-      if(G.click&&G.homeBox&&!G.cut){const b=G.homeBox;if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){askHome();break}}
+      if(homeClick()){G.state='pause';G.menuSel=0;break}
       if(vauxActive()){vauxUpdate(dt);break}
       if(svActive()){svUpdate(dt);break}
       if(rfActive()){rfUpdate(dt);break}
@@ -15418,6 +15433,8 @@ function vauxOverlays(){
   if(G.state==='confirm')renderConfirm();
   if(G.state==='exiting'){ctx.fillStyle='rgba(11,10,12,'+Math.min(1,G.exitT/1.1)+')';ctx.fillRect(0,0,W,H)}
 }
+/* le bouton maison du bandeau : la même chose qu'Échap (pause, puis reprise) */
+function homeClick(){const b=G.homeBox;return !!(G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)}
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
   G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}

@@ -497,7 +497,8 @@ function fDecor(g,t,era,vis){const b=FGR*T;
   fForest(g,era,vis,b);
   if(era===14&&vis(266*T-60,307*T+60))fPoleLine(g,[266,279,292,307].map(c=>c*T),b);
   for(const[k,c]of FD[era]){const x=c*T;if(!vis(x-160,x+160))continue;
-    if(k==='platane')fPlane(g,x,b,era===14);else if(k==='grand'){g.save();g.translate(x,b);g.scale(1.5,1.5);fPlane(g,0,0,era===14);g.restore()}else if(k==='marronnier')fChestnut(g,b,t);else if(k==='saule')fWillow(g,x,b,t);else if(k==='peuplier'){for(let i=0;i<3;i++)fPoplarN(g,x+i*34-34,b,240+((c*7+i*13)%60))}
+    // les arbres sont dessinés une fois dans une image, puis recopiés (bien moins lourd à chaque image)
+    if(k==='platane')fSpr(g,'fd-plane'+era,260,330,130,318,x,b,g2=>fPlane(g2,0,0,era===14));else if(k==='grand')fSpr(g,'fd-grand'+era,380,490,190,474,x,b,g2=>{g2.scale(1.5,1.5);fPlane(g2,0,0,era===14)});else if(k==='marronnier')fChestnut(g,b,t);else if(k==='saule')fSpr(g,'fd-saule',360,400,180,390,x,b,g2=>fWillow(g2,0,0,0));else if(k==='peuplier'){for(let i=0;i<3;i++)fPoplarN(g,x+i*34-34,b,240+((c*7+i*13)%60))}
     else if(k==='brise')fPlane(g,x,b,true,true);
     else if(k==='roseaux')fReeds(g,x,b,t);else if(k==='banc')fBench(g,x,b);else if(k==='lampe')fLamp(g,x,b);
     else if(k==='pecheur')fFisher(g,x,b,t,c===27&&L.ferte?L.ferte.seau:null);else if(k==='canoes')fCanoes(g,x,b);else if(k==='tente')fTent(g,x,b,t,L.ferte&&L.ferte.tent);else if(k==='terrasse')fTerrace(g,x,b,t);else if(k==='velo')fBike(g,x,b);
@@ -682,10 +683,19 @@ function forestList(era){if(FFOREST[era])return FFOREST[era];const R=mulberry(er
     if(ok){const k=R();out.push({x:c*T+R()*20,row,v:k<.3?'grand':k<.5?'grand2':k<.68?'platane':k<.84?'peuplier':'saule',dy:row?0:-18-R()*14})}
     c+=row?1.6+R()*1.8:1.0+R()*1.1}}
   out.sort((a,b)=>a.row-b.row);return FFOREST[era]=out}
-function fForest(g,era,vis,b){const list=forestList(era),e14=era===14;let veiled=false;
-  for(const tr of list){if(tr.row===1&&!veiled){veiled=true;g.fillStyle=rgba(L.th.fog,e14?.45:.4);g.fillRect(cam.x-60,cam.y-60,W+120,b-cam.y+60+2)}
-    if(!vis(tr.x-230,tr.x+230))continue;
-    fSpr(g,'arbreB'+era+tr.v,460,520,230,505,tr.x,b+tr.dy,g2=>{
-      if(tr.v==='grand'){g2.scale(1.5,1.5);fPlane(g2,0,0,e14)}else if(tr.v==='grand2'){g2.scale(1.25,1.3);fPlane(g2,0,0,e14)}else if(tr.v==='platane')fPlane(g2,0,0,e14);
-      else if(tr.v==='peuplier'){fPoplarN(g2,-30,0,330);fPoplarN(g2,4,0,380);fPoplarN(g2,36,0,300)}else{g2.scale(1.3,1.3);fWillow(g2,0,0,0)}})}
-  if(!veiled){}}
+function fForestTree(g,tr,e14,b){
+  fSpr(g,'arbreB'+(e14?14:26)+tr.v,460,520,230,505,tr.x,b+tr.dy,g2=>{
+    if(tr.v==='grand'){g2.scale(1.5,1.5);fPlane(g2,0,0,e14)}else if(tr.v==='grand2'){g2.scale(1.25,1.3);fPlane(g2,0,0,e14)}else if(tr.v==='platane')fPlane(g2,0,0,e14);
+    else if(tr.v==='peuplier'){fPoplarN(g2,-30,0,330);fPoplarN(g2,4,0,380);fPoplarN(g2,36,0,300)}else{g2.scale(1.3,1.3);fWillow(g2,0,0,0)}})}
+/* la forêt est peinte une fois, par bandes de 1024 px, la première fois qu'elle entre dans l'écran ;
+   ensuite on ne recopie que la bande visible (des dizaines de grands arbres par image, c'était trop lourd) */
+const FOREST_CW=1024,FOREST_H=600;
+function fForest(g,era,vis,b){const F=L.ferte,e14=era===14,list=forestList(era),top=b-FOREST_H+20,veil=rgba(L.th.fog,e14?.45:.4);
+  const C=F.forestC||(F.forestC={});const k0=Math.floor((cam.x-240)/FOREST_CW),k1=Math.floor((cam.x+W+240)/FOREST_CW);
+  for(let k=k0;k<=k1;k++){if(k<0)continue;const key=era+':'+k;let c=C[key];
+    if(!c){const x0=k*FOREST_CW;c=mk(FOREST_CW,FOREST_H);const g2=c.getContext('2d');g2.translate(-x0,-top);let veiled=false;
+      for(const tr of list){if(tr.x<x0-240||tr.x>x0+FOREST_CW+240)continue;if(tr.row===1&&!veiled){veiled=true;g2.fillStyle=veil;g2.fillRect(x0-10,top,FOREST_CW+20,b-top+2)}fForestTree(g2,tr,e14,b)}
+      if(!veiled){g2.fillStyle=veil;g2.fillRect(x0-10,top,FOREST_CW+20,b-top+2)}C[key]=c}
+    g.drawImage(c,k*FOREST_CW,top)}
+  // le voile de brume au-dessus de la forêt (le ciel), comme avant
+  if(cam.y-60<top){g.fillStyle=veil;g.fillRect(cam.x-60,cam.y-60,W+120,top-(cam.y-60))}}
