@@ -442,3 +442,12 @@ function drawUglyPigeon(g,o,t){
   if(k==='moignon'&&o.st==='beg'){g.fillStyle='rgba(150,190,230,.8)';g.beginPath();g.ellipse(hx+1,hy+3+(t*2%1)*4,1,1.6,0,0,7);g.fill()}
   g.restore();
 }
+
+/* le square Colbert : les mêmes grands arbres qu'à l'entrée de Crécy (platanes, chênes, saules, peupliers), derrière le jeu */
+const GARE_TREES=[['grand',181.5],['peuplier',188.5],['chene',195],['grand',216],['saule',224],['chene',231],['peuplier',236.5],['grand',242]];
+function drawGareBack(t,cx){const g=ctx,b=GR.FL;
+  for(const[k,c]of GARE_TREES){const x=c*T;if(x<cx-300||x>cx+W+300)continue;
+    if(k==='saule')fSpr(g,'cr-saule2',460,520,230,505,x,b,g2=>{g2.scale(1.35,1.35);fWillow(g2,0,0,0)});
+    else if(k==='grand')fSpr(g,'cr-grand',340,520,170,505,x,b,g2=>{g2.scale(1.5,1.5);fPlane(g2,0,0,false)});
+    else if(k==='chene')fSpr(g,'cr-chene',380,520,190,505,x,b,g2=>cOak(g2));
+    else if(k==='peuplier'){fPoplarN(g,x-30,b,320);fPoplarN(g,x,b,380);fPoplarN(g,x+32,b,300)}}}

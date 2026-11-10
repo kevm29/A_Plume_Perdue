@@ -7365,6 +7365,15 @@ function drawUglyPigeon(g,o,t){
   g.restore();
 }
 
+/* le square Colbert : les mêmes grands arbres qu'à l'entrée de Crécy (platanes, chênes, saules, peupliers), derrière le jeu */
+const GARE_TREES=[['grand',181.5],['peuplier',188.5],['chene',195],['grand',216],['saule',224],['chene',231],['peuplier',236.5],['grand',242]];
+function drawGareBack(t,cx){const g=ctx,b=GR.FL;
+  for(const[k,c]of GARE_TREES){const x=c*T;if(x<cx-300||x>cx+W+300)continue;
+    if(k==='saule')fSpr(g,'cr-saule2',460,520,230,505,x,b,g2=>{g2.scale(1.35,1.35);fWillow(g2,0,0,0)});
+    else if(k==='grand')fSpr(g,'cr-grand',340,520,170,505,x,b,g2=>{g2.scale(1.5,1.5);fPlane(g2,0,0,false)});
+    else if(k==='chene')fSpr(g,'cr-chene',380,520,190,505,x,b,g2=>cOak(g2));
+    else if(k==='peuplier'){fPoplarN(g,x-30,b,320);fPoplarN(g,x,b,380);fPoplarN(g,x+32,b,300)}}}
+
 /* =========================================================
    3-3 · LE COURS LANGLET — de l'angle à la rotonde jusqu'au flanc de la cathédrale, façade après façade
    ---------------------------------------------------------
@@ -14364,7 +14373,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.lgLayer)drawLangletBack(t,cx);
   if(lv.fcLayer)drawFacadeBack(t,cx,cy);
   if(lv.a4Layer)drawA4Back(t,cx);if(lv.aireLayer)drawAireBack(t,cx);
-  if(lv.ferte)drawFerteBack(t,cx);if(lv.crecy)drawCrecyBack(t,cx);if(lv.pl)drawPlaceBack(t,cx);if(lv.cm)drawCmBack(t,cx);
+  if(lv.ferte)drawFerteBack(t,cx);if(lv.crecy)drawCrecyBack(t,cx);if(lv.gare)drawGareBack(t,cx);if(lv.pl)drawPlaceBack(t,cx);if(lv.cm)drawCmBack(t,cx);
   if(lv.s16&&!opts.noEntities)drawS16Back(t);
   // les enseignes de salle (intérieurs) passent devant les meubles : dessinées après les tuiles
   for(const d of lv.decor)if(d.x>cx-460&&d.x<cx+W+460&&d.t!=='sign')drawDecor(ctx,d,t);

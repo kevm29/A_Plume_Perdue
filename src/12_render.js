@@ -21,7 +21,7 @@ function renderWorld(lv,cx,cy,t,opts){
   if(lv.lgLayer)drawLangletBack(t,cx);
   if(lv.fcLayer)drawFacadeBack(t,cx,cy);
   if(lv.a4Layer)drawA4Back(t,cx);if(lv.aireLayer)drawAireBack(t,cx);
-  if(lv.ferte)drawFerteBack(t,cx);if(lv.crecy)drawCrecyBack(t,cx);if(lv.pl)drawPlaceBack(t,cx);if(lv.cm)drawCmBack(t,cx);
+  if(lv.ferte)drawFerteBack(t,cx);if(lv.crecy)drawCrecyBack(t,cx);if(lv.gare)drawGareBack(t,cx);if(lv.pl)drawPlaceBack(t,cx);if(lv.cm)drawCmBack(t,cx);
   if(lv.s16&&!opts.noEntities)drawS16Back(t);
   // les enseignes de salle (intérieurs) passent devant les meubles : dessinées après les tuiles
   for(const d of lv.decor)if(d.x>cx-460&&d.x<cx+W+460&&d.t!=='sign')drawDecor(ctx,d,t);
