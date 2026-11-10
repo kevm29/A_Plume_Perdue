@@ -18,27 +18,31 @@ const RF={W:4200,H:1560,
   door:[4080,1290,4200,1500],
   bay:300,
   // les feux qui ne bougent pas : [x, y, largeur, hauteur] (en bas : depuis le sol de la bande ; en haut : pendus aux poutres)
-  fires:[[3400,250,70,90],[3000,40,60,110],[2600,230,80,110],[2150,40,70,120],[1750,240,70,100],[1300,40,60,120],[900,220,90,120],
+  fires:[[3300,680,80,80],[2250,690,90,70],[1150,680,80,80],[3400,250,70,90],[3000,40,60,110],[2600,230,80,110],[2150,40,70,120],[1750,240,70,100],[1300,40,60,120],[900,220,90,120],
          [3000,1080,90,80],[2250,1070,100,90],[1550,1085,80,75],[950,1075,90,85],
          [3300,1380,150,120],[2700,1400,200,100],[2050,1360,160,140],[1400,1390,180,110],[800,1370,140,130]],
   // le plomb fondu : [x de la goutte, bande, phase]
-  lead:[[700,1,0],[1250,1,1.2],[1900,1,.4],[2500,1,2],[3150,1,.9],[3650,1,1.6]],
   chand:[[3500,2],[2700,2],[1900,2],[1100,2]],
   straws:[[3700,120],[2800,300],[1960,140],[1050,300],[420,560],[1400,700],[2300,470],[3300,720],[3500,1000],[2500,880],[1500,1100],[700,950],[1000,1250],[2350,1260],[3000,1300],[3800,1440]]};
 let RFS=null;
 function rfActive(){return!!(RFS&&L&&L.fc)}
 /* l'entrée : devant l'ange au sourire, sur le portail, la touche d'époque (si on la connaît) */
-function rfCanStart(){const pc=P.x+P.w/2;return L.fc&&!P.dead&&P.onGround&&pc<560&&P.y+P.h<FC.G-40}
-function rfStart(){if(!rfCanStart()||RFS)return;
+function rfCanStart(){const pc=P.x+P.w/2;return L.fc&&!P.dead&&P.onGround&&Math.abs(pc-FC.AX)<64&&Math.abs(P.y+P.h-fcY(43))<6}
+function rfStart(){if(!rfCanStart()||RFS||G.state!=='play')return;G.state='intro';G.cards=RF_CARDS_IN;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';rfBegin()}}
+function rfBegin(){
   RFS={t:0,lane:0,x:0,y:0,vx:0,vy:0,f:-1,fph:0,dead:0,fade:1,flash:1,hist:[],mates:[{n:/*v2*/'Flocon',d:.3,alive:true,pal:{w0:'#d8d8d2',w1:'#e8e8e2',tail:'#e4e4de',tailT:'#c8c8c0',b0:'#f6f6f0',b1:'#dcdcd4',n0:'#ecece6',n1:'#f2f2ec',n2:'#e8e8e2',head:'#f4f4ee',bar:'#c0c0b8',tube:false}},
     {n:/*v2*/'Gaston',d:.62,alive:true,pal:{w0:'#4a5262',w1:'#5e6678',tail:'#6a7282',b0:'#8a93a4',b1:'#6a7282',n0:'#5a7aa0',n1:'#3f8a6a',n2:'#7a8394',head:'#7a8394',tube:false}}],
-    beams:[],debris:[],beamT:2.2,said:{},cp:null,out:null,smoke:[],embers:[],grace:1.2};
+    beams:[],debris:[],beamT:4,said:{},cp:null,out:null,smoke:[],embers:[],grace:1.2,holes:[],falls:[],col:null};
   rfSpawn(0);RFS.cp={lane:0,alive:[true,true]};
   G.quip=null;G.quipQ=[];MUS_OLD=true;if(!L.rfLayer)L.rfLayer=rfBuild();
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);SFX.thunder&&SFX.thunder(.5)}
   say(/*v2*/"Le 19 septembre 1914. Je faisais la sieste dans les combles avec Flocon et Gaston, des camarades du colombier militaire… et tout brûle ! Je vais mourir ici !",5)}
-function rfSpawn(lane){const s=RFS,l=RF.lanes[lane];s.lane=lane;s.x=l.sx;s.y=l.sy;s.vx=0;s.vy=0;s.f=l.dir;s.hist=[];s.beams=[];s.debris=[];s.grace=1;
+function rfSpawn(lane){const s=RFS,l=RF.lanes[lane];s.lane=lane;s.x=l.sx;s.y=l.sy;s.vx=0;s.vy=0;s.f=l.dir;s.hist=[];s.beams=[];s.debris=[];s.falls=[];s.grace=1;s.beamT=lane?2.4:4;s.colDone=s.colDone||{};s.col=lane&&!s.colDone[lane]?rfColArm(lane):null;
   for(let k=0;k<60;k++)s.hist.push({x:s.x-l.dir*k*4,y:s.y})}
+/* les effondrements : le plancher de l'étage d'au-dessus (voûte, triforium, poutres) s'ouvre ; les poutres du toit passent par les trous */
+function rfSep(li){const y=RF.lanes[li-1].y1;return RF.solid.find(r=>r[1]===y)}
+function rfColArm(li){const r=rfSep(li),d=RF.lanes[li].dir;return{lane:li,dir:d,edge:d>0?r[0]:r[0]+r[2]}}
+function rfHole(li,x,w){const s=RFS;if(li<1)return;if(s.holes.some(h=>h.li===li&&Math.abs(h.x-x)<(h.w+w)/2-10))return;s.holes.push({li,x,w,ph:rnd()*6,seed:(x*13+li*7)|0})}
 function rfSolidAt(x,y,r){for(const[a,b,w,h]of RF.solid)if(x+r>a&&x-r<a+w&&y+r>b&&y-r<b+h)return[a,b,w,h];return null}
 function rfLaneOf(y){for(let i=0;i<4;i++){const l=RF.lanes[i];if(y>=l.y0-20&&y<=l.y1+20)return i}return-1}
 function rfCrash(why){const s=RFS;if(s.dead>0||s.out)return;if(S.god){return}
@@ -61,7 +65,12 @@ function rfUpdate(dt){const s=RFS;s.t+=dt;s.fade=Math.max(0,s.fade-dt*1.2);s.fla
   // la sortie : le grand portail
   if(s.x>RF.door[0]&&s.y>RF.door[1]){s.out={t:0};const both=s.mates.every(m=>m.alive);if(both)unlock('a73');if(!G.sim)SFX.medal&&SFX.medal();return}
   // le point de reprise : l'entrée de chaque bande
-  const li=rfLaneOf(s.y);if(li>s.cp.lane){s.cp={lane:li,alive:s.mates.map(m=>m.alive)};if(!s.said['l'+li]&&!G.sim){s.said['l'+li]=1;say([null,/*v2*/"Sous les voûtes, le plomb du toit fond et coule. Ne pas passer dessous quand ça goutte !",/*v2*/"La nef. La fumée descend. Flocon, Gaston : restez derrière moi !",/*v2*/"La paille des blessés brûle par terre. Le portail est ouvert, tout au bout. Vite !"][li],4)}}
+  const li=rfLaneOf(s.y);if(li>s.cp.lane){s.lane=li;s.beamT=Math.max(s.beamT,1.6);s.cp={lane:li,alive:s.mates.map(m=>m.alive)};s.colDone=s.colDone||{};if(!s.colDone[li])s.col=rfColArm(li);if(!s.said['l'+li]&&!G.sim){s.said['l'+li]=1;say([null,/*v2*/"Sous les voûtes. Derrière moi, le plafond s'effondre : les poutres du toit passent à travers !",/*v2*/"La nef. La fumée descend. Flocon, Gaston : restez derrière moi !",/*v2*/"La paille des blessés brûle par terre. Le portail est ouvert, tout au bout. Vite !"][li],4)}}
+  if(s.col&&s.col.lane===s.lane&&(s.x-s.col.edge)*s.col.dir>700){const c=s.col,l=RF.lanes[c.lane];s.colDone[c.lane]=1;s.col=null;
+    for(let k=0;k<3;k++){const x=c.edge+c.dir*(70+k*120+rnd()*30),w=90+rnd()*50;rfHole(c.lane,x,w);if(k<2)s.beams.push({x,w:k?120:160,big:true,t:0,T:.45,y0:l.y0,y1:l.y1,rot:(rnd()-.5)*.5,lane:c.lane,col:1})}
+    if(!G.sim){noise(1.2,240,.3,'lowpass');SFX.thunder&&SFX.thunder(.4);G.shake=Math.max(G.shake||0,9)}}
+  if(s.holes.length&&rnd()<dt*6){const vh=s.holes.filter(h=>h.li<=s.lane&&Math.abs(h.x-s.x)<W);if(vh.length){const h=vh[Math.floor(rnd()*vh.length)];s.falls.push({x:h.x+(rnd()-.5)*h.w*.6,y:RF.lanes[h.li].y0,vy:60+rnd()*80,vx:(rnd()-.5)*40,r:rnd()*6,f:RF.lanes[h.li].y1,big:rnd()<.3})}}
+  for(const f of s.falls){f.vy+=900*dt;f.y+=f.vy*dt;f.x+=f.vx*dt;f.r+=dt*4;if(f.y>=f.f&&!f.done){f.done=1;for(let k=0;k<5;k++)s.embers.push({x:f.x,y:f.f-4,vx:(rnd()-.5)*140,vy:-40-rnd()*120,t:0,max:.6+rnd()*.6})}}s.falls=s.falls.filter(f=>!f.done);
   // la trace : les camarades volent dans le sillage de Raymond, avec un temps de retard
   s.hist.unshift({x:s.x,y:s.y,t:s.t});if(s.hist.length>200)s.hist.pop();
   for(const m of s.mates){if(!m.alive){if(m.fall){m.fall.t+=dt;m.fall.vy+=800*dt;m.fall.y+=m.fall.vy*dt}continue}
@@ -69,12 +78,11 @@ function rfUpdate(dt){const s=RFS;s.t+=dt;s.fade=Math.max(0,s.fade-dt*1.2);s.fla
   // les feux, le plomb, les poutres qui tombent
   const hit=(x,y,r,box)=>x+r>box[0]&&x-r<box[0]+box[2]&&y+r>box[1]&&y-r<box[1]+box[3];
   if(s.grace<=0)for(const[x,y,w,h]of RF.fires){const fl=Math.sin(s.t*3+x)*8;if(hit(s.x,s.y,9,[x+6,y+(y<300&&y<60?0:12)-fl*.3,w-12,h-8]))return rfCrash('feu')}
-  for(const[x,l,ph]of RF.lead){const on=((s.t+ph)%3.2)<1.1,L1=RF.lanes[l];if(!on)continue;const box=[x-5,L1.y0,10,L1.y1-L1.y0];if(s.grace<=0&&hit(s.x,s.y,8,box))return rfCrash('plomb');for(const m of s.mates)if(m.alive&&hit(m.x,m.y,7,box))rfMateDie(m,'plomb')}
   for(const c of RF.chand){const L1=RF.lanes[c[1]],sw=Math.sin(s.t*.9+c[0])*.25,cx=c[0]+Math.sin(sw)*190,cy=L1.y0+Math.cos(sw)*190;if(s.grace<=0&&Math.hypot(s.x-cx,s.y-cy)<34)return rfCrash('lustre')}
   s.beamT-=dt;if(s.beamT<=0&&s.beams.length<3){const l=RF.lanes[s.lane],big=rnd()<.4,lead=big?1.05:.8,xt=clamp(s.x+s.vx*(lead+.38)+(rnd()-.5)*60,90,4100);
-    s.beams.push({x:xt,w:big?150:56,big,t:-lead,T:.4,y0:l.y0,y1:l.y1,rot:(rnd()-.5)*.5,lane:s.lane});s.beamT=1.1+rnd()*.8;if(!G.sim)tone(big?260:420,.5,'sine',.03,big?180:300)}
+    if(Math.abs(xt-l.sx)>320||s.cp.lane!==s.lane){s.beams.push({x:xt,w:big?150:56,big,t:-lead,T:.4,y0:l.y0,y1:l.y1,rot:(rnd()-.5)*.5,lane:s.lane});rfHole(s.lane,xt,(big?150:56)*.9)}s.beamT=1.1+rnd()*.8;if(!G.sim)tone(big?260:420,.5,'sine',.03,big?180:300)}
   for(const b of s.beams){b.t+=dt;if(b.t<0)continue;const u=Math.min(1,b.t/b.T),y=lerp(b.y0,b.y1-24,u*u),box=[b.x-b.w/2,y-12,b.w,26];
-    if(u<1){if(s.grace<=0&&hit(s.x,s.y,10,box))return rfCrash('poutre');for(const m of s.mates)if(m.alive&&hit(m.x,m.y,8,box))rfMateDie(m,'poutre')}
+    if(u<1){if(s.grace<=0&&hit(s.x,s.y,10,box))return rfCrash('poutre');if(!b.col)for(const m of s.mates)if(m.alive&&hit(m.x,m.y,8,box))rfMateDie(m,'poutre')}
     if(u>=1&&!b.landed){b.landed=1;s.debris.push({x:b.x,w:b.w,y:b.y1,t:0,big:b.big});if(!G.sim){noise(b.big?.5:.3,b.big?300:600,.2,'lowpass');G.shake=Math.max(G.shake||0,b.big?6:3)}for(let k=0;k<14;k++)s.embers.push({x:b.x+(rnd()-.5)*b.w,y:b.y1-10,vx:(rnd()-.5)*120,vy:-60-rnd()*160,t:0,max:1+rnd()})}}
   s.beams=s.beams.filter(b=>!b.landed);for(const d of s.debris)d.t+=dt;s.debris=s.debris.filter(d=>d.t<3);
   for(const d of s.debris){const box=[d.x-d.w/2,d.y-34,d.w,34];if(s.grace<=0&&hit(s.x,s.y,9,box))return rfCrash('braise')}
@@ -82,8 +90,17 @@ function rfUpdate(dt){const s=RFS;s.t+=dt;s.fade=Math.max(0,s.fade-dt*1.2);s.fla
   for(const k of L.corn)if(k.rf&&!k.taken&&Math.abs(k.x-s.x)<22&&Math.abs(k.y-s.y)<24){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}save();if(!G.sim)SFX.straw()}}
 function rfAmbient(dt){const s=RFS;for(const e of s.embers){e.t+=dt;e.vy+=-30*dt;e.x+=e.vx*dt;e.y+=e.vy*dt}s.embers=s.embers.filter(e=>e.t<e.max);
   if(s.embers.length<120&&rnd()<dt*40){const c=(s.cam&&s.cam.x)||0,cy=(s.cam&&s.cam.y)||0;s.embers.push({x:c+rnd()*W,y:cy+H+10,vx:(rnd()-.5)*40,vy:-50-rnd()*80,t:0,max:3+rnd()*3})}}
-function rfLeave(){const s=RFS;RFS=null;MUS_OLD=false;G.fade=1;
-  const n=s.mates.filter(m=>m.alive).length;say(n===2?/*v2*/"On est sortis tous les trois. Derrière nous, la cathédrale brûlait comme une forge. Je ne l'ai jamais oubliée.":n===1?/*v2*/"On est sortis à deux. Derrière nous, la cathédrale brûlait. Je pense encore à celui qui est resté dedans.":/*v2*/"Je suis sorti seul. Derrière moi, la cathédrale brûlait, et mes camarades avec.",5)}
+function rfLeave(){const s=RFS;RFS=null;MUS_OLD=false;
+  const n=s.mates.filter(m=>m.alive).length,line=n===2?/*v2*/"On est sortis tous les trois. Derrière nous, la cathédrale brûlait comme une forge. Je ne l'ai jamais oubliée.":n===1?/*v2*/"On est sortis à deux. Derrière nous, la cathédrale brûlait. Je pense encore à celui qui est resté dedans.":/*v2*/"Je suis sorti seul. Derrière moi, la cathédrale brûlait, et mes camarades avec.";
+  G.state='intro';G.cards=RF_CARDS_OUT;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';G.fade=1;say(line,5)}}
+const RF_CARDS_IN=[
+  {t:/*v2*/"Reims, le 19 septembre 1914. Depuis le matin, l'artillerie allemande bombarde la ville. Dans la nef de la cathédrale, on a étendu de la paille pour coucher des blessés allemands faits prisonniers.",minT:1.2},
+  {t:/*v2*/"Vers trois heures de l'après-midi, les obus mettent le feu au toit. La charpente, une forêt de vieux chênes, s'embrase ; puis la paille de la nef prend feu à son tour.",minT:1.2},
+  {t:/*v2*/"Raymond faisait la sieste dans les combles avec deux camarades du colombier militaire, Flocon et Gaston. Il se souvient de la chaleur qui l'a réveillé, et du bruit des poutres.",minT:1.2}];
+const RF_CARDS_OUT=[
+  {t:/*v2*/"La charpente a brûlé jusqu'à la nuit. Le plomb du toit a fondu, les vitraux ont éclaté, les statues de la façade ont été calcinées. L'ange au sourire y a perdu sa tête.",minT:1.2},
+  {t:/*v2*/"La cathédrale en feu a fait le tour du monde. Il a fallu près de vingt ans de travaux pour la relever : elle a été rendue au culte en 1938.",minT:1.2},
+  {t:/*v2*/"Raymond se dit que l'ange et lui ont quelque chose en commun : on les a recollés tous les deux.",minT:1.2}];
 
 /* ---------- le décor (en cache) : la nef, les voûtes, la charpente, le portail ---------- */
 function rfBuild(){const TR=Math.min(RS,1),{layer:c,g}=mkLayer(RF.W*TR,RF.H*TR);g.scale(TR,TR);c.rs=TR;const R=mulberry(1914),B=RF.bay;RF.deco=[];
@@ -123,10 +140,8 @@ function rfBuild(){const TR=Math.min(RS,1),{layer:c,g}=mkLayer(RF.W*TR,RF.H*TR);
     if(burn>.55)RF.deco.push([x+10+R()*30,1474,40,26])}
   for(const x of[520,1240,1960,2680,3400]){g.fillStyle='#8a6a28';rr(g,x,1484,90,16,6);g.fill();g.fillStyle='#5a3e18';for(let k=0;k<10;k++)g.fillRect(x+6+k*8,1486+(k%3)*4,7,2);RF.deco.push([x+6,1460,80,30])}
   // le bois sur les piliers : les lambris au pied des piles, les chevrons tombés appuyés contre elles — tout ça brûle
-  for(let x=60;x<4140;x+=B){if(x>4000)continue;g.fillStyle='#4a2c18';g.fillRect(x-10,1400,60,100);g.fillStyle='#2a180c';for(let k=0;k<5;k++)g.fillRect(x-10+k*12,1400,2,100);g.fillRect(x-12,1396,64,6);
-    g.fillStyle='#120804';g.fillRect(x-10,1400,60,18+R()*20);RF.deco.push([x-8,1352,56,50]);
-    if(x>200){const lx=x+56+R()*30;g.strokeStyle='#2a180c';g.lineWidth=12;g.beginPath();g.moveTo(lx,1160);g.lineTo(x+40,930+R()*40);g.stroke();g.strokeStyle='rgba(255,110,30,.6)';g.lineWidth=3;g.beginPath();g.moveTo(lx+3,1158);g.lineTo(x+43,940);g.stroke();RF.deco.push([x+36,890+R()*40,30,60]);RF.deco.push([x+40,1100,50,60])}
-    g.fillStyle='#3a2414';g.fillRect(x-4,600,40,26);g.fillStyle='#1a0e06';g.fillRect(x-4,600,40,8);RF.deco.push([x-2,560,36,44])}
+  for(let x=60;x<4140;x+=B){if(x>4000)continue;
+    if(x>200){const lx=x+56+R()*30;g.strokeStyle='#2a180c';g.lineWidth=12;g.beginPath();g.moveTo(lx,1160);g.lineTo(x+40,930+R()*40);g.stroke();g.strokeStyle='rgba(255,110,30,.6)';g.lineWidth=3;g.beginPath();g.moveTo(lx+3,1158);g.lineTo(x+43,940);g.stroke();RF.deco.push([x+36,890+R()*40,30,60]);RF.deco.push([x+40,1100,50,60])}}
   // les grosses poutres tombées de la charpente, coincées en travers entre les piles (la bande 1160-1190)
   for(let x=300;x<4140;x+=B/2){const w=B/2+30,tl=(R()-.5)*.03;g.save();g.translate(x+w/2-15,1175);g.rotate(tl);
     g.fillStyle='#2a1a0e';g.fillRect(-w/2,-16,w,32);g.fillStyle='#3e2614';g.fillRect(-w/2,-16,w,8);g.fillStyle='#0e0604';for(let k=-w/2+6;k<w/2-10;k+=14+R()*10)g.fillRect(k,-8,8+R()*6,3);
@@ -152,6 +167,12 @@ function rfRender(t){const s=RFS,g=ctx;
   g.globalCompositeOperation='lighter';
   for(const[x,y,w,h]of RF.fires){if(x<cx-200||x>cx+W+200)continue;const gl=g.createRadialGradient(x+w/2,y+h/2,10,x+w/2,y+h/2,220);gl.addColorStop(0,'rgba(255,140,40,'+(.35+Math.sin(t*7+x)*.08)+')');gl.addColorStop(1,'rgba(255,90,20,0)');g.fillStyle=gl;g.fillRect(x-200,y-200,w+400,h+400)}
   g.globalCompositeOperation='source-over';
+  // les trous des effondrements : la pierre crevée, des flammes qui pendent, la lueur de l'étage d'au-dessus
+  for(const h of s.holes){if(h.x<cx-200||h.x>cx+W+200)continue;const yA=RF.lanes[h.li-1].y1,yB=RF.lanes[h.li].y0,R=mulberry(h.seed);
+    g.fillStyle='#0a0503';g.beginPath();g.moveTo(h.x-h.w/2,yA-4);for(let k=1;k<6;k++)g.lineTo(h.x-h.w/2+h.w*k/6,yA-4+R()*10);g.lineTo(h.x+h.w/2,yA-4);g.lineTo(h.x+h.w/2-R()*12,yB+4);for(let k=5;k>0;k--)g.lineTo(h.x-h.w/2+h.w*k/6,yB+4-R()*10);g.lineTo(h.x-h.w/2+R()*12,yB+4);g.closePath();g.fill();
+    const gl=g.createLinearGradient(0,yA,0,yB+4);gl.addColorStop(0,'rgba(255,120,30,.55)');gl.addColorStop(1,'rgba(255,80,20,.1)');g.fillStyle=gl;g.fill();
+    g.strokeStyle='rgba(255,150,50,.85)';g.lineWidth=3;g.stroke();rfFlame(g,h.x-h.w/2+8,yB,h.w-16,22+Math.sin(t*3+h.ph)*6,t+h.ph,true)}
+  for(const f of s.falls){g.save();g.translate(f.x,f.y);g.rotate(f.r);g.fillStyle=f.big?'#3a2414':'#6a5a4a';g.fillRect(-(f.big?14:5),-4,f.big?28:10,8);if(f.big){g.fillStyle='rgba(255,140,40,.9)';g.fillRect(-14,2,28,2)}g.restore();if(f.big)rfFlame(g,f.x-10,f.y-22,20,18,t,false)}
   // le bois qui brûle sur les piles, les bancs, les poutres (le décor : ces flammes-là sont derrière)
   if(RF.deco){g.globalCompositeOperation='lighter';for(const[x,y,w,h]of RF.deco){if(x<cx-150||x>cx+W+150||y<cy-150||y>cy+H+150)continue;const gl=g.createRadialGradient(x+w/2,y+h,4,x+w/2,y+h,130);gl.addColorStop(0,'rgba(255,120,30,.22)');gl.addColorStop(1,'rgba(255,80,20,0)');g.fillStyle=gl;g.fillRect(x+w/2-130,y+h-130,260,260)}g.globalCompositeOperation='source-over';g.globalAlpha=.8;for(const[x,y,w,h]of RF.deco){if(x<cx-100||x>cx+W+100||y<cy-100||y>cy+H+100)continue;rfFlame(g,x,y,w,h,t*.9+x*.003,false)}g.globalAlpha=1}
   // la fumée noire qui s'accumule sous les voûtes et sous le toit, qui roule
@@ -161,10 +182,6 @@ function rfRender(t){const s=RFS,g=ctx;
   for(const[x,y,w,h]of RF.fires){if(x<cx-200||x>cx+W+200)continue;const bot=y<300&&y<60;if(bot)continue;for(let k=0;k<5;k++){const ph=(t*.35+k*.2+x*.001)%1,px=x+w/2+Math.sin(t+k*2)*20*ph,py=y-ph*220,r=16+ph*50;const sg=g.createRadialGradient(px,py,r*.1,px,py,r);sg.addColorStop(0,'rgba(16,10,8,'+(.6*(1-ph))+')');sg.addColorStop(1,'rgba(16,10,8,0)');g.fillStyle=sg;g.beginPath();g.arc(px,py,r,0,7);g.fill()}}
   // les feux
   for(const[x,y,w,h]of RF.fires){if(x<cx-120||x>cx+W+120)continue;rfFlame(g,x,y,w,h,t,y<300&&y<60)}
-  // le plomb fondu
-  for(const[x,l,ph]of RF.lead){if(x<cx-50||x>cx+W+50)continue;const L1=RF.lanes[l],u=((t+ph)%3.2);g.fillStyle='#c8ccd2';
-    if(u<1.1){const k2=Math.min(1,u*4);g.globalAlpha=.9;g.fillRect(x-3,L1.y0,6,(L1.y1-L1.y0)*k2);g.fillStyle='#f0f4f8';g.fillRect(x-1,L1.y0,2,(L1.y1-L1.y0)*k2);g.globalAlpha=1;g.fillStyle='rgba(220,225,232,.6)';g.beginPath();g.ellipse(x,L1.y1,18*k2,4,0,0,7);g.fill()}
-    else if(u>2.4){const k2=(u-2.4)/.8;g.fillStyle='rgba(230,235,240,'+(.3+k2*.6)+')';g.beginPath();g.ellipse(x,L1.y0+4,4+k2*4,3+k2*5,0,0,7);g.fill()}}
   // les lustres qui se balancent
   for(const c of RF.chand){const L1=RF.lanes[c[1]],sw=Math.sin(t*.9+c[0])*.25,px=c[0],py=L1.y0-6,ex=px+Math.sin(sw)*190,ey=py+Math.cos(sw)*190;if(ex<cx-200||ex>cx+W+200)continue;
     g.strokeStyle='#2a2018';g.lineWidth=2;g.beginPath();g.moveTo(px,py);g.lineTo(ex,ey-20);g.stroke();g.fillStyle='#c8a050';g.beginPath();g.ellipse(ex,ey,30,9,0,0,7);g.fill();g.strokeStyle='#a88030';g.lineWidth=3;g.beginPath();g.moveTo(ex-28,ey);g.quadraticCurveTo(ex,ey+30,ex+28,ey);g.stroke();
@@ -287,16 +304,26 @@ function rfOutro(g,t,s){const u=s.out.t,B=RFO.base;if(!s.outL)s.outL=rfOutLayers
   for(let k=0;k<12;k++){const x=((k*130-t*14)%1300+1300)%1300-200,y=40+((k*37)%90)+Math.sin(t*.3+k)*8,r=110+(k%3)*40;const dg=g.createRadialGradient(x,y,r*.2,x,y,r);dg.addColorStop(0,'rgba(48,38,38,.75)');dg.addColorStop(1,'rgba(60,46,44,0)');g.fillStyle=dg;g.beginPath();g.arc(x,y,r,0,7);g.fill()}
   for(let k=0;k<34;k++)puff(k,true);
   const gl=g.createRadialGradient(560,210,20,560,210,420);gl.addColorStop(0,'rgba(255,150,50,.55)');gl.addColorStop(1,'rgba(255,90,20,0)');g.fillStyle=gl;g.fillRect(0,0,W,H);
+  // les colonnes de fumée noire qui sortent du toit, poussées vers la gauche (derrière)
+  const smoke=(x0,k,front)=>{const ph=(t*.09+k*.173)%1,x=x0-ph*ph*420+Math.sin(t*.5+k)*10,y=200-ph*330,r=26+ph*120;const sg=g.createRadialGradient(x,y,r*.15,x,y,r);const a=(front?.55:.8)*(1-ph*.6);
+    sg.addColorStop(0,'rgba(18,14,14,'+a+')');sg.addColorStop(.6,'rgba(28,22,22,'+(a*.7)+')');sg.addColorStop(1,'rgba(30,24,24,0)');g.fillStyle=sg;g.beginPath();g.arc(x,y,r,0,7);g.fill()};
+  for(const x0 of[430,520,610,700,120,190])for(let k=0;k<7;k++)smoke(x0,k+x0*.01,false);
   g.drawImage(Ly.a,0,0,W,H);
+  // la fumée qui sort par les fenêtres hautes de la nef et par la rose du transept
+  for(let i=0;i<9;i++){const x=415+i*42;for(let k=0;k<3;k++){const ph=(t*.5+k*.33+i*.17)%1,yy=280-ph*90,r=6+ph*22;g.fillStyle='rgba(24,18,18,'+(.55*(1-ph))+')';g.beginPath();g.arc(x-ph*20,yy,r,0,7);g.fill()}}
+  for(let k=0;k<4;k++){const ph=(t*.4+k*.25)%1;g.fillStyle='rgba(24,18,18,'+(.5*(1-ph))+')';g.beginPath();g.arc(312-ph*30,290-ph*120,14+ph*30,0,7);g.fill()}
   // le toit qui brûle : la nef, le chevet ; la charpente noire dans les flammes
   const fl=(x0,x1,base,hh,step)=>{for(let x=x0;x<x1;x+=step){const h=hh*(.6+.4*Math.sin(t*7+x*.7))+((x*13)%30);
     for(const[c,k]of[['rgba(200,50,10,.9)',1],['rgba(255,140,30,.95)',.75],['rgba(255,230,140,.95)',.42]]){g.fillStyle=c;g.beginPath();g.moveTo(x-step*.9*k,base);g.quadraticCurveTo(x-step*.4+Math.sin(t*5+x)*4,base-h*k*.6,x+Math.sin(t*6+x*.3)*6,base-h*k);g.quadraticCurveTo(x+step*.5,base-h*k*.5,x+step*.9*k,base);g.fill()}}};
-  fl(392,772,206,110,12);fl(6,232,252,70,12);
+  fl(392,772,206,150,11);fl(6,232,252,95,11);
   g.strokeStyle='rgba(30,14,8,.85)';g.lineWidth=3;for(let x=400;x<770;x+=34){g.beginPath();g.moveTo(x,206);g.lineTo(x+16,150+((x*3)%20));g.lineTo(x+32,206);g.stroke()}
   g.lineWidth=2;g.beginPath();g.moveTo(396,168);g.lineTo(700,160);g.stroke();
   g.drawImage(Ly.b,0,0,W,H);
-  // le plomb qui coule par les gargouilles
-  for(let i=0;i<9;i++){const x=424+i*42,u2=(t*.7+i*.31)%1;g.fillStyle='rgba(225,230,236,.85)';g.fillRect(x,204,2.5,u2*60);g.beginPath();g.arc(x+1,204+u2*60,2.6,0,7);g.fill()}
+  // de temps en temps, un pan de toit s'effondre : une gerbe d'étincelles monte
+  {const per=2.6,k=Math.floor(t/per),u=(t%per)/per,bx=420+((k*137)%330);if(u<.5){const a=1-u*2;g.fillStyle='rgba(255,220,140,'+(a*.5)+')';g.beginPath();g.ellipse(bx,200,60*(1-a)+20,26,0,0,7);g.fill();
+    for(let i=0;i<26;i++){const an=-Math.PI/2+(i/26-.5)*1.6,d=u*2*(90+(i*37%60));g.fillStyle='rgba(255,'+(160+(i%3)*30)+',60,'+a+')';g.fillRect(bx+Math.cos(an)*d,200+Math.sin(an)*d+u*u*60,2.5,2.5)}}}
+  // la fumée noire, devant aussi
+  for(const x0 of[470,640])for(let k=0;k<5;k++)smoke(x0,k*1.3+7,true);
   // la fumée devant, les braises
   for(let k=0;k<14;k++)puff(k+40,false);
   for(let k=0;k<50;k++){const ph=(t*.25+k*.071)%1,x=360+((k*61)%420)-ph*180,y=210-ph*200;g.fillStyle='rgba(255,'+(150+(k%4)*20)+',50,'+(1-ph)+')';g.fillRect(x,y,2,2)}

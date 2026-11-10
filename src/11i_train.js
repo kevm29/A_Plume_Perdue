@@ -47,6 +47,8 @@ function trainStep(dt){
   // le train vibre, les joints des rails claquent : ta-dam… ta-dam
   if(!G.sim){G.shake=Math.max(G.shake,.7*v);Tn.clickT-=dt*v;if(Tn.clickT<=0){Tn.clickT=.62;noise(.04,900,.12*v+.02,'bandpass',0,3);noise(.04,700,.1*v+.02,'bandpass',.13,3)}
     loopSet('wind',trainOnRoof()?.15*v:.03*v)}
+  // au-dessus des voitures 3 et 4 (celles où l'on marche dedans), la ligne haute tension : on ne peut pas y monter
+  {const D=L.def.train,a=D.wagons[4].c0*T,b=(D.wagons[5].c1+1)*T;if(!P.dead&&P.y+P.h<=TRN.ROOF+2&&P.x+P.w>a&&P.x<b){const pc=P.x+P.w/2;if(pc<(a+b)/2)P.x=a-P.w;else P.x=b;P.vx=0}}
   // les pylônes : sur les toits 1-2 et 5-6
   const roofish=P.y<9*T&&!P.dead;
   // aucun avertissement : un pylône (ou une passerelle) toutes les 2 à 5 secondes, à intervalles irréguliers

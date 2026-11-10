@@ -108,7 +108,7 @@ function vfUpdate(dt){
     for(const m of VF.people){if(m.side==='fr'||m.splat)continue;const hx=m.hx,hy=m.hy;if(hx==null)continue;if(Math.abs(p.x-hx)<9&&Math.abs(p.y-hy)<8){m.splat=true;m.wipe=1.8;p.dead=1;
       vxBubble(hx,hy-30,pick(['Scheiße!','Igitt!','Verdammte Taube!','Mein Helm!','Pfui Teufel!']),'#3a3a2a',1.8);if(!G.sim)noise(.08,600,.15,'lowpass');
       {const q="Un vrai, celui-là. Et en plein sur le casque. Le règlement appelle ça de l'artillerie d'appoint.";
-       if(L.vfSid!=null&&!L.vfSecret&&!G.sim){L.vfSecret=true;s.said.poop=1;grantSecret({sid:L.vfSid,x:-9999,q:[q]},-9999)}
+       if(L.vfSid!=null&&!L.vfSecret&&!G.sim){L.vfSecret=true;s.said.poop=1;grantSecret({sid:L.vfSid,style:'vfpoop',x:-9999,q:[q]},-9999)}
        else if(!s.said.poop){s.said.poop=1;say(q,4)}}break}}
     if(!p.dead&&p.y>vfGround(p.x)){p.dead=1;s.splats.push({x:p.x,y:vfGround(p.x),t:0})}}
   s.poops=s.poops.filter(p=>!p.dead);for(const q of s.splats)q.t+=dt;s.splats=s.splats.filter(q=>q.t<8);

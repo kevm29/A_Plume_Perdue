@@ -103,7 +103,7 @@ function tryAct(){
   }
 }
 function grantSecret(a,py){
-  a.used=true;{const gt=gotOf(G.li);if(!gt.sec.includes(a.sid))gt.sec.push(a.sid)}achSecret(G.li,a.sid);if(a.style==='backdoor')unlock('a2');
+  a.used=true;{const gt=gotOf(G.li);if(!gt.sec.includes(a.sid))gt.sec.push(a.sid)}achSecret(G.li,a.sid);if(a.style==='backdoor')unlock('a2');if(a.style==='fiente')achScheisse('musee');if(a.style==='vfpoop')achScheisse('vaux');
   if(!a.noStraw&&(S.run.wear||0)>0){S.run.wear--;P.sx=1.15;P.sy=1.15}
   save();
   if(!G.sim){SFX.secret();if(a.noStraw)noise(.25,3200,.2,'highpass');else{setTimeout(()=>SFX.straw(),180);parts.push({type:'tuftpop',x:a.x,y:py,life:0,max:1.3});puff(a.x,py+4,8,true)}say(pick(a.q||SECRET_Q),3.8)}

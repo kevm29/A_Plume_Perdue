@@ -29,6 +29,10 @@ const SV16={
     peck:/*v2*/"Ne bouge pas, Raymond. Respire doucement.",
     end:/*v2*/"Le linge sentait le vinaigre. Dehors, tout était jaune. Lucien ne m'a pas lâché une seconde."}
 };
+const SV_GAZ_CARDS=[
+  {t:/*v2*/"Avril 1916. Sur la colline du Mort-Homme, au nord-ouest de Verdun, les Allemands attaquent sans relâche. Avec les obus ordinaires, ils tirent des obus à gaz.",minT:1.2},
+  {t:/*v2*/"Le gaz est plus lourd que l'air : il coule par-dessus le parapet et reste au fond des tranchées. Quand une sentinelle le voit venir, elle frappe une douille d'obus pendue à un piquet.",minT:1.2},
+  {t:/*v2*/"Les hommes ont un masque. Les pigeons n'en ont pas : il faut un linge mouillé sur le panier. Raymond se souvient que, ce jour-là, Lucien a pensé au panier avant de penser à lui-même.",minT:1.2}];
 let SV=null;
 function svActive(){return!!(SV&&L&&(L.s16||L.zr16))}
 function svStart(k){SV={k,t:0,i:0,next:1.4,bub:[],fade:1,out:null,peckT:0,peckCool:0,rain:[]};G.quip=null;G.quipQ=[];MUS_OLD=true;
@@ -38,6 +42,7 @@ function svUpdate(dt){const s=SV,d=SV16[s.k];s.t+=dt;s.fade=Math.max(0,s.fade-dt
   if(s.i<d.lines.length&&s.t>=s.next){const[w,txt]=d.lines[s.i];s.bub.push({who:w,text:txt,t:0,max:Math.max(2.8,1.4+txt.length*.055)});s.next=s.t+Math.max(3,1.6+txt.length*.06);s.i++;
     if(s.k==='bois'&&s.i===1&&!G.sim){SFX.thunder&&SFX.thunder(.6);s.boom=1}}
   if(s.boom>0)s.boom-=dt*1.5;
+  if(s.k==='gaz'&&s.t<6&&!G.sim){s.gong=(s.gong||0)-dt;if(s.gong<=0){s.gong=.45;tone(620,.35,'triangle',.05,600)}}
   if(pressed.has('act')&&s.peckCool<=0&&!s.out){s.peckT=.5;s.peckCool=3;if(!G.sim)noise(.08,2200,.12,'bandpass');s.bub.push({who:0,text:d.peck,t:0,max:3})}
   if(s.i>=d.lines.length&&s.t>s.next+.6&&!s.out)s.out={t:0};
   if(s.out){s.out.t+=dt;if(s.out.t>1){const e=d.end;SV=null;MUS_OLD=false;G.fade=1;if(L.s16)L.s16.flash=1;say(e,4.6)}}}
@@ -90,8 +95,32 @@ function svBois(g,t,s){const fl=Math.max(0,s.boom||0)+Math.max(0,Math.sin(t*1.7)
   if(fl>.3){g.fillStyle='rgba(255,220,160,'+(fl*.25)+')';g.fillRect(0,0,W,H)}
   for(let k=0;k<30;k++){const ph=(t*.3+k/30)%1;g.fillStyle='rgba(40,30,20,.6)';g.fillRect((k*67)%W,ph*H,3,3)}}
 function svGaz(g,t,s){const gz=Math.min(1,s.t/3);
-  g.fillStyle='#2c2a24';g.fillRect(0,0,W,H);g.fillStyle='#5a4a36';g.fillRect(0,0,W,140);g.fillStyle='#3a2e22';g.fillRect(0,140,W,320);
-  for(let x=0;x<W;x+=46){g.fillStyle='#7a6a4a';rr(g,x,120,44,24,8);g.fill()}for(let x=0;x<W;x+=30){g.fillStyle='#4a3a2a';g.fillRect(x,200,4,260)}
+  // le ciel sale, les éclatements au loin ; le nuage jaune-vert qui arrive par la gauche et passe le parapet
+  const sk=g.createLinearGradient(0,0,0,150);sk.addColorStop(0,'#4a4a44');sk.addColorStop(1,'#7a7462');g.fillStyle=sk;g.fillRect(0,0,W,150);
+  for(let k=0;k<4;k++){const ph=((t*.4+k*.27)%1),x=((k*260+80)%W);g.fillStyle='rgba(60,56,50,'+(.6*(1-ph))+')';g.beginPath();g.arc(x,90-ph*40,14+ph*30,0,7);g.fill()}
+  for(let k=0;k<10;k++){const x=-200+gz*(W+200)*.9-k*90+Math.sin(t*.7+k)*16,y=70+(k%3)*22;const cg=g.createRadialGradient(x,y,6,x,y,90);cg.addColorStop(0,'rgba(196,196,90,'+(.55*gz)+')');cg.addColorStop(1,'rgba(196,196,90,0)');g.fillStyle=cg;g.beginPath();g.arc(x,y,90,0,7);g.fill()}
+  // les barbelés et leurs piquets, sur le parapet
+  for(let x=10;x<W;x+=110){g.strokeStyle='#2a2620';g.lineWidth=4;g.beginPath();g.moveTo(x,124);g.lineTo(x+6,74);g.stroke()}
+  g.strokeStyle='rgba(40,36,30,.9)';g.lineWidth=1.4;for(const y0 of[84,100,114]){g.beginPath();for(let x=0;x<=W;x+=14)g.lineTo(x,y0+Math.sin(x*.2)*4);g.stroke()}
+  // la paroi de la tranchée : sacs de terre, clayonnage, piquets
+  for(let x=-10;x<W;x+=46){g.fillStyle=(x/46|0)%2?'#8a7a56':'#7a6a4a';rr(g,x,118,44,24,8);g.fill();g.fillStyle=(x/46|0)%2?'#7a6a4a':'#8a7a56';rr(g,x+22,96,44,24,8);g.fill()}
+  g.fillStyle='#4a3a28';g.fillRect(0,142,W,318);
+  for(let y=150;y<450;y+=10){g.strokeStyle=(y/10|0)%2?'#5e4a32':'#3e3020';g.lineWidth=7;g.beginPath();for(let x=0;x<=W;x+=36)g.lineTo(x,y+((x/36|0)%2?3:-3));g.stroke()}
+  for(let x=20;x<W;x+=130){g.fillStyle='#2e2216';g.fillRect(x,140,10,320)}
+  // la banquette de tir, une niche à munitions, les masques pendus au clou, les fusils appuyés
+  g.fillStyle='#5a4630';g.fillRect(0,400,W,60);g.fillStyle='#6a5438';g.fillRect(0,400,W,6);
+  g.fillStyle='#1e1810';g.fillRect(800,300,110,90);for(const[x,w]of[[808,40],[852,48]]){g.fillStyle='#6a4e30';g.fillRect(x,350,w,40);g.strokeStyle='#4a3420';g.lineWidth=2;g.strokeRect(x+2,352,w-4,36)}
+  for(const x of[330,360,610,640]){g.fillStyle='#2a2018';g.beginPath();g.arc(x,186,3,0,7);g.fill();g.fillStyle='#6e6a50';rr(g,x-9,190,18,24,4);g.fill();g.strokeStyle='#4a4632';g.lineWidth=1.5;g.beginPath();g.moveTo(x,186);g.lineTo(x,192);g.stroke()}
+  for(const x of[560,575,590]){g.save();g.translate(x,456);g.rotate(-.14);g.fillStyle='#4a3020';g.fillRect(-3,-150,6,90);g.fillStyle='#2a2a2a';g.fillRect(-1.5,-176,3,60);g.fillStyle='#5a3a24';g.fillRect(-4,-62,8,62);g.restore()}
+  // le gong d'alerte : une douille d'obus pendue à un piquet, qu'une sentinelle frappe
+  {const gx=96,gy=210,sw=Math.sin(t*14)*(s.t<6?.18:.04);g.strokeStyle='#3a2a1a';g.lineWidth=6;g.beginPath();g.moveTo(40,456);g.lineTo(40,170);g.lineTo(gx+10,170);g.stroke();
+   g.save();g.translate(gx,170);g.rotate(sw);g.strokeStyle='#2a2018';g.lineWidth=1.5;g.beginPath();g.moveTo(0,0);g.lineTo(0,24);g.stroke();
+   const bg=g.createLinearGradient(-12,0,12,0);bg.addColorStop(0,'#8a6a2a');bg.addColorStop(.5,'#e0c060');bg.addColorStop(1,'#7a5a20');g.fillStyle=bg;rr(g,-12,24,24,70,4);g.fill();g.fillStyle='#5a4418';g.fillRect(-13,86,26,8);g.restore();
+   const hit=s.t<6&&Math.sin(t*14)>.6;if(hit){g.strokeStyle='rgba(255,240,180,.7)';g.lineWidth=2;for(let k=0;k<3;k++){g.beginPath();g.arc(gx,gy+20,22+k*8,-.6,.6);g.stroke()}}}
+  // au fond, d'autres hommes mettent leur masque
+  for(const[x,i]of[[720,0],[860,2]]){g.save();g.globalAlpha=.55;const m=svMate(g,t,i,x,440,Object.assign({},VX_P.stand,{nT:{x:2.6,y:-4.4},fT:{x:2.4,y:-4.2},head:-.1}),{sc:6.6});if(s.t>1.5)svMask(g,m.head);g.restore()}
+  // le gaz coule par-dessus le parapet et descend dans la tranchée
+  for(let k=0;k<12;k++){const x=((k*90+t*22)%(W+200))-100,yy=120+Math.min(1,gz*1.3)*(140+Math.sin(t*.8+k)*30);const cg=g.createRadialGradient(x,yy,6,x,yy,80);cg.addColorStop(0,'rgba(200,196,96,'+(.35*gz)+')');cg.addColorStop(1,'rgba(200,196,96,0)');g.fillStyle=cg;g.beginPath();g.arc(x,yy,80,0,7);g.fill()}
   g.fillStyle='#5a4630';g.fillRect(0,460,W,H-460);g.fillStyle='#6a5a3e';for(let x=0;x<W;x+=60)g.fillRect(x,456,50,8);
   s.who=[];const gy=470,masked=s.i>=1;
   const fm=Object.assign({},S16_MATES[1]);
@@ -109,22 +138,22 @@ function svMask(g,h){g.fillStyle='#8a8a7a';g.beginPath();g.ellipse(h.x+4,h.y+6,1
 /* ---------- 2-1 : les endroits du souvenir ; la tranchée de mars 1916, jouable ---------- */
 const S16={route:[44,56],bois:[140,150],tr:[247,258],
   W0:228,W1:265,          // la tranchée de 1916 : murs pleins de part et d'autre
-  cage:{c:237,r:18},luc:{c:235}};
+  // trois étages : la tranchée (sol rangée 13), la sape haute avec la cagna (sol 17), la sape basse (sol 21)
+  F:[13,17,21],X:[[233.5,259.6],[234.5,258.5],[241.5,257.5]],
+  lad:[[239,253],[246,256]],   // les échelles : tranchée ↔ sape haute, sape haute ↔ sape basse (centre, en colonnes)
+  cage:{c:237,r:17},luc:{c:236.1}};
 const S16_KEYS=['g','th','rats','moths','cps','movers','mark','decor','lights','exit','hints','quips','bolts','updrafts','far','mid','tiles'];
 function s16Grid(Lv){
   const g=Lv.g.map(r=>r.slice()),R=g.length;const fill=(c0,c1,r0,r1,ch)=>{for(let c=c0;c<=c1;c++)for(let r=r0;r<=r1;r++)if(r>=0&&r<R)g[r][c]=ch};
   for(let c=S16.W0-6;c<=S16.W1+6;c++)for(let r=0;r<R;r++)g[r][c]='.';
   fill(S16.W0,S16.W0+3,0,R-1,'#');fill(S16.W1-3,S16.W1,0,R-1,'#');   // les murs
-  fill(S16.W0+4,S16.W1-4,9,R-1,'#');                                  // le terrain
-  fill(233,260,9,13,'.');                                             // la tranchée, à ciel ouvert
-  fill(232,261,8,8,'^');                                              // les barbelés, sur le parapet
-  fill(234,239,15,17,'.');                                            // la cagna (abri de Lucien)
-  fill(238,239,14,14,'.');                                            // l'échelle de la cagna à la tranchée
-  fill(240,258,16,17,'.');                                            // la sape basse (Lucien n'y tient pas)
-  fill(252,253,14,15,'.');                                            // le puits vers la tranchée
-  fill(242,256,19,20,'.');                                            // la sape du dessous
-  fill(246,247,18,18,'.');fill(255,256,18,18,'.');                    // les passages entre les deux sapes
-  g[17][244]='k';g[20][250]='k';                                      // les rats de sape
+  fill(S16.W0+4,S16.W1-4,8,R-1,'#');                                  // la terre
+  fill(233,260,8,12,'.');                                             // la tranchée, à ciel ouvert
+  fill(232,261,7,7,'^');                                              // les barbelés, sur le parapet
+  fill(234,258,14,16,'.');                                            // la sape haute : la cagna de Lucien à gauche, puis la galerie
+  fill(241,257,18,20,'.');                                            // la sape basse
+  for(const c of S16.lad[0])fill(c-1,c,13,13,'.');                   // les trous des échelles
+  for(const c of S16.lad[1])fill(c-1,c,17,17,'.');
   return g.map(r=>r.join('')).join('\n')}
 function s16Post(Lv){
   const d=Lv.def;if(d.zr16){Lv.zr16={done:{}};return}
@@ -137,14 +166,14 @@ function s16Post(Lv){
   S.seeds={kind:'secret',style:'graines16',x:-9999,y:-9999,open:0,t:0,used:false,q:[/*v2*/"Dans la musette du gars qui dort : des graines ! Du chènevis, du vrai. Pour moi ? Je ne demanderai pas."]};Lv.acts.push(S.seeds);
   // la médaille de la mission 2 : dans l'autre musette (on la note comme une médaille ramassée)
   Lv.medal={x:-99999,y:-99999,taken:false,s16:1};
-  S.mus=[{x:249.5*T,y:21*T,k:'seeds',open:0},{x:250*T,y:14*T,k:'medal',open:0}];
+  S.mus=[{x:249.5*T,y:21*T,k:'seeds',open:0},{x:250.6*T,y:13*T,k:'medal',open:0}];
   // les actes de 2026 ne répondent pas en 1916
   for(const a of Lv.acts){const w=a.when;a.when=()=>L.s16&&L.s16.era===16?false:(w?w():true)}}
 function s16Swap(era){const S=L.s16;if(S.era===era)return;for(const k of S16_KEYS)S.E[S.era][k]=L[k];for(const k of S16_KEYS)L[k]=S.E[era][k];S.era=era;MUS_OLD=era===16;
   L.camZone=era===16?()=>[S16.W0*T+T*2,(S16.W1-1)*T]:null;S.flash=1;P.onMover=null}
 function s16Layers(){const S=L.s16;if(!S)return;const sg=L.g,st=L.th;L.g=S.E[16].g;L.th=S.E[16].th;S.E[16].far=buildFar(L);S.E[16].mid=buildMid(L);S.E[16].tiles=buildTilesF(L);L.g=sg;L.th=st}
 function s16Cage(){const S=L.s16;S.caged=true;P.x=S16.cage.c*T+T/2-P.w/2;P.y=S16.cage.r*T-P.h-8;P.vx=P.vy=0;P.onGround=true;P.facing=-1;P.lastGY=P.y;
-  S.luc={x:S16.luc.c*T+T/2,y:18*T,vx:0,vy:0,st:'sit',f:1,t:0,lvl:'cagna',climb:0}}
+  S.luc={x:S16.luc.c*T,y:17*T,vx:0,vy:0,st:'sit',f:1,t:0,lvl:1,climb:0}}
 function s16Enter(){const S=L.s16;s16Swap(16);S.done.tr=1;s16Cage();cam.x=clamp(P.x-W/2,S16.W0*T+80,(S16.W1-1)*T-W);cam.y=clamp(P.y-H*.55,0,ROWS*T-H);S.net=null;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);noise(1.6,260,.22,'lowpass',.05);setTimeout(()=>SFX.thunder&&SFX.thunder(.25),120)}
   say(/*v2*/"Mars 1916. La tranchée, avant qu'on la tonde. Et moi dans mon panier, à côté de Lucien. Le loquet est mal fermé…",4.2)}
@@ -157,20 +186,20 @@ function s16Step(dt){
   // ---- 1916 ----
   const lu=S.luc;
   if(S.caged){P.x=S16.cage.c*T+T/2-P.w/2;P.y=S16.cage.r*T-P.h-8;P.vx=P.vy=0}
-  // Lucien : il court après Raymond, monte et descend l'échelle de la cagna ; il ne passe pas dans les sapes basses
+  // Lucien : il court après Raymond, à tous les étages ; il prend l'échelle la plus proche pour changer d'étage
   if(lu){lu.t+=dt;
-    const pIn=P.y+P.h>14*T+4?(pc>=234*T&&pc<=240*T&&P.y+P.h>15*T?'cagna':'sape'):'tr',lad=238.5*T;
+    const pb=P.y+P.h,pl=pb<=S16.F[0]*T+4?0:pb<=S16.F[1]*T+4?1:2;
     if(lu.st==='rise'&&lu.t>.9)lu.st='chase';
     if(lu.st==='chase'&&!S.net){let tx=pc;
-      if(lu.lvl==='cagna'){if(pIn!=='cagna'){tx=lad;if(Math.abs(lu.x-lad)<6){lu.st='up';lu.t=0}}}
-      else{if(pIn==='cagna'){tx=lad;if(Math.abs(lu.x-lad)<6){lu.st='down';lu.t=0}}else if(pIn==='sape'){tx=clamp(pc,234*T,259*T);if(!S.said.sape&&!G.sim){S.said.sape=1;bubble(lu.x,lu.y-130,/*v2*/'Sors de là, tête de mule !','#3a4a6a')}}}
-      if(lu.st==='chase'){const lo=lu.lvl==='cagna'?234.5*T:233.5*T,hi=lu.lvl==='cagna'?239.5*T:259*T,dx=clamp(tx,lo,hi)-lu.x;lu.vx=Math.abs(dx)<4?0:Math.sign(dx)*150;lu.x+=lu.vx*dt;if(lu.vx)lu.f=Math.sign(lu.vx)}}
-    if(lu.st==='up'||lu.st==='down'){const to=lu.st==='up'?14*T:18*T;lu.y+=Math.sign(to-lu.y)*170*dt;if(Math.abs(lu.y-to)<4){lu.y=to;lu.lvl=lu.st==='up'?'tr':'cagna';lu.st='chase'}}
+      if(pl!==lu.lvl){const up=pl<lu.lvl,set=S16.lad[up?lu.lvl-1:lu.lvl];let best=set[0];for(const c of set)if(Math.abs(c*T-lu.x)<Math.abs(best*T-lu.x))best=c;tx=best*T;
+        if(Math.abs(lu.x-tx)<6){lu.x=tx;lu.st=up?'up':'down';lu.t=0;lu.to=up?lu.lvl-1:lu.lvl+1}}
+      if(lu.st==='chase'){const[lo,hi]=S16.X[lu.lvl],dx=clamp(tx,lo*T,hi*T)-lu.x;lu.vx=Math.abs(dx)<4?0:Math.sign(dx)*150;lu.x+=lu.vx*dt;if(lu.vx)lu.f=Math.sign(lu.vx)}}
+    if(lu.st==='up'||lu.st==='down'){const to=S16.F[lu.to]*T;lu.y+=Math.sign(to-lu.y)*170*dt;if(Math.abs(lu.y-to)<4){lu.y=to;lu.lvl=lu.to;lu.st='chase'}}
     // il attrape Raymond : retour au panier (sans accroc)
     if(!S.caged&&!P.dead&&!S.net&&(lu.st==='chase'||lu.st==='up'||lu.st==='down')&&overlap({x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6},{x:lu.x-24,y:lu.y-118,w:48,h:118})){
       if(!G.sim){bubble(lu.x,lu.y-130,pick([/*v2*/'Pas si vite, mon vieux !',/*v2*/'Je te tiens !',/*v2*/'Au panier !']),'#3a4a6a');noise(.15,900,.2,'bandpass')}s16Cage()}}
   // le dernier soldat sort un petit filet
-  if(!S.net&&!S.caged&&!P.dead&&pc>256.5*T&&P.y+P.h<=14*T+4){S.net={t:0};if(!G.sim){bubble(259*T,14*T-130,/*v2*/"Attends, Vasseur, je l'ai !",'#3a4a6a');noise(.3,700,.15,'bandpass')}}
+  if(!S.net&&!S.caged&&!P.dead&&pc>256.5*T&&P.y+P.h<=13*T+4){S.net={t:0};if(!G.sim){bubble(259*T,13*T-130,/*v2*/"Attends, Vasseur, je l'ai !",'#3a4a6a');noise(.3,700,.15,'bandpass')}}
   if(S.net){S.net.t+=dt;P.vx*=.8;if(S.net.t>.5){P.vx=0;P.vy=Math.min(P.vy,60);P.x+=(258*T-P.x)*Math.min(1,dt*4)}
     if(S.net.t>1.6&&G.state==='play'){G.state='intro';G.cards=S16_NET_CARDS;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>s16Leave()}}}
 const S16_NET_CARDS=[
@@ -185,29 +214,73 @@ function s16Act(){const Q=L.s16;if(!Q||Q.era!==16||P.dead)return;const lu=Q.luc,
     else{const md=L.medal;if(md&&!md.taken){md.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();S.run.medals[G.li]=true;save();say(/*v2*/"Dans la musette de Castagnet, sous le tabac : une médaille. Il me la prête, dit-il. Je la lui rendrai après la guerre.",4.4)}}}}
 function s16Respawn(){const S=L.s16;if(!S||S.era!==16)return;s16Cage();S.net=null}
 function s16Switch(){if(P.dead||SV)return;const pc=P.x+P.w/2;
-  if(L.zr16){if(pc>133*T&&pc<153*T)svStart('gaz');return}
+  if(L.zr16){if(pc>133*T&&pc<153*T){G.state='intro';G.cards=SV_GAZ_CARDS;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';svStart('gaz')}}return}
   const S=L.s16;if(!S)return;
   if(S.era===26){if(pc>S16.route[0]*T&&pc<S16.route[1]*T)return svStart('route');if(pc>S16.bois[0]*T&&pc<S16.bois[1]*T)return svStart('bois');if(pc>S16.tr[0]*T-80&&pc<S16.tr[1]*T)return s16Enter()}}
 /* dessin de la tranchée de 1916 : planches, étais, sacs, la cagna, les musettes, les soldats, Lucien, le panier, le filet */
+/* le fond, derrière les tuiles : tout est sous terre — la paroi de la tranchée, la terre et le boisage des sapes */
+function drawS16Back(t){const S=L.s16;if(!S||S.era!==16)return;const g=ctx,R=mulberry(1916);
+  // la terre, partout derrière (on ne voit plus le paysage à travers la sape)
+  g.fillStyle='#2a2018';g.fillRect(232*T,7.6*T,30*T,15*T);
+  for(let k=0;k<160;k++){g.fillStyle=k%3?'rgba(70,52,36,.5)':'rgba(20,14,10,.5)';g.beginPath();g.ellipse(232*T+R()*30*T,8*T+R()*14*T,3+R()*8,2+R()*5,R()*3,0,7);g.fill()}
+  // la paroi de la tranchée : un clayonnage de branches tressées entre des piquets, des sacs de terre en haut
+  g.fillStyle='#4a3a28';g.fillRect(233*T,8*T,28*T,5*T);
+  for(let y=8*T+6;y<13*T;y+=9){g.strokeStyle=(y/9|0)%2?'#5e4a32':'#3e3020';g.lineWidth=6;g.beginPath();for(let x=233*T;x<=261*T;x+=40)g.lineTo(x,y+((x/40|0)%2?3:-3));g.stroke()}
+  for(let x=233*T;x<261*T;x+=80){g.fillStyle='#3a2a1a';g.fillRect(x,8*T-10,9,5*T+10)}
+  for(let x=233*T;x<261*T;x+=34){g.fillStyle=(x/34|0)%2?'#8a7a5a':'#7a6a4c';rr(g,x,8*T-14,32,16,6);g.fill();g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x+4,8*T-4,24,2)}
+  // la banquette de tir le long de la paroi
+  g.fillStyle='#5a4630';g.fillRect(233*T,12.4*T,28*T,.6*T);g.fillStyle='#6a5438';g.fillRect(233*T,12.4*T,28*T,5);
+  // les sapes : parois en planches, cadres de boisage (montants et chapeaux), plafond de rondins
+  for(const[x0,x1,r0]of[[234,259,14],[241,258,18]]){g.fillStyle='#3a2c1e';g.fillRect(x0*T,r0*T,(x1-x0)*T,3*T);
+    for(let y=r0*T+8;y<(r0+3)*T;y+=16){g.fillStyle=(y/16|0)%2?'#4a3826':'#42321f';g.fillRect(x0*T,y,(x1-x0)*T,14);g.fillStyle='rgba(0,0,0,.25)';for(let x=x0*T+((y/16|0)%2)*30;x<x1*T;x+=60)g.fillRect(x,y,2,14)}
+    for(let x=x0*T;x<=x1*T;x+=24){g.fillStyle='#2e2016';g.beginPath();g.arc(x+12,r0*T+8,10,0,7);g.fill();g.fillStyle='#4e3a26';g.beginPath();g.arc(x+12,r0*T+8,6,0,7);g.fill()}
+    for(let x=x0*T+6;x<x1*T;x+=120){g.fillStyle='#5a4228';g.fillRect(x,r0*T+12,14,3*T-12);g.fillStyle='#6a5032';g.fillRect(x,r0*T+12,4,3*T-12);g.fillStyle='#4a3420';g.fillRect(x-14,r0*T+12,42,10)}}
+  // la cloison de la cagna (planches plus claires, un rideau de toile à l'entrée)
+  g.fillStyle='#5a4430';g.fillRect(234*T,14*T+16,6*T,3*T-16);for(let x=234*T;x<240*T;x+=20){g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x,14*T+16,2,3*T-16)}
+  g.fillStyle='#7a6e50';g.beginPath();g.moveTo(240*T-2,14*T+14);g.quadraticCurveTo(240*T+14,15.5*T,240*T+4,17*T);g.lineTo(240*T-6,17*T);g.closePath();g.fill()}
+function s16Ladder(g,x,y0,y1){g.fillStyle='#6a5032';g.fillRect(x-14,y0,5,y1-y0);g.fillRect(x+9,y0,5,y1-y0);g.fillStyle='#7a6040';for(let y=y0+10;y<y1;y+=16)g.fillRect(x-12,y,24,4)}
 function drawS16Mid(t){const S=L.s16;if(!S||S.era!==16)return;const g=ctx;
-  // caillebotis et étais de la tranchée
-  g.fillStyle='#6a5236';for(let x=233*T;x<261*T;x+=36)g.fillRect(x,14*T-6,30,6);
-  for(let x=233*T;x<261*T;x+=120){g.fillStyle='#4a3826';g.fillRect(x,9*T,8,5*T)}
-  g.fillStyle='rgba(30,22,14,.6)';g.fillRect(233*T,9*T,28*T,6);
-  // la cagna : poutres, lampe, couchette
-  g.fillStyle='#3a2a1c';g.fillRect(234*T,15*T,6*T,6);g.fillStyle='#5a4230';for(const x of[234.2,236.6,239.2])g.fillRect(x*T,15*T,7,3*T);
-  g.fillStyle='#6a4a2e';g.fillRect(234.2*T,17*T+20,80,10);g.fillStyle='#ffd890';g.beginPath();g.arc(236*T,15*T+18,4,0,7);g.fill();
-  g.strokeStyle='#5a4230';g.lineWidth=3;for(let y=14*T;y<18*T;y+=10){g.beginPath();g.moveTo(238*T+6,y);g.lineTo(240*T-6,y);g.stroke()}
+  // les caillebotis de la tranchée et des sapes
+  for(const[x0,x1,r]of[[233,261,13],[234,259,17],[241,258,21]])for(let x=x0*T;x<x1*T;x+=36){const hole=S16.lad.some((l,i)=>(r===(i?17:13))&&l.some(c=>x+30>(c-1)*T&&x<(c+1)*T));if(hole)continue;g.fillStyle='#6a5236';g.fillRect(x,r*T-6,30,6);g.fillStyle='#4a3826';g.fillRect(x+4,r*T-6,3,6);g.fillRect(x+22,r*T-6,3,6)}
+  // les échelles
+  for(const c of S16.lad[0])s16Ladder(g,c*T,13*T-34,17*T);
+  for(const c of S16.lad[1])s16Ladder(g,c*T,17*T-34,21*T);
+  // ---- la tranchée : fusils contre la paroi, un périscope, un seau, la caisse où l'on s'assoit
+  for(const x of[235.2,236,254.6]){g.save();g.translate(x*T,13*T-6);g.rotate(-.18);g.fillStyle='#4a3020';g.fillRect(-3,-96,6,60);g.fillStyle='#2a2a2a';g.fillRect(-1.5,-110,3,50);g.fillStyle='#5a3a24';g.fillRect(-4,-40,8,40);g.restore()}
+  g.fillStyle='#3a3a36';g.fillRect(242.4*T,8*T-44,8,90);g.fillRect(242.4*T,8*T-44,18,8);g.fillStyle='#8ab0c0';g.fillRect(242.4*T+14,8*T-42,3,5);
+  g.fillStyle='#5a5a54';rr(g,257.2*T,13*T-26,22,22,3);g.fill();g.strokeStyle='#3a3a36';g.lineWidth=2;g.beginPath();g.arc(257.2*T+11,13*T-26,10,Math.PI,0);g.stroke();
+  g.fillStyle='#6a4e30';g.fillRect(247.5*T-18,13*T-34,36,34);g.fillStyle='#7a5c3a';g.fillRect(247.5*T-18,13*T-34,36,6);g.fillStyle='#3a2a1a';g.font='bold 8px '+F_BODY;g.textAlign='center';g.fillText('8mm',247.5*T,13*T-14);
+  // ---- la cagna : la couchette (paille, couverture), le tabouret de Lucien, l'étagère, la lampe, la photo, le casque au clou
+  {const x0=234.1*T,fl=17*T;g.fillStyle='#5a4028';g.fillRect(x0,fl-34,62,6);g.fillRect(x0,fl-34,5,34);g.fillRect(x0+57,fl-34,5,34);g.fillStyle='#c8a860';g.fillRect(x0+4,fl-40,54,7);g.fillStyle='#6a6a4a';rr(g,x0+16,fl-46,44,10,4);g.fill();g.fillStyle='#8a8a6a';g.fillRect(x0+18,fl-45,40,3);g.fillStyle='#d8d0b8';rr(g,x0+2,fl-48,16,9,4);g.fill();
+   g.fillStyle='#6a4a2e';g.fillRect(S16.luc.c*T-14,fl-38,28,6);g.fillRect(S16.luc.c*T-11,fl-32,4,32);g.fillRect(S16.luc.c*T+7,fl-32,4,32);
+   g.fillStyle='#5a4028';g.fillRect(234.2*T,14.9*T,70,5);for(const[dx,c]of[[4,'#8a8a90'],[16,'#8a8a90'],[30,'#5a6a3a'],[46,'#c8b890']])g.fillStyle=c,g.fillRect(234.2*T+dx,14.9*T-12,10,12);
+   g.fillStyle='#e8e0c8';g.fillRect(236.6*T,15.2*T,14,18);g.fillStyle='#6a5a4a';g.fillRect(236.6*T+3,15.2*T+3,8,10);
+   g.fillStyle='#4a5a6a';g.beginPath();g.ellipse(238.2*T,15.3*T,13,7,0,Math.PI,0);g.fill();g.fillStyle='#2a2a2a';g.beginPath();g.arc(238.2*T,15.3*T-3,1.5,0,7);g.fill();
+   const lx=236*T,ly=14*T+24;g.strokeStyle='#2a2a2a';g.lineWidth=1;g.beginPath();g.moveTo(lx,14*T+10);g.lineTo(lx,ly);g.stroke();g.fillStyle='#4a4a40';g.fillRect(lx-5,ly,10,4);g.fillStyle='rgba(255,220,140,'+(.85+Math.sin(t*9)*.1)+')';g.beginPath();g.ellipse(lx,ly+10,4,6,0,0,7);g.fill();
+   const gl=g.createRadialGradient(lx,ly+10,4,lx,ly+10,120);gl.addColorStop(0,'rgba(255,200,120,.22)');gl.addColorStop(1,'rgba(255,200,120,0)');g.fillStyle=gl;g.fillRect(lx-120,ly-110,240,240)}
+  // ---- la sape haute : la table de cartes, deux tabourets, la bougie, le poêle et son tuyau, les caisses, le râtelier
+  {const fl=17*T,tx=243.5*T;g.fillStyle='#6a4a2e';g.fillRect(tx-34,fl-42,68,6);g.fillRect(tx-30,fl-36,5,36);g.fillRect(tx+25,fl-36,5,36);
+   for(const dx of[-52,52]){g.fillRect(tx+dx-10,fl-24,20,5);g.fillRect(tx+dx-8,fl-19,3,19);g.fillRect(tx+dx+5,fl-19,3,19)}
+   g.fillStyle='#e8e0d0';for(let k=0;k<4;k++)g.fillRect(tx-20+k*9,fl-45,7,3);g.fillStyle='#d8c890';g.fillRect(tx+18,fl-58,5,13);g.fillStyle='rgba(255,210,120,.9)';g.beginPath();g.ellipse(tx+20.5,fl-62,2.5,4,0,0,7);g.fill();
+   const gl=g.createRadialGradient(tx+20,fl-62,2,tx+20,fl-62,90);gl.addColorStop(0,'rgba(255,200,120,.2)');gl.addColorStop(1,'rgba(255,200,120,0)');g.fillStyle=gl;g.fillRect(tx-70,fl-150,180,180);
+   const sx=249.4*T;g.fillStyle='#2a2826';rr(g,sx-14,fl-46,28,46,4);g.fill();g.fillStyle='rgba(255,120,40,'+(.6+Math.sin(t*6)*.2)+')';g.fillRect(sx-8,fl-22,16,8);g.fillStyle='#3a3836';g.fillRect(sx-4,14*T,8,3*T-46);
+   for(const[x,w,h]of[[250.8,34,26],[251.7,30,22],[257.3,36,30]]){g.fillStyle='#6a4e30';g.fillRect(x*T,fl-h,w,h);g.strokeStyle='#4a3420';g.lineWidth=2;g.strokeRect(x*T+2,fl-h+2,w-4,h-4)}
+   g.fillStyle='#4a3420';g.fillRect(254.4*T,14.8*T,60,5);for(let k=0;k<4;k++){g.fillStyle='#3a2414';g.fillRect(254.4*T+6+k*14,14.8*T+5,5,70)}}
+  // ---- la sape basse : le lit du gars qui dort, une lanterne, des sacs, un tonneau
+  {const fl=21*T,bx=243.2*T;g.fillStyle='#5a4028';g.fillRect(bx-10,fl-26,96,6);g.fillRect(bx-10,fl-26,5,26);g.fillRect(bx+81,fl-26,5,26);g.fillRect(bx-10,fl-44,5,18);g.fillStyle='#c8a860';g.fillRect(bx-6,fl-31,88,6);g.fillStyle='#6a6a4a';rr(g,bx+14,fl-34,66,8,3);g.fill();
+   g.fillStyle='#6a4a30';rr(g,252*T,fl-34,26,34,6);g.fill();g.fillStyle='#4a3420';g.fillRect(252*T,fl-26,26,3);g.fillRect(252*T,fl-10,26,3);
+   for(const x of[254,254.7]){g.fillStyle='#8a7a5a';rr(g,x*T,fl-22,26,22,8);g.fill()}
+   g.fillStyle='#3a3a36';g.fillRect(251*T,18*T+18,8,10);g.fillStyle='rgba(255,210,130,.85)';g.fillRect(251*T+2,18*T+20,4,6)}
   // la caisse et le panier
   g.fillStyle='#7a5a3a';g.fillRect(S16.cage.c*T+2,S16.cage.r*T-8,36,8);
   if(S.caged)vxBasket(g,S16.cage.c*T+T/2,S16.cage.r*T-8,40,28,{win:6,big:1,inside:(g2,lx,ly)=>{g2.save();g2.beginPath();g2.rect(lx-10,ly-14,20,17);g2.clip();drawRaymond(g2,lx-9,ly+19,{f:1,t,wear:0,size:.78});g2.restore()}});
   else vxBasket(g,S16.cage.c*T+T/2,S16.cage.r*T-8,40,28,{win:6,big:1});
-  // le gars qui dort dans la sape du dessous, et sa musette ; le soldat assis dans la tranchée, et la sienne
-  vxSoldier(g,{hip:{x:244*T,y:21*T-14},s:8,f:1,side:'fr',t,pose:Object.assign({},VX_P.sit,{lean:-1.2,head:-.6}),face:Object.assign({},S16_MATES[2],{ex:'sleep',tilt:-.5}),kit:{}});
-  vxSoldier(g,{hip:{x:247.5*T,y:14*T-40},s:9,f:1,side:'fr',t,pose:Object.assign({},VX_P.sit,{lean:.1,head:.15,nT:{x:2.6,y:-2},fT:{x:3,y:-1.6}}),face:S16_MATES[0],kit:{bidon:1}});
+  // le gars qui dort sur son lit, dans la sape basse, et sa musette ; le soldat assis sur sa caisse dans la tranchée, et la sienne
+  vxSoldier(g,{hip:{x:244.4*T,y:21*T-36},s:8,f:1,side:'fr',t,pose:Object.assign({},VX_P.sit,{lean:-1.25,head:-.6}),face:Object.assign({},S16_MATES[2],{ex:'sleep',tilt:-.5}),kit:{}});
+  vxSoldier(g,{hip:{x:247.5*T,y:13*T-40},s:9,f:1,side:'fr',t,pose:Object.assign({},VX_P.sit,{lean:.1,head:.15,nT:{x:2.6,y:-2},fT:{x:3,y:-1.6}}),face:S16_MATES[0],kit:{bidon:1}});
   for(const m of S.mus){g.fillStyle='#6e6a50';g.save();g.translate(m.x,m.y-34);g.rotate(m.open?.3:0);rr(g,-12,0,24,20,5);g.fill();g.fillStyle='#5a5640';g.fillRect(-12,0,24,7);g.strokeStyle='#4a4632';g.lineWidth=2;g.beginPath();g.moveTo(-8,0);g.lineTo(0,-14);g.lineTo(8,0);g.stroke();g.restore();g.fillStyle='#3a2a1c';g.beginPath();g.arc(m.x,m.y-48,2.5,0,7);g.fill()}
   // le dernier soldat (et son filet)
-  {const x=259.4*T,y=14*T,n=S.net;vxSoldier(g,{x,y,s:9.2,f:-1,side:'fr',t,pose:n?Object.assign({},VX_P.throwUp,{head:.1}):Object.assign({},VX_P.stand,{head:.1}),face:S16_MATES[1],kit:{musette:1}});
+  {const x=259.4*T,y=13*T,n=S.net;vxSoldier(g,{x,y,s:9.2,f:-1,side:'fr',t,pose:n?Object.assign({},VX_P.throwUp,{head:.1}):Object.assign({},VX_P.stand,{head:.1}),face:S16_MATES[1],kit:{musette:1}});
     if(n){const k=Math.min(1,n.t/.5),cx=lerp(x-20,P.x+P.w/2,k),cy=lerp(y-120,P.y+P.h/2,k);g.strokeStyle='#5a4a32';g.lineWidth=2;g.beginPath();g.moveTo(x-10,y-100);g.lineTo(cx,cy);g.stroke();
       g.strokeStyle='rgba(220,210,180,.8)';g.lineWidth=1;for(let i=-3;i<=3;i++){g.beginPath();g.moveTo(cx-24,cy+i*7);g.lineTo(cx+24,cy+i*7);g.stroke();g.beginPath();g.moveTo(cx+i*7,cy-24);g.lineTo(cx+i*7,cy+24);g.stroke()}}}
   // Lucien

@@ -26,7 +26,7 @@ function museePost(Lv){
 function museeHide(a){
   const c=a.cup;c.anim=.5;
   if(P.hideIn===a){P.hideIn=null;if(!G.sim)tone(300,.08,'triangle',.05,220);return}
-  P.hideIn=a;P.x=c.x-P.w/2;P.vx=P.vy=0;if(!G.sim){tone(220,.08,'triangle',.05,300);if(!L.musee.said.hide){L.musee.said.hide=1;say("Au placard. Le règlement appelle ça « se mettre à couvert ». Moi, j'appelle ça se cacher.",3.4)}}
+  P.hideIn=a;if(!G.sim)achCup(L.musee.cups.indexOf(c),L.musee.cups.length);P.x=c.x-P.w/2;P.vx=P.vy=0;if(!G.sim){tone(220,.08,'triangle',.05,300);if(!L.musee.said.hide){L.musee.said.hide=1;say("Au placard. Le règlement appelle ça « se mettre à couvert ». Moi, j'appelle ça se cacher.",3.4)}}
 }
 const MUSEE_SEQ={
   1:[[0,'say',"Les gars ! Filez d'ici, il y a des Allemands dans l'abri, je les ai vus !",3],[2.7,'coo',"Rrrou ! Rou-rou-rou !"],[4.3,'say',"Ils ne comprennent pas le pigeon. On ne l'apprend jamais, à l'armée.",3.2]],
