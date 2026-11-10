@@ -12009,8 +12009,8 @@ function comblesPost(Lv){
   C.dyn=[];for(const b of CB.beams){if(b.e==='b')continue;const frag=b.e==='f'||b.e==='o'||b.e==='r',n=b.c1-b.c0+1,sz=!frag?n:n<=2?1:2;
     for(let c=b.c0;c<=b.c1;c+=sz)C.dyn.push(Object.assign({},b,{c0:c,c1:Math.min(b.c1,c+sz-1),st:'ok',t:0,deb:[],seg:frag&&n>1}))}
   Lv.acts=Lv.acts||[];
-  C.bague={kind:'secret',style:'bague',x:138.8*T,y:2*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Vasseur. Il a fini ses jours ici, au calme. Il y a pire."]};
-  C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,when:()=>L.cb.era===26,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Vasseur montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
+  C.bague={kind:'secret',style:'bague',x:124.4*T,y:21*T,open:0,t:0,used:false,q:["Un vieux nid. Et dedans, une bague de pigeon : « 1913 ». Un gars du colombier Vasseur. Il a fini ses jours ici, au calme. Il y a pire."]};
+  C.graf={kind:'secret',style:'graffiti',x:122.6*T,y:4*T,open:0,t:0,used:false,q:["Gravé dans la poutre : « Lucien et Marguerite, 1913 ». Le petit Vasseur montait sonner les cloches. Je ne savais pas qu'il montait aussi pour ça."]};
   C.canif={kind:'secret',style:'canif',x:199.5*T,y:19*T,open:0,t:0,used:false,when:()=>L.cb.era===14,q:[/*v2*/"Un canif oublié sur une poutre, tout en bas. Un L gravé sur le manche. Lucien montait jusqu'ici, lui aussi. Il avait le vertige des sergents : aucun."]};
   Lv.acts.push(C.bague,C.graf,C.canif);
   // la médaille de la mission : en 1914, tout en haut à gauche
@@ -12309,7 +12309,7 @@ function drawComblesMid(t){const C=L.cb;if(!C)return;const g=ctx,vis=(x,y)=>x>ca
   {const a=C.bague;if(vis(a.x)){g.save();g.translate(a.x,a.y);g.fillStyle='#8a7048';g.beginPath();g.ellipse(0,-6,20,8,0,0,7);g.fill();g.strokeStyle='#5a4428';g.lineWidth=1.2;for(let k=0;k<9;k++){g.beginPath();g.moveTo(-20+k*4,-2);g.lineTo(-14+k*4,-12);g.stroke()}
     g.fillStyle='#3a2a18';g.beginPath();g.ellipse(0,-9,12,4,0,0,7);g.fill();if(!a.used){g.strokeStyle='#d8b450';g.lineWidth=1.6;g.beginPath();g.ellipse(4,-10,3,2,0,0,7);g.stroke()}g.restore()}}
   {const a=C.canif;if(C.era===14&&vis(a.x)&&!a.used){g.save();g.translate(a.x,a.y-2);g.rotate(-.1);g.fillStyle='#6a4428';rr(g,-9,-3,12,5,2);g.fill();g.fillStyle='#c8ccd0';poly(g,[3,-2.5,13,-1.5,3,1.5]);g.fill();g.fillStyle='#e8d8a0';g.font='bold 4px '+F_DISP;g.fillText('L',-5,1);g.restore()}}
-  {const a=C.graf;if(C.era===26&&vis(a.x)){g.save();g.strokeStyle=a.used?'rgba(255,230,180,.55)':'rgba(255,230,180,.22)';g.lineWidth=1;g.font='italic 8px '+F_BODY;g.fillStyle=g.strokeStyle;g.textAlign='center';g.fillText('L ♥ M 1913',a.x,a.y+15);g.restore()}}
+  {const a=C.graf;if(vis(a.x)){g.save();g.strokeStyle=a.used?'rgba(255,230,180,.55)':'rgba(255,230,180,.22)';g.lineWidth=1;g.font='italic 8px '+F_BODY;g.fillStyle=g.strokeStyle;g.textAlign='center';g.fillText('L ♥ M 1913',a.x,a.y+15);g.restore()}}
   // pigeons
   for(const o of C.pig)if(vis(o.x))drawUglyPigeon(g,o,t);
   for(const o of C.chieurs){if(!vis(o.x))continue;g.save();g.translate(o.x,o.y);g.scale(-1,1);
