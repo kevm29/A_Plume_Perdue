@@ -33,6 +33,7 @@ const ACH=[
  ['a72','X',/*v2*/'Voyeur',/*v2*/"Sur l'aire de Gueux, ouvrir la porte d'un cabinet occupé."],
  ['a74','X',/*v2*/'Scheisse',/*v2*/"Fienter sur l'officier allemand de l'abri du Mort-Homme et sur un soldat allemand pendant le vol depuis le fort de Vaux, en 1916."],
  ['a75','X',/*v2*/'Planqué',/*v2*/"Dans l'abri du Mort-Homme, se cacher une fois dans chacun des six placards."],
+ ['a76','X',/*v2*/'Mémoire de pigeon',/*v2*/"Revivre avec la touche B les huit souvenirs : la route, le bois et la tranchée de 1916, le gaz du Mort-Homme, la cathédrale en feu, et le passé de la Marne, de Crécy et des combles."],
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
  ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond : de nouveaux modes apparaissent dans les paramètres."],
@@ -41,7 +42,7 @@ const ACH=[
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=47;   // tous les secrets du jeu (vérifié niveau par niveau)
+const SECRET_TOTAL=48;   // tous les secrets du jeu (vérifié niveau par niveau)
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -52,6 +53,18 @@ function unlock(id){
 function achSecret(li,sid){achState();S.achStats.secrets[li+':'+sid]=1;if(Object.keys(S.achStats.secrets).length>=SECRET_TOTAL)unlock('a30')}
 function achScheisse(k){achState();const o=S.achStats.scheisse=S.achStats.scheisse||{};o[k]=1;save();if(o.musee&&o.vaux)unlock('a74')}
 function achCup(i,n){achState();const o=S.achStats.cups=S.achStats.cups||{};o[i]=1;save();if(Object.keys(o).length>=n)unlock('a75')}
+const B_SCENES=['route','bois','tr','gaz','reims','ferte','crecy','combles'];
+function achB(k){if(G.sim)return;achState();const o=S.achStats.bScenes=S.achStats.bScenes||{};if(o[k])return;o[k]=1;save();if(B_SCENES.every(x=>o[x]))unlock('a76')}
+/* la progression des succès qui se comptent : [fait, total] */
+const ACH_PROG={
+  a17:()=>[Object.keys(S.achStats.letters||{}).length,20],
+  a26:()=>[Object.keys(S.run.medals||{}).length,6],
+  a30:()=>[Object.keys(S.achStats.secrets||{}).length,SECRET_TOTAL],
+  c1:()=>[S.achStats.keys||0,10],
+  a90:()=>[Object.keys(S.sheets||{}).length,13],
+  a75:()=>[Object.keys(S.achStats.cups||{}).length,6],
+  a74:()=>[Object.keys(S.achStats.scheisse||{}).length,2],
+  a76:()=>[B_SCENES.filter(x=>(S.achStats.bScenes||{})[x]).length,B_SCENES.length]};
 function achKey(){achState();S.achStats.keys=(S.achStats.keys||0)+1;save();if(S.achStats.keys>=10)unlock('c1')}
 function achLetter(li){achState();S.achStats.letters[li]=1;if(Object.keys(S.achStats.letters).length>=20)unlock('a17')}
 /* fin de mission (après la lettre) */
@@ -203,6 +216,9 @@ function renderAch(t){
     ctx.save();rr(ctx,x,y,cw,rh-8,8);ctx.clip();drawAchMedal(ctx,x+36,y+40,a[0],on,1.15);
     ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.45)';ctx.font='17px '+F_DISP;ctx.font='italic 14px '+F_BODY;const long=on&&achWrap(a[3],cw-74-16,12).length>2;ctx.font='17px '+F_DISP;ctx.fillText(on?a[2]:'Décoration secrète',x+74,y+(long?24:30));
     ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?a[3]:(hov||tap?'':'Survoler pour un indice'),x+74,y+52,cw-74-16);
+    const pr=ACH_PROG[a[0]];if(pr){let[d,n]=pr();if(on)d=n;d=Math.min(d,n);const k=n?d/n:0,bx=x+74,bw=cw-74-70,by=y+rh-20;
+      ctx.fillStyle='rgba(233,223,199,.14)';rr(ctx,bx,by,bw,6,3);ctx.fill();if(k>0){ctx.fillStyle=on?'#d9a441':'rgba(217,164,65,.75)';rr(ctx,bx,by,Math.max(6,bw*k),6,3);ctx.fill()}
+      ctx.textAlign='right';ctx.font='12px '+F_DISP;ctx.fillStyle=on?'#d9a441':'rgba(233,223,199,.6)';ctx.fillText(Math.floor(k*100)+' %',x+cw-14,by+7)}
     ctx.restore();if(!on&&(hov||tap))tip={x:x+74,y:y+52,w:cw-74-16,t:ACH_HINT[a[0]]||'…'}});
   if(tip){ctx.fillStyle='#d9a441';ctx.textAlign='left';achDesc('Indice : '+tip.t,tip.x,tip.y,tip.w)}
   ctx.restore();

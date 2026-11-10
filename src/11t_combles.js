@@ -116,7 +116,7 @@ function comblesApplyEra(Lv,era){const C=Lv.cb;C.era=era;
   for(const b of C.dyn){b.st='ok';b.t=0;b.deb=[];for(let c=b.c0;c<=b.c1;c++)Lv.g[b.r][c]=cbActive(b,era)?'=':'.'}
   for(let c=200;c<=204;c++)Lv.g[0][c]=era===26?'.':'#';
   C.webs=(era===26?CB.webs26:CB.webs14).map(([x,y,w,h])=>({x:x*T,y:y*T,w:w*T,h:h*T,shake:0}))}
-function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
+function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;if(era===14)achB('combles');comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Septembre 1914. La charpente sent le bois neuf… presque. Il y a des poutres que je ne connaissais pas.",4.2)}}
 function comblesRespawn(){const C=L.cb;if(!C)return;{const e=(P.cp&&P.cp.era)||26;if(e!==C.era){comblesApplyEra(L,e);MUS_OLD=e===14}}C.drops=[];C.grace=1;C.talk=null;for(const o of C.owls){o.st='perch';o.x=o.hx;o.y=o.hy;o.cool=1.5}for(const p of C.pig)if(p.k==='deplume'){p.x=p.home;p.st='walk';p.chase=0;p.rt=0}

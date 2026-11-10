@@ -29,7 +29,7 @@ function rfActive(){return!!(RFS&&L&&L.fc)}
 /* l'entrée : devant l'ange au sourire, sur le portail, la touche d'époque (si on la connaît) */
 function rfCanStart(){const pc=P.x+P.w/2;return L.fc&&!P.dead&&P.onGround&&Math.abs(pc-FC.AX)<64&&Math.abs(P.y+P.h-fcY(43))<6}
 function rfStart(){if(!rfCanStart()||RFS||G.state!=='play')return;G.state='intro';G.cards=RF_CARDS_IN;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';rfBegin()}}
-function rfBegin(){
+function rfBegin(){achB('reims');
   RFS={t:0,lane:0,x:0,y:0,vx:0,vy:0,f:-1,fph:0,dead:0,fade:1,flash:1,hist:[],mates:[{n:/*v2*/'Flocon',d:.3,alive:true,pal:{w0:'#d8d8d2',w1:'#e8e8e2',tail:'#e4e4de',tailT:'#c8c8c0',b0:'#f6f6f0',b1:'#dcdcd4',n0:'#ecece6',n1:'#f2f2ec',n2:'#e8e8e2',head:'#f4f4ee',bar:'#c0c0b8',tube:false}},
     {n:/*v2*/'Gaston',d:.62,alive:true,pal:{w0:'#4a5262',w1:'#5e6678',tail:'#6a7282',b0:'#8a93a4',b1:'#6a7282',n0:'#5a7aa0',n1:'#3f8a6a',n2:'#7a8394',head:'#7a8394',tube:false}}],
     beams:[],debris:[],beamT:4,said:{},cp:null,out:null,smoke:[],embers:[],grace:1.2,col:null};

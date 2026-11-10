@@ -150,6 +150,7 @@ function ferteSwitch(){
   const F=L.ferte;if(!F||P.dead||F.cer.on)return;
   if(F.cool>0)return;
   const to=F.era===26?14:26;
+  if(to===14&&ferteFits(to))achB('ferte');
   if(!ferteFits(to)){F.cool=.4;bubble(P.x+P.w/2,P.y-14,'…','#6a5a48');if(!F.said.block){F.said.block=1;say("Le souvenir résiste. De l'autre côté, quelque chose occupe déjà la place.",3.4)}SFX.bump&&SFX.bump();return}
   ferteSet(to);F.cool=.35;F.flash=1;F.flashC=to;
   P.onMover=null;P.onGround=false;

@@ -25,7 +25,7 @@ function selectOpen(i){if(S.infinite)return true;if(i===100)return true;if(i===1
 function abandonMission(){const w=LEVELS[G.li].w;for(let k=w*4;k<w*4+4;k++){delete S.run.stats[k];if(S.run.got)delete S.run.got[k]}S.resume=w*4;save();G.chase=false;goTitle()}
 function askHome(){G.confirm={prev:G.state,text:"Retourner à l'accueil ?",sub:"L'avancement et les points de cette mission seront perdus. Raymond reprendra au début de la mission."};G.state='confirm';G.confirmSel=0}
 function handleConfirm(){
-  const C=G.confirm,yes=()=>{G.confirm=null;abandonMission()},no=()=>{G.state=C.prev;G.confirm=null};
+  const C=G.confirm,yes=()=>{G.confirm=null;(C.yes||abandonMission)()},no=()=>{G.state=C.prev;G.confirm=null};
   if(pressed.has('esc')||pressed.has('back')){no();return}
   if(pressed.has('left')||pressed.has('right')||pressed.has('up')||pressed.has('down'))G.confirmSel=1-G.confirmSel;
   if(G.click&&G.confirmBoxes)for(const b of G.confirmBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){b.i?yes():no();return}
@@ -36,10 +36,12 @@ function renderConfirm(){
   ctx.save();ctx.translate(W/2,H/2);ctx.fillStyle='#ece3cc';rr(ctx,-250,-100,500,200,8);ctx.fill();ctx.strokeStyle='rgba(42,36,32,.5)';rr(ctx,-243,-93,486,186,5);ctx.stroke();
   ctx.fillStyle='#2a2420';ctx.textAlign='center';ctx.font='26px '+F_DISP;ctx.fillText(C.text,0,-48);
   ctx.font='italic 16px '+F_BODY;wrap(ctx,C.sub,420).forEach((l,k)=>ctx.fillText(l,0,-16+k*21));
-  G.confirmBoxes=[];[['Rester',0],["Retour à l'accueil",1]].forEach(([lb,i])=>{const bx=i?20:-200,by=46;const sel=G.confirmSel===i;ctx.fillStyle=sel?'#2a2420':'rgba(42,36,32,.12)';rr(ctx,bx,by,180,36,6);ctx.fill();ctx.fillStyle=sel?'#ece3cc':'#2a2420';ctx.font='17px '+F_DISP;ctx.fillText(lb,bx+90,by+24);G.confirmBoxes.push({x:W/2+bx,y:H/2+by,w:180,h:36,i})});
+  G.confirmBoxes=[];(C.labels?[[C.labels[0],0],[C.labels[1],1]]:[['Rester',0],["Retour à l'accueil",1]]).forEach(([lb,i])=>{const bx=i?20:-200,by=46;const sel=G.confirmSel===i;ctx.fillStyle=sel?'#2a2420':'rgba(42,36,32,.12)';rr(ctx,bx,by,180,36,6);ctx.fill();ctx.fillStyle=sel?'#ece3cc':'#2a2420';ctx.font='17px '+F_DISP;ctx.fillText(lb,bx+90,by+24);G.confirmBoxes.push({x:W/2+bx,y:H/2+by,w:180,h:36,i})});
   ctx.restore();
 }
 function goTitle(){G.state='title';G.menuSel=0;G.fade=1;setSong('title');loopsOff()}
+/* le nombre de pailles et la médaille de chaque niveau, lus dans sa carte */
+const LV_TOT={};function levelTotals(i){if(!LV_TOT[i]){const r=ROWS;try{const l=parseLevel(i);LV_TOT[i]={corn:l.corn.length,medal:!!l.medal}}catch(e){LV_TOT[i]={corn:0,medal:false}}ROWS=r}return LV_TOT[i]}
 function openSelect(){G.state='select';G.sel=Math.min(S.unlocked,19);G.fade=1;setSong('title');loopsOff()}
 function startIntro(){G.state='intro';G.cards=INTRO;G.card=0;G.cardT=0;G.cutSeen=false;G.cardsDone=()=>{unlock('a1');startLevel(0)};G.fade=1;setSong('title')}
 function handleMenu(){
@@ -100,11 +102,14 @@ function renderSelect(t){
     wd.levels.forEach((ln,lj)=>{
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
       tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,(li<=S.unlocked||S.best[li])?ln:'?????');
-      const b=S.best[li];if(b){ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';ctx.fillText((b.medal?'✠ ':'')+`paille ${b.corn}`,x+188,yy+16)}
+      if(selectOpen(li)||S.best[li]){const b=S.best[li],tot=levelTotals(li);ctx.save();if(!selectOpen(li))ctx.globalAlpha=.35;ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';
+        ctx.fillText(/*v2*/`Paille ${b?Math.min(b.corn,tot.corn):0}/${tot.corn}`,x+188,yy+16);
+        if(tot.medal){ctx.save();ctx.translate(x+178,yy+33);ctx.scale(.62,.62);if(!(b&&b.medal))ctx.filter='brightness(0)';drawMedal(ctx,0,0,0);ctx.restore()}ctx.restore()}
     });
   });
-  tile(100,70,480,406,28,"Revoir l'introduction");
-  tile(101,484,480,406,28,'Revoir la fin');
+  const ry=82+WORLDS.length*64+14;
+  tile(100,70,ry,406,28,"Revoir l'introduction");
+  tile(101,484,ry,406,28,'Revoir la fin');
   ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Entrée pour lancer · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }

@@ -4968,6 +4968,7 @@ const ACH=[
  ['a72','X',/*v2*/'Voyeur',/*v2*/"Sur l'aire de Gueux, ouvrir la porte d'un cabinet occupé."],
  ['a74','X',/*v2*/'Scheisse',/*v2*/"Fienter sur l'officier allemand de l'abri du Mort-Homme et sur un soldat allemand pendant le vol depuis le fort de Vaux, en 1916."],
  ['a75','X',/*v2*/'Planqué',/*v2*/"Dans l'abri du Mort-Homme, se cacher une fois dans chacun des six placards."],
+ ['a76','X',/*v2*/'Mémoire de pigeon',/*v2*/"Revivre avec la touche B les huit souvenirs : la route, le bois et la tranchée de 1916, le gaz du Mort-Homme, la cathédrale en feu, et le passé de la Marne, de Crécy et des combles."],
  ['a71','X','Tous en chieur',"En haut de la tour sud, faire comme les pigeons du toit."],
  ['a68','S',"L'aile qui se décroche","Vider complètement la robustesse de ses ailes."],
  ['a81','X',"Clin d'œil","Cliquer quatre fois sur l'œil de Raymond : de nouveaux modes apparaissent dans les paramètres."],
@@ -4976,7 +4977,7 @@ const ACH=[
 ];
 const ACH_BY={};ACH.forEach((a,i)=>ACH_BY[a[0]]={i,cat:a[1],t:a[2],d:a[3]});
 /* nombre total de secrets (1-1 : trois ; les autres niveaux : une) */
-const SECRET_TOTAL=47;   // tous les secrets du jeu (vérifié niveau par niveau)
+const SECRET_TOTAL=48;   // tous les secrets du jeu (vérifié niveau par niveau)
 function achState(){if(!S.ach)S.ach={};if(!S.achStats)S.achStats={keys:0,secrets:{},letters:{}};return S.ach}
 function unlock(id){
   if(G.sim||!ACH_BY[id])return;const st=achState();if(st[id])return;
@@ -4987,6 +4988,18 @@ function unlock(id){
 function achSecret(li,sid){achState();S.achStats.secrets[li+':'+sid]=1;if(Object.keys(S.achStats.secrets).length>=SECRET_TOTAL)unlock('a30')}
 function achScheisse(k){achState();const o=S.achStats.scheisse=S.achStats.scheisse||{};o[k]=1;save();if(o.musee&&o.vaux)unlock('a74')}
 function achCup(i,n){achState();const o=S.achStats.cups=S.achStats.cups||{};o[i]=1;save();if(Object.keys(o).length>=n)unlock('a75')}
+const B_SCENES=['route','bois','tr','gaz','reims','ferte','crecy','combles'];
+function achB(k){if(G.sim)return;achState();const o=S.achStats.bScenes=S.achStats.bScenes||{};if(o[k])return;o[k]=1;save();if(B_SCENES.every(x=>o[x]))unlock('a76')}
+/* la progression des succès qui se comptent : [fait, total] */
+const ACH_PROG={
+  a17:()=>[Object.keys(S.achStats.letters||{}).length,20],
+  a26:()=>[Object.keys(S.run.medals||{}).length,6],
+  a30:()=>[Object.keys(S.achStats.secrets||{}).length,SECRET_TOTAL],
+  c1:()=>[S.achStats.keys||0,10],
+  a90:()=>[Object.keys(S.sheets||{}).length,13],
+  a75:()=>[Object.keys(S.achStats.cups||{}).length,6],
+  a74:()=>[Object.keys(S.achStats.scheisse||{}).length,2],
+  a76:()=>[B_SCENES.filter(x=>(S.achStats.bScenes||{})[x]).length,B_SCENES.length]};
 function achKey(){achState();S.achStats.keys=(S.achStats.keys||0)+1;save();if(S.achStats.keys>=10)unlock('c1')}
 function achLetter(li){achState();S.achStats.letters[li]=1;if(Object.keys(S.achStats.letters).length>=20)unlock('a17')}
 /* fin de mission (après la lettre) */
@@ -5138,6 +5151,9 @@ function renderAch(t){
     ctx.save();rr(ctx,x,y,cw,rh-8,8);ctx.clip();drawAchMedal(ctx,x+36,y+40,a[0],on,1.15);
     ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.45)';ctx.font='17px '+F_DISP;ctx.font='italic 14px '+F_BODY;const long=on&&achWrap(a[3],cw-74-16,12).length>2;ctx.font='17px '+F_DISP;ctx.fillText(on?a[2]:'Décoration secrète',x+74,y+(long?24:30));
     ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?a[3]:(hov||tap?'':'Survoler pour un indice'),x+74,y+52,cw-74-16);
+    const pr=ACH_PROG[a[0]];if(pr){let[d,n]=pr();if(on)d=n;d=Math.min(d,n);const k=n?d/n:0,bx=x+74,bw=cw-74-70,by=y+rh-20;
+      ctx.fillStyle='rgba(233,223,199,.14)';rr(ctx,bx,by,bw,6,3);ctx.fill();if(k>0){ctx.fillStyle=on?'#d9a441':'rgba(217,164,65,.75)';rr(ctx,bx,by,Math.max(6,bw*k),6,3);ctx.fill()}
+      ctx.textAlign='right';ctx.font='12px '+F_DISP;ctx.fillStyle=on?'#d9a441':'rgba(233,223,199,.6)';ctx.fillText(Math.floor(k*100)+' %',x+cw-14,by+7)}
     ctx.restore();if(!on&&(hov||tap))tip={x:x+74,y:y+52,w:cw-74-16,t:ACH_HINT[a[0]]||'…'}});
   if(tip){ctx.fillStyle='#d9a441';ctx.textAlign='left';achDesc('Indice : '+tip.t,tip.x,tip.y,tip.w)}
   ctx.restore();
@@ -10815,6 +10831,7 @@ function ferteSwitch(){
   const F=L.ferte;if(!F||P.dead||F.cer.on)return;
   if(F.cool>0)return;
   const to=F.era===26?14:26;
+  if(to===14&&ferteFits(to))achB('ferte');
   if(!ferteFits(to)){F.cool=.4;bubble(P.x+P.w/2,P.y-14,'…','#6a5a48');if(!F.said.block){F.said.block=1;say("Le souvenir résiste. De l'autre côté, quelque chose occupe déjà la place.",3.4)}SFX.bump&&SFX.bump();return}
   ferteSet(to);F.cool=.35;F.flash=1;F.flashC=to;
   P.onMover=null;P.onGround=false;
@@ -11833,7 +11850,7 @@ function crecyPigStep(){const C=L.crecy;if(!C||C.era!==14||G.sim)return;const px
   if(!C.said.noms&&px>249*T){C.said.noms=1;say(/*v2*/"Fernand ! Pâquerette ! Vous êtes là-haut, les anciens… Attendez-moi, je monte !",4)}
   if(!C.said.haut&&P.onGround&&!P.dead&&Math.abs(P.y+P.h-6*T)<3&&px>254*T&&px<256*T){C.said.haut=1;G.quip=null;G.quipQ=[];
     G.state='intro';G.cards=CRECY_PIG_CARDS;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';G.fade=1}}}
-function crecySwitch(){const C=L.crecy;if(!C||P.dead)return;if(P.x<241*T&&C.era===26)return;crecySet(C.era===26?14:26)}
+function crecySwitch(){const C=L.crecy;if(!C||P.dead)return;if(P.x<241*T&&C.era===26)return;if(C.era===26)achB('crecy');crecySet(C.era===26?14:26)}
 function crecyOverlay(t){const C=L.crecy;if(!C)return;
   if(C.era===14){const fc=ferteFogTex();ctx.save();const ox=((t*14+cam.x*.15)%fc.fog.width+fc.fog.width)%fc.fog.width;ctx.drawImage(fc.fog,-ox,0,fc.fog.width,H);ctx.drawImage(fc.fog,fc.fog.width-ox,0,fc.fog.width,H);ctx.drawImage(fc.vig,0,0,W,H);
     ctx.globalAlpha=.6;ctx.fillStyle='#efe5cc';ctx.font='italic 15px '+F_BODY;ctx.textAlign='left';ctx.fillText('Crécy · septembre 1914',20,H-20);ctx.restore()}
@@ -12072,7 +12089,7 @@ function comblesApplyEra(Lv,era){const C=Lv.cb;C.era=era;
   for(const b of C.dyn){b.st='ok';b.t=0;b.deb=[];for(let c=b.c0;c<=b.c1;c++)Lv.g[b.r][c]=cbActive(b,era)?'=':'.'}
   for(let c=200;c<=204;c++)Lv.g[0][c]=era===26?'.':'#';
   C.webs=(era===26?CB.webs26:CB.webs14).map(([x,y,w,h])=>({x:x*T,y:y*T,w:w*T,h:h*T,shake:0}))}
-function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
+function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;if(era===14)achB('combles');comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Septembre 1914. La charpente sent le bois neuf… presque. Il y a des poutres que je ne connaissais pas.",4.2)}}
 function comblesRespawn(){const C=L.cb;if(!C)return;{const e=(P.cp&&P.cp.era)||26;if(e!==C.era){comblesApplyEra(L,e);MUS_OLD=e===14}}C.drops=[];C.grace=1;C.talk=null;for(const o of C.owls){o.st='perch';o.x=o.hx;o.y=o.hy;o.cool=1.5}for(const p of C.pig)if(p.k==='deplume'){p.x=p.home;p.st='walk';p.chase=0;p.rt=0}
@@ -13766,7 +13783,7 @@ const SV_GAZ_CARDS=[
   {t:/*v2*/"Les hommes ont un masque. Les pigeons n'en ont pas : il faut un linge mouillé sur le panier. Raymond se souvient que, ce jour-là, Lucien a pensé au panier avant de penser à lui-même.",minT:1.2}];
 let SV=null;
 function svActive(){return!!(SV&&L&&(L.s16||L.zr16))}
-function svStart(k){SV={k,t:0,i:0,next:1.4,bub:[],fade:1,out:null,peckT:0,peckCool:0,rain:[]};G.quip=null;G.quipQ=[];MUS_OLD=true;
+function svStart(k){achB(k);SV={k,t:0,i:0,next:1.4,bub:[],fade:1,out:null,peckT:0,peckCool:0,rain:[]};G.quip=null;G.quipQ=[];MUS_OLD=true;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);tone(392,.5,'sine',.05,262,.02)}}
 function svUpdate(dt){const s=SV,d=SV16[s.k];s.t+=dt;s.fade=Math.max(0,s.fade-dt*1.5);s.peckT=Math.max(0,s.peckT-dt);s.peckCool-=dt;
   for(const b of s.bub)b.t+=dt;s.bub=s.bub.filter(b=>b.t<b.max);
@@ -13905,7 +13922,7 @@ function s16Swap(era){const S=L.s16;if(S.era===era)return;for(const k of S16_KEY
 function s16Layers(){const S=L.s16;if(!S)return;const sg=L.g,st=L.th;L.g=S.E[16].g;L.th=S.E[16].th;S.E[16].far=buildFar(L);S.E[16].mid=buildMid(L);S.E[16].tiles=buildTilesF(L);L.g=sg;L.th=st}
 function s16Cage(){const S=L.s16;S.caged=true;P.x=S16.cage.c*T+T/2-P.w/2;P.y=S16.cage.r*T-P.h-8;P.vx=P.vy=0;P.onGround=true;P.facing=-1;P.lastGY=P.y;
   S.luc={x:S16.luc.c*T,y:17*T,vx:0,vy:0,st:'sit',f:1,t:0,lvl:1,climb:0}}
-function s16Enter(){const S=L.s16;s16Swap(16);S.done.tr=1;s16Cage();cam.x=clamp(P.x-W/2,S16.W0*T+80,(S16.W1-1)*T-W);cam.y=clamp(P.y-H*.55,0,ROWS*T-H);S.net=null;
+function s16Enter(){achB('tr');const S=L.s16;s16Swap(16);S.done.tr=1;s16Cage();cam.x=clamp(P.x-W/2,S16.W0*T+80,(S16.W1-1)*T-W);cam.y=clamp(P.y-H*.55,0,ROWS*T-H);S.net=null;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);noise(1.6,260,.22,'lowpass',.05);setTimeout(()=>SFX.thunder&&SFX.thunder(.25),120)}
   say(/*v2*/"Mars 1916. La tranchée, avant qu'on la tonde. Et moi dans mon panier, à côté de Lucien. Le loquet est mal fermé…",4.2)}
 function s16Leave(){const S=L.s16;s16Swap(26);S.caged=false;S.luc=null;P.x=250*T;P.y=18*T-P.h;P.vx=P.vy=0;P.onGround=false;P.lastGY=P.y;G.state='play';G.fade=1;
@@ -14055,7 +14072,7 @@ function rfActive(){return!!(RFS&&L&&L.fc)}
 /* l'entrée : devant l'ange au sourire, sur le portail, la touche d'époque (si on la connaît) */
 function rfCanStart(){const pc=P.x+P.w/2;return L.fc&&!P.dead&&P.onGround&&Math.abs(pc-FC.AX)<64&&Math.abs(P.y+P.h-fcY(43))<6}
 function rfStart(){if(!rfCanStart()||RFS||G.state!=='play')return;G.state='intro';G.cards=RF_CARDS_IN;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';rfBegin()}}
-function rfBegin(){
+function rfBegin(){achB('reims');
   RFS={t:0,lane:0,x:0,y:0,vx:0,vy:0,f:-1,fph:0,dead:0,fade:1,flash:1,hist:[],mates:[{n:/*v2*/'Flocon',d:.3,alive:true,pal:{w0:'#d8d8d2',w1:'#e8e8e2',tail:'#e4e4de',tailT:'#c8c8c0',b0:'#f6f6f0',b1:'#dcdcd4',n0:'#ecece6',n1:'#f2f2ec',n2:'#e8e8e2',head:'#f4f4ee',bar:'#c0c0b8',tube:false}},
     {n:/*v2*/'Gaston',d:.62,alive:true,pal:{w0:'#4a5262',w1:'#5e6678',tail:'#6a7282',b0:'#8a93a4',b1:'#6a7282',n0:'#5a7aa0',n1:'#3f8a6a',n2:'#7a8394',head:'#7a8394',tube:false}}],
     beams:[],debris:[],beamT:4,said:{},cp:null,out:null,smoke:[],embers:[],grace:1.2,col:null};
@@ -14619,7 +14636,7 @@ function selectOpen(i){if(S.infinite)return true;if(i===100)return true;if(i===1
 function abandonMission(){const w=LEVELS[G.li].w;for(let k=w*4;k<w*4+4;k++){delete S.run.stats[k];if(S.run.got)delete S.run.got[k]}S.resume=w*4;save();G.chase=false;goTitle()}
 function askHome(){G.confirm={prev:G.state,text:"Retourner à l'accueil ?",sub:"L'avancement et les points de cette mission seront perdus. Raymond reprendra au début de la mission."};G.state='confirm';G.confirmSel=0}
 function handleConfirm(){
-  const C=G.confirm,yes=()=>{G.confirm=null;abandonMission()},no=()=>{G.state=C.prev;G.confirm=null};
+  const C=G.confirm,yes=()=>{G.confirm=null;(C.yes||abandonMission)()},no=()=>{G.state=C.prev;G.confirm=null};
   if(pressed.has('esc')||pressed.has('back')){no();return}
   if(pressed.has('left')||pressed.has('right')||pressed.has('up')||pressed.has('down'))G.confirmSel=1-G.confirmSel;
   if(G.click&&G.confirmBoxes)for(const b of G.confirmBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){b.i?yes():no();return}
@@ -14630,10 +14647,12 @@ function renderConfirm(){
   ctx.save();ctx.translate(W/2,H/2);ctx.fillStyle='#ece3cc';rr(ctx,-250,-100,500,200,8);ctx.fill();ctx.strokeStyle='rgba(42,36,32,.5)';rr(ctx,-243,-93,486,186,5);ctx.stroke();
   ctx.fillStyle='#2a2420';ctx.textAlign='center';ctx.font='26px '+F_DISP;ctx.fillText(C.text,0,-48);
   ctx.font='italic 16px '+F_BODY;wrap(ctx,C.sub,420).forEach((l,k)=>ctx.fillText(l,0,-16+k*21));
-  G.confirmBoxes=[];[['Rester',0],["Retour à l'accueil",1]].forEach(([lb,i])=>{const bx=i?20:-200,by=46;const sel=G.confirmSel===i;ctx.fillStyle=sel?'#2a2420':'rgba(42,36,32,.12)';rr(ctx,bx,by,180,36,6);ctx.fill();ctx.fillStyle=sel?'#ece3cc':'#2a2420';ctx.font='17px '+F_DISP;ctx.fillText(lb,bx+90,by+24);G.confirmBoxes.push({x:W/2+bx,y:H/2+by,w:180,h:36,i})});
+  G.confirmBoxes=[];(C.labels?[[C.labels[0],0],[C.labels[1],1]]:[['Rester',0],["Retour à l'accueil",1]]).forEach(([lb,i])=>{const bx=i?20:-200,by=46;const sel=G.confirmSel===i;ctx.fillStyle=sel?'#2a2420':'rgba(42,36,32,.12)';rr(ctx,bx,by,180,36,6);ctx.fill();ctx.fillStyle=sel?'#ece3cc':'#2a2420';ctx.font='17px '+F_DISP;ctx.fillText(lb,bx+90,by+24);G.confirmBoxes.push({x:W/2+bx,y:H/2+by,w:180,h:36,i})});
   ctx.restore();
 }
 function goTitle(){G.state='title';G.menuSel=0;G.fade=1;setSong('title');loopsOff()}
+/* le nombre de pailles et la médaille de chaque niveau, lus dans sa carte */
+const LV_TOT={};function levelTotals(i){if(!LV_TOT[i]){const r=ROWS;try{const l=parseLevel(i);LV_TOT[i]={corn:l.corn.length,medal:!!l.medal}}catch(e){LV_TOT[i]={corn:0,medal:false}}ROWS=r}return LV_TOT[i]}
 function openSelect(){G.state='select';G.sel=Math.min(S.unlocked,19);G.fade=1;setSong('title');loopsOff()}
 function startIntro(){G.state='intro';G.cards=INTRO;G.card=0;G.cardT=0;G.cutSeen=false;G.cardsDone=()=>{unlock('a1');startLevel(0)};G.fade=1;setSong('title')}
 function handleMenu(){
@@ -14694,11 +14713,14 @@ function renderSelect(t){
     wd.levels.forEach((ln,lj)=>{
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
       tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,(li<=S.unlocked||S.best[li])?ln:'?????');
-      const b=S.best[li];if(b){ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';ctx.fillText((b.medal?'✠ ':'')+`paille ${b.corn}`,x+188,yy+16)}
+      if(selectOpen(li)||S.best[li]){const b=S.best[li],tot=levelTotals(li);ctx.save();if(!selectOpen(li))ctx.globalAlpha=.35;ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';
+        ctx.fillText(/*v2*/`Paille ${b?Math.min(b.corn,tot.corn):0}/${tot.corn}`,x+188,yy+16);
+        if(tot.medal){ctx.save();ctx.translate(x+178,yy+33);ctx.scale(.62,.62);if(!(b&&b.medal))ctx.filter='brightness(0)';drawMedal(ctx,0,0,0);ctx.restore()}ctx.restore()}
     });
   });
-  tile(100,70,480,406,28,"Revoir l'introduction");
-  tile(101,484,480,406,28,'Revoir la fin');
+  const ry=82+WORLDS.length*64+14;
+  tile(100,70,ry,406,28,"Revoir l'introduction");
+  tile(101,484,ry,406,28,'Revoir la fin');
   ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Entrée pour lancer · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
@@ -15092,9 +15114,13 @@ function openSettings(){G.state='settings';G.setSel=0;G.codeEntry=null;G.setMsg=
 function setVol(k,d){S[k]=clamp((S[k]==null?8:S[k])+d,0,10);applyVolumes();save();if(k==='vSfx')SFX.tick()}
 function setMode(d){const vis=modesVisible();let i=vis.findIndex(m=>m.k===(G.setPick||S.mode));if(i<0)i=0;i=(i+d+vis.length)%vis.length;const m=vis[i];G.setPick=m.k;G.setMsg=null;
   if(m.hidden&&!(S.codes&&S.codes[m.k]))return;S.mode=m.k;G.setPick=null;applyMode();save()}
-function settingsRows(){return['mus','sfx','mode','back']}
+function settingsRows(){return['mus','sfx','mode','reset','back']}
+/* tout effacer : pailles, médailles, secrets, succès, avancement (on garde le son et le mode de jeu) */
+function askReset(){G.confirm={prev:'settings',text:/*v2*/'Réinitialiser le jeu ?',sub:/*v2*/"Toute la paille, les médailles, les secrets, les succès et l'avancement seront effacés. C'est définitif.",labels:[/*v2*/'Annuler',/*v2*/'Tout effacer'],yes:resetGame};G.confirmSel=0}
+function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,mode:S.mode,codes:S.codes,modesShown:S.modesShown};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
 function handleSettings(){
   const C=G.codeEntry;if(C)return; // la saisie du code passe par le clavier (voir 14_main)
+  if(G.confirm){handleConfirm();return}
   const rows=settingsRows();
   if(pressed.has('esc')||pressed.has('back')){G.setPick=null;goTitle();return}
   if(pressed.has('up'))G.setSel=(G.setSel-1+rows.length)%rows.length;
@@ -15103,8 +15129,8 @@ function handleSettings(){
   if(dx){if(r==='mus')setVol('vMus',dx);else if(r==='sfx')setVol('vSfx',dx);else if(r==='mode')setMode(dx)}
   if(G.click&&G.setBoxes)for(const b of G.setBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.setSel=rows.indexOf(b.r);
     if(b.d){if(b.r==='mus')setVol('vMus',b.d);else if(b.r==='sfx')setVol('vSfx',b.d);else if(b.r==='mode')setMode(b.d)}
-    else if(b.r==='back'){G.setPick=null;goTitle()}else if(b.r==='code')askCode();return}
-  if(pressed.has('ok')){if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
+    else if(b.r==='back'){G.setPick=null;goTitle()}else if(b.r==='code')askCode();else if(b.r==='reset')askReset();return}
+  if(pressed.has('ok')){if(r==='reset')askReset();else if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
 }
 function pendingLocked(){const m=MODES.find(m=>m.k===G.setPick);return m&&m.hidden&&!(S.codes&&S.codes[m.k])?m:null}
 function askCode(){const m=pendingLocked();if(m){G.codeEntry={k:m.k,txt:''};G.setMsg=null}}
@@ -15146,9 +15172,12 @@ function renderSettings(t){
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
     if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['G',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=19}}
+  // réinitialiser
+  {const y=H-62,sel=rows[G.setSel]==='reset';ctx.textAlign='center';ctx.font=(sel?'18px ':'16px ')+F_DISP;ctx.fillStyle=sel?'#e8a090':'rgba(224,138,128,.6)';ctx.fillText(/*v2*/'Réinitialiser le jeu',W/2,y);G.setBoxes.push({r:'reset',x:W/2-110,y:y-22,w:220,h:30})}
   // retour
   {const y=H-28,sel=rows[G.setSel]==='back';ctx.textAlign='center';ctx.font=(sel?'21px ':'19px ')+F_DISP;ctx.fillStyle=sel?'#f2e8cf':'rgba(233,223,199,.65)';ctx.fillText('Retour',W/2,y);G.setBoxes.push({r:'back',x:W/2-60,y:y-24,w:120,h:32})}
   ctx.restore();
+  if(G.confirm)renderConfirm();
 }
 
 /* =========================================================

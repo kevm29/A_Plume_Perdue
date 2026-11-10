@@ -35,7 +35,7 @@ const SV_GAZ_CARDS=[
   {t:/*v2*/"Les hommes ont un masque. Les pigeons n'en ont pas : il faut un linge mouillé sur le panier. Raymond se souvient que, ce jour-là, Lucien a pensé au panier avant de penser à lui-même.",minT:1.2}];
 let SV=null;
 function svActive(){return!!(SV&&L&&(L.s16||L.zr16))}
-function svStart(k){SV={k,t:0,i:0,next:1.4,bub:[],fade:1,out:null,peckT:0,peckCool:0,rain:[]};G.quip=null;G.quipQ=[];MUS_OLD=true;
+function svStart(k){achB(k);SV={k,t:0,i:0,next:1.4,bub:[],fade:1,out:null,peckT:0,peckCool:0,rain:[]};G.quip=null;G.quipQ=[];MUS_OLD=true;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);tone(392,.5,'sine',.05,262,.02)}}
 function svUpdate(dt){const s=SV,d=SV16[s.k];s.t+=dt;s.fade=Math.max(0,s.fade-dt*1.5);s.peckT=Math.max(0,s.peckT-dt);s.peckCool-=dt;
   for(const b of s.bub)b.t+=dt;s.bub=s.bub.filter(b=>b.t<b.max);
@@ -174,7 +174,7 @@ function s16Swap(era){const S=L.s16;if(S.era===era)return;for(const k of S16_KEY
 function s16Layers(){const S=L.s16;if(!S)return;const sg=L.g,st=L.th;L.g=S.E[16].g;L.th=S.E[16].th;S.E[16].far=buildFar(L);S.E[16].mid=buildMid(L);S.E[16].tiles=buildTilesF(L);L.g=sg;L.th=st}
 function s16Cage(){const S=L.s16;S.caged=true;P.x=S16.cage.c*T+T/2-P.w/2;P.y=S16.cage.r*T-P.h-8;P.vx=P.vy=0;P.onGround=true;P.facing=-1;P.lastGY=P.y;
   S.luc={x:S16.luc.c*T,y:17*T,vx:0,vy:0,st:'sit',f:1,t:0,lvl:1,climb:0}}
-function s16Enter(){const S=L.s16;s16Swap(16);S.done.tr=1;s16Cage();cam.x=clamp(P.x-W/2,S16.W0*T+80,(S16.W1-1)*T-W);cam.y=clamp(P.y-H*.55,0,ROWS*T-H);S.net=null;
+function s16Enter(){achB('tr');const S=L.s16;s16Swap(16);S.done.tr=1;s16Cage();cam.x=clamp(P.x-W/2,S16.W0*T+80,(S16.W1-1)*T-W);cam.y=clamp(P.y-H*.55,0,ROWS*T-H);S.net=null;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);noise(1.6,260,.22,'lowpass',.05);setTimeout(()=>SFX.thunder&&SFX.thunder(.25),120)}
   say(/*v2*/"Mars 1916. La tranchée, avant qu'on la tonde. Et moi dans mon panier, à côté de Lucien. Le loquet est mal fermé…",4.2)}
 function s16Leave(){const S=L.s16;s16Swap(26);S.caged=false;S.luc=null;P.x=250*T;P.y=18*T-P.h;P.vx=P.vy=0;P.onGround=false;P.lastGY=P.y;G.state='play';G.fade=1;

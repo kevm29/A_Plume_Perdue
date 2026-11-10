@@ -24,9 +24,13 @@ function openSettings(){G.state='settings';G.setSel=0;G.codeEntry=null;G.setMsg=
 function setVol(k,d){S[k]=clamp((S[k]==null?8:S[k])+d,0,10);applyVolumes();save();if(k==='vSfx')SFX.tick()}
 function setMode(d){const vis=modesVisible();let i=vis.findIndex(m=>m.k===(G.setPick||S.mode));if(i<0)i=0;i=(i+d+vis.length)%vis.length;const m=vis[i];G.setPick=m.k;G.setMsg=null;
   if(m.hidden&&!(S.codes&&S.codes[m.k]))return;S.mode=m.k;G.setPick=null;applyMode();save()}
-function settingsRows(){return['mus','sfx','mode','back']}
+function settingsRows(){return['mus','sfx','mode','reset','back']}
+/* tout effacer : pailles, médailles, secrets, succès, avancement (on garde le son et le mode de jeu) */
+function askReset(){G.confirm={prev:'settings',text:/*v2*/'Réinitialiser le jeu ?',sub:/*v2*/"Toute la paille, les médailles, les secrets, les succès et l'avancement seront effacés. C'est définitif.",labels:[/*v2*/'Annuler',/*v2*/'Tout effacer'],yes:resetGame};G.confirmSel=0}
+function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,mode:S.mode,codes:S.codes,modesShown:S.modesShown};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
 function handleSettings(){
   const C=G.codeEntry;if(C)return; // la saisie du code passe par le clavier (voir 14_main)
+  if(G.confirm){handleConfirm();return}
   const rows=settingsRows();
   if(pressed.has('esc')||pressed.has('back')){G.setPick=null;goTitle();return}
   if(pressed.has('up'))G.setSel=(G.setSel-1+rows.length)%rows.length;
@@ -35,8 +39,8 @@ function handleSettings(){
   if(dx){if(r==='mus')setVol('vMus',dx);else if(r==='sfx')setVol('vSfx',dx);else if(r==='mode')setMode(dx)}
   if(G.click&&G.setBoxes)for(const b of G.setBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.setSel=rows.indexOf(b.r);
     if(b.d){if(b.r==='mus')setVol('vMus',b.d);else if(b.r==='sfx')setVol('vSfx',b.d);else if(b.r==='mode')setMode(b.d)}
-    else if(b.r==='back'){G.setPick=null;goTitle()}else if(b.r==='code')askCode();return}
-  if(pressed.has('ok')){if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
+    else if(b.r==='back'){G.setPick=null;goTitle()}else if(b.r==='code')askCode();else if(b.r==='reset')askReset();return}
+  if(pressed.has('ok')){if(r==='reset')askReset();else if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
 }
 function pendingLocked(){const m=MODES.find(m=>m.k===G.setPick);return m&&m.hidden&&!(S.codes&&S.codes[m.k])?m:null}
 function askCode(){const m=pendingLocked();if(m){G.codeEntry={k:m.k,txt:''};G.setMsg=null}}
@@ -78,7 +82,10 @@ function renderSettings(t){
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
     if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['G',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=19}}
+  // réinitialiser
+  {const y=H-62,sel=rows[G.setSel]==='reset';ctx.textAlign='center';ctx.font=(sel?'18px ':'16px ')+F_DISP;ctx.fillStyle=sel?'#e8a090':'rgba(224,138,128,.6)';ctx.fillText(/*v2*/'Réinitialiser le jeu',W/2,y);G.setBoxes.push({r:'reset',x:W/2-110,y:y-22,w:220,h:30})}
   // retour
   {const y=H-28,sel=rows[G.setSel]==='back';ctx.textAlign='center';ctx.font=(sel?'21px ':'19px ')+F_DISP;ctx.fillStyle=sel?'#f2e8cf':'rgba(233,223,199,.65)';ctx.fillText('Retour',W/2,y);G.setBoxes.push({r:'back',x:W/2-60,y:y-24,w:120,h:32})}
   ctx.restore();
+  if(G.confirm)renderConfirm();
 }

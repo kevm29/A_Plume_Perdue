@@ -477,7 +477,7 @@ function crecyPigStep(){const C=L.crecy;if(!C||C.era!==14||G.sim)return;const px
   if(!C.said.noms&&px>249*T){C.said.noms=1;say(/*v2*/"Fernand ! Pâquerette ! Vous êtes là-haut, les anciens… Attendez-moi, je monte !",4)}
   if(!C.said.haut&&P.onGround&&!P.dead&&Math.abs(P.y+P.h-6*T)<3&&px>254*T&&px<256*T){C.said.haut=1;G.quip=null;G.quipQ=[];
     G.state='intro';G.cards=CRECY_PIG_CARDS;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';G.fade=1}}}
-function crecySwitch(){const C=L.crecy;if(!C||P.dead)return;if(P.x<241*T&&C.era===26)return;crecySet(C.era===26?14:26)}
+function crecySwitch(){const C=L.crecy;if(!C||P.dead)return;if(P.x<241*T&&C.era===26)return;if(C.era===26)achB('crecy');crecySet(C.era===26?14:26)}
 function crecyOverlay(t){const C=L.crecy;if(!C)return;
   if(C.era===14){const fc=ferteFogTex();ctx.save();const ox=((t*14+cam.x*.15)%fc.fog.width+fc.fog.width)%fc.fog.width;ctx.drawImage(fc.fog,-ox,0,fc.fog.width,H);ctx.drawImage(fc.fog,fc.fog.width-ox,0,fc.fog.width,H);ctx.drawImage(fc.vig,0,0,W,H);
     ctx.globalAlpha=.6;ctx.fillStyle='#efe5cc';ctx.font='italic 15px '+F_BODY;ctx.textAlign='left';ctx.fillText('Crécy · septembre 1914',20,H-20);ctx.restore()}
