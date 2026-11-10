@@ -14003,7 +14003,7 @@ const RF={W:4200,H:1560,
          [3300,1380,150,120],[2700,1400,200,100],[2050,1360,160,140],[1400,1390,180,110],[800,1370,140,130]],
   // le plomb fondu : [x de la goutte, bande, phase]
   chand:[[3500,2],[2700,2],[1900,2],[1100,2]],
-  straws:[[3700,120],[2800,300],[1960,140],[1050,300],[420,560],[1400,700],[2300,470],[3300,720],[3500,1000],[2500,880],[1500,1100],[700,950],[1000,1250],[2350,1260],[3000,1300],[3800,1440]]};
+  straws:[[3700,120],[2800,300],[1960,140],[1050,300],[420,560],[1400,700],[2300,470],[3000,600],[3200,960],[2500,880],[1500,1100],[700,950],[1000,1250],[2350,1260],[3000,1300],[3800,1440]]};
 let RFS=null;
 function rfActive(){return!!(RFS&&L&&L.fc)}
 /* l'entrée : devant l'ange au sourire, sur le portail, la touche d'époque (si on la connaît) */
@@ -14012,17 +14012,16 @@ function rfStart(){if(!rfCanStart()||RFS||G.state!=='play')return;G.state='intro
 function rfBegin(){
   RFS={t:0,lane:0,x:0,y:0,vx:0,vy:0,f:-1,fph:0,dead:0,fade:1,flash:1,hist:[],mates:[{n:/*v2*/'Flocon',d:.3,alive:true,pal:{w0:'#d8d8d2',w1:'#e8e8e2',tail:'#e4e4de',tailT:'#c8c8c0',b0:'#f6f6f0',b1:'#dcdcd4',n0:'#ecece6',n1:'#f2f2ec',n2:'#e8e8e2',head:'#f4f4ee',bar:'#c0c0b8',tube:false}},
     {n:/*v2*/'Gaston',d:.62,alive:true,pal:{w0:'#4a5262',w1:'#5e6678',tail:'#6a7282',b0:'#8a93a4',b1:'#6a7282',n0:'#5a7aa0',n1:'#3f8a6a',n2:'#7a8394',head:'#7a8394',tube:false}}],
-    beams:[],debris:[],beamT:4,said:{},cp:null,out:null,smoke:[],embers:[],grace:1.2,holes:[],falls:[],col:null};
+    beams:[],debris:[],beamT:4,said:{},cp:null,out:null,smoke:[],embers:[],grace:1.2,col:null};
   rfSpawn(0);RFS.cp={lane:0,alive:[true,true]};
   G.quip=null;G.quipQ=[];MUS_OLD=true;if(!L.rfLayer)L.rfLayer=rfBuild();
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);SFX.thunder&&SFX.thunder(.5)}
   say(/*v2*/"Le 19 septembre 1914. Je faisais la sieste dans les combles avec Flocon et Gaston, des camarades du colombier militaire… et tout brûle ! Je vais mourir ici !",5)}
-function rfSpawn(lane){const s=RFS,l=RF.lanes[lane];s.lane=lane;s.x=l.sx;s.y=l.sy;s.vx=0;s.vy=0;s.f=l.dir;s.hist=[];s.beams=[];s.debris=[];s.falls=[];s.grace=1;s.beamT=lane?2.4:4;s.colDone=s.colDone||{};s.col=lane&&!s.colDone[lane]?rfColArm(lane):null;
+function rfSpawn(lane){const s=RFS,l=RF.lanes[lane];s.lane=lane;s.x=l.sx;s.y=l.sy;s.vx=0;s.vy=0;s.f=l.dir;s.hist=[];s.beams=[];s.debris=[];s.grace=1;s.beamT=lane?2.4:4;s.col=null;
   for(let k=0;k<60;k++)s.hist.push({x:s.x-l.dir*k*4,y:s.y})}
 /* les effondrements : le plancher de l'étage d'au-dessus (voûte, triforium, poutres) s'ouvre ; les poutres du toit passent par les trous */
-function rfSep(li){const y=RF.lanes[li-1].y1;return RF.solid.find(r=>r[1]===y)}
-function rfColArm(li){const r=rfSep(li),d=RF.lanes[li].dir;return{lane:li,dir:d,edge:d>0?r[0]:r[0]+r[2]}}
-function rfHole(li,x,w){const s=RFS;if(li<1)return;if(s.holes.some(h=>h.li===li&&Math.abs(h.x-x)<(h.w+w)/2-10))return;s.holes.push({li,x,w,ph:rnd()*6,seed:(x*13+li*7)|0})}
+/* la poutre arrive déjà lancée : elle vient du toit, traverse les étages du dessus (sans rien casser) et tombe dans celui de Raymond */
+function rfBeamY(b){const D=b.y1-24-b.y0,v0=D*.4/b.T;if(b.t<0)return b.y0+v0*b.t;const u=Math.min(1,b.t/b.T);return b.y0+D*(.4*u+.6*u*u)}
 function rfSolidAt(x,y,r){for(const[a,b,w,h]of RF.solid)if(x+r>a&&x-r<a+w&&y+r>b&&y-r<b+h)return[a,b,w,h];return null}
 function rfLaneOf(y){for(let i=0;i<4;i++){const l=RF.lanes[i];if(y>=l.y0-20&&y<=l.y1+20)return i}return-1}
 function rfCrash(why){const s=RFS;if(s.dead>0||s.out)return;if(S.god){return}
@@ -14045,12 +14044,7 @@ function rfUpdate(dt){const s=RFS;s.t+=dt;s.fade=Math.max(0,s.fade-dt*1.2);s.fla
   // la sortie : le grand portail
   if(s.x>RF.door[0]&&s.y>RF.door[1]){s.out={t:0};const both=s.mates.every(m=>m.alive);if(both)unlock('a73');if(!G.sim)SFX.medal&&SFX.medal();return}
   // le point de reprise : l'entrée de chaque bande
-  const li=rfLaneOf(s.y);if(li>s.cp.lane){s.lane=li;s.beamT=Math.max(s.beamT,1.6);s.cp={lane:li,alive:s.mates.map(m=>m.alive)};s.colDone=s.colDone||{};if(!s.colDone[li])s.col=rfColArm(li);if(!s.said['l'+li]&&!G.sim){s.said['l'+li]=1;say([null,/*v2*/"Sous les voûtes. Derrière moi, le plafond s'effondre : les poutres du toit passent à travers !",/*v2*/"La nef. La fumée descend. Flocon, Gaston : restez derrière moi !",/*v2*/"La paille des blessés brûle par terre. Le portail est ouvert, tout au bout. Vite !"][li],4)}}
-  if(s.col&&s.col.lane===s.lane&&(s.x-s.col.edge)*s.col.dir>700){const c=s.col,l=RF.lanes[c.lane];s.colDone[c.lane]=1;s.col=null;
-    for(let k=0;k<3;k++){const x=c.edge+c.dir*(70+k*120+rnd()*30),w=90+rnd()*50;rfHole(c.lane,x,w);if(k<2)s.beams.push({x,w:k?120:160,big:true,t:0,T:.45,y0:l.y0,y1:l.y1,rot:(rnd()-.5)*.5,lane:c.lane,col:1})}
-    if(!G.sim){noise(1.2,240,.3,'lowpass');SFX.thunder&&SFX.thunder(.4);G.shake=Math.max(G.shake||0,9)}}
-  if(s.holes.length&&rnd()<dt*6){const vh=s.holes.filter(h=>h.li<=s.lane&&Math.abs(h.x-s.x)<W);if(vh.length){const h=vh[Math.floor(rnd()*vh.length)];s.falls.push({x:h.x+(rnd()-.5)*h.w*.6,y:RF.lanes[h.li].y0,vy:60+rnd()*80,vx:(rnd()-.5)*40,r:rnd()*6,f:RF.lanes[h.li].y1,big:rnd()<.3})}}
-  for(const f of s.falls){f.vy+=900*dt;f.y+=f.vy*dt;f.x+=f.vx*dt;f.r+=dt*4;if(f.y>=f.f&&!f.done){f.done=1;for(let k=0;k<5;k++)s.embers.push({x:f.x,y:f.f-4,vx:(rnd()-.5)*140,vy:-40-rnd()*120,t:0,max:.6+rnd()*.6})}}s.falls=s.falls.filter(f=>!f.done);
+  const li=rfLaneOf(s.y);if(li>s.cp.lane){s.lane=li;s.beamT=Math.max(s.beamT,1.6);s.cp={lane:li,alive:s.mates.map(m=>m.alive)};if(!s.said['l'+li]&&!G.sim){s.said['l'+li]=1;say([null,/*v2*/"Sous les voûtes. Les poutres du toit tombent à travers tous les étages, jusqu'ici !",/*v2*/"La nef. La fumée descend. Flocon, Gaston : restez derrière moi !",/*v2*/"La paille des blessés brûle par terre. Le portail est ouvert, tout au bout. Vite !"][li],4)}}
   // la trace : les camarades volent dans le sillage de Raymond, avec un temps de retard
   s.hist.unshift({x:s.x,y:s.y,t:s.t});if(s.hist.length>200)s.hist.pop();
   for(const m of s.mates){if(!m.alive){if(m.fall){m.fall.t+=dt;m.fall.vy+=800*dt;m.fall.y+=m.fall.vy*dt}continue}
@@ -14058,10 +14052,10 @@ function rfUpdate(dt){const s=RFS;s.t+=dt;s.fade=Math.max(0,s.fade-dt*1.2);s.fla
   // les feux, le plomb, les poutres qui tombent
   const hit=(x,y,r,box)=>x+r>box[0]&&x-r<box[0]+box[2]&&y+r>box[1]&&y-r<box[1]+box[3];
   if(s.grace<=0)for(const[x,y,w,h]of RF.fires){const fl=Math.sin(s.t*3+x)*8;if(hit(s.x,s.y,9,[x+6,y+(y<300&&y<60?0:12)-fl*.3,w-12,h-8]))return rfCrash('feu')}
-  for(const c of RF.chand){const L1=RF.lanes[c[1]],sw=Math.sin(s.t*.9+c[0])*.25,cx=c[0]+Math.sin(sw)*190,cy=L1.y0+Math.cos(sw)*190;if(s.grace<=0&&Math.hypot(s.x-cx,s.y-cy)<34)return rfCrash('lustre')}
-  s.beamT-=dt;if(s.beamT<=0&&s.beams.length<3){const l=RF.lanes[s.lane],big=rnd()<.4,lead=big?1.05:.8,xt=clamp(s.x+s.vx*(lead+.38)+(rnd()-.5)*60,90,4100);
-    if(Math.abs(xt-l.sx)>320||s.cp.lane!==s.lane){s.beams.push({x:xt,w:big?150:56,big,t:-lead,T:.4,y0:l.y0,y1:l.y1,rot:(rnd()-.5)*.5,lane:s.lane});rfHole(s.lane,xt,(big?150:56)*.9)}s.beamT=1.1+rnd()*.8;if(!G.sim)tone(big?260:420,.5,'sine',.03,big?180:300)}
-  for(const b of s.beams){b.t+=dt;if(b.t<0)continue;const u=Math.min(1,b.t/b.T),y=lerp(b.y0,b.y1-24,u*u),box=[b.x-b.w/2,y-12,b.w,26];
+  for(const c of RF.chand){const L1=RF.lanes[c[1]],sw=Math.sin(s.t*.9+c[0])*.25,cx=c[0]+Math.sin(sw)*190,cy=L1.y0-6+Math.cos(sw)*190;if(s.grace<=0&&Math.abs(s.x-cx)<30+8&&s.y>cy-30-6&&s.y<cy+16+6)return rfCrash('lustre')}
+  s.beamT-=dt;if(s.beamT<=0&&s.beams.length<3){const l=RF.lanes[s.lane],big=rnd()<.4,lead=big?1.55:1.3,xt=clamp(s.x+s.vx*(lead+.38)+(rnd()-.5)*60,90,4100);
+    if(Math.abs(xt-l.sx)>320||s.cp.lane!==s.lane)s.beams.push({x:xt,w:big?122:56,big,t:-lead,T:.4/.9,y0:l.y0,y1:l.y1,rot:(rnd()-.5)*.5,lane:s.lane});s.beamT=1.1+rnd()*.8;if(!G.sim)tone(big?260:420,.5,'sine',.03,big?180:300)}
+  for(const b of s.beams){b.t+=dt;if(b.t<0)continue;const u=Math.min(1,b.t/b.T),y=rfBeamY(b),box=[b.x-b.w/2,y-12,b.w,26];
     if(u<1){if(s.grace<=0&&hit(s.x,s.y,10,box))return rfCrash('poutre');if(!b.col)for(const m of s.mates)if(m.alive&&hit(m.x,m.y,8,box))rfMateDie(m,'poutre')}
     if(u>=1&&!b.landed){b.landed=1;s.debris.push({x:b.x,w:b.w,y:b.y1,t:0,big:b.big});if(!G.sim){noise(b.big?.5:.3,b.big?300:600,.2,'lowpass');G.shake=Math.max(G.shake||0,b.big?6:3)}for(let k=0;k<14;k++)s.embers.push({x:b.x+(rnd()-.5)*b.w,y:b.y1-10,vx:(rnd()-.5)*120,vy:-60-rnd()*160,t:0,max:1+rnd()})}}
   s.beams=s.beams.filter(b=>!b.landed);for(const d of s.debris)d.t+=dt;s.debris=s.debris.filter(d=>d.t<3);
@@ -14116,16 +14110,14 @@ function rfBuild(){const TR=Math.min(RS,1),{layer:c,g}=mkLayer(RF.W*TR,RF.H*TR);
   // les bancs de la nef, brûlés (rangées de chaises et de bancs carbonisés) ; quelques bottes de paille des blessés
   for(let x=180;x<4020;x+=92){const tilt=(R()-.5)*(R()<.3?.6:.08),burn=R();g.save();g.translate(x+40,1500);g.rotate(tilt);
     g.fillStyle=burn<.5?'#1a0e08':'#2e1c10';g.fillRect(-40,-24,80,7);g.fillRect(-36,-24,6,24);g.fillRect(30,-24,6,24);g.fillRect(-40,-52,6,30);g.fillRect(-40,-50,80,6);g.fillRect(-40,-40,80,4);
-    g.fillStyle='rgba(255,110,30,.75)';for(let k=0;k<5;k++)g.fillRect(-38+R()*74,-24+R()*4,6+R()*8,2);g.fillStyle='#0c0604';g.fillRect(-40+R()*60,-52,12+R()*16,6);g.restore();
+    g.fillStyle='rgba(200,80,20,.35)';for(let k=0;k<2;k++)g.fillRect(-38+R()*74,-24+R()*4,6+R()*6,2);g.fillStyle='#0c0604';g.fillRect(-40+R()*60,-52,12+R()*16,6);g.restore();
     if(burn>.55)RF.deco.push([x+10+R()*30,1474,40,26])}
   for(const x of[520,1240,1960,2680,3400]){g.fillStyle='#8a6a28';rr(g,x,1484,90,16,6);g.fill();g.fillStyle='#5a3e18';for(let k=0;k<10;k++)g.fillRect(x+6+k*8,1486+(k%3)*4,7,2);RF.deco.push([x+6,1460,80,30])}
   // le bois sur les piliers : les lambris au pied des piles, les chevrons tombés appuyés contre elles — tout ça brûle
-  for(let x=60;x<4140;x+=B){if(x>4000)continue;
-    if(x>200){const lx=x+56+R()*30;g.strokeStyle='#2a180c';g.lineWidth=12;g.beginPath();g.moveTo(lx,1160);g.lineTo(x+40,930+R()*40);g.stroke();g.strokeStyle='rgba(255,110,30,.6)';g.lineWidth=3;g.beginPath();g.moveTo(lx+3,1158);g.lineTo(x+43,940);g.stroke();RF.deco.push([x+36,890+R()*40,30,60]);RF.deco.push([x+40,1100,50,60])}}
   // les grosses poutres tombées de la charpente, coincées en travers entre les piles (la bande 1160-1190)
   for(let x=300;x<4140;x+=B/2){const w=B/2+30,tl=(R()-.5)*.03;g.save();g.translate(x+w/2-15,1175);g.rotate(tl);
     g.fillStyle='#2a1a0e';g.fillRect(-w/2,-16,w,32);g.fillStyle='#3e2614';g.fillRect(-w/2,-16,w,8);g.fillStyle='#0e0604';for(let k=-w/2+6;k<w/2-10;k+=14+R()*10)g.fillRect(k,-8,8+R()*6,3);
-    g.fillStyle='rgba(255,120,30,.8)';g.fillRect(-w/2,12,w,3);for(let k=0;k<6;k++)g.fillRect(-w/2+R()*w,-2+R()*10,10+R()*16,2);g.restore();
+    g.fillStyle='rgba(200,80,20,.35)';for(let k=0;k<3;k++)g.fillRect(-w/2+R()*w,2+R()*8,6+R()*8,2);g.restore();
     if(R()<.5)RF.deco.push([x+20+R()*60,1128,60,34])}
   // le chœur, à gauche : l'autel, les cierges
   g.fillStyle='#8a7058';g.fillRect(80,1430,140,70);g.fillStyle='#e8dcc0';g.fillRect(84,1434,132,10);for(const x of[100,140,180,200])g.fillStyle='#f0e8d0',g.fillRect(x,1400,5,30);
@@ -14147,12 +14139,6 @@ function rfRender(t){const s=RFS,g=ctx;
   g.globalCompositeOperation='lighter';
   for(const[x,y,w,h]of RF.fires){if(x<cx-200||x>cx+W+200)continue;const gl=g.createRadialGradient(x+w/2,y+h/2,10,x+w/2,y+h/2,220);gl.addColorStop(0,'rgba(255,140,40,'+(.35+Math.sin(t*7+x)*.08)+')');gl.addColorStop(1,'rgba(255,90,20,0)');g.fillStyle=gl;g.fillRect(x-200,y-200,w+400,h+400)}
   g.globalCompositeOperation='source-over';
-  // les trous des effondrements : la pierre crevée, des flammes qui pendent, la lueur de l'étage d'au-dessus
-  for(const h of s.holes){if(h.x<cx-200||h.x>cx+W+200)continue;const yA=RF.lanes[h.li-1].y1,yB=RF.lanes[h.li].y0,R=mulberry(h.seed);
-    g.fillStyle='#0a0503';g.beginPath();g.moveTo(h.x-h.w/2,yA-4);for(let k=1;k<6;k++)g.lineTo(h.x-h.w/2+h.w*k/6,yA-4+R()*10);g.lineTo(h.x+h.w/2,yA-4);g.lineTo(h.x+h.w/2-R()*12,yB+4);for(let k=5;k>0;k--)g.lineTo(h.x-h.w/2+h.w*k/6,yB+4-R()*10);g.lineTo(h.x-h.w/2+R()*12,yB+4);g.closePath();g.fill();
-    const gl=g.createLinearGradient(0,yA,0,yB+4);gl.addColorStop(0,'rgba(255,120,30,.55)');gl.addColorStop(1,'rgba(255,80,20,.1)');g.fillStyle=gl;g.fill();
-    g.strokeStyle='rgba(255,150,50,.85)';g.lineWidth=3;g.stroke();rfFlame(g,h.x-h.w/2+8,yB,h.w-16,22+Math.sin(t*3+h.ph)*6,t+h.ph,true)}
-  for(const f of s.falls){g.save();g.translate(f.x,f.y);g.rotate(f.r);g.fillStyle=f.big?'#3a2414':'#6a5a4a';g.fillRect(-(f.big?14:5),-4,f.big?28:10,8);if(f.big){g.fillStyle='rgba(255,140,40,.9)';g.fillRect(-14,2,28,2)}g.restore();if(f.big)rfFlame(g,f.x-10,f.y-22,20,18,t,false)}
   // le bois qui brûle sur les piles, les bancs, les poutres (le décor : ces flammes-là sont derrière)
   if(RF.deco){g.globalCompositeOperation='lighter';for(const[x,y,w,h]of RF.deco){if(x<cx-150||x>cx+W+150||y<cy-150||y>cy+H+150)continue;const gl=g.createRadialGradient(x+w/2,y+h,4,x+w/2,y+h,130);gl.addColorStop(0,'rgba(255,120,30,.22)');gl.addColorStop(1,'rgba(255,80,20,0)');g.fillStyle=gl;g.fillRect(x+w/2-130,y+h-130,260,260)}g.globalCompositeOperation='source-over';g.globalAlpha=.8;for(const[x,y,w,h]of RF.deco){if(x<cx-100||x>cx+W+100||y<cy-100||y>cy+H+100)continue;rfFlame(g,x,y,w,h,t*.9+x*.003,false)}g.globalAlpha=1}
   // la fumée noire qui s'accumule sous les voûtes et sous le toit, qui roule
@@ -14163,14 +14149,14 @@ function rfRender(t){const s=RFS,g=ctx;
   // les feux
   for(const[x,y,w,h]of RF.fires){if(x<cx-120||x>cx+W+120)continue;rfFlame(g,x,y,w,h,t,y<300&&y<60)}
   // les lustres qui se balancent
-  for(const c of RF.chand){const L1=RF.lanes[c[1]],sw=Math.sin(t*.9+c[0])*.25,px=c[0],py=L1.y0-6,ex=px+Math.sin(sw)*190,ey=py+Math.cos(sw)*190;if(ex<cx-200||ex>cx+W+200)continue;
+  for(const c of RF.chand){const L1=RF.lanes[c[1]],sw=Math.sin(s.t*.9+c[0])*.25,px=c[0],py=L1.y0-6,ex=px+Math.sin(sw)*190,ey=py+Math.cos(sw)*190;if(ex<cx-200||ex>cx+W+200)continue;
     g.strokeStyle='#2a2018';g.lineWidth=2;g.beginPath();g.moveTo(px,py);g.lineTo(ex,ey-20);g.stroke();g.fillStyle='#c8a050';g.beginPath();g.ellipse(ex,ey,30,9,0,0,7);g.fill();g.strokeStyle='#a88030';g.lineWidth=3;g.beginPath();g.moveTo(ex-28,ey);g.quadraticCurveTo(ex,ey+30,ex+28,ey);g.stroke();
     for(let k=-2;k<=2;k++){g.fillStyle='#f0e8d0';g.fillRect(ex+k*12-2,ey-14,4,10);rfFlame(g,ex+k*12-5,ey-28,10,16,t+k,false)}}
   // les pailles
   for(const k of L.corn)if(k.rf&&!k.taken&&k.x>cx-40&&k.x<cx+W+40)drawTuft(g,k.x,k.y,t+k.ph);
   // les poutres qui tombent, les braises au sol
-  for(const b of s.beams){if(b.t<0)continue;const u=Math.min(1,b.t/b.T),y=lerp(b.y0,b.y1-24,u*u);rfBeam(g,b.x,y,b.w,b.rot*u,t,true)}
-  for(const d of s.debris){rfBeam(g,d.x,d.y-12,d.w,.06,t,false);rfFlame(g,d.x-d.w/2+6,d.y-34,d.w-12,34*(1-d.t/3),t,false)}
+  for(const b of s.beams){if(b.t<-.35)continue;const u=clamp(b.t/b.T,0,1),y=rfBeamY(b);rfBeam(g,b.x,y,b.w,b.rot*u,t,true)}
+  for(const d of s.debris){rfFlame(g,d.x-d.w/2+8,d.y-24-38*(1-d.t/3),d.w-16,38*(1-d.t/3)+14,t+d.x*.01,false,1);rfBeam(g,d.x,d.y-12,d.w,.06,t,false)}
   // les camarades, Raymond
   for(const m of s.mates){if(m.alive)vxPigeon(g,m.x,m.y,1,m.f,t+m.d*3,{pal:m.pal});else if(m.fall&&m.fall.t<2)vxPigeon(g,m.fall.x,m.fall.y,1,1,t,{pal:Object.assign({},m.pal,{b0:'#3a3430',b1:'#2a2420',w0:'#2a2420',w1:'#3a3430',head:'#3a3430'}),rot:m.fall.t*6,fold:1,closed:1})}
   if(s.dead>0)vxPigeon(g,s.x,s.y,1,s.f,t,{rot:(1.4-s.dead)*8,fold:1,closed:1});else vxPigeon(g,s.x,s.y,1.05,s.f,s.fph/14,{flap:s.fph});
@@ -14185,8 +14171,8 @@ function rfRender(t){const s=RFS,g=ctx;
   // la fumée basse, toujours là, qui défile devant
   for(let k=0;k<5;k++){const x=((k*300+t*55)%(W+500)+W+500)%(W+500)-250,y=H-30-k*12+Math.sin(t*.6+k)*14;rfPuff(g,x,y,200,50,'10,6,5',.6)}
   // les repères en haut de l'écran : une poutre va tomber (gros repère : gros morceau)
-  for(const b of s.beams){if(b.t>=0)continue;const sx=b.x-cx;if(sx<-60||sx>W+60)continue;const bl=Math.sin(t*18)>0,sz=b.big?22:13,yy=34;
-    g.fillStyle=bl?'#ff7020':'#ffd060';g.beginPath();g.moveTo(sx,yy+sz);g.lineTo(sx-sz*.9,yy-sz*.4);g.lineTo(sx+sz*.9,yy-sz*.4);g.closePath();g.fill();g.fillStyle='#2a1008';g.font='bold '+(b.big?18:12)+'px '+F_DISP;g.textAlign='center';g.fillText('!',sx,yy+(b.big?4:2));
+  for(const b of s.beams){if(b.t>=0)continue;const sx=b.x-cx;if(sx<-60||sx>W+60)continue;const near=b.t>-.5,bl=Math.sin(t*(near?30:12))>0,sz=b.big?22:13,yy=34,k=clamp(1+b.t/1.3,0,1);
+    g.fillStyle=near?(bl?'#ff1a10':'#a00800'):(bl?mix('#ffd060','#ff5020',k):'#ffd060');g.beginPath();g.moveTo(sx,yy+sz);g.lineTo(sx-sz*.9,yy-sz*.4);g.lineTo(sx+sz*.9,yy-sz*.4);g.closePath();g.fill();g.fillStyle='#2a1008';g.font='bold '+(b.big?18:12)+'px '+F_DISP;g.textAlign='center';g.fillText('!',sx,yy+(b.big?4:2));
     g.strokeStyle='rgba(255,180,80,.35)';g.lineWidth=b.big?3:2;g.setLineDash([6,6]);g.beginPath();g.moveTo(sx-b.w/2,yy+sz+4);g.lineTo(sx+b.w/2,yy+sz+4);g.stroke();g.setLineDash([])}
   // le vignettage, la date
   const vg=g.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(20,6,0,.6)');g.fillStyle=vg;g.fillRect(0,0,W,H);
@@ -14196,13 +14182,13 @@ function rfRender(t){const s=RFS,g=ctx;
   drawQuip(66);
   const f=Math.max(s.fade,s.flash*.85);if(f>0){g.fillStyle='rgba(255,236,210,'+f+')';g.fillRect(0,0,W,H)}}
 function rfPuff(g,x,y,rx,ry,c,a){g.save();g.translate(x,y);g.scale(1,ry/rx);const sg=g.createRadialGradient(0,0,rx*.1,0,0,rx);sg.addColorStop(0,'rgba('+c+','+a+')');sg.addColorStop(1,'rgba('+c+',0)');g.fillStyle=sg;g.beginPath();g.arc(0,0,rx,0,7);g.fill();g.restore()}
-function rfFlame(g,x,y,w,h,t,hang){const n=Math.max(2,Math.floor(w/14));for(let k=0;k<n;k++){const fx=x+(k+.5)*w/n,ph=t*9+k*1.7+x*.01,hh=h*(.7+.3*Math.sin(ph)),ww=w/n*.9;
+function rfFlame(g,x,y,w,h,t,hang,v){const n=Math.max(2,Math.floor(w/(v?11:14)));for(let k=0;k<n;k++){const fx=x+(k+.5)*w/n+(v?Math.sin(k*7.3)*4:0),ph=t*9+k*1.7+x*.01,hh=h*(v?(.45+.55*Math.abs(Math.sin(k*2.39+x*.07)))*(.75+.25*Math.sin(ph)):(.7+.3*Math.sin(ph))),ww=w/n*(v?1.25:.9);
     for(const[c,s]of[['rgba(200,60,10,.85)',1],['rgba(255,150,30,.9)',.72],['rgba(255,236,150,.95)',.4]]){g.fillStyle=c;g.beginPath();
       if(hang){g.moveTo(fx-ww*s,y);g.quadraticCurveTo(fx-ww*s*.6+Math.sin(ph)*4,y+hh*s*.6,fx+Math.sin(ph*1.3)*5,y+hh*s);g.quadraticCurveTo(fx+ww*s*.6,y+hh*s*.6,fx+ww*s,y)}
       else{const b=y+h;g.moveTo(fx-ww*s,b);g.quadraticCurveTo(fx-ww*s*.6+Math.sin(ph)*4,b-hh*s*.6,fx+Math.sin(ph*1.3)*5,b-hh*s);g.quadraticCurveTo(fx+ww*s*.6,b-hh*s*.6,fx+ww*s,b)}g.fill()}}}
-function rfBeam(g,x,y,w,rot,t,falling){g.save();g.translate(x,y);g.rotate(rot);g.fillStyle='#3a2414';g.fillRect(-w/2,-12,w,24);g.fillStyle='#5a3820';g.fillRect(-w/2,-12,w,6);
+function rfBeam(g,x,y,w,rot,t,falling){g.save();g.translate(x,y);g.rotate(rot);if(falling)rfFlame(g,-w/2+6,-44,w-12,40,t+x*.01,false,1);g.fillStyle='#3a2414';g.fillRect(-w/2,-12,w,24);g.fillStyle='#5a3820';g.fillRect(-w/2,-12,w,6);
   g.fillStyle='#1a0c06';for(let k=-w/2+8;k<w/2-8;k+=18)g.fillRect(k,-4,10,3);g.fillStyle='rgba(255,120,30,.8)';g.fillRect(-w/2,8,w,4);
-  if(falling)rfFlame(g,-w/2+4,-40,w-8,28,t,false);g.restore()}
+g.restore()}
 /* la sortie : on se retourne, la cathédrale brûle — d'après la carte postale coloriée de septembre 1914 :
    à gauche le chevet et la flèche de l'ange, puis la façade du transept nord et sa rose, la nef hérissée de pinacles
    devant le toit en flammes, à droite la tour nord ; au premier plan, les toits de Reims */
