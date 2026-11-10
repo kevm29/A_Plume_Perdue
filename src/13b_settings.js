@@ -25,9 +25,9 @@ function setVol(k,d){S[k]=clamp((S[k]==null?8:S[k])+d,0,10);applyVolumes();save(
 function setMode(d){const vis=modesVisible();let i=vis.findIndex(m=>m.k===(G.setPick||S.mode));if(i<0)i=0;i=(i+d+vis.length)%vis.length;const m=vis[i];G.setPick=m.k;G.setMsg=null;
   if(m.hidden&&!(S.codes&&S.codes[m.k]))return;S.mode=m.k;G.setPick=null;applyMode();save()}
 function settingsRows(){return['mus','sfx','mode','reset','back']}
-/* tout effacer : pailles, médailles, secrets, succès, avancement (on garde le son et le mode de jeu) */
-function askReset(){G.confirm={prev:'settings',text:/*v2*/'Réinitialiser le jeu ?',sub:/*v2*/"Toute la paille, les médailles, les secrets, les succès et l'avancement seront effacés. C'est définitif.",labels:[/*v2*/'Annuler',/*v2*/'Tout effacer'],yes:resetGame};G.confirmSel=0}
-function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,mode:S.mode,codes:S.codes,modesShown:S.modesShown};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
+/* tout effacer : pailles, médailles, secrets, succès, avancement, modes cachés et leurs codes (on ne garde que le son) */
+function askReset(){G.confirm={prev:'settings',text:/*v2*/'Réinitialiser le jeu ?',sub:/*v2*/"Toute la paille, les médailles, les secrets, les succès, l'avancement et les modes cachés seront effacés. C'est définitif.",labels:[/*v2*/'Annuler',/*v2*/'Tout effacer'],yes:resetGame};G.confirmSel=0}
+function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,mode:'normal',codes:{},modesShown:false};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
 function handleSettings(){
   const C=G.codeEntry;if(C)return; // la saisie du code passe par le clavier (voir 14_main)
   if(G.confirm){handleConfirm();return}
