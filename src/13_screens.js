@@ -17,7 +17,7 @@ function menuItems(){
     it.push({label:'Paramètres',act:openSettings});
     return it;
   }
-  if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:"Retour à l'accueil",act:askHome},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
+  if(G.state==='pause')return[{label:'Reprendre',act:()=>G.state='play'},{label:'Recommencer le niveau',act:()=>{G.cutSeen=G.cutSeen||G.li>0;startLevel(G.li)}},{label:'Choisir un niveau',act:openSelect},{label:/*v2*/'Succès',act:()=>{G.achFrom='pause';openAch()}},{label:"Retour à l'accueil",act:askHome},{label:S.muted?'Son : coupé':'Son : activé',act:toggleMute}];
   return[];
 }
 function selectOpen(i){if(S.infinite)return true;if(i===100)return true;if(i===101)return !!S.finished;return i<=S.unlocked}
@@ -412,8 +412,8 @@ function renderLetter(t){
   }
 }
 /* fin de niveau : court bilan ; fin de mission : les quatre morceaux de lettre */
-function endOfLevel(li){
-  const def=LEVELS[li],st=S.run.stats[li]||{corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths,points:0};
+function endOfLevel(li,shown){
+  const def=LEVELS[li],st=shown||S.run.stats[li]||{corn:G.corn,cornTotal:G.cornTotal,medal:G.medal,deaths:G.levelDeaths,points:0};
   const after=()=>{
     if(li%4!==3){G.state='levelend';G.LE={mode:'short',li,after:0,st};G.fade=1;SFX.page();return}
     const first=li-3,go=()=>{G.state='levelend';G.LE={mode:'letter',li:first,last:li,chars:0,done:false,after:0};G.fade=1;SFX.page()};
@@ -424,12 +424,19 @@ function endOfLevel(li){
 }
 function handleLetter(dt){
   const LE=G.LE;const go=pressed.has('ok')||pressed.has('jump')||G.click;
-  if(LE.mode==='short'){LE.after+=dt;if(go&&LE.after>.5){G.cutSeen=true;startLevel(LE.li+1)}return}
+  if(LE.mode==='short'){LE.after+=dt;if(LE.sel==null)LE.sel=1;if(LE.after<=.5)return;
+    if(pressed.has('left')||pressed.has('right')||pressed.has('up')||pressed.has('down'))LE.sel=1-LE.sel;
+    let pick=null;if(G.click&&G.doneBoxes){for(const b of G.doneBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)pick=b.i}
+    else if(pressed.has('ok'))pick=LE.sel;
+    if(pick===1){G.cutSeen=true;startLevel(LE.li+1)}else if(pick===0)replayLevel(LE.li);return}
   const def=LEVELS[LE.li];
   const total=(def.letter.date||'').length+letterToks(LE.li).reduce((s,t)=>s+(t.br?0:t.w.length+1),0);
   if(!LE.done){const before=Math.floor(LE.chars);LE.chars+=dt*30;if(Math.floor(LE.chars)!==before&&Math.floor(LE.chars)%3===0)noise(.03,2600,.04,'highpass');if(go)LE.chars=total;if(LE.chars>=total){LE.done=true;LE.after=0;achLetter(LE.li)}}
   else{LE.after+=dt;if(go&&LE.after>.5){if(LE.li<LE.last){LE.li++;LE.chars=0;LE.done=false;LE.after=0;SFX.page();const pre=LEVELS[LE.li].letter.pre;if(pre){const keep=LE;G.state='intro';G.cards=[{t:pre,minT:.8}];G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='levelend';G.LE=keep;G.fade=1;SFX.page()}}}else afterLetter(LE.last)}}
 }
+/* rejouer le niveau qu'on vient de finir : tout revient en jeu ; on garde la meilleure des deux tentatives */
+function replayLevel(li){G.replay={li,stats:S.run.stats[li],got:S.run.got&&S.run.got[li],medal:S.run.medals&&S.run.medals[li]};
+  if(S.run.got)delete S.run.got[li];delete S.run.stats[li];if(S.run.medals)delete S.run.medals[li];save();G.cutSeen=true;startLevel(li)}
 function renderLevelDone(t){
   const LE=G.LE,def=LEVELS[LE.li],st=LE.st;
   ctx.fillStyle='#1a120c';ctx.fillRect(0,0,W,H);
@@ -448,7 +455,9 @@ function renderLevelDone(t){
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});
-  if(LE.after>.6){ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.45+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer ▸',W-24,H-16)}
+  G.doneBoxes=[];if(LE.after>.5)[[/*v2*/'Rejouer le niveau',0],['Continuer ▸',1]].forEach(([lb,i])=>{const bw=210,bh=40,bx=W/2-5+(i?12:-bw-12),by=H/2+118,sel=(LE.sel==null?1:LE.sel)===i;
+    ctx.fillStyle=sel?'#ece2c6':'rgba(236,226,198,.12)';rr(ctx,bx,by,bw,bh,7);ctx.fill();ctx.strokeStyle='rgba(236,226,198,.5)';ctx.lineWidth=1.5;rr(ctx,bx,by,bw,bh,7);ctx.stroke();
+    ctx.fillStyle=sel?'#2a2420':'#ece2c6';ctx.font='18px '+F_DISP;ctx.textAlign='center';ctx.fillText(lb,bx+bw/2,by+26);G.doneBoxes.push({x:bx,y:by,w:bw,h:bh,i})});
   ctx.restore();
 }
 function afterLetter(li){

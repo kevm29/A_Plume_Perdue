@@ -176,11 +176,12 @@ function renderToasts(dt){
 function openAch(){G.state='ach';G.fade=1;G.achY=0}
 function achMaxY(){return Math.max(0,Math.ceil(ACH.length/2)*84+96-H+30)}
 function handleAch(){
-  if(pressed.has('esc')||pressed.has('back')||pressed.has('ok')){goTitle();return}
+  const back=()=>{if(G.achFrom==='pause'){G.achFrom=null;G.state='pause';G.fade=0}else goTitle()};
+  if(pressed.has('esc')||pressed.has('back')||pressed.has('ok')){back();return}
   if(pressed.has('down'))G.achY=(G.achY||0)+84;if(pressed.has('up'))G.achY=(G.achY||0)-84;
   if(G.wheel){G.achY=(G.achY||0)+G.wheel;G.wheel=0}
   G.achY=clamp(G.achY||0,0,achMaxY());
-  if(G.click){if(G.click.y>H-34||G.click.y<70)goTitle();else G.achTap=G.click}
+  if(G.click){if(G.click.y>H-34||G.click.y<70)back();else G.achTap=G.click}
 }
 /* description d'un succès : retour à la ligne dans la case (2 lignes, police réduite si besoin) */
 /* largeur prudente : selon le navigateur et le chargement des polices, measureText peut sous-estimer ; on prend aussi une estimation par caractère */
