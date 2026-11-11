@@ -39,7 +39,7 @@ const ACH=[
  ['a72','X',/*v2*/'Voyeur',/*v2*/"Sur l'aire de Gueux, ouvrir la porte d'un cabinet occupé."],
  ['a74','X',/*v2*/'Scheisse',/*v2*/"Fienter sur l'officier allemand de l'abri du Mort-Homme et sur un soldat allemand pendant le vol depuis le fort de Vaux, en 1916."],
  ['a75','X',/*v2*/'Planqué',/*v2*/"Dans l'abri du Mort-Homme, se cacher une fois dans chacun des six placards."],
- ['a76','X',/*v2*/'Mémoire de pigeon',/*v2*/"Revivre avec la touche B les huit souvenirs : la route, le bois et la tranchée de 1916, le gaz du Mort-Homme, la cathédrale en feu, et le passé de la Marne, de Crécy et des combles."],
+ ['a76','X',/*v2*/'Mémoire de pigeon',/*v2*/"Revivre avec la touche B les huit souvenirs : 1916 au sentier (route, bois, tranchée), le gaz, la cathédrale en feu, la Marne, Crécy, les combles."],
  ['n11','X',/*v2*/"Tchao les nazes !",/*v2*/"Faire fuir tous les pigeons du parc en fientant sur la tête de Colbert."],
  ['n21','X',/*v2*/"Zzzip",/*v2*/"Faire rentrer les deux campeurs dans leur tente."],
  ['n25','X',/*v2*/"Génération Z",/*v2*/"Demander le chemin aux pigeons des combles."],
@@ -273,7 +273,7 @@ function renderToasts(dt){
 }
 /* écran des succès (depuis l'accueil, seulement si au moins un est débloqué) : molette pour défiler, survol pour un indice */
 function openAch(){G.state='ach';G.fade=1;G.achY=0}
-function achMaxY(){return Math.max(0,Math.ceil(ACH.length/2)*84+96-H+30)}
+function achMaxY(){return Math.max(0,Math.ceil(ACH.length/2)*96+96-H+30)}
 function handleAch(){
   const back=()=>{if(G.achFrom==='pause'){G.achFrom=null;G.state='pause';G.fade=0}else goTitle()};
   if(pressed.has('esc')||pressed.has('back')||pressed.has('ok')){back();return}
@@ -295,14 +295,14 @@ function renderAch(t){
   ctx.fillStyle='rgba(12,10,16,.9)';ctx.fillRect(0,0,W,H);
   const st=achState(),n=ACH.filter(a=>st[a[0]]).length;
   ctx.save();ctx.beginPath();ctx.rect(0,74,W,H-110);ctx.clip();
-  const cw=440,rh=84,x0=W/2-cw-6,y0=86-(G.achY||0),ms=G.mouse||{x:-1,y:-1};let tip=null;
+  const cw=440,rh=96,x0=W/2-cw-6,y0=86-(G.achY||0),ms=G.mouse||{x:-1,y:-1};let tip=null;
   ACH.forEach((a,i)=>{const on=!!st[a[0]],c=i%2,r=Math.floor(i/2),x=x0+c*(cw+12),y=y0+r*rh;if(y<-rh||y>H)return;
     const hov=ms.x>x&&ms.x<x+cw&&ms.y>y&&ms.y<y+rh-8&&ms.y>74&&ms.y<H-36,tap=G.achTap&&G.achTap.x>x&&G.achTap.x<x+cw&&G.achTap.y>y&&G.achTap.y<y+rh-8;
     ctx.fillStyle=on?(hov?'rgba(233,223,199,.11)':'rgba(233,223,199,.07)'):(hov?'rgba(233,223,199,.06)':'rgba(233,223,199,.025)');rr(ctx,x,y,cw,rh-8,8);ctx.fill();
     ctx.save();rr(ctx,x,y,cw,rh-8,8);ctx.clip();drawAchMedal(ctx,x+36,y+40,a[0],on,1.15);
     ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.45)';ctx.font='17px '+F_DISP;ctx.font='italic 14px '+F_BODY;const long=on&&achWrap(a[3],cw-74-16,12).length>2;ctx.font='17px '+F_DISP;ctx.fillText(on?a[2]:'Décoration secrète',x+74,y+(long?24:30));
     ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?a[3]:(hov||tap?'':'Survoler pour un indice'),x+74,y+52,cw-74-16);
-    const pr=ACH_PROG[a[0]];if(pr){let[d,n]=pr();if(on)d=n;d=Math.min(d,n);const k=n?d/n:0,bx=x+74,bw=cw-74-70,by=y+rh-20;
+    const pr=ACH_PROG[a[0]];if(pr){let[d,n]=pr();if(on)d=n;d=Math.min(d,n);const k=n?d/n:0,bx=x+74,bw=cw-74-70,by=y+rh-17;
       ctx.fillStyle='rgba(233,223,199,.14)';rr(ctx,bx,by,bw,6,3);ctx.fill();if(k>0){ctx.fillStyle=on?'#d9a441':'rgba(217,164,65,.75)';rr(ctx,bx,by,Math.max(6,bw*k),6,3);ctx.fill()}
       ctx.textAlign='right';ctx.font='12px '+F_DISP;ctx.fillStyle=on?'#d9a441':'rgba(233,223,199,.6)';ctx.fillText(Math.floor(k*100)+' %',x+cw-14,by+7)}
     ctx.restore();if(!on&&(hov||tap))tip={x:x+74,y:y+52,w:cw-74-16,t:ACH_HINT[a[0]]||'…'}});

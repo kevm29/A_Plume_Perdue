@@ -219,7 +219,7 @@ function renderHUD(){
   // une seule bulle à la fois : le cartel passe devant la réplique (qui attend)
   if(G.hintA<.05)drawQuip(qy);
 }
-function drawQuip(qy){
+function drawQuip(qy){if(G.state==='pause'||G.state==='confirm')return;
   const q=G.quip;if(!q||!q.text)return;
   const a=Math.min(1,q.t*4,(q.dur-q.t)*3);if(a<=0)return;
   ctx.save();ctx.globalAlpha=a;ctx.font='italic 20px '+F_BODY;
