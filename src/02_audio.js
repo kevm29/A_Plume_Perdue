@@ -58,6 +58,10 @@ const SONGS={
     prog:'C A Dm G C A Dm G F F C A D G C C',
     mel:'E5:.5 G5:1 E5:.5 C5:1 D5:1 C#5:.5 E5:1 A5:.5 G5:2 F5:.5 E5:.5 D5:1 A4:1 D5:1 B4:1 D5:1 G5:2 E5:.5 G5:1 E5:.5 C6:1 G5:1 A5:.5 G5:.5 E5:1 C#5:2 D5:1 F5:1 A5:1 F5:1 G5:2 F5:1 D5:1 A5:1 C6:1 A5:1 F5:1 G5:.5 F5:.5 E5:1 D5:2 C5:1 E5:1 G5:1 E5:1 A5:2 C#5:2 D5:1 F#5:1 A5:1 F#5:1 G5:1 F5:1 D5:1 B4:1 C5:1 G4:1 E5:1 G5:1 C6:2 r:2'},
   // cantique de la cathédrale : mode de ré, flûte d'orgue sur un plein-jeu tenu
+  // 4-2 — les néons de l'aire, la nuit : notes pincées sur une basse en battement de cœur
+  neons:{tempo:84,bpb:4,lead:['pizz', 'harpsi'],bass:'heart',gap:2,
+    prog:'Em Em C C Am Am B B Em Em C C Am B Em Em',
+    mel:'B4:1 r:.5 E5:.5 G5:1 r:1 F#5:.5 G5:.5 F#5:1 E5:2 E5:1 r:.5 G5:.5 C6:1 r:1 B5:.5 C6:.5 B5:1 G5:2 A5:1 r:.5 C6:.5 E6:1 r:1 D6:.5 C6:.5 B5:.5 A5:.5 E5:2 D#5:1 F#5:1 B5:1 A5:1 F#5:3 r:1 G5:1 r:.5 B5:.5 E6:1 r:1 D6:.5 B5:.5 G5:1 E5:2 C6:1 r:.5 E6:.5 G5:1 r:1 E5:.5 G5:.5 E5:1 C5:2 A4:1 C5:1 E5:1 A5:1 F#5:1 D#5:1 B4:2 E5:2 G5:2 E5:3 r:1'},
   // 4-3 — la route sous la pluie : valse lente en ut mineur, boîte à musique puis clarinette
   routepluie:{tempo:92,bpb:3,lead:['box', 'clar'],bass:'waltz',gap:2,
     prog:'Cm Cm Fm Fm G G Cm Cm Ab Eb Fm Cm Fm G Cm Cm',
@@ -114,7 +118,7 @@ const LEVEL_SONGS={
   's2-1':{base:'sentier'},'s2-2':{base:'eoliennes'},
   's2-3':{base:'zonerouge'},'s2-4':{base:'complainte',tr:-2,tempo:70,lead:['box'],bass:'soft'},
   's3-1':{base:'train'},'s3-2':{base:'gare'},'s3-3':{base:'tango'},'s3-4':{base:'cantique'},
-  's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'orage',tempo:136,bass:'gallop'},'s4-3':{base:'routepluie'},'s4-4':{base:'barcarolle'},
+  's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'neons'},'s4-3':{base:'routepluie'},'s4-4':{base:'barcarolle'},
   's5-1':{base:'polka'},'s5-2':{base:'salve'},'bal':{base:'valse',tempo:132,lead:['accord','box'],bass:'waltz'},'s5-3':{base:'musette'},'pl-java':{base:'java'},'s5-4':{base:'title',tempo:50,tr:-5,lead:['clar','box'],bass:'chorale'},
   'vx-nuit':{base:'nuitA4'},'vx-route':{base:'route1916'},'vx-chambree':{base:'chambree'},'vx-aube':{base:'aube'},'vx-vol':{base:'vol1916'},'vx-reveil':{base:'nuitA4',tempo:66,tr:-3,lead:['box'],bass:'soft'},
   'chase':{base:'galop'},'title':{base:'title'}
