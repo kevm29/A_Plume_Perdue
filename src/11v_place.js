@@ -60,7 +60,7 @@ function plSetPass(Lv,n){
   const S2=Lv.pl;S2.pass=n;S2.rain=n===3;S2.t=0;S2.said={};
   const g=Lv.g,put=(c,r,ch)=>{g[r][c]=ch},plat=(c0,c1,r,ch)=>{for(let c=c0;c<=c1;c++)g[r][c]=ch||'='},box=(c0,c1,r0,r1)=>{for(let c=c0;c<=c1;c++)for(let r=r0;r<=r1;r++)g[r][c]='X'};
   for(let r=0;r<PLG;r++)for(let c=1;c<PLW-1;c++)g[r][c]='.';
-  S2.props=[];const prop=(k,c0,c1,r0,o)=>{S2.props.push(Object.assign({k,c0,c1,r0},o||{}));if(k==='bench'||k==='horseDeck')plat(c0,c1,r0);else box(c0,c1,r0,PLG-1)};
+  S2.props=[];const prop=(k,c0,c1,r0,o)=>{S2.props.push(Object.assign({k,c0,c1,r0},o||{}));if(k==='bench'||k==='horseDeck')plat(c0,c1,r0);else if(k==='van'){box(c0,c1-1,r0,PLG-1);box(c1,c1,r0+1,PLG-1)}else box(c0,c1,r0,PLG-1)};   /*v2*/ // la camionnette : la cabine est plus basse que la caisse
   // ce qui est là à chaque passage : les arbres, les réverbères, la scène, les bancs, le plancher du manège
   for(const tr of PLX.trees)for(const[c0,c1,r]of tr.br)plat(c0,c1,r);
   for(const l of PLX.lamps){if(l.perch!=null)put(l.perch,5,'=');if(l.sp)for(const c of l.sp)put(c,5,'v')}
@@ -533,8 +533,7 @@ function plGoods(g,k,w,R,st){const y=-50;
 }
 function plVendor(g,c,st,t){if(st==='f')return;const x=c.c*T+80,b=PLF-50;g.save();
   const R=mulberry(c.c*7),coat=pick2(R,['#f2f0ea','#3a5a7a','#8a3a3a','#4a6a4a']),skin=pick2(R,PL_SKIN),hair=pick2(R,PL_HAIR),fem=R()<.45,must=!fem&&R()<.5,ph=c.c*.37;
-  if(st==='p'){// il remballe : penché sur une caisse, on le voit de dos
-    const bend=Math.abs(Math.sin(t*1.5))*6;g.fillStyle=coat;rr(g,x-14,b-30+bend,28,32,8);g.fill();g.fillStyle=hair;g.beginPath();g.arc(x+12,b-26+bend,8,0,7);g.fill();g.restore();return}
+  if(st==='p'){g.restore();return}   /*v2*/ // (le marchand qui remballait, dessiné de dos, flottait derrière le comptoir : retiré)
   const bob=Math.sin(t*2+c.c)*1.2,hy=b-56+bob;
   // le corps, le tablier
   g.fillStyle=coat;rr(g,x-14,b-44+bob,28,46,8);g.fill();
