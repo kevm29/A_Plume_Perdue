@@ -15159,7 +15159,10 @@ function endOfLevel(li,shown){
     const pre=def.w===0?TUBE:LETTER_CARDS[def.w];if(pre){G.state='intro';G.cards=pre;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=go}else go();
   };
   if(li===18)unlock('a13');
-  if(def.afterCards){G.state='intro';G.cards=def.afterCards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=after;if(def.afterSong)setSong(def.afterSong)}else after();
+  const cards=()=>{if(def.afterCards){G.state='intro';G.cards=def.afterCards;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=after;if(def.afterSong)setSong(def.afterSong)}else after()};
+  // 4e niveau d'une mission : le panneau des scores d'abord, puis les intertitres et la lettre
+  if(li%4===3){G.state='levelend';G.LE={mode:'short',li,after:0,st,next:cards};G.fade=1;SFX.page();return}
+  cards();
 }
 function handleLetter(dt){
   const LE=G.LE;const go=pressed.has('ok')||pressed.has('jump')||G.click;
@@ -15167,7 +15170,7 @@ function handleLetter(dt){
     if(pressed.has('left')||pressed.has('right')||pressed.has('up')||pressed.has('down'))LE.sel=1-LE.sel;
     let pick=null;if(G.click&&G.doneBoxes){for(const b of G.doneBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)pick=b.i}
     else if(pressed.has('ok'))pick=LE.sel;
-    if(pick===1){G.cutSeen=true;startLevel(LE.li+1)}else if(pick===0)replayLevel(LE.li);return}
+    if(pick===1){G.cutSeen=true;if(LE.next)LE.next();else startLevel(LE.li+1)}else if(pick===0)replayLevel(LE.li);return}
   const def=LEVELS[LE.li];
   const total=(def.letter.date||'').length+letterToks(LE.li).reduce((s,t)=>s+(t.br?0:t.w.length+1),0);
   if(!LE.done){const before=Math.floor(LE.chars);LE.chars+=dt*30;if(Math.floor(LE.chars)!==before&&Math.floor(LE.chars)%3===0)noise(.03,2600,.04,'highpass');if(go)LE.chars=total;if(LE.chars>=total){LE.done=true;LE.after=0;achLetter(LE.li)}}
