@@ -554,7 +554,7 @@ const WORLD_CARDS=[
   [{t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
    {t:"Raymond doit rentrer au pigeonnier Vasseur, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
    {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
-   {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
+   {t:/*v2*/"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1914."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
   [{t:"Raymond repense à cette phrase rayée. Il n'en dit rien à personne.\nLes pigeons de Reims, eux, ne se taisent jamais."},
    {t:"Du haut de la cathédrale, Raymond aperçoit un grand axe qui file vers l'ouest.\nAu loin, il reconnaît les paysages."},
@@ -6687,7 +6687,10 @@ function trainStep(dt){
   if(pcx>Tn.b1&&!Tn.w5){Tn.w5=true;Tn.spawnT=Math.min(Tn.spawnT,2.5)}
   if(pcx>Tn.b2+3*T&&!Tn.bridgeDone){Tn.nextKind='bridge'}
   if(!Tn.w7&&roofish&&trainZone(pcx)){Tn.spawnT-=dt;
-    if(Tn.spawnT<=0){const k=Tn.nextKind;Tn.pyl.push({k,x:Math.max(cam.x+W+70,pcx+560),said:false});if(k==='bridge')Tn.bridgeDone=true;
+    if(Tn.spawnT<=0){const k=Tn.nextKind,np={k,x:Math.max(cam.x+W+70,pcx+560),said:false};Tn.pyl.push(np);
+      // les premiers obstacles sont annoncés par une flèche : les deux premiers pylônes, puis, au retour sur les toits, le premier pylône et le premier pont
+      if(pcx<Tn.zA[1]){Tn.cueA=(Tn.cueA||0)+1;if(Tn.cueA<=2&&k==='pylon')np.cue='up'}
+      else if(pcx>Tn.zB[0]){if(k==='pylon'&&!Tn.cueBp){Tn.cueBp=1;np.cue='up'}if(k==='bridge'&&!Tn.cueBb){Tn.cueBb=1;np.cue='down'}}if(k==='bridge')Tn.bridgeDone=true;
       Tn.spawnT=2+rnd()*3;Tn.nextKind=Tn.bridgeDone&&pcx>Tn.b2&&rnd()<.45?'bridge':'pylon'}}
   for(let i=Tn.pyl.length-1;i>=0;i--){const p=Tn.pyl[i];p.x-=TRN.VN*Math.max(v,.0)*dt;
     if(!p.said&&p.x<pcx-60&&!P.dead&&!P.carried&&trainOnRoof()&&!G.sim){p.said=true;
@@ -6708,7 +6711,10 @@ function trainStep(dt){
     if(!G.sim&&(trIn(Tn,Tn.in3)||trIn(Tn,Tn.in4))){G.shake=Math.max(G.shake,3.5);noise(.12,400,.35,'lowpass')}}
   const [a3,b3]=Tn.in3;
   Tn.bottles.sort((p,q)=>p.x-q.x);for(let i=0;i+1<Tn.bottles.length;i++){const p=Tn.bottles[i],q=Tn.bottles[i+1];if(q.x-p.x<26){const m=(p.x+q.x)/2;p.x=m-13;q.x=m+13;const t2=p.vx;p.vx=q.vx*.8;q.vx=t2*.8}}
-  for(const b of Tn.bottles){const f=40*dt;b.vx=Math.abs(b.vx)<=f?0:b.vx-Math.sign(b.vx)*f;b.x+=b.vx*dt;b.rot+=b.vx*dt/7;
+  // les places où l'on se cache (siège vide, dormeur) : rien ne s'y arrête, ce qui roule continue jusqu'à en sortir
+  const hideZ=Tn.pass.filter(pa=>pa.k==='empty'||pa.k==='sleep').map(pa=>[pa.x-14,pa.x+94]);
+  for(const b of Tn.bottles){const f=40*dt;const inHide=hideZ.some(([a,c])=>b.x>a&&b.x<c);
+    if(inHide){if(Math.abs(b.vx)<45)b.vx=(Math.sign(b.vx)||Tn.dir)*45}else b.vx=Math.abs(b.vx)<=f?0:b.vx-Math.sign(b.vx)*f;b.x+=b.vx*dt;b.rot+=b.vx*dt/7;
     if(b.x<a3+8){b.x=a3+8;b.vx=Math.abs(b.vx)*.5}if(b.x>b3-8){b.x=b3-8;b.vx=-Math.abs(b.vx)*.5}
     if(!P.dead&&Math.abs(b.x-pcx)<12&&P.y+P.h>TRN.FLOOR-12&&P.y<TRN.FLOOR)G.trainHit='bouteille'}
   // les voyageurs : horrifiés s'ils voient Raymond sauter devant eux
@@ -6966,6 +6972,17 @@ function drawTrainFront(t){
   const Tn=L.train;if(!Tn)return;const g=ctx;
   for(const p of Tn.pyl){if(p.x<cam.x-300||p.x>cam.x+W+300)continue;if(p.k==='pylon')drawPylonFront(g,p.x);else drawBridgeFront(g,p.x,t)}
   if(Tn.w7)drawStationFront(g,Tn);
+  // flèche d'alerte au-dessus de Raymond : elle clignote à l'approche, puis passe au rouge au moment d'agir
+  //   vers le haut (pylône) : sauter ; vers le bas (pont) : rester à plat
+  if(!P.dead&&!P.carried&&trainOnRoof()){const pcx=P.x+P.w/2;let best=null;
+    for(const p of Tn.pyl)if(p.cue&&p.x>pcx-10){const tt=(p.x-pcx)/(TRN.VN*Math.max(Tn.v,.05));if(tt<1.8&&(!best||tt<best.tt))best={tt,d:p.cue}}
+    if(best){const red=best.tt<(best.d==='up'?.38:.6),blink=red||Math.sin(t*(best.tt<.9?22:12))>-.2;
+      if(blink){const hh=P.h*2,x=pcx,y0=P.y-12;g.save();g.globalAlpha=red?1:.85;
+        g.fillStyle=red?'#d8322a':best.tt<.9?'#e8a23a':'#f0e6c8';g.strokeStyle='rgba(20,16,14,.75)';g.lineWidth=2.5;
+        const up=best.d==='up',top=y0-hh,bot=y0,sw=9,hw=20,hl=24;g.beginPath();
+        if(up)poly(g,[x-sw,bot,x-sw,top+hl,x-hw,top+hl,x,top,x+hw,top+hl,x+sw,top+hl,x+sw,bot]);
+        else poly(g,[x-sw,top,x-sw,bot-hl,x-hw,bot-hl,x,bot,x+hw,bot-hl,x+sw,bot-hl,x+sw,top]);
+        g.fill();g.stroke();g.restore()}}}
   // traînées de vent au-dessus des toits
   if(Tn.v>.2){g.strokeStyle='rgba(255,255,255,'+(.3*Tn.v)+')';g.lineWidth=1;for(let k=0;k<9;k++){const x=cam.x+((k*233-t*900*Tn.v)%(W+200)+W+200)%(W+200)-100,y=60+((k*61)%200);g.beginPath();g.moveTo(x,y);g.lineTo(x+70,y);g.stroke()}}
   // l'annonce : un pylône (ou autre chose) arrive
