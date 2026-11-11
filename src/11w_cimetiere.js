@@ -24,7 +24,7 @@ const CMX={
     ['dalle',140,141],['stele',143,143,10],['croixfer',145,146],['granit',148,151,9,{nom:'LECLERC',fleurs:1}],['dalle',153,154],['chapelle',157,159,7,{nom:'BOUCHER'}],['stele',161,161,9],['colonne',163,163,7],
     ['dalle',167,168],['croix',170,170,10],['stele',172,173,10]],
   trees:[{x:61.5,br:[[59,60,8],[63,64,6],[61,62,4]]},{x:176.5,br:[[174,175,8],[178,179,6],[176,177,3]]}],
-  mem:{c0:89,c1:100,x:94.5*T},
+  mem:{c0:89,c1:100,x:95*T},   // centré sur ses marches : le monument repose entièrement sur la marche haute
   tomb:181,
   // les fantômes : a, b (colonnes), haut ?, vitesse, allure, souvenir
   ghosts:[[15.5,27,0,46,'chignon',"Le facteur passait à midi. Je l'attendais tous les jours."],
@@ -56,7 +56,7 @@ function cmPost(Lv){
   C.chapels=C.graves.filter(q=>q.k==='chapelle');
   for(const tr of CMX.trees)for(const[c0,c1,r]of tr.br)plat(c0,c1,r);
   // les marches du monument aux morts
-  box(CMX.mem.c0,CMX.mem.c1,11,11);box(CMX.mem.c0+2,CMX.mem.c1-2,10,10);
+  box(CMX.mem.c0,CMX.mem.c1,11,11);box(CMX.mem.c0+1,CMX.mem.c1-1,10,10);
   Lv.spawn={x:1.5*T,y:CMF};
   Lv.exit={x:CMX.tomb*T-6,y:10*T,w:T+12,h:2*T};
   Lv.cps=[[59.5,CMF],[101.5,CMF],[137.5,CMF]].map(([c,y])=>({x:c*T,y,on:false}));
@@ -72,7 +72,7 @@ function cmPost(Lv){
     const gh={a:a*T,b:b*T,hi:!!hi,sp,kind,line,x:lerp(a,b,.3+.4*((i*.37)%1))*T,dir:i%2?-1:1,f:i%2?-1:1,pause:0,yb0:yb,y:yb,ph:i*1.37,t:i*.9,li:{x:0,y:0,r:hi?150:120,i:.5}};
     Lv.lights.push(gh.li);return gh});
   // les hiboux, dans les deux tilleuls
-  C.owls=[{hx:61.5*T,hy:2.6*T},{hx:176.5*T,hy:1.7*T}].map(o=>Object.assign(o,{x:o.hx,y:o.hy,st:'perch',t:0,cool:1.2,f:-1,n:0}));
+  C.owls=[{hx:61.5*T,hy:2.6*T},{hx:123.5*T,hy:6*T},{hx:176.5*T,hy:1.7*T}]   /*v2*/ // le troisième, perché sur la colonne brisée.map(o=>Object.assign(o,{x:o.hx,y:o.hy,st:'perch',t:0,cool:1.2,f:-1,n:0}));
   // les rats, bornés par des butées
   Lv.rats=[];Lv.mark=new Set();
   for(const[a,b,x]of[[131,136,133]]){Lv.mark.add(a+',11');Lv.mark.add(b+',11');Lv.rats.push({kind:'rat',x:x*T-15,y:CMF-16,w:30,h:16,vx:95,vy:0,onGround:false,t:x*.37%9,sq:1+x%3,base:95})}
@@ -279,7 +279,7 @@ function cmChapelFront(g,q){// la façade : pilastres, entablement gravé, front
   // la marche
   cmStone(g,-4,-6,w+8,6,cmSh(base,-.05),R,true);
   g.restore()}
-function cmSteps(g){const x0=CMX.mem.c0*T,x1=(CMX.mem.c1+1)*T,x2=(CMX.mem.c0+2)*T,x3=(CMX.mem.c1-1)*T,R=mulberry(91);g.save();
+function cmSteps(g){const x0=CMX.mem.c0*T,x1=(CMX.mem.c1+1)*T,x2=(CMX.mem.c0+1)*T,x3=CMX.mem.c1*T,R=mulberry(91);g.save();
   cmStone(g,x0,CMF-40,x1-x0,40,'#8a867a',R,true);g.fillStyle='rgba(255,255,255,.12)';g.fillRect(x0,CMF-40,x1-x0,2);
   cmStone(g,x2,CMF-80,x3-x2,40,'#948f82',R,false);g.fillStyle='rgba(255,255,255,.14)';g.fillRect(x2,CMF-80,x3-x2,2);
   g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x2,CMF-42,x3-x2,2);

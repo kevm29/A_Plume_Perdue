@@ -220,7 +220,8 @@ function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
     if(k.sw>0&&k.sw<.3&&!P.dead&&overlap(hb,{x:k.x-44,y:k.y-42,w:88,h:42}))hit='chatToit'}}
   // les pigeons des toits : ils chassent qui s'y pose, et sautent au passage de qui les survole
   for(const fl of S2.flocks){const x0=fl.c0*T,x1=(fl.c1+1)*T,over=pcx>x0-40&&pcx<x1+40&&P.y+P.h<=8*T+4&&!P.dead,onRoof=P.onGround&&!P.dead&&Math.abs(P.y+P.h-8*T)<3&&pcx>x0-6&&pcx<x1+6;
-    if(onRoof&&!fl.angry){fl.angry=1.6;unlock('r16');if(!G.sim){SFX.coo();bubble((x0+x1)/2,8*T-60,pick(['Krrr ! Dégage !','Rrou ! Chez nous !','Wesh ! Pas ici !']),'#6a4a4a')}}
+    // (le succès « Wesh » : seulement si des pigeons sont vraiment là, tout près, sur ce toit)
+    if(onRoof&&!fl.angry){fl.angry=1.6;if(fl.birds.some(bd=>Math.abs(bd.x-pcx)<110&&Math.abs(bd.y-(P.y+P.h))<30))unlock('r16');if(!G.sim){SFX.coo();bubble((x0+x1)/2,8*T-60,pick(['Krrr ! Dégage !','Rrou ! Chez nous !','Wesh ! Pas ici !']),'#6a4a4a')}}
     if(fl.angry>0)fl.angry-=dt;
     for(const b of fl.birds){b.t+=dt;b.cool-=dt;
       if(b.st==='hop'){b.vy+=1500*dt;b.y+=b.vy*dt;if(b.y>=b.y0){b.y=b.y0;b.vy=0;b.st='walk';b.cool=1.4}}
@@ -464,6 +465,9 @@ function plLamp(g,l){// réverbère de fonte noire : socle mouluré, fût cannel
     g.fillRect(-42,-244,84,6);g.strokeStyle=k;g.lineWidth=3;for(const s of[-1,1]){g.beginPath();g.moveTo(0,-222);g.quadraticCurveTo(s*30,-226,s*30,-238);g.stroke();g.beginPath();g.arc(s*16,-230,5,0,7);g.stroke()}
     for(const s of[-1,1]){const lx=s*36;g.fillStyle=k;g.fillRect(lx-8,-250,16,6);poly(g,[lx-10,-250,lx-7,-280,lx+7,-280,lx+10,-250]);g.fill();g.fillStyle='rgba(240,232,200,.75)';poly(g,[lx-7,-252,lx-5,-277,lx+5,-277,lx+7,-252]);g.fill();
       g.fillStyle=k;poly(g,[lx-11,-280,lx,-292,lx+11,-280]);g.fill();g.fillRect(lx-1,-298,2,6)}
+    // de petites pointes vers le haut sur la barre et sur les deux lanternes : on ne s'y pose pas
+    g.fillStyle='#16181c';for(let x=-40;x<=40;x+=6){if(Math.abs(x)<4)continue;poly(g,[x-2,-244,x,-252,x+2,-244]);g.fill()}
+    for(const s of[-1,1]){const lx=s*36;for(let x=-8;x<=8;x+=4){poly(g,[lx+x-1.6,-284+Math.abs(x)*.9,lx+x,-292+Math.abs(x)*.9-4,lx+x+1.6,-284+Math.abs(x)*.9]);g.fill()}}
     g.fillStyle='#16181c';g.fillRect(-43,-240,86,5);for(let x=-40;x<=40;x+=5){g.fillStyle='#16181c';poly(g,[x-2,-236,x+2,-236,x,-213]);g.fill();g.fillStyle='rgba(190,198,210,.7)';poly(g,[x-.4,-235,x+.8,-235,x,-217]);g.fill()}}
   else{// la crosse et sa lanterne (on peut s'y percher)
     g.fillStyle=k;g.fillRect(-9,-232,18,5);poly(g,[-12,-232,-8,-266,8,-266,12,-232]);g.fill();g.fillStyle='rgba(240,232,200,.75)';poly(g,[-9,-234,-6,-264,6,-264,9,-234]);g.fill();
@@ -921,6 +925,9 @@ function placeOverlay(t){const S2=L.pl;if(!S2)return;const n=S2.pass,cx=Math.rou
   ctx.save();if(zm){ctx.translate(W/2,H/2);ctx.scale(zm.z,zm.z);ctx.translate(-W/2,-H/2);ctx.translate(-Math.round(zm.fx-W/2),-Math.round(zm.fy-H/2))}else ctx.translate(-cx,-cy);
   const x0v=zm?zm.fx-W/2/zm.z-20:cx-20,x1v=zm?zm.fx+W/2/zm.z+20:cx+W+20;
   // les guirlandes d'ampoules et de fanions (deux premiers passages)
+  // les mâts où s'accrochent les guirlandes là où il n'y a ni réverbère, ni arbre, ni estrade (elles ne flottent pas dans le vide)
+  if(n<=2)for(const[mx,my]of[[6,230],[52*T,240],[PLW*T-6,230]]){if(mx<x0v-20||mx>x1v+20)continue;ctx.fillStyle='#2a2a2e';ctx.fillRect(mx-3,my-6,6,PLF-my+6);ctx.fillStyle='#4a4a52';ctx.fillRect(mx-3,my-6,2,PLF-my+6);
+    ctx.fillStyle='#2a2a2e';ctx.beginPath();ctx.arc(mx,my-8,5,0,7);ctx.fill();ctx.fillRect(mx-8,PLF-6,16,6)}
   if(n<=2){for(const[a,ya,b,yb,sag,kind]of PL_GARL){if(b<x0v||a>x1v)continue;const pt=u=>[lerp(a,b,u),lerp(ya,yb,u)+Math.sin(u*Math.PI)*sag];
     ctx.strokeStyle='rgba(30,30,30,.8)';ctx.lineWidth=1.2;ctx.beginPath();for(let k=0;k<=20;k++){const[x,y]=pt(k/20);k?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();
     const len=Math.hypot(b-a,yb-ya),nb=Math.floor(len/(kind==='flag'?24:22));
