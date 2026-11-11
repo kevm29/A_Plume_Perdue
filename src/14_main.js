@@ -28,10 +28,10 @@ bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch(
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
 /*v2*/
 /* ---------- manette (API Gamepad, disposition standard Xbox / PlayStation) ----------
-   A sauter / valider · B retour · RB action · Y époque · Start pause · Select dernier fanion · LB Super-Raymond / Dieu-Pigeon
+   A sauter / valider · B retour · X action · RB époque · Start pause · Select dernier fanion · LB Super-Raymond / Dieu-Pigeon
    Stick gauche ou croix : se déplacer, choisir dans les menus. La manette marche toujours ; le réglage « Commandes »
    des paramètres ne change que les indications affichées. */
-const PAD_BTN={0:['jump','ok'],1:['back'],5:['act'],3:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
+const PAD_BTN={0:['jump','ok'],1:['back'],2:['act'],5:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
 const padHeld=new Set();let padPrev={};
 function pollPad(){
   let gps=[];try{gps=navigator.getGamepads?navigator.getGamepads():[]}catch(e){return}

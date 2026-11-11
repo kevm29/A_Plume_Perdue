@@ -411,7 +411,7 @@ function vxCard(text,a,t,sub){
   ctx.restore()}
 /* la touche E qui flotte au-dessus de Raymond */
 function vxKeyE(x,y,t){const b=Math.sin(t*5)*2;ctx.save();ctx.translate(x,y+b);ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();ctx.fillStyle='#ece3cc';rr(ctx,-12,-12,24,24,5);ctx.fill();
-  ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.font=(pad()?'12px ':'16px ')+F_DISP;ctx.fillText(pad()?'RB':'E',0,pad()?5:6);ctx.restore()}
+  ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText(pad()?'X':'E',0,6);ctx.restore()}
 /* un sac de terre : toile de jute bombée, oreille nouée, couture, ombre portée */
 function vxSandbag(g,x,y,w,h,k){const R=mulberry((x*7+y*13)|0),col=mix(mix('#9a8660','#7a6644',R()),'#4a3a28',k||0),dk=mix(col,'#000000',.3),lt=mix(col,'#ffffff',.18),fl=R()<.5?1:-1;
   g.save();g.translate(x+w/2,y+h/2);g.rotate((R()-.5)*.08);
