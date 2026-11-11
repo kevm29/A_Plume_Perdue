@@ -272,12 +272,16 @@ function renderToasts(dt){
   if(T0.t>4)q.shift();
 }
 /* écran des succès (depuis l'accueil, seulement si au moins un est débloqué) : molette pour défiler, survol pour un indice */
-function openAch(){G.state='ach';G.fade=1;G.achY=0}
+function openAch(){G.state='ach';G.fade=1;G.achY=0;G.achSel=0}
 function achMaxY(){return Math.max(0,Math.ceil(ACH.length/2)*96+96-H+30)}
 function handleAch(){
   const back=()=>{if(G.achFrom==='pause'){G.achFrom=null;G.state='pause';G.fade=0}else goTitle()};
-  if(pressed.has('esc')||pressed.has('back')||pressed.has('ok')){back();return}
-  if(pressed.has('down'))G.achY=(G.achY||0)+84;if(pressed.has('up'))G.achY=(G.achY||0)-84;
+  if(pressed.has('esc')||pressed.has('back')||(!pad()&&pressed.has('ok'))){back();return}
+  if(pad()){/*v2*/ // à la manette : on choisit une fiche (elle s'éclaire et montre son indice), le défilement suit
+    let s=G.achSel||0;const n=ACH.length;
+    if(pressed.has('down'))s=Math.min(n-1,s+2);if(pressed.has('up'))s=Math.max(0,s-2);if(pressed.has('right')&&s%2===0&&s+1<n)s++;if(pressed.has('left')&&s%2===1)s--;
+    G.achSel=s;const yy=86+Math.floor(s/2)*96-(G.achY||0);if(yy<80)G.achY=(G.achY||0)-(80-yy);if(yy+96>H-40)G.achY=(G.achY||0)+(yy+96-(H-40))}
+  else{if(pressed.has('down'))G.achY=(G.achY||0)+84;if(pressed.has('up'))G.achY=(G.achY||0)-84}
   if(G.wheel){G.achY=(G.achY||0)+G.wheel;G.wheel=0}
   G.achY=clamp(G.achY||0,0,achMaxY());
   if(G.click){if(G.click.y>H-34||G.click.y<70)back();else G.achTap=G.click}
@@ -297,11 +301,11 @@ function renderAch(t){
   ctx.save();ctx.beginPath();ctx.rect(0,74,W,H-110);ctx.clip();
   const cw=440,rh=96,x0=W/2-cw-6,y0=86-(G.achY||0),ms=G.mouse||{x:-1,y:-1};let tip=null;
   ACH.forEach((a,i)=>{const on=!!st[a[0]],c=i%2,r=Math.floor(i/2),x=x0+c*(cw+12),y=y0+r*rh;if(y<-rh||y>H)return;
-    const hov=ms.x>x&&ms.x<x+cw&&ms.y>y&&ms.y<y+rh-8&&ms.y>74&&ms.y<H-36,tap=G.achTap&&G.achTap.x>x&&G.achTap.x<x+cw&&G.achTap.y>y&&G.achTap.y<y+rh-8;
+    const hov=(pad()&&G.achSel===i)||ms.x>x&&ms.x<x+cw&&ms.y>y&&ms.y<y+rh-8&&ms.y>74&&ms.y<H-36,tap=G.achTap&&G.achTap.x>x&&G.achTap.x<x+cw&&G.achTap.y>y&&G.achTap.y<y+rh-8;
     ctx.fillStyle=on?(hov?'rgba(233,223,199,.11)':'rgba(233,223,199,.07)'):(hov?'rgba(233,223,199,.06)':'rgba(233,223,199,.025)');rr(ctx,x,y,cw,rh-8,8);ctx.fill();
     ctx.save();rr(ctx,x,y,cw,rh-8,8);ctx.clip();drawAchMedal(ctx,x+36,y+40,a[0],on,1.15);
     ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.45)';ctx.font='17px '+F_DISP;ctx.font='italic 14px '+F_BODY;const long=on&&achWrap(a[3],cw-74-16,12).length>2;ctx.font='17px '+F_DISP;ctx.fillText(on?a[2]:'Décoration secrète',x+74,y+(long?24:30));
-    ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?a[3]:(hov||tap?'':'Survoler pour un indice'),x+74,y+52,cw-74-16);
+    ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?padTxt(a[3]):(hov||tap?'':(pad()?/*v2*/'Choisir pour un indice':'Survoler pour un indice')),x+74,y+52,cw-74-16);
     const pr=ACH_PROG[a[0]];if(pr){let[d,n]=pr();if(on)d=n;d=Math.min(d,n);const k=n?d/n:0,bx=x+74,bw=cw-74-70,by=y+rh-17;
       ctx.fillStyle='rgba(233,223,199,.14)';rr(ctx,bx,by,bw,6,3);ctx.fill();if(k>0){ctx.fillStyle=on?'#d9a441':'rgba(217,164,65,.75)';rr(ctx,bx,by,Math.max(6,bw*k),6,3);ctx.fill()}
       ctx.textAlign='right';ctx.font='12px '+F_DISP;ctx.fillStyle=on?'#d9a441':'rgba(233,223,199,.6)';ctx.fillText(Math.floor(k*100)+' %',x+cw-14,by+7)}
@@ -311,6 +315,6 @@ function renderAch(t){
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Décorations de Raymond',W/2,40);
   ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText(`${n} sur ${ACH.length}`,W/2,62);
   const my=achMaxY();if(my>0){const k=(G.achY||0)/my;ctx.fillStyle='rgba(233,223,199,.15)';rr(ctx,W-14,80,4,H-120,2);ctx.fill();ctx.fillStyle='rgba(217,164,65,.7)';rr(ctx,W-14,80+(H-160)*k,4,40,2);ctx.fill()}
-  ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('molette ou ↑ ↓ pour défiler · Échap pour revenir',W/2,H-12);
+  ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText(pad()?/*v2*/'stick ou croix pour choisir · B pour revenir':'molette ou ↑ ↓ pour défiler · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }

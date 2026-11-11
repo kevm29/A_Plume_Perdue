@@ -207,7 +207,7 @@ function renderHUD(){
   if(G.hintA>.02&&(G.hintI>=0||G.lastHint!=null)){
     if(G.hintI>=0)G.lastHint=G.hintI;
     const h=L.def.hints[G.lastHint];if(h){
-      ctx.save();ctx.globalAlpha=G.hintA;ctx.font='italic 18px '+F_BODY;const lines=wrap(ctx,h[1],440);
+      ctx.save();ctx.globalAlpha=G.hintA;ctx.font='italic 18px '+F_BODY;const lines=wrap(ctx,padTxt(h[1]),440);
       const bh=50+lines.length*23,bx2=W/2-250,by2=64;
       ctx.fillStyle='rgba(0,0,0,.3)';rr(ctx,bx2+5,by2+6,500,bh,6);ctx.fill();
       ctx.fillStyle='#ece3cc';rr(ctx,bx2,by2,500,bh,6);ctx.fill();ctx.strokeStyle='rgba(42,36,32,.6)';ctx.lineWidth=1;rr(ctx,bx2+6.5,by2+6.5,487,bh-13,4);ctx.stroke();

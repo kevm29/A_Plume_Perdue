@@ -110,7 +110,7 @@ function renderSelect(t){
   const ry=82+WORLDS.length*64+14;
   tile(100,70,ry,406,28,"Revoir l'introduction");
   tile(101,484,ry,406,28,'Revoir la fin');
-  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Entrée pour lancer · Échap pour revenir',W/2,H-12);
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText(pad()?/*v2*/'A pour lancer · B pour revenir':'Entrée pour lancer · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){
@@ -334,7 +334,7 @@ function renderCards(t){
   }
   ctx.restore();
   if(c.pic!=='finale')for(let k=0;k<2;k++){if(rnd()<.3){ctx.fillStyle='rgba(230,220,200,'+(rnd()*.1)+')';ctx.fillRect(rnd()*W,0,1+rnd(),H)}}
-  if(G.cardT>.8&&c.pic!=='finale'){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.4+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer · Échap pour passer',W-90,H-22)}
+  if(G.cardT>.8&&c.pic!=='finale'){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.4+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText(pad()?/*v2*/'appuyer pour continuer · Start pour passer':'appuyer pour continuer · Échap pour passer',W-90,H-22)}
 }
 function handleCards(dt){
   G.cardT+=dt;

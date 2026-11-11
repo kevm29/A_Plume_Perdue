@@ -24,10 +24,11 @@ function openSettings(){G.state='settings';G.setSel=0;G.codeEntry=null;G.setMsg=
 function setVol(k,d){S[k]=clamp((S[k]==null?8:S[k])+d,0,10);applyVolumes();save();if(k==='vSfx')SFX.tick()}
 function setMode(d){const vis=modesVisible();let i=vis.findIndex(m=>m.k===(G.setPick||S.mode));if(i<0)i=0;i=(i+d+vis.length)%vis.length;const m=vis[i];G.setPick=m.k;G.setMsg=null;
   if(m.hidden&&!(S.codes&&S.codes[m.k]))return;S.mode=m.k;G.setPick=null;applyMode();save()}
-function settingsRows(){return['mus','sfx','mode','reset','back']}
+function settingsRows(){return['mus','sfx','pad','mode','reset','back']}
+/*v2*/function setPad(){S.pad=!S.pad;save();SFX.tick()}
 /* tout effacer : pailles, médailles, secrets, succès, avancement, modes cachés et leurs codes (on ne garde que le son) */
 function askReset(){G.confirm={prev:'settings',text:/*v2*/'Réinitialiser le jeu ?',sub:/*v2*/"Toute la paille, les médailles, les secrets, les succès, l'avancement et les modes cachés seront effacés. C'est définitif.",labels:[/*v2*/'Annuler',/*v2*/'Tout effacer'],yes:resetGame};G.confirmSel=0}
-function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,mode:'normal',codes:{},modesShown:false};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
+function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,pad:!!S.pad,mode:'normal',codes:{},modesShown:false};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
 function handleSettings(){
   const C=G.codeEntry;if(C)return; // la saisie du code passe par le clavier (voir 14_main)
   if(G.confirm){handleConfirm();return}
@@ -36,11 +37,12 @@ function handleSettings(){
   if(pressed.has('up'))G.setSel=(G.setSel-1+rows.length)%rows.length;
   if(pressed.has('down'))G.setSel=(G.setSel+1)%rows.length;
   const r=rows[G.setSel],dx=pressed.has('left')?-1:pressed.has('right')?1:0;
-  if(dx){if(r==='mus')setVol('vMus',dx);else if(r==='sfx')setVol('vSfx',dx);else if(r==='mode')setMode(dx)}
+  if(dx){if(r==='mus')setVol('vMus',dx);else if(r==='sfx')setVol('vSfx',dx);else if(r==='mode')setMode(dx);else if(r==='pad')setPad()}
   if(G.click&&G.setBoxes)for(const b of G.setBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.setSel=rows.indexOf(b.r);
-    if(b.d){if(b.r==='mus')setVol('vMus',b.d);else if(b.r==='sfx')setVol('vSfx',b.d);else if(b.r==='mode')setMode(b.d)}
+    if(b.d){if(b.r==='mus')setVol('vMus',b.d);else if(b.r==='sfx')setVol('vSfx',b.d);else if(b.r==='mode')setMode(b.d);else if(b.r==='pad')setPad()}
+    else if(b.r==='pad')setPad()
     else if(b.r==='back'){G.setPick=null;goTitle()}else if(b.r==='code')askCode();else if(b.r==='reset')askReset();return}
-  if(pressed.has('ok')){if(r==='reset')askReset();else if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
+  if(pressed.has('ok')){if(r==='pad')setPad();else if(r==='reset')askReset();else if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
 }
 function pendingLocked(){const m=MODES.find(m=>m.k===G.setPick);return m&&m.hidden&&!(S.codes&&S.codes[m.k])?m:null}
 function askCode(){const m=pendingLocked();if(m){G.codeEntry={k:m.k,txt:''};G.setMsg=null}}
@@ -64,12 +66,15 @@ function renderSettings(t){
   const arrows=(r,y,w)=>{ctx.font='20px '+F_DISP;ctx.fillStyle='#d9a441';ctx.textAlign='center';ctx.fillText('◂',R0,y);ctx.fillText('▸',R0+w,y);
     G.setBoxes.push({r,d:-1,x:R0-16,y:y-22,w:32,h:30},{r,d:1,x:R0+w-16,y:y-22,w:32,h:30})};
   // volumes
-  [['mus','Musique','vMus',100],['sfx','Sons','vSfx',140]].forEach(([r,lb,k,y])=>{label(r,lb,y);arrows(r,y,250);const v=S[k]==null?8:S[k];
+  [['mus','Musique','vMus',100],['sfx','Sons','vSfx',136]].forEach(([r,lb,k,y])=>{label(r,lb,y);arrows(r,y,250);const v=S[k]==null?8:S[k];
     for(let i=0;i<10;i++){ctx.fillStyle=i<v?'#d9a441':'rgba(233,223,199,.16)';rr(ctx,R0+22+i*21,y-17,15,18,3);ctx.fill()}
     if(v===0){ctx.textAlign='left';ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('coupée',R0+272,y-2)}
     G.setBoxes.push({r,x:W/2-200,y:y-24,w:170,h:32})});
+  // commandes : clavier ou manette (ne change que les indications affichées)
+  {const y=172;label('pad',/*v2*/'Commandes',y);arrows('pad',y,250);ctx.textAlign='center';ctx.font='20px '+F_DISP;ctx.fillStyle='#efe5cc';ctx.fillText(pad()?/*v2*/'Manette':/*v2*/'Clavier',R0+125,y);
+    G.setBoxes.push({r:'pad',x:W/2-200,y:y-24,w:170,h:32},{r:'pad',x:R0+30,y:y-24,w:190,h:32})}
   // mode
-  {const y=190;label('mode','Mode de jeu',y);arrows('mode',y,250);const k=G.setPick||S.mode,m=MODES.find(m=>m.k===k)||MODES[1],locked=m.hidden&&!(S.codes&&S.codes[m.k]);
+  {const y=214;label('mode','Mode de jeu',y);arrows('mode',y,250);const k=G.setPick||S.mode,m=MODES.find(m=>m.k===k)||MODES[1],locked=m.hidden&&!(S.codes&&S.codes[m.k]);
     ctx.textAlign='center';ctx.font='20px '+F_DISP;ctx.fillStyle=locked?'rgba(233,223,199,.5)':'#efe5cc';ctx.fillText(m.n,R0+125,y);
     ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(m.d,W/2,y+26);
     if(G.codeEntry){ctx.fillStyle='#ece3cc';rr(ctx,W/2-150,y+36,300,30,6);ctx.fill();ctx.fillStyle='#2a2420';ctx.font='18px '+F_DISP;ctx.fillText((G.codeEntry.txt||'')+(Math.sin(t*6)>0?'|':' '),W/2,y+57);
@@ -79,9 +84,12 @@ function renderSettings(t){
     G.setBoxes.push({r:'mode',x:W/2-200,y:y-24,w:170,h:32})}
   // touches
   let keysEnd=0;
-  {let y=300;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText('TOUCHES',W/2,y);y+=22;
+  {let y=318;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(pad()?/*v2*/'MANETTE':'TOUCHES',W/2,y);y+=22;
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
     if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['G',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
+    if(pad()){K.length=0;K.push([/*v2*/'Stick gauche ou croix',/*v2*/'Marcher ; choisir dans les menus'],['A',"Sauter ; en l'air = battre des ailes ; maintenu = planer"],[/*v2*/'Bas',/*v2*/'Descendre'],['X',/*v2*/'Action']);
+      if(eraKeyOn())K.push(['Y','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['RB',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);
+      K.push(['Select','Revenir au dernier fanion'],['Start','Pause'],['B',/*v2*/'Retour dans les menus'])}
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=16}keysEnd=y}
   // réinitialiser
   {const y=Math.min(H-56,keysEnd+16),sel=rows[G.setSel]==='reset';ctx.textAlign='center';ctx.font=(sel?'18px ':'16px ')+F_DISP;ctx.fillStyle=sel?'#e8a090':'rgba(224,138,128,.6)';ctx.fillText(/*v2*/'Réinitialiser le jeu',W/2,y);G.setBoxes.push({r:'reset',x:W/2-110,y:y-22,w:220,h:30})}

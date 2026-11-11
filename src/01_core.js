@@ -75,4 +75,9 @@ const LEVEL_MAX=1000;
 /* le score d'un niveau, c'est ce qu'on y a trouvé : 10 points par paille, par médaille et par cachette */
 function levelPoints(o){return 10*((o.corn||0)+(o.medal?1:0)+(o.secFound||0))}
 function levelMax(o){return 10*((o.cornTotal||0)+(o.hasMedal?1:0)+(o.secTotal||0))}
+/*v2*/
+/* indications des commandes : clavier ou manette selon le réglage « Commandes » */
+function pad(){return !!S.pad}
+const PAD_TXT=[["← → (ou Q / D).","Stick gauche ou croix ← →."],["Espace, Z ou ↑.","Bouton A."],["E : Tirer","X : Tirer"],["En appuyant sur B,","En appuyant sur Y,"],["avec la touche B","avec le bouton Y"]];
+function padTxt(t){if(!S.pad||!t)return t;for(const[a,b]of PAD_TXT)t=t.split(a).join(b);return t}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}

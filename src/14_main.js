@@ -26,6 +26,28 @@ function bindTouch(id,act){
 }
 bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch('te','act');bindTouch('tb','era');
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
+/*v2*/
+/* ---------- manette (API Gamepad, disposition standard Xbox / PlayStation) ----------
+   A sauter / valider · B retour · X action · Y époque · Start pause · Select dernier fanion · RB Super-Raymond / Dieu-Pigeon
+   Stick gauche ou croix : se déplacer, choisir dans les menus. La manette marche toujours ; le réglage « Commandes »
+   des paramètres ne change que les indications affichées. */
+const PAD_BTN={0:['jump','ok'],1:['back'],2:['act'],3:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
+const padHeld=new Set();let padPrev={};
+function pollPad(){
+  let gps=[];try{gps=navigator.getGamepads?navigator.getGamepads():[]}catch(e){return}
+  const now=new Set(),edge={};
+  for(const gp of gps){if(!gp||!gp.connected)continue;
+    gp.buttons.forEach((b,i)=>{const on=b&&(b.pressed||b.value>.5);if(!on)return;if(PAD_BTN[i])for(const a of PAD_BTN[i])now.add(a);if(!padPrev[i])edge[i]=1;});
+    const ax=gp.axes[0]||0,ay=gp.axes[1]||0;
+    if(ax<-.4)now.add('left');if(ax>.4)now.add('right');if(ay<-.55)now.add('up');if(ay>.55)now.add('down');
+    padPrev={};gp.buttons.forEach((b,i)=>{if(b&&(b.pressed||b.value>.5))padPrev[i]=1});break}
+  if(!gps||![...gps].some(g=>g&&g.connected))padPrev={};
+  if(now.size||Object.keys(edge).length)ensureAudio();
+  for(const a of now){if(!keys.has(a))pressed.add(a);keys.add(a)}
+  for(const a of padHeld)if(!now.has(a))keys.delete(a);
+  padHeld.clear();for(const a of now)padHeld.add(a);
+  if(edge[8])pressed.add('restart');if(edge[5])godSwap();
+}
 let touchUI=false;
 function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on');syncTouchB()}
 function syncTouchB(){if(touchUI)document.getElementById('tb').classList.toggle('on',eraKeyOn())}
@@ -44,7 +66,7 @@ function update(dt){
   if(G.state!=='play'&&G.state!=='pause'&&G.state!=='confirm'&&G.state!=='exiting'&&typeof mGain!=='undefined'&&mGain&&mGain.gain.value!==.1)mGain.gain.value=.1;
   switch(G.state){
     case'title':handleMenu();break;
-    case'pause':if(pressed.has('esc')||homeClick()){G.state='play';break}handleMenu();break;
+    case'pause':if(pressed.has('esc')||pressed.has('back')||homeClick()){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
     case'ach':handleAch();break;
@@ -147,7 +169,7 @@ function vauxOverlays(){
 function homeClick(){const b=G.homeBox;return !!(G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)}
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}
+  G.dtLast=dt;try{pollPad();update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);
 }
 applyMode();

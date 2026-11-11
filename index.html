@@ -118,6 +118,11 @@ const LEVEL_MAX=1000;
 /* le score d'un niveau, c'est ce qu'on y a trouvé : 10 points par paille, par médaille et par cachette */
 function levelPoints(o){return 10*((o.corn||0)+(o.medal?1:0)+(o.secFound||0))}
 function levelMax(o){return 10*((o.cornTotal||0)+(o.hasMedal?1:0)+(o.secTotal||0))}
+/*v2*/
+/* indications des commandes : clavier ou manette selon le réglage « Commandes » */
+function pad(){return !!S.pad}
+const PAD_TXT=[["← → (ou Q / D).","Stick gauche ou croix ← →."],["Espace, Z ou ↑.","Bouton A."],["E : Tirer","X : Tirer"],["En appuyant sur B,","En appuyant sur Y,"],["avec la touche B","avec le bouton Y"]];
+function padTxt(t){if(!S.pad||!t)return t;for(const[a,b]of PAD_TXT)t=t.split(a).join(b);return t}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 
 /* =========================================================
@@ -3587,7 +3592,7 @@ function drawActPrompt(t){
   ctx.save();ctx.translate(x,y+b);
   ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();
   ctx.fillStyle='#ece3cc';rr(ctx,-12,-12,24,24,5);ctx.fill();ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();
-  ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText('E',0,6);
+  ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText(pad()?'X':'E',0,6);
   ctx.restore();
 }
 /* gardien endormi sur sa chaise (le gardien au filet, avant la poursuite) */
@@ -5226,12 +5231,16 @@ function renderToasts(dt){
   if(T0.t>4)q.shift();
 }
 /* écran des succès (depuis l'accueil, seulement si au moins un est débloqué) : molette pour défiler, survol pour un indice */
-function openAch(){G.state='ach';G.fade=1;G.achY=0}
+function openAch(){G.state='ach';G.fade=1;G.achY=0;G.achSel=0}
 function achMaxY(){return Math.max(0,Math.ceil(ACH.length/2)*96+96-H+30)}
 function handleAch(){
   const back=()=>{if(G.achFrom==='pause'){G.achFrom=null;G.state='pause';G.fade=0}else goTitle()};
-  if(pressed.has('esc')||pressed.has('back')||pressed.has('ok')){back();return}
-  if(pressed.has('down'))G.achY=(G.achY||0)+84;if(pressed.has('up'))G.achY=(G.achY||0)-84;
+  if(pressed.has('esc')||pressed.has('back')||(!pad()&&pressed.has('ok'))){back();return}
+  if(pad()){/*v2*/ // à la manette : on choisit une fiche (elle s'éclaire et montre son indice), le défilement suit
+    let s=G.achSel||0;const n=ACH.length;
+    if(pressed.has('down'))s=Math.min(n-1,s+2);if(pressed.has('up'))s=Math.max(0,s-2);if(pressed.has('right')&&s%2===0&&s+1<n)s++;if(pressed.has('left')&&s%2===1)s--;
+    G.achSel=s;const yy=86+Math.floor(s/2)*96-(G.achY||0);if(yy<80)G.achY=(G.achY||0)-(80-yy);if(yy+96>H-40)G.achY=(G.achY||0)+(yy+96-(H-40))}
+  else{if(pressed.has('down'))G.achY=(G.achY||0)+84;if(pressed.has('up'))G.achY=(G.achY||0)-84}
   if(G.wheel){G.achY=(G.achY||0)+G.wheel;G.wheel=0}
   G.achY=clamp(G.achY||0,0,achMaxY());
   if(G.click){if(G.click.y>H-34||G.click.y<70)back();else G.achTap=G.click}
@@ -5251,11 +5260,11 @@ function renderAch(t){
   ctx.save();ctx.beginPath();ctx.rect(0,74,W,H-110);ctx.clip();
   const cw=440,rh=96,x0=W/2-cw-6,y0=86-(G.achY||0),ms=G.mouse||{x:-1,y:-1};let tip=null;
   ACH.forEach((a,i)=>{const on=!!st[a[0]],c=i%2,r=Math.floor(i/2),x=x0+c*(cw+12),y=y0+r*rh;if(y<-rh||y>H)return;
-    const hov=ms.x>x&&ms.x<x+cw&&ms.y>y&&ms.y<y+rh-8&&ms.y>74&&ms.y<H-36,tap=G.achTap&&G.achTap.x>x&&G.achTap.x<x+cw&&G.achTap.y>y&&G.achTap.y<y+rh-8;
+    const hov=(pad()&&G.achSel===i)||ms.x>x&&ms.x<x+cw&&ms.y>y&&ms.y<y+rh-8&&ms.y>74&&ms.y<H-36,tap=G.achTap&&G.achTap.x>x&&G.achTap.x<x+cw&&G.achTap.y>y&&G.achTap.y<y+rh-8;
     ctx.fillStyle=on?(hov?'rgba(233,223,199,.11)':'rgba(233,223,199,.07)'):(hov?'rgba(233,223,199,.06)':'rgba(233,223,199,.025)');rr(ctx,x,y,cw,rh-8,8);ctx.fill();
     ctx.save();rr(ctx,x,y,cw,rh-8,8);ctx.clip();drawAchMedal(ctx,x+36,y+40,a[0],on,1.15);
     ctx.textAlign='left';ctx.fillStyle=on?'#efe5cc':'rgba(233,223,199,.45)';ctx.font='17px '+F_DISP;ctx.font='italic 14px '+F_BODY;const long=on&&achWrap(a[3],cw-74-16,12).length>2;ctx.font='17px '+F_DISP;ctx.fillText(on?a[2]:'Décoration secrète',x+74,y+(long?24:30));
-    ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?a[3]:(hov||tap?'':'Survoler pour un indice'),x+74,y+52,cw-74-16);
+    ctx.fillStyle=on?'rgba(233,223,199,.72)':'rgba(233,223,199,.32)';achDesc(on?padTxt(a[3]):(hov||tap?'':(pad()?/*v2*/'Choisir pour un indice':'Survoler pour un indice')),x+74,y+52,cw-74-16);
     const pr=ACH_PROG[a[0]];if(pr){let[d,n]=pr();if(on)d=n;d=Math.min(d,n);const k=n?d/n:0,bx=x+74,bw=cw-74-70,by=y+rh-17;
       ctx.fillStyle='rgba(233,223,199,.14)';rr(ctx,bx,by,bw,6,3);ctx.fill();if(k>0){ctx.fillStyle=on?'#d9a441':'rgba(217,164,65,.75)';rr(ctx,bx,by,Math.max(6,bw*k),6,3);ctx.fill()}
       ctx.textAlign='right';ctx.font='12px '+F_DISP;ctx.fillStyle=on?'#d9a441':'rgba(233,223,199,.6)';ctx.fillText(Math.floor(k*100)+' %',x+cw-14,by+7)}
@@ -5265,7 +5274,7 @@ function renderAch(t){
   ctx.save();ctx.textAlign='center';ctx.fillStyle='#efe5cc';ctx.font='30px '+F_DISP;ctx.fillText('Décorations de Raymond',W/2,40);
   ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText(`${n} sur ${ACH.length}`,W/2,62);
   const my=achMaxY();if(my>0){const k=(G.achY||0)/my;ctx.fillStyle='rgba(233,223,199,.15)';rr(ctx,W-14,80,4,H-120,2);ctx.fill();ctx.fillStyle='rgba(217,164,65,.7)';rr(ctx,W-14,80+(H-160)*k,4,40,2);ctx.fill()}
-  ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText('molette ou ↑ ↓ pour défiler · Échap pour revenir',W/2,H-12);
+  ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText(pad()?/*v2*/'stick ou croix pour choisir · B pour revenir':'molette ou ↑ ↓ pour défiler · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 
@@ -9632,7 +9641,7 @@ function vxCard(text,a,t,sub){
   ctx.restore()}
 /* la touche E qui flotte au-dessus de Raymond */
 function vxKeyE(x,y,t){const b=Math.sin(t*5)*2;ctx.save();ctx.translate(x,y+b);ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();ctx.fillStyle='#ece3cc';rr(ctx,-12,-12,24,24,5);ctx.fill();
-  ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText('E',0,6);ctx.restore()}
+  ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText(pad()?'X':'E',0,6);ctx.restore()}
 /* un sac de terre : toile de jute bombée, oreille nouée, couture, ombre portée */
 function vxSandbag(g,x,y,w,h,k){const R=mulberry((x*7+y*13)|0),col=mix(mix('#9a8660','#7a6644',R()),'#4a3a28',k||0),dk=mix(col,'#000000',.3),lt=mix(col,'#ffffff',.18),fl=R()<.5?1:-1;
   g.save();g.translate(x+w/2,y+h/2);g.rotate((R()-.5)*.08);
@@ -14699,7 +14708,7 @@ function renderHUD(){
   if(G.hintA>.02&&(G.hintI>=0||G.lastHint!=null)){
     if(G.hintI>=0)G.lastHint=G.hintI;
     const h=L.def.hints[G.lastHint];if(h){
-      ctx.save();ctx.globalAlpha=G.hintA;ctx.font='italic 18px '+F_BODY;const lines=wrap(ctx,h[1],440);
+      ctx.save();ctx.globalAlpha=G.hintA;ctx.font='italic 18px '+F_BODY;const lines=wrap(ctx,padTxt(h[1]),440);
       const bh=50+lines.length*23,bx2=W/2-250,by2=64;
       ctx.fillStyle='rgba(0,0,0,.3)';rr(ctx,bx2+5,by2+6,500,bh,6);ctx.fill();
       ctx.fillStyle='#ece3cc';rr(ctx,bx2,by2,500,bh,6);ctx.fill();ctx.strokeStyle='rgba(42,36,32,.6)';ctx.lineWidth=1;rr(ctx,bx2+6.5,by2+6.5,487,bh-13,4);ctx.stroke();
@@ -14844,7 +14853,7 @@ function renderSelect(t){
   const ry=82+WORLDS.length*64+14;
   tile(100,70,ry,406,28,"Revoir l'introduction");
   tile(101,484,ry,406,28,'Revoir la fin');
-  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText('Entrée pour lancer · Échap pour revenir',W/2,H-12);
+  ctx.textAlign='center';ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.55)';ctx.fillText(pad()?/*v2*/'A pour lancer · B pour revenir':'Entrée pour lancer · Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
 function handleSelect(){
@@ -15068,7 +15077,7 @@ function renderCards(t){
   }
   ctx.restore();
   if(c.pic!=='finale')for(let k=0;k<2;k++){if(rnd()<.3){ctx.fillStyle='rgba(230,220,200,'+(rnd()*.1)+')';ctx.fillRect(rnd()*W,0,1+rnd(),H)}}
-  if(G.cardT>.8&&c.pic!=='finale'){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.4+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText('appuyer pour continuer · Échap pour passer',W-90,H-22)}
+  if(G.cardT>.8&&c.pic!=='finale'){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,'+(.4+Math.sin(t*3)*.2)+')';ctx.textAlign='right';ctx.fillText(pad()?/*v2*/'appuyer pour continuer · Start pour passer':'appuyer pour continuer · Échap pour passer',W-90,H-22)}
 }
 function handleCards(dt){
   G.cardT+=dt;
@@ -15240,10 +15249,11 @@ function openSettings(){G.state='settings';G.setSel=0;G.codeEntry=null;G.setMsg=
 function setVol(k,d){S[k]=clamp((S[k]==null?8:S[k])+d,0,10);applyVolumes();save();if(k==='vSfx')SFX.tick()}
 function setMode(d){const vis=modesVisible();let i=vis.findIndex(m=>m.k===(G.setPick||S.mode));if(i<0)i=0;i=(i+d+vis.length)%vis.length;const m=vis[i];G.setPick=m.k;G.setMsg=null;
   if(m.hidden&&!(S.codes&&S.codes[m.k]))return;S.mode=m.k;G.setPick=null;applyMode();save()}
-function settingsRows(){return['mus','sfx','mode','reset','back']}
+function settingsRows(){return['mus','sfx','pad','mode','reset','back']}
+/*v2*/function setPad(){S.pad=!S.pad;save();SFX.tick()}
 /* tout effacer : pailles, médailles, secrets, succès, avancement, modes cachés et leurs codes (on ne garde que le son) */
 function askReset(){G.confirm={prev:'settings',text:/*v2*/'Réinitialiser le jeu ?',sub:/*v2*/"Toute la paille, les médailles, les secrets, les succès, l'avancement et les modes cachés seront effacés. C'est définitif.",labels:[/*v2*/'Annuler',/*v2*/'Tout effacer'],yes:resetGame};G.confirmSel=0}
-function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,mode:'normal',codes:{},modesShown:false};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
+function resetGame(){const keep={vMus:S.vMus,vSfx:S.vSfx,muted:S.muted,pad:!!S.pad,mode:'normal',codes:{},modesShown:false};try{localStorage.setItem(SAVE_KEY,JSON.stringify(Object.assign({v:5,unlocked:0,best:{},finished:false,run:{lives:START_LIVES,worldLives:[START_LIVES],medals:{},wear:0,stats:{},got:{}}},keep)))}catch(e){}location.reload()}
 function handleSettings(){
   const C=G.codeEntry;if(C)return; // la saisie du code passe par le clavier (voir 14_main)
   if(G.confirm){handleConfirm();return}
@@ -15252,11 +15262,12 @@ function handleSettings(){
   if(pressed.has('up'))G.setSel=(G.setSel-1+rows.length)%rows.length;
   if(pressed.has('down'))G.setSel=(G.setSel+1)%rows.length;
   const r=rows[G.setSel],dx=pressed.has('left')?-1:pressed.has('right')?1:0;
-  if(dx){if(r==='mus')setVol('vMus',dx);else if(r==='sfx')setVol('vSfx',dx);else if(r==='mode')setMode(dx)}
+  if(dx){if(r==='mus')setVol('vMus',dx);else if(r==='sfx')setVol('vSfx',dx);else if(r==='mode')setMode(dx);else if(r==='pad')setPad()}
   if(G.click&&G.setBoxes)for(const b of G.setBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h){G.setSel=rows.indexOf(b.r);
-    if(b.d){if(b.r==='mus')setVol('vMus',b.d);else if(b.r==='sfx')setVol('vSfx',b.d);else if(b.r==='mode')setMode(b.d)}
+    if(b.d){if(b.r==='mus')setVol('vMus',b.d);else if(b.r==='sfx')setVol('vSfx',b.d);else if(b.r==='mode')setMode(b.d);else if(b.r==='pad')setPad()}
+    else if(b.r==='pad')setPad()
     else if(b.r==='back'){G.setPick=null;goTitle()}else if(b.r==='code')askCode();else if(b.r==='reset')askReset();return}
-  if(pressed.has('ok')){if(r==='reset')askReset();else if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
+  if(pressed.has('ok')){if(r==='pad')setPad();else if(r==='reset')askReset();else if(r==='back'){G.setPick=null;goTitle()}else if(r==='mode'&&pendingLocked())askCode()}
 }
 function pendingLocked(){const m=MODES.find(m=>m.k===G.setPick);return m&&m.hidden&&!(S.codes&&S.codes[m.k])?m:null}
 function askCode(){const m=pendingLocked();if(m){G.codeEntry={k:m.k,txt:''};G.setMsg=null}}
@@ -15280,12 +15291,15 @@ function renderSettings(t){
   const arrows=(r,y,w)=>{ctx.font='20px '+F_DISP;ctx.fillStyle='#d9a441';ctx.textAlign='center';ctx.fillText('◂',R0,y);ctx.fillText('▸',R0+w,y);
     G.setBoxes.push({r,d:-1,x:R0-16,y:y-22,w:32,h:30},{r,d:1,x:R0+w-16,y:y-22,w:32,h:30})};
   // volumes
-  [['mus','Musique','vMus',100],['sfx','Sons','vSfx',140]].forEach(([r,lb,k,y])=>{label(r,lb,y);arrows(r,y,250);const v=S[k]==null?8:S[k];
+  [['mus','Musique','vMus',100],['sfx','Sons','vSfx',136]].forEach(([r,lb,k,y])=>{label(r,lb,y);arrows(r,y,250);const v=S[k]==null?8:S[k];
     for(let i=0;i<10;i++){ctx.fillStyle=i<v?'#d9a441':'rgba(233,223,199,.16)';rr(ctx,R0+22+i*21,y-17,15,18,3);ctx.fill()}
     if(v===0){ctx.textAlign='left';ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.6)';ctx.fillText('coupée',R0+272,y-2)}
     G.setBoxes.push({r,x:W/2-200,y:y-24,w:170,h:32})});
+  // commandes : clavier ou manette (ne change que les indications affichées)
+  {const y=172;label('pad',/*v2*/'Commandes',y);arrows('pad',y,250);ctx.textAlign='center';ctx.font='20px '+F_DISP;ctx.fillStyle='#efe5cc';ctx.fillText(pad()?/*v2*/'Manette':/*v2*/'Clavier',R0+125,y);
+    G.setBoxes.push({r:'pad',x:W/2-200,y:y-24,w:170,h:32},{r:'pad',x:R0+30,y:y-24,w:190,h:32})}
   // mode
-  {const y=190;label('mode','Mode de jeu',y);arrows('mode',y,250);const k=G.setPick||S.mode,m=MODES.find(m=>m.k===k)||MODES[1],locked=m.hidden&&!(S.codes&&S.codes[m.k]);
+  {const y=214;label('mode','Mode de jeu',y);arrows('mode',y,250);const k=G.setPick||S.mode,m=MODES.find(m=>m.k===k)||MODES[1],locked=m.hidden&&!(S.codes&&S.codes[m.k]);
     ctx.textAlign='center';ctx.font='20px '+F_DISP;ctx.fillStyle=locked?'rgba(233,223,199,.5)':'#efe5cc';ctx.fillText(m.n,R0+125,y);
     ctx.font='italic 15px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(m.d,W/2,y+26);
     if(G.codeEntry){ctx.fillStyle='#ece3cc';rr(ctx,W/2-150,y+36,300,30,6);ctx.fill();ctx.fillStyle='#2a2420';ctx.font='18px '+F_DISP;ctx.fillText((G.codeEntry.txt||'')+(Math.sin(t*6)>0?'|':' '),W/2,y+57);
@@ -15295,9 +15309,12 @@ function renderSettings(t){
     G.setBoxes.push({r:'mode',x:W/2-200,y:y-24,w:170,h:32})}
   // touches
   let keysEnd=0;
-  {let y=300;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText('TOUCHES',W/2,y);y+=22;
+  {let y=318;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(pad()?/*v2*/'MANETTE':'TOUCHES',W/2,y);y+=22;
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
     if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['G',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
+    if(pad()){K.length=0;K.push([/*v2*/'Stick gauche ou croix',/*v2*/'Marcher ; choisir dans les menus'],['A',"Sauter ; en l'air = battre des ailes ; maintenu = planer"],[/*v2*/'Bas',/*v2*/'Descendre'],['X',/*v2*/'Action']);
+      if(eraKeyOn())K.push(['Y','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['RB',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);
+      K.push(['Select','Revenir au dernier fanion'],['Start','Pause'],['B',/*v2*/'Retour dans les menus'])}
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=16}keysEnd=y}
   // réinitialiser
   {const y=Math.min(H-56,keysEnd+16),sel=rows[G.setSel]==='reset';ctx.textAlign='center';ctx.font=(sel?'18px ':'16px ')+F_DISP;ctx.fillStyle=sel?'#e8a090':'rgba(224,138,128,.6)';ctx.fillText(/*v2*/'Réinitialiser le jeu',W/2,y);G.setBoxes.push({r:'reset',x:W/2-110,y:y-22,w:220,h:30})}
@@ -15335,6 +15352,28 @@ function bindTouch(id,act){
 }
 bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch('te','act');bindTouch('tb','era');
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
+/*v2*/
+/* ---------- manette (API Gamepad, disposition standard Xbox / PlayStation) ----------
+   A sauter / valider · B retour · X action · Y époque · Start pause · Select dernier fanion · RB Super-Raymond / Dieu-Pigeon
+   Stick gauche ou croix : se déplacer, choisir dans les menus. La manette marche toujours ; le réglage « Commandes »
+   des paramètres ne change que les indications affichées. */
+const PAD_BTN={0:['jump','ok'],1:['back'],2:['act'],3:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
+const padHeld=new Set();let padPrev={};
+function pollPad(){
+  let gps=[];try{gps=navigator.getGamepads?navigator.getGamepads():[]}catch(e){return}
+  const now=new Set(),edge={};
+  for(const gp of gps){if(!gp||!gp.connected)continue;
+    gp.buttons.forEach((b,i)=>{const on=b&&(b.pressed||b.value>.5);if(!on)return;if(PAD_BTN[i])for(const a of PAD_BTN[i])now.add(a);if(!padPrev[i])edge[i]=1;});
+    const ax=gp.axes[0]||0,ay=gp.axes[1]||0;
+    if(ax<-.4)now.add('left');if(ax>.4)now.add('right');if(ay<-.55)now.add('up');if(ay>.55)now.add('down');
+    padPrev={};gp.buttons.forEach((b,i)=>{if(b&&(b.pressed||b.value>.5))padPrev[i]=1});break}
+  if(!gps||![...gps].some(g=>g&&g.connected))padPrev={};
+  if(now.size||Object.keys(edge).length)ensureAudio();
+  for(const a of now){if(!keys.has(a))pressed.add(a);keys.add(a)}
+  for(const a of padHeld)if(!now.has(a))keys.delete(a);
+  padHeld.clear();for(const a of now)padHeld.add(a);
+  if(edge[8])pressed.add('restart');if(edge[5])godSwap();
+}
 let touchUI=false;
 function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on');syncTouchB()}
 function syncTouchB(){if(touchUI)document.getElementById('tb').classList.toggle('on',eraKeyOn())}
@@ -15353,7 +15392,7 @@ function update(dt){
   if(G.state!=='play'&&G.state!=='pause'&&G.state!=='confirm'&&G.state!=='exiting'&&typeof mGain!=='undefined'&&mGain&&mGain.gain.value!==.1)mGain.gain.value=.1;
   switch(G.state){
     case'title':handleMenu();break;
-    case'pause':if(pressed.has('esc')||homeClick()){G.state='play';break}handleMenu();break;
+    case'pause':if(pressed.has('esc')||pressed.has('back')||homeClick()){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
     case'ach':handleAch();break;
@@ -15456,7 +15495,7 @@ function vauxOverlays(){
 function homeClick(){const b=G.homeBox;return !!(G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)}
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  G.dtLast=dt;try{update(dt);render()}catch(err){console.error(err)}
+  G.dtLast=dt;try{pollPad();update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);
 }
 applyMode();
