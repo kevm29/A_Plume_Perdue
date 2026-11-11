@@ -198,13 +198,15 @@ function vanRender(t){
   // la camionnette et sa remorque
   const ox=s.vanX;ctx.save();ctx.translate(ox,by);vanDraw(ctx,t,s);ctx.restore();
   ctx.save();ctx.translate(ox,by*1.4);trailerBack(ctx,t);ctx.restore();
+  // la touffe d'herbe secrète : au pied de la glissière, derrière Raymond (pas au milieu de la chaussée)
+  if(s.stopped)vanTuft(ctx,VAN.sign-170,388,t,s);
   // Raymond
   const air=s.ry<VAN.floor-1&&s.ry<VAN.road-1;
   const inT=s.rx>VAN.x0+ox&&s.rx<VAN.x1+ox&&s.ry<=VAN.floor+1;
   drawRaymond(ctx,s.rx,s.ry+(inT?by*1.4:0),{f:s.f,t,walk:Math.min(1,Math.abs(s.vx)/200)*(air?0:1),air,flap:s.flaps&&s.vy<0?.2:0,glide:s.stopped&&keys.has('jump')&&s.vy>0,wear:wear(),size:1.5,eyeClosed:s.closed});
   ctx.save();ctx.translate(ox,by*1.4);trailerFront(ctx,t);ctx.restore();
   // la sortie
-  if(s.stopped){vanSign(ctx,VAN.sign,t);vanTuft(ctx,VAN.sign-170,VAN.road,t,s)}
+  if(s.stopped)vanSign(ctx,VAN.sign,t);
   ctx.restore();
   // la pluie, les éclaboussures, le brouillard
   ctx.save();ctx.strokeStyle='rgba(190,205,228,.36)';ctx.lineWidth=1.1;ctx.beginPath();

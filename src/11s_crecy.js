@@ -379,7 +379,9 @@ function cMower(g,m,t){g.save();g.translate(m.x,CGR*T);g.fillStyle='#2a2a2a';g.b
   g.fillStyle='#3aa04a';g.fillRect(-24,-10,48,3);g.fillStyle=((t*2)%1)<.5?'#3ad04a':'#1a6a2a';g.beginPath();g.arc(m.dir*12,-18,2.5,0,7);g.fill();
   g.fillStyle='rgba(90,160,60,.6)';for(let k=0;k<4;k++){g.fillRect(-m.dir*(26+k*6),-4-((t*40+k*5)%10),2,3)}g.restore()}
 function cEntrySign(g,x,b){g.save();g.fillStyle='#6a6a6a';g.fillRect(x-40,b-90,4,90);g.fillRect(x+36,b-90,4,90);g.fillStyle='#f6f4ee';rr(g,x-60,b-120,120,44,4);g.fill();g.strokeStyle='#c8302a';g.lineWidth=4;rr(g,x-56,b-116,112,36,3);g.stroke();
-  g.fillStyle='#1a1a1a';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText('CRÉCY-',x,b-101);g.fillText('LA-CHAPELLE',x,b-88);g.fillStyle='#2a5aa0';g.font='italic 8px '+F_BODY;g.fillText('la Venise briarde',x,b-64);g.restore()}
+  g.fillStyle='#1a1a1a';g.font='bold 11px '+F_DISP;g.textAlign='center';g.fillText('CRÉCY-',x,b-101);g.fillText('LA-CHAPELLE',x,b-88);/*v2*/ // le sous-panneau, sous le panneau d'entrée : un petit cartouche blanc liseré de bleu
+  g.fillStyle='#f6f4ee';rr(g,x-44,b-74,88,16,3);g.fill();g.strokeStyle='#2a5aa0';g.lineWidth=2;rr(g,x-41,b-71,82,10,2);g.stroke();
+  g.fillStyle='#2a5aa0';g.font='italic 8px '+F_BODY;g.fillText('la Venise briarde',x,b-63);g.restore()}
 function cFlowerRail(g,x,b){g.save();g.fillStyle='#2a4a3a';g.fillRect(x-24,b-34,48,3);g.fillRect(x-24,b-16,48,2);for(let k=0;k<5;k++)g.fillRect(x-24+k*12,b-34,2,34);g.fillStyle='#6a4a2a';g.fillRect(x-22,b-44,44,10);
   for(let k=0;k<7;k++){g.fillStyle=['#e83a5a','#f2f0e8','#e86aa0','#f0a030'][k%4];g.beginPath();g.arc(x-18+k*6,b-46-((k*7)%5),4,0,7);g.fill()}g.fillStyle='#4a7a3a';g.fillRect(x-22,b-46,44,3);g.restore()}
 function cRoses(g,x,b,big){g.save();const n=big?9:6;for(let k=0;k<n;k++){g.fillStyle='#3e6a2e';g.beginPath();g.arc(x-26+((k*19)%52),b-14-((k*13)%(big?40:22)),12,0,7);g.fill()}
