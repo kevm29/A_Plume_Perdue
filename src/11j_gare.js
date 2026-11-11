@@ -186,7 +186,9 @@ function drawGareMid(t){
     for(let k=0;k<3;k++){g.fillStyle=['#6a3a2a','#2a4a6a','#8a6a3a'][k];rr(g,x0+8+k*22,F-76+k%2*6,22,60-k%2*6,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x0+12+k*22,F-70+k%2*6,14,3)}
     g.fillStyle='#1e1e22';for(const wx of[x0+12,x1-12]){g.beginPath();g.arc(wx,F-6,6,0,7);g.fill()}}
   // les pics suspendus tiennent à une tige accrochée à la verrière
-  for(const[c,r]of S2.hang){const x=c*T+T/2;if(vis(x,x)){g.fillStyle='#3a3e46';g.fillRect(x-1,40,2,r*T-40);g.fillRect(x-6,40,12,3)}}
+  for(const[c,r]of S2.hang){const x=c*T+T/2;if(vis(x,x)){g.fillStyle='#3a3e46';g.fillRect(x-1,40,2,r*T-40);g.fillRect(x-6,40,12,3);
+    // de petites pointes vers le haut sur le dessus : on ne s'y pose pas non plus
+    const y0=r*T;g.fillStyle='#1e2026';for(let k=0;k<5;k++){const px=c*T+4+k*8;if(Math.abs(px+4-x)<3)continue;poly(g,[px,y0+1,px+4,y0-8,px+8,y0+1]);g.fill()}}}
   // les valises de la file (sur leurs cases) et les buissons du square
   {const v=(c,r,w,h,col,kind)=>{const x=c*T,y=(r+1)*T;if(!vis(x,x+T))return;g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(x+T/2,y,w/2+4,3,0,0,7);g.fill();g.fillStyle=col;
       if(kind==='roll'){rr(g,x+T/2-w/2,y-h,w,h,5);g.fill();g.fillStyle='rgba(0,0,0,.18)';for(let k=1;k<4;k++)g.fillRect(x+T/2-w/2+k*w/4,y-h+4,2,h-8);g.fillStyle='#2a2a2e';g.fillRect(x+T/2-8,y-h-12,2,12);g.fillRect(x+T/2+6,y-h-12,2,12);g.fillRect(x+T/2-8,y-h-14,16,3);g.beginPath();g.arc(x+T/2-w/2+5,y-2,3,0,7);g.arc(x+T/2+w/2-5,y-2,3,0,7);g.fill()}

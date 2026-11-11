@@ -233,8 +233,8 @@ function facadeBuild(Lv){
       // le groupe sculpté du couronnement, sur le replat du sommet
       for(const[dx,h,o]of[[-32,96,{crown:1,attr:'sceptre'}],[0,108,{halo:1,crown:1,attr:'book'}],[32,96,{halo:1,attr:'book'}]])fcStatue(g,AX+dx,yt-4,h,Object.assign({niche:false,canopy:false},o),R);
       // les pics anti-pigeons, posés sur les têtes : une réglette de métal hérissée de fines aiguilles
-      for(const[dx,hy]of[[-32,FC_SPK.y+25],[0,FC_SPK.y+13],[32,FC_SPK.y+25]]){const x=AX+dx;g.fillStyle='#3a3c42';g.fillRect(x-15,hy,30,3);g.strokeStyle='#aeb4bc';g.lineWidth=1;
-        for(let k=0;k<9;k++){const bx=x-13+k*3.2,a=(k-4)*.13;g.beginPath();g.moveTo(bx,hy);g.lineTo(bx+Math.sin(a)*14,hy-Math.cos(a)*14);g.stroke()}g.fillStyle='rgba(255,220,180,.5)';g.fillRect(x-15,hy,30,1)}}
+      for(const[dx,hy]of[[-32,FC_SPK.y+25],[0,FC_SPK.y+13],[32,FC_SPK.y+25]]){const x=AX+dx;g.fillStyle='#0c0c10';g.fillRect(x-15,hy,30,3);g.strokeStyle='#101014';g.lineWidth=1.7;
+        for(let k=0;k<9;k++){const bx=x-13+k*3.2,a=(k-4)*.13;g.beginPath();g.moveTo(bx,hy);g.lineTo(bx+Math.sin(a)*14,hy-Math.cos(a)*14);g.stroke()}}}
     fcArchivolts(g,px,yb,pw,ah,4,R);
     // le tympan ajouré d'une rose (comme à Reims), la porte
     g.fillStyle=FCC.mid;fcOgivePath(g,px,yb,pw,ah);g.fill();fcRose(g,px,yb-ah*.62,pw*.3,side?8:10);
@@ -453,7 +453,7 @@ function towerBuild(g,R){const X0=FT.X0,X1=FT.X1,F=FT.FLOOR,RO=FT.ROOF,TU=FT.TUR
    g.fillStyle='#2a2420';poly(g,[lx-12,ly-34,lx+12,ly-34,lx+9,ly-6,lx-9,ly-6]);g.fill();g.fillStyle='rgba(255,200,110,.95)';poly(g,[lx-8,ly-31,lx+8,ly-31,lx+6,ly-9,lx-6,ly-9]);g.fill();
    g.fillStyle='#2a2420';g.fillRect(lx-12,ly-6,24,6);poly(g,[lx-14,ly-34,lx,ly-44,lx+14,ly-34]);g.fill();g.fillStyle='#ffe7a8';g.beginPath();g.ellipse(lx,ly-20,2.5,5,0,0,7);g.fill()}
 }
-function ftNeedles(g,x0,x1,y,d){g.fillStyle='#2a2c32';g.fillRect(x0+2,d>0?y+5:y-4,x1-x0-4,4);g.strokeStyle='#c8ced6';g.lineWidth=1.4;
+function ftNeedles(g,x0,x1,y,d){g.fillStyle='#0c0c10';g.fillRect(x0+2,d>0?y+5:y-4,x1-x0-4,4);g.strokeStyle='#101014';g.lineWidth=1.9;
   for(let x=x0+5;x<x1-4;x+=4){const a=((x/4|0)%5-2)*.12;g.beginPath();if(d>0){g.moveTo(x,y+8);g.lineTo(x+Math.sin(a)*13,y+8+Math.cos(a)*13)}else{g.moveTo(x,y-3);g.lineTo(x+Math.sin(a)*13,y-3-Math.cos(a)*13)}g.stroke()}}
 /* ---------- la tour, en direct : cloches, ondes, lueur de la lanterne ---------- */
 function drawTowerMid(g,S,t){if(!S.bells||cam.x<FT.CAM-400)return;

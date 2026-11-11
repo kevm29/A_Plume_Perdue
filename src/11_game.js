@@ -330,13 +330,17 @@ function stepChaser(K,dt,pcx,pcy){
     const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
     const sp=K.type==='bigrat'?clamp(272+(Math.abs(dist)-260)*.35,272,340):clamp(205+(Math.abs(dist)-160)*.25,205,300);
     K.leapT=(K.leapT||0)-dt;if(!(K.leapT>0&&!K.onGround))K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*6));K.f=dir;
-    K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
+    K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);if(K.fallThru>0)K.fallThru-=dt;
     moveX(K,K.vx*dt);K.onGround=false;moveY(K,K.vy*dt);
     if(K.onGround){
       const fx=dir>0?K.x+K.w+6:K.x-6,cf=Math.floor(fx/T),rf=Math.floor((K.y+K.h-2)/T);
       const la=dir>0?K.x+K.w+34:K.x-34,cl=Math.floor(la/T);
       const blocked=isSolid(cf,rf)||isSolid(cf,rf-1),gap=!groundAt(cl,rf+1)&&!isSolid(cl,rf),pins=tile(cl,rf)==='^'||tile(cf,rf)==='^',above=P.y+P.h<K.y-20&&Math.abs(dist)<110;
-      if(blocked||gap||pins||above)chaserLeap(K,dir,rf,K.type==='bigrat'?(above?960:880):undefined);
+      // le gros rat redescend aussi : si Raymond est plus bas, il se laisse tomber dans le vide ou traverse la planche sous ses pattes
+      const below=K.type==='bigrat'&&P.onGround&&P.y+P.h>K.y+K.h+30;
+      if(below){const cu=Math.floor((K.x+K.w/2)/T),under=tile(cu,rf+1);if(Math.abs(dist)<150&&!SOLID.includes(under)&&owTop(under,cu,rf+1)>=0){K.fallThru=.3;K.onGround=false}
+        else if(blocked||pins)chaserLeap(K,dir,rf,880)}
+      else if(blocked||gap||pins||above)chaserLeap(K,dir,rf,K.type==='bigrat'?(above?960:880):undefined);
     }
     if(K.y>ROWS*T+60)chaserReenter(K);
     return;

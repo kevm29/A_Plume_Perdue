@@ -115,7 +115,7 @@ function moveY(e,dy){
       const ch=tile(c,r);
       if(SOLID.includes(ch)){e.y=r*T-e.h;e.vy=0;e.onGround=true;return true}
       const o=owTop(ch,c,r);
-      if(o>=0&&!(e===P&&P.fallThru>0)){const top=r*T+o;if(prevB<=top+.5&&b>=top){e.y=top-e.h;e.vy=0;e.onGround=true;return true}}
+      if(o>=0&&!(e===P&&P.fallThru>0)&&!(e!==P&&e.fallThru>0)){const top=r*T+o;if(prevB<=top+.5&&b>=top){e.y=top-e.h;e.vy=0;e.onGround=true;return true}}
     }
   }else if(dy<0){
     const r=Math.floor(e.y/T);

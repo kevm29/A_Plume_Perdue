@@ -1855,7 +1855,7 @@ function moveY(e,dy){
       const ch=tile(c,r);
       if(SOLID.includes(ch)){e.y=r*T-e.h;e.vy=0;e.onGround=true;return true}
       const o=owTop(ch,c,r);
-      if(o>=0&&!(e===P&&P.fallThru>0)){const top=r*T+o;if(prevB<=top+.5&&b>=top){e.y=top-e.h;e.vy=0;e.onGround=true;return true}}
+      if(o>=0&&!(e===P&&P.fallThru>0)&&!(e!==P&&e.fallThru>0)){const top=r*T+o;if(prevB<=top+.5&&b>=top){e.y=top-e.h;e.vy=0;e.onGround=true;return true}}
     }
   }else if(dy<0){
     const r=Math.floor(e.y/T);
@@ -4309,13 +4309,17 @@ function stepChaser(K,dt,pcx,pcy){
     const dist=pcx-(K.x+K.w/2),dir=Math.sign(dist)||1;
     const sp=K.type==='bigrat'?clamp(272+(Math.abs(dist)-260)*.35,272,340):clamp(205+(Math.abs(dist)-160)*.25,205,300);
     K.leapT=(K.leapT||0)-dt;if(!(K.leapT>0&&!K.onGround))K.vx=lerp(K.vx,dir*sp,Math.min(1,dt*6));K.f=dir;
-    K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);
+    K.vy=Math.min(MAXFALL,K.vy+GRAV*dt);if(K.fallThru>0)K.fallThru-=dt;
     moveX(K,K.vx*dt);K.onGround=false;moveY(K,K.vy*dt);
     if(K.onGround){
       const fx=dir>0?K.x+K.w+6:K.x-6,cf=Math.floor(fx/T),rf=Math.floor((K.y+K.h-2)/T);
       const la=dir>0?K.x+K.w+34:K.x-34,cl=Math.floor(la/T);
       const blocked=isSolid(cf,rf)||isSolid(cf,rf-1),gap=!groundAt(cl,rf+1)&&!isSolid(cl,rf),pins=tile(cl,rf)==='^'||tile(cf,rf)==='^',above=P.y+P.h<K.y-20&&Math.abs(dist)<110;
-      if(blocked||gap||pins||above)chaserLeap(K,dir,rf,K.type==='bigrat'?(above?960:880):undefined);
+      // le gros rat redescend aussi : si Raymond est plus bas, il se laisse tomber dans le vide ou traverse la planche sous ses pattes
+      const below=K.type==='bigrat'&&P.onGround&&P.y+P.h>K.y+K.h+30;
+      if(below){const cu=Math.floor((K.x+K.w/2)/T),under=tile(cu,rf+1);if(Math.abs(dist)<150&&!SOLID.includes(under)&&owTop(under,cu,rf+1)>=0){K.fallThru=.3;K.onGround=false}
+        else if(blocked||pins)chaserLeap(K,dir,rf,880)}
+      else if(blocked||gap||pins||above)chaserLeap(K,dir,rf,K.type==='bigrat'?(above?960:880):undefined);
     }
     if(K.y>ROWS*T+60)chaserReenter(K);
     return;
@@ -7265,7 +7269,9 @@ function drawGareMid(t){
     for(let k=0;k<3;k++){g.fillStyle=['#6a3a2a','#2a4a6a','#8a6a3a'][k];rr(g,x0+8+k*22,F-76+k%2*6,22,60-k%2*6,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x0+12+k*22,F-70+k%2*6,14,3)}
     g.fillStyle='#1e1e22';for(const wx of[x0+12,x1-12]){g.beginPath();g.arc(wx,F-6,6,0,7);g.fill()}}
   // les pics suspendus tiennent à une tige accrochée à la verrière
-  for(const[c,r]of S2.hang){const x=c*T+T/2;if(vis(x,x)){g.fillStyle='#3a3e46';g.fillRect(x-1,40,2,r*T-40);g.fillRect(x-6,40,12,3)}}
+  for(const[c,r]of S2.hang){const x=c*T+T/2;if(vis(x,x)){g.fillStyle='#3a3e46';g.fillRect(x-1,40,2,r*T-40);g.fillRect(x-6,40,12,3);
+    // de petites pointes vers le haut sur le dessus : on ne s'y pose pas non plus
+    const y0=r*T;g.fillStyle='#1e2026';for(let k=0;k<5;k++){const px=c*T+4+k*8;if(Math.abs(px+4-x)<3)continue;poly(g,[px,y0+1,px+4,y0-8,px+8,y0+1]);g.fill()}}}
   // les valises de la file (sur leurs cases) et les buissons du square
   {const v=(c,r,w,h,col,kind)=>{const x=c*T,y=(r+1)*T;if(!vis(x,x+T))return;g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(x+T/2,y,w/2+4,3,0,0,7);g.fill();g.fillStyle=col;
       if(kind==='roll'){rr(g,x+T/2-w/2,y-h,w,h,5);g.fill();g.fillStyle='rgba(0,0,0,.18)';for(let k=1;k<4;k++)g.fillRect(x+T/2-w/2+k*w/4,y-h+4,2,h-8);g.fillStyle='#2a2a2e';g.fillRect(x+T/2-8,y-h-12,2,12);g.fillRect(x+T/2+6,y-h-12,2,12);g.fillRect(x+T/2-8,y-h-14,16,3);g.beginPath();g.arc(x+T/2-w/2+5,y-2,3,0,7);g.arc(x+T/2+w/2-5,y-2,3,0,7);g.fill()}
@@ -8259,8 +8265,8 @@ function facadeBuild(Lv){
       // le groupe sculpté du couronnement, sur le replat du sommet
       for(const[dx,h,o]of[[-32,96,{crown:1,attr:'sceptre'}],[0,108,{halo:1,crown:1,attr:'book'}],[32,96,{halo:1,attr:'book'}]])fcStatue(g,AX+dx,yt-4,h,Object.assign({niche:false,canopy:false},o),R);
       // les pics anti-pigeons, posés sur les têtes : une réglette de métal hérissée de fines aiguilles
-      for(const[dx,hy]of[[-32,FC_SPK.y+25],[0,FC_SPK.y+13],[32,FC_SPK.y+25]]){const x=AX+dx;g.fillStyle='#3a3c42';g.fillRect(x-15,hy,30,3);g.strokeStyle='#aeb4bc';g.lineWidth=1;
-        for(let k=0;k<9;k++){const bx=x-13+k*3.2,a=(k-4)*.13;g.beginPath();g.moveTo(bx,hy);g.lineTo(bx+Math.sin(a)*14,hy-Math.cos(a)*14);g.stroke()}g.fillStyle='rgba(255,220,180,.5)';g.fillRect(x-15,hy,30,1)}}
+      for(const[dx,hy]of[[-32,FC_SPK.y+25],[0,FC_SPK.y+13],[32,FC_SPK.y+25]]){const x=AX+dx;g.fillStyle='#0c0c10';g.fillRect(x-15,hy,30,3);g.strokeStyle='#101014';g.lineWidth=1.7;
+        for(let k=0;k<9;k++){const bx=x-13+k*3.2,a=(k-4)*.13;g.beginPath();g.moveTo(bx,hy);g.lineTo(bx+Math.sin(a)*14,hy-Math.cos(a)*14);g.stroke()}}}
     fcArchivolts(g,px,yb,pw,ah,4,R);
     // le tympan ajouré d'une rose (comme à Reims), la porte
     g.fillStyle=FCC.mid;fcOgivePath(g,px,yb,pw,ah);g.fill();fcRose(g,px,yb-ah*.62,pw*.3,side?8:10);
@@ -8479,7 +8485,7 @@ function towerBuild(g,R){const X0=FT.X0,X1=FT.X1,F=FT.FLOOR,RO=FT.ROOF,TU=FT.TUR
    g.fillStyle='#2a2420';poly(g,[lx-12,ly-34,lx+12,ly-34,lx+9,ly-6,lx-9,ly-6]);g.fill();g.fillStyle='rgba(255,200,110,.95)';poly(g,[lx-8,ly-31,lx+8,ly-31,lx+6,ly-9,lx-6,ly-9]);g.fill();
    g.fillStyle='#2a2420';g.fillRect(lx-12,ly-6,24,6);poly(g,[lx-14,ly-34,lx,ly-44,lx+14,ly-34]);g.fill();g.fillStyle='#ffe7a8';g.beginPath();g.ellipse(lx,ly-20,2.5,5,0,0,7);g.fill()}
 }
-function ftNeedles(g,x0,x1,y,d){g.fillStyle='#2a2c32';g.fillRect(x0+2,d>0?y+5:y-4,x1-x0-4,4);g.strokeStyle='#c8ced6';g.lineWidth=1.4;
+function ftNeedles(g,x0,x1,y,d){g.fillStyle='#0c0c10';g.fillRect(x0+2,d>0?y+5:y-4,x1-x0-4,4);g.strokeStyle='#101014';g.lineWidth=1.9;
   for(let x=x0+5;x<x1-4;x+=4){const a=((x/4|0)%5-2)*.12;g.beginPath();if(d>0){g.moveTo(x,y+8);g.lineTo(x+Math.sin(a)*13,y+8+Math.cos(a)*13)}else{g.moveTo(x,y-3);g.lineTo(x+Math.sin(a)*13,y-3-Math.cos(a)*13)}g.stroke()}}
 /* ---------- la tour, en direct : cloches, ondes, lueur de la lanterne ---------- */
 function drawTowerMid(g,S,t){if(!S.bells||cam.x<FT.CAM-400)return;
