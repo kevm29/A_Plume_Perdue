@@ -121,7 +121,7 @@ function levelMax(o){return 10*((o.cornTotal||0)+(o.hasMedal?1:0)+(o.secTotal||0
 /*v2*/
 /* indications des commandes : clavier ou manette selon le réglage « Commandes » */
 function pad(){return !!S.pad}
-const PAD_TXT=[["← → (ou Q / D).","Stick gauche ou croix ← →."],["Espace, Z ou ↑.","Bouton A."],["E : Tirer","X : Tirer"],["En appuyant sur B,","En appuyant sur Y,"],["avec la touche B","avec le bouton Y"]];
+const PAD_TXT=[["← → (ou Q / D).","Stick gauche ou croix ← →."],["Espace, Z ou ↑.","Bouton A."],["E : Tirer","RB : Tirer"],["En appuyant sur B,","En appuyant sur Y,"],["avec la touche B","avec le bouton Y"]];
 function padTxt(t){if(!S.pad||!t)return t;for(const[a,b]of PAD_TXT)t=t.split(a).join(b);return t}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
 
@@ -1428,6 +1428,9 @@ LEVELS.push((()=>{
   put(4,6,'S');put(M.c1,7,'E');
   put(wagons[3].c1-5,6,'q');put(S.c0+5,11,'q');put(B.c0+1,11,'q');put(B1.c0+4,6,'q');
   return {w:2,name:"Le train",theme:'train',exit:'train',seed:79,rows:RR,camY:.55,
+    /*v2*/ // deux cartels : sur le toit au départ, puis à l'entrée de la voiture des voyageurs
+    hintSpots:Lv=>{const Tn=Lv.train,sx=(Lv.spawn?Lv.spawn.x:2*T);return[{x:sx+3*T,y:TRN.ROOF,h:[/*v2*/"ARTICLE 21 — LE TOIT DU TRAIN",/*v2*/"Voyager sur le toit d'un train lancé : dangereux. Les pylônes arrivent sans prévenir, il faut sauter par-dessus. Sous un pont, rester bien à plat."]},
+      {x:Tn.in3[0]+T*.5,y:TRN.FLOOR,h:[/*v2*/"ARTICLE 22 — LES VOYAGEURS",/*v2*/"Ne pas se faire voir. Au ras du sol, les voyageurs ne remarquent rien ; en l'air, ils lancent tout ce qu'ils ont sous la main."]}]},
     gust:{period:5.3,dur:1.1,push:250,dir:-1},
     train:{wagons,seats:['old','empty','phone','sleep','bagblue','paper','empty','student','bagred','suit','sleep','phone','empty','knit'],
       bottles:[S.c0+6.5,S.c0+15.5,S.c0+25.2],door:S.c1,counter:cnt,chips:cnt[0]+5.5},
@@ -1684,6 +1687,7 @@ LEVELS.push((()=>{
       coffee:5340,salad:5900,hood:[5700,6100],fridge:6850,window:12440},
     start:/*v2*/"L'aire de Gueux. Des lumières, des odeurs de gasoil et de café. Et, contre la voiture garée, deux chiens qui dorment. Marcher doucement pour ne pas les exciter !",
     hints:[],quips:[],
+    /*v2*/ hintSpots:Lv=>[{x:(Lv.spawn?Lv.spawn.x:2*T)+150,y:G0*T,h:[/*v2*/"ARTICLE 23 — LES CHIENS DE L'AIRE",/*v2*/"Ils dorment. Un saut ou un battement d'aile près d'eux, et ils se réveillent. Avancer à pas de pigeon."]}],
     segs:[{z:'aire',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
 /* 4-3 · L'orage : la remorque sous l'orage, puis le souvenir — la route du fort de Vaux, la chambrée, la cour,
@@ -3593,7 +3597,7 @@ function drawActPrompt(t){
   ctx.save();ctx.translate(x,y+b);
   ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();
   ctx.fillStyle='#ece3cc';rr(ctx,-12,-12,24,24,5);ctx.fill();ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();
-  ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText(pad()?'X':'E',0,6);
+  ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.font=(pad()?'12px ':'16px ')+F_DISP;ctx.fillText(pad()?'RB':'E',0,pad()?5:6);
   ctx.restore();
 }
 /* gardien endormi sur sa chaise (le gardien au filet, avant la poursuite) */
@@ -4015,6 +4019,8 @@ function startLevel(i){
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
   setSong(songKey(i));loopsOff();
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
+  // cartels posés par coordonnées (niveaux construits par le code) : ils s'ajoutent à ceux de la grille
+  L.hintTexts=(L.def.hints||[]).slice();for(const sp of (L.def.hintSpots?L.def.hintSpots(L):[])){L.hints.push({x:sp.x,y:sp.y,i:L.hintTexts.length,noEasel:sp.noEasel});L.hintTexts.push(sp.h)}
   parts.length=0;G.quip=null;G.quipQ=[];G.hintShow=-1;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
   if(L.dome){
     const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
@@ -4283,7 +4289,8 @@ function stepPlay(dt){
   // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;
   // un cartel s'affiche 3 s pleines, même si on s'en éloigne
-  if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0;if(hn>=0){G.hintShow=hn;G.hintShowT=0}}G.hintT=(G.hintT||0)+dt;G.hintShowT=(G.hintShowT||0)+dt;G.hintI=G.hintShow!=null&&G.hintShow>=0&&G.hintShowT<3?G.hintShow:-1;
+  // un cartel croisé pour la première fois : le jeu se met en pause et le cartel s'ouvre, avec un bouton « Compris »
+  if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0;if(hn>=0&&!G.sim&&!P.dead&&!(L.hintRead||(L.hintRead={}))[hn]){L.hintRead[hn]=1;G.hintPop=hn;G.hintPopT=0;G.state='hint';SFX.page()}}G.hintI=-1;
   if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
   if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&trainExitOk()&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
@@ -9687,7 +9694,7 @@ function vxCard(text,a,t,sub){
   ctx.restore()}
 /* la touche E qui flotte au-dessus de Raymond */
 function vxKeyE(x,y,t){const b=Math.sin(t*5)*2;ctx.save();ctx.translate(x,y+b);ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();ctx.fillStyle='#ece3cc';rr(ctx,-12,-12,24,24,5);ctx.fill();
-  ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText(pad()?'X':'E',0,6);ctx.restore()}
+  ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.font=(pad()?'12px ':'16px ')+F_DISP;ctx.fillText(pad()?'RB':'E',0,pad()?5:6);ctx.restore()}
 /* un sac de terre : toile de jute bombée, oreille nouée, couture, ombre portée */
 function vxSandbag(g,x,y,w,h,k){const R=mulberry((x*7+y*13)|0),col=mix(mix('#9a8660','#7a6644',R()),'#4a3a28',k||0),dk=mix(col,'#000000',.3),lt=mix(col,'#ffffff',.18),fl=R()<.5?1:-1;
   g.save();g.translate(x+w/2,y+h/2);g.rotate((R()-.5)*.08);
@@ -14606,7 +14613,7 @@ function renderWorld(lv,cx,cy,t,opts){
 let rayC=null,rayG=null;
 function drawEntities(t){
   const vis=x=>x>cam.x-120&&x<cam.x+W+120,th=L.th;
-  for(const h of L.hints)if(vis(h.x)){const m=/(FIG\.|ARTICLE) (\d+)/.exec(L.def.hints[h.i][0]);drawEasel(ctx,h.x,h.y,m?m[2]:'§',th.outdoor)}
+  for(const h of L.hints)if(vis(h.x)&&!h.noEasel){const m=/(FIG\.|ARTICLE) (\d+)/.exec((L.hintTexts||L.def.hints)[h.i][0]);drawEasel(ctx,h.x,h.y,m?m[2]:'§',th.outdoor)}
   for(const cp of L.cps)if(vis(cp.x)&&!(cp.era&&L.cb&&cp.era!==L.cb.era))drawCartel(ctx,cp.x,cp.y,cp.on,t,th.outdoor);
   if(L.exit&&L.def.exit!=='none')drawExit(ctx,L.exit,L.def.exit,t,L.def.exitLabel);
   for(const m of L.movers)if(vis(m.x)||vis(m.x+m.w))drawMover(ctx,m);
@@ -15389,8 +15396,8 @@ function renderSettings(t){
   {let y=318;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(pad()?/*v2*/'MANETTE':'TOUCHES',W/2,y);y+=22;
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
     if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['G',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
-    if(pad()){K.length=0;K.push([/*v2*/'Stick gauche ou croix',/*v2*/'Marcher ; choisir dans les menus'],['A',"Sauter ; en l'air = battre des ailes ; maintenu = planer"],[/*v2*/'Bas',/*v2*/'Descendre'],['X',/*v2*/'Action']);
-      if(eraKeyOn())K.push(['Y','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['RB',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);
+    if(pad()){K.length=0;K.push([/*v2*/'Stick gauche ou croix',/*v2*/'Marcher ; choisir dans les menus'],['A',"Sauter ; en l'air = battre des ailes ; maintenu = planer"],[/*v2*/'Bas',/*v2*/'Descendre'],['RB',/*v2*/'Action']);
+      if(eraKeyOn())K.push(['Y','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['LB',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);
       K.push(['Select','Revenir au dernier fanion'],['Start','Pause'],['B',/*v2*/'Retour dans les menus'])}
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=16}keysEnd=y}
   // réinitialiser
@@ -15445,6 +15452,22 @@ function renderScores(t){
   ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText(pad()?'B pour revenir':'Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
+/* ---------- un cartel en grand : le jeu attend qu'on l'ait lu (« Compris ») ---------- */
+function hintPopText(){const h=(L.hintTexts||L.def.hints||[])[G.hintPop];return h?[h[0],padTxt(h[1])]:['','']}
+function handleHintPop(dt){G.hintPopT=(G.hintPopT||0)+dt;const b=G.hintBtn;
+  const clicked=G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h;
+  if(G.hintPopT>.45&&(clicked||pressed.has('ok')||pressed.has('act')||pressed.has('back')||pressed.has('esc')||pressed.has('jump'))){G.state='play';G.hintPop=null;keys.delete('jump');P.jumpBuf=0;SFX.tick()}}
+function renderHintPop(t){const[title,body]=hintPopText();const a=Math.min(1,(G.hintPopT||0)/.25);ctx.save();
+  ctx.fillStyle='rgba(8,7,10,'+(.55*a)+')';ctx.fillRect(0,0,W,H);ctx.globalAlpha=a;
+  ctx.font='italic 20px '+F_BODY;const lines=wrap(ctx,body,520);const bw=600,bh=132+lines.length*27,bx=W/2-bw/2,by=H/2-bh/2-10;
+  ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,bx+6,by+8,bw,bh,8);ctx.fill();ctx.fillStyle='#ece3cc';rr(ctx,bx,by,bw,bh,8);ctx.fill();
+  ctx.strokeStyle='rgba(42,36,32,.6)';ctx.lineWidth=1;rr(ctx,bx+8.5,by+8.5,bw-17,bh-17,5);ctx.stroke();
+  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='17px '+F_DISP;ctx.fillText(title,bx+34,by+40);ctx.fillStyle='rgba(42,36,32,.3)';ctx.fillRect(bx+34,by+50,bw-68,1);
+  ctx.font='italic 20px '+F_BODY;ctx.fillStyle='#2a2420';lines.forEach((l,k)=>ctx.fillText(l,bx+34,by+80+k*27));
+  const lbl=pad()?/*v2*/'Compris  (A)':/*v2*/'Compris',bw2=150,bx2=W/2-bw2/2,by2=by+bh-50;G.hintBtn={x:bx2,y:by2,w:bw2,h:34};
+  const ms=G.mouse||{x:-1,y:-1},hov=ms.x>bx2&&ms.x<bx2+bw2&&ms.y>by2&&ms.y<by2+34;
+  ctx.fillStyle=hov?'#c8902e':'#2a2420';rr(ctx,bx2,by2,bw2,34,6);ctx.fill();ctx.fillStyle='#efe5cc';ctx.textAlign='center';ctx.font='17px '+F_DISP;ctx.fillText(lbl,W/2,by2+23);
+  ctx.restore()}
 
 /* =========================================================
    ENTRÉES ET BOUCLE PRINCIPALE
@@ -15476,10 +15499,10 @@ bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch(
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
 /*v2*/
 /* ---------- manette (API Gamepad, disposition standard Xbox / PlayStation) ----------
-   A sauter / valider · B retour · X action · Y époque · Start pause · Select dernier fanion · RB Super-Raymond / Dieu-Pigeon
+   A sauter / valider · B retour · RB action · Y époque · Start pause · Select dernier fanion · LB Super-Raymond / Dieu-Pigeon
    Stick gauche ou croix : se déplacer, choisir dans les menus. La manette marche toujours ; le réglage « Commandes »
    des paramètres ne change que les indications affichées. */
-const PAD_BTN={0:['jump','ok'],1:['back'],2:['act'],3:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
+const PAD_BTN={0:['jump','ok'],1:['back'],5:['act'],3:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
 const padHeld=new Set();let padPrev={};
 function pollPad(){
   let gps=[];try{gps=navigator.getGamepads?navigator.getGamepads():[]}catch(e){return}
@@ -15494,7 +15517,7 @@ function pollPad(){
   for(const a of now){if(!keys.has(a))pressed.add(a);keys.add(a)}
   for(const a of padHeld)if(!now.has(a))keys.delete(a);
   padHeld.clear();for(const a of now)padHeld.add(a);
-  if(edge[8])pressed.add('restart');if(edge[5])godSwap();
+  if(edge[8])pressed.add('restart');if(edge[4])godSwap();
 }
 let touchUI=false;
 function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on');syncTouchB()}
@@ -15517,6 +15540,7 @@ function update(dt){
     case'pause':if(pressed.has('esc')||pressed.has('back')||homeClick()){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
+    case'hint':handleHintPop(dt);break;
     case'ach':handleAch();break;
     case'scores':handleScores();break;
     case'settings':handleSettings();break;
@@ -15577,7 +15601,7 @@ function render(){
     case'settings':renderSettings(t);renderGrain();break;
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;
-    case'play':case'pause':case'exiting':case'confirm':{
+    case'play':case'pause':case'exiting':case'confirm':case'hint':{
       if(vauxActive()){vauxRender(t);vauxOverlays();break}
       if(svActive()){svRender(t);drawQuip(66);vauxOverlays();break}
       if(rfActive()){rfRender(t);vauxOverlays();break}
@@ -15602,7 +15626,7 @@ function render(){
       renderGrain();
       if(!G.cut&&!(L.cb&&L.cb.end&&L.cb.end.t>1.2)&&!(L.pl&&L.pl.seq)&&!(L.cm&&L.cm.seq))renderHUD();else if(G.cut)drawQuip(66);
       if(G.cut){ctx.fillStyle='rgba(0,0,0,.88)';ctx.fillRect(0,0,W,46);ctx.fillRect(0,H-46,W,46);if(G.cut.t>1){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('appuyer pour passer',W-20,H-18)}}
-      vauxOverlays();
+      vauxOverlays();if(G.state==='hint')renderHintPop(t);
       break}
   }
   if(G.fade>0){ctx.fillStyle='rgba(11,10,12,'+G.fade+')';ctx.fillRect(0,0,W,H)}

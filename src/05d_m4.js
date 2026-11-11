@@ -70,6 +70,7 @@ LEVELS.push((()=>{
       coffee:5340,salad:5900,hood:[5700,6100],fridge:6850,window:12440},
     start:/*v2*/"L'aire de Gueux. Des lumières, des odeurs de gasoil et de café. Et, contre la voiture garée, deux chiens qui dorment. Marcher doucement pour ne pas les exciter !",
     hints:[],quips:[],
+    /*v2*/ hintSpots:Lv=>[{x:(Lv.spawn?Lv.spawn.x:2*T)+150,y:G0*T,h:[/*v2*/"ARTICLE 23 — LES CHIENS DE L'AIRE",/*v2*/"Ils dorment. Un saut ou un battement d'aile près d'eux, et ils se réveillent. Avancer à pas de pigeon."]}],
     segs:[{z:'aire',s:'\n'+g.map(r=>r.join('')).join('\n')}]};
 })());
 /* 4-3 · L'orage : la remorque sous l'orage, puis le souvenir — la route du fort de Vaux, la chambrée, la cour,

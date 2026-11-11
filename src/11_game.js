@@ -36,6 +36,8 @@ function startLevel(i){
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
   setSong(songKey(i));loopsOff();
   P.cp={x:L.spawn.x,y:L.spawn.y};resetPlayer();
+  // cartels posés par coordonnées (niveaux construits par le code) : ils s'ajoutent à ceux de la grille
+  L.hintTexts=(L.def.hints||[]).slice();for(const sp of (L.def.hintSpots?L.def.hintSpots(L):[])){L.hints.push({x:sp.x,y:sp.y,i:L.hintTexts.length,noEasel:sp.noEasel});L.hintTexts.push(sp.h)}
   parts.length=0;G.quip=null;G.quipQ=[];G.hintShow=-1;G.hintI=-1;G.lastHint=null;G.state='play';G.fade=1;G.t=0;G.cut=null;G.tombSeq=null;L.carton=null;
   if(L.dome){
     const dg=domeGeom(L.dome);L.armoire={x:L.dome.x+92,shake:0,door:0};L.backDoor={x:L.dome.x-170,open:0};
@@ -304,7 +306,8 @@ function stepPlay(dt){
   // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir
   let hn=-1;for(const h of L.hints)if(Math.abs(h.x-pc.x)<90&&Math.abs(h.y-(P.y+P.h))<120)hn=h.i;
   // un cartel s'affiche 3 s pleines, même si on s'en éloigne
-  if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0;if(hn>=0){G.hintShow=hn;G.hintShowT=0}}G.hintT=(G.hintT||0)+dt;G.hintShowT=(G.hintShowT||0)+dt;G.hintI=G.hintShow!=null&&G.hintShow>=0&&G.hintShowT<3?G.hintShow:-1;
+  // un cartel croisé pour la première fois : le jeu se met en pause et le cartel s'ouvre, avec un bouton « Compris »
+  if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0;if(hn>=0&&!G.sim&&!P.dead&&!(L.hintRead||(L.hintRead={}))[hn]){L.hintRead[hn]=1;G.hintPop=hn;G.hintPopT=0;G.state='hint';SFX.page()}}G.hintI=-1;
   if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
   if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&trainExitOk()&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}

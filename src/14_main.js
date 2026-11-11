@@ -28,10 +28,10 @@ bindTouch('tl','left');bindTouch('tr','right');bindTouch('tj','jump');bindTouch(
 document.getElementById('tp').addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();pressed.add('esc')});
 /*v2*/
 /* ---------- manette (API Gamepad, disposition standard Xbox / PlayStation) ----------
-   A sauter / valider · B retour · X action · Y époque · Start pause · Select dernier fanion · RB Super-Raymond / Dieu-Pigeon
+   A sauter / valider · B retour · RB action · Y époque · Start pause · Select dernier fanion · LB Super-Raymond / Dieu-Pigeon
    Stick gauche ou croix : se déplacer, choisir dans les menus. La manette marche toujours ; le réglage « Commandes »
    des paramètres ne change que les indications affichées. */
-const PAD_BTN={0:['jump','ok'],1:['back'],2:['act'],3:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
+const PAD_BTN={0:['jump','ok'],1:['back'],5:['act'],3:['era'],9:['esc'],12:['up'],13:['down'],14:['left'],15:['right']};
 const padHeld=new Set();let padPrev={};
 function pollPad(){
   let gps=[];try{gps=navigator.getGamepads?navigator.getGamepads():[]}catch(e){return}
@@ -46,7 +46,7 @@ function pollPad(){
   for(const a of now){if(!keys.has(a))pressed.add(a);keys.add(a)}
   for(const a of padHeld)if(!now.has(a))keys.delete(a);
   padHeld.clear();for(const a of now)padHeld.add(a);
-  if(edge[8])pressed.add('restart');if(edge[5])godSwap();
+  if(edge[8])pressed.add('restart');if(edge[4])godSwap();
 }
 let touchUI=false;
 function showTouch(){if(touchUI)return;touchUI=true;for(const id of['tl','tr','tj','tp','te'])document.getElementById(id).classList.add('on');syncTouchB()}
@@ -69,6 +69,7 @@ function update(dt){
     case'pause':if(pressed.has('esc')||pressed.has('back')||homeClick()){G.state='play';break}handleMenu();break;
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
+    case'hint':handleHintPop(dt);break;
     case'ach':handleAch();break;
     case'scores':handleScores();break;
     case'settings':handleSettings();break;
@@ -129,7 +130,7 @@ function render(){
     case'settings':renderSettings(t);renderGrain();break;
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;
-    case'play':case'pause':case'exiting':case'confirm':{
+    case'play':case'pause':case'exiting':case'confirm':case'hint':{
       if(vauxActive()){vauxRender(t);vauxOverlays();break}
       if(svActive()){svRender(t);drawQuip(66);vauxOverlays();break}
       if(rfActive()){rfRender(t);vauxOverlays();break}
@@ -154,7 +155,7 @@ function render(){
       renderGrain();
       if(!G.cut&&!(L.cb&&L.cb.end&&L.cb.end.t>1.2)&&!(L.pl&&L.pl.seq)&&!(L.cm&&L.cm.seq))renderHUD();else if(G.cut)drawQuip(66);
       if(G.cut){ctx.fillStyle='rgba(0,0,0,.88)';ctx.fillRect(0,0,W,46);ctx.fillRect(0,H-46,W,46);if(G.cut.t>1){ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.45)';ctx.textAlign='right';ctx.fillText('appuyer pour passer',W-20,H-18)}}
-      vauxOverlays();
+      vauxOverlays();if(G.state==='hint')renderHintPop(t);
       break}
   }
   if(G.fade>0){ctx.fillStyle='rgba(11,10,12,'+G.fade+')';ctx.fillRect(0,0,W,H)}

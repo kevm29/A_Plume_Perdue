@@ -42,3 +42,19 @@ function renderScores(t){
   ctx.font='italic 14px '+F_BODY;ctx.fillStyle='rgba(233,223,199,.5)';ctx.fillText(pad()?'B pour revenir':'Échap pour revenir',W/2,H-12);
   ctx.restore();
 }
+/* ---------- un cartel en grand : le jeu attend qu'on l'ait lu (« Compris ») ---------- */
+function hintPopText(){const h=(L.hintTexts||L.def.hints||[])[G.hintPop];return h?[h[0],padTxt(h[1])]:['','']}
+function handleHintPop(dt){G.hintPopT=(G.hintPopT||0)+dt;const b=G.hintBtn;
+  const clicked=G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h;
+  if(G.hintPopT>.45&&(clicked||pressed.has('ok')||pressed.has('act')||pressed.has('back')||pressed.has('esc')||pressed.has('jump'))){G.state='play';G.hintPop=null;keys.delete('jump');P.jumpBuf=0;SFX.tick()}}
+function renderHintPop(t){const[title,body]=hintPopText();const a=Math.min(1,(G.hintPopT||0)/.25);ctx.save();
+  ctx.fillStyle='rgba(8,7,10,'+(.55*a)+')';ctx.fillRect(0,0,W,H);ctx.globalAlpha=a;
+  ctx.font='italic 20px '+F_BODY;const lines=wrap(ctx,body,520);const bw=600,bh=132+lines.length*27,bx=W/2-bw/2,by=H/2-bh/2-10;
+  ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,bx+6,by+8,bw,bh,8);ctx.fill();ctx.fillStyle='#ece3cc';rr(ctx,bx,by,bw,bh,8);ctx.fill();
+  ctx.strokeStyle='rgba(42,36,32,.6)';ctx.lineWidth=1;rr(ctx,bx+8.5,by+8.5,bw-17,bh-17,5);ctx.stroke();
+  ctx.fillStyle='#2a2420';ctx.textAlign='left';ctx.font='17px '+F_DISP;ctx.fillText(title,bx+34,by+40);ctx.fillStyle='rgba(42,36,32,.3)';ctx.fillRect(bx+34,by+50,bw-68,1);
+  ctx.font='italic 20px '+F_BODY;ctx.fillStyle='#2a2420';lines.forEach((l,k)=>ctx.fillText(l,bx+34,by+80+k*27));
+  const lbl=pad()?/*v2*/'Compris  (A)':/*v2*/'Compris',bw2=150,bx2=W/2-bw2/2,by2=by+bh-50;G.hintBtn={x:bx2,y:by2,w:bw2,h:34};
+  const ms=G.mouse||{x:-1,y:-1},hov=ms.x>bx2&&ms.x<bx2+bw2&&ms.y>by2&&ms.y<by2+34;
+  ctx.fillStyle=hov?'#c8902e':'#2a2420';rr(ctx,bx2,by2,bw2,34,6);ctx.fill();ctx.fillStyle='#efe5cc';ctx.textAlign='center';ctx.font='17px '+F_DISP;ctx.fillText(lbl,W/2,by2+23);
+  ctx.restore()}

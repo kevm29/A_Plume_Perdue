@@ -87,8 +87,8 @@ function renderSettings(t){
   {let y=318;ctx.textAlign='center';ctx.font='15px '+F_DISP;ctx.fillStyle='#d9a441';ctx.fillText(pad()?/*v2*/'MANETTE':'TOUCHES',W/2,y);y+=22;
     const K=[['← →  ou  Q D','Marcher'],['Espace, ↑ ou Z','Sauter ; en l\'air = battre des ailes ; maintenu = planer'],['↓ ou S','Descendre'],['E','Action']];
     if(eraKeyOn())K.push(['B','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['G',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);K.push(['R','Revenir au dernier fanion'],['Échap ou P','Pause'],['M','Couper le son']);
-    if(pad()){K.length=0;K.push([/*v2*/'Stick gauche ou croix',/*v2*/'Marcher ; choisir dans les menus'],['A',"Sauter ; en l'air = battre des ailes ; maintenu = planer"],[/*v2*/'Bas',/*v2*/'Descendre'],['X',/*v2*/'Action']);
-      if(eraKeyOn())K.push(['Y','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['RB',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);
+    if(pad()){K.length=0;K.push([/*v2*/'Stick gauche ou croix',/*v2*/'Marcher ; choisir dans les menus'],['A',"Sauter ; en l'air = battre des ailes ; maintenu = planer"],[/*v2*/'Bas',/*v2*/'Descendre'],['RB',/*v2*/'Action']);
+      if(eraKeyOn())K.push(['Y','Faire revivre des souvenirs (quand ils existent)']);if(S.mode==='super'||S.mode==='dieu')K.push(['LB',/*v2*/'Passer de Super-Raymond à Dieu-Pigeon, et retour']);
       K.push(['Select','Revenir au dernier fanion'],['Start','Pause'],['B',/*v2*/'Retour dans les menus'])}
     ctx.font='15px '+F_BODY;for(const[a,b]of K){ctx.textAlign='right';ctx.fillStyle='#efe5cc';ctx.fillText(a,W/2-20,y);ctx.textAlign='left';ctx.fillStyle='rgba(233,223,199,.7)';ctx.fillText(b,W/2+4,y);y+=16}keysEnd=y}
   // réinitialiser

@@ -35,6 +35,9 @@ LEVELS.push((()=>{
   put(4,6,'S');put(M.c1,7,'E');
   put(wagons[3].c1-5,6,'q');put(S.c0+5,11,'q');put(B.c0+1,11,'q');put(B1.c0+4,6,'q');
   return {w:2,name:"Le train",theme:'train',exit:'train',seed:79,rows:RR,camY:.55,
+    /*v2*/ // deux cartels : sur le toit au départ, puis à l'entrée de la voiture des voyageurs
+    hintSpots:Lv=>{const Tn=Lv.train,sx=(Lv.spawn?Lv.spawn.x:2*T);return[{x:sx+3*T,y:TRN.ROOF,h:[/*v2*/"ARTICLE 21 — LE TOIT DU TRAIN",/*v2*/"Voyager sur le toit d'un train lancé : dangereux. Les pylônes arrivent sans prévenir, il faut sauter par-dessus. Sous un pont, rester bien à plat."]},
+      {x:Tn.in3[0]+T*.5,y:TRN.FLOOR,h:[/*v2*/"ARTICLE 22 — LES VOYAGEURS",/*v2*/"Ne pas se faire voir. Au ras du sol, les voyageurs ne remarquent rien ; en l'air, ils lancent tout ce qu'ils ont sous la main."]}]},
     gust:{period:5.3,dur:1.1,push:250,dir:-1},
     train:{wagons,seats:['old','empty','phone','sleep','bagblue','paper','empty','student','bagred','suit','sleep','phone','empty','knit'],
       bottles:[S.c0+6.5,S.c0+15.5,S.c0+25.2],door:S.c1,counter:cnt,chips:cnt[0]+5.5},

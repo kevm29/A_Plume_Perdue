@@ -109,7 +109,7 @@ function drawActPrompt(t){
   ctx.save();ctx.translate(x,y+b);
   ctx.fillStyle='rgba(0,0,0,.35)';rr(ctx,-11,-9,24,24,5);ctx.fill();
   ctx.fillStyle='#ece3cc';rr(ctx,-12,-12,24,24,5);ctx.fill();ctx.strokeStyle='#2a2420';ctx.lineWidth=1.2;rr(ctx,-12,-12,24,24,5);ctx.stroke();
-  ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.fillText(pad()?'X':'E',0,6);
+  ctx.fillStyle='#2a2420';ctx.font='16px '+F_DISP;ctx.textAlign='center';ctx.font=(pad()?'12px ':'16px ')+F_DISP;ctx.fillText(pad()?'RB':'E',0,pad()?5:6);
   ctx.restore();
 }
 /* gardien endormi sur sa chaise (le gardien au filet, avant la poursuite) */

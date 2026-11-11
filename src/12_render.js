@@ -37,7 +37,7 @@ function renderWorld(lv,cx,cy,t,opts){
 let rayC=null,rayG=null;
 function drawEntities(t){
   const vis=x=>x>cam.x-120&&x<cam.x+W+120,th=L.th;
-  for(const h of L.hints)if(vis(h.x)){const m=/(FIG\.|ARTICLE) (\d+)/.exec(L.def.hints[h.i][0]);drawEasel(ctx,h.x,h.y,m?m[2]:'§',th.outdoor)}
+  for(const h of L.hints)if(vis(h.x)&&!h.noEasel){const m=/(FIG\.|ARTICLE) (\d+)/.exec((L.hintTexts||L.def.hints)[h.i][0]);drawEasel(ctx,h.x,h.y,m?m[2]:'§',th.outdoor)}
   for(const cp of L.cps)if(vis(cp.x)&&!(cp.era&&L.cb&&cp.era!==L.cb.era))drawCartel(ctx,cp.x,cp.y,cp.on,t,th.outdoor);
   if(L.exit&&L.def.exit!=='none')drawExit(ctx,L.exit,L.def.exit,t,L.def.exitLabel);
   for(const m of L.movers)if(vis(m.x)||vis(m.x+m.w))drawMover(ctx,m);
