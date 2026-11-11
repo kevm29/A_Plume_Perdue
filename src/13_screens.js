@@ -437,10 +437,12 @@ function endOfLevel(li,shown){
 function handleLetter(dt){
   const LE=G.LE;const go=pressed.has('ok')||pressed.has('jump')||G.click;
   if(LE.mode==='short'){LE.after+=dt;if(LE.sel==null)LE.sel=1;if(LE.after<=.5)return;
-    if(pressed.has('left')||pressed.has('right')||pressed.has('up')||pressed.has('down'))LE.sel=1-LE.sel;
+    {const ord=[2,0,1],k=ord.indexOf(LE.sel);if(pressed.has('left')||pressed.has('up'))LE.sel=ord[(k+2)%3];if(pressed.has('right')||pressed.has('down'))LE.sel=ord[(k+1)%3]}
     let pick=null;if(G.click&&G.doneBoxes){for(const b of G.doneBoxes)if(G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)pick=b.i}
     else if(pressed.has('ok'))pick=LE.sel;
-    if(pick===1){G.cutSeen=true;if(LE.next)LE.next();else startLevel(LE.li+1)}else if(pick===0)replayLevel(LE.li);return}
+    if(pick===1){G.cutSeen=true;if(LE.next)LE.next();else startLevel(LE.li+1)}else if(pick===0)replayLevel(LE.li);
+    else if(pick===2){/*v2*/ // retour au menu principal : « Continuer » reprendra au niveau suivant
+      S.resume=Math.min(19,LE.li+1);save();goTitle()}return}
   const def=LEVELS[LE.li];
   const total=(def.letter.date||'').length+letterToks(LE.li).reduce((s,t)=>s+(t.br?0:t.w.length+1),0);
   if(!LE.done){const before=Math.floor(LE.chars);LE.chars+=dt*30;if(Math.floor(LE.chars)!==before&&Math.floor(LE.chars)%3===0)noise(.03,2600,.04,'highpass');if(go)LE.chars=total;if(LE.chars>=total){LE.done=true;LE.after=0;achLetter(LE.li)}}
@@ -468,7 +470,7 @@ function renderLevelDone(t){
   rows.forEach(([k,v],i)=>{const y=-8+i*25;ctx.textAlign='left';ctx.font='italic 18px '+F_BODY;ctx.fillStyle='#4a3e30';ctx.fillText(k,-170,y);ctx.textAlign='right';ctx.font='18px '+F_DISP;ctx.fillStyle=i===rows.length-1?'#a8322d':'#2a2420';ctx.fillText(v,160,y)});
   ctx.restore();
   drawRaymond(ctx,W/2-300,H-60,{f:1,t,walk:0,wear:wear(),size:1.6});
-  G.doneBoxes=[];if(LE.after>.5)[[/*v2*/'Rejouer le niveau',0],['Continuer ▸',1]].forEach(([lb,i])=>{const bw=210,bh=40,bx=W/2-5+(i?12:-bw-12),by=H/2+118,sel=(LE.sel==null?1:LE.sel)===i;
+  G.doneBoxes=[];if(LE.after>.5)[[/*v2*/'Menu principal',2],[/*v2*/'Rejouer le niveau',0],['Continuer ▸',1]].forEach(([lb,i],j)=>{const bw=196,bh=40,bx=W/2-301+j*206,by=H/2+118,sel=(LE.sel==null?1:LE.sel)===i;
     ctx.fillStyle=sel?'#ece2c6':'rgba(236,226,198,.12)';rr(ctx,bx,by,bw,bh,7);ctx.fill();ctx.strokeStyle='rgba(236,226,198,.5)';ctx.lineWidth=1.5;rr(ctx,bx,by,bw,bh,7);ctx.stroke();
     ctx.fillStyle=sel?'#2a2420':'#ece2c6';ctx.font='18px '+F_DISP;ctx.textAlign='center';ctx.fillText(lb,bx+bw/2,by+26);G.doneBoxes.push({x:bx,y:by,w:bw,h:bh,i})});
   ctx.restore();
