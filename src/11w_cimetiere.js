@@ -393,9 +393,12 @@ function cmOverlay(t){const C=L.cm;if(!C)return;const cx=Math.round(cam.x),cy=Ma
   // Marguerite et Joseph
   {const pcx=P.x+P.w/2,a=G.tombSeq?.85:clamp((pcx-174*T)/(5*T),0,1)*.75;if(a>0)cmCouple(ctx,t,a)}
   ctx.restore();
-  // le brouillard : un voile, des nappes qui traînent au ras du sol
-  ctx.save();ctx.fillStyle='rgba(120,132,165,.04)';ctx.fillRect(0,0,W,H);
-  for(let k=0;k<7;k++){const x=((k*230-t*(8+k*3)-cx*.3)%(W+700)+W+700)%(W+700)-350,y=CMF-cy-20+(k%3)*18;const gr=ctx.createRadialGradient(x,y,10,x,y,300);gr.addColorStop(0,'rgba(170,182,210,.12)');gr.addColorStop(1,'rgba(170,182,210,0)');ctx.fillStyle=gr;ctx.save();ctx.translate(x,y);ctx.scale(1,.32);ctx.translate(-x,-y);ctx.fillRect(x-300,y-300,600,600);ctx.restore()}
-  for(let k=0;k<4;k++){const x=((k*410-t*(5+k*2)-cx*.15)%(W+800)+W+800)%(W+800)-400,y=250+k*50-cy*.3;const gr=ctx.createRadialGradient(x,y,10,x,y,280);gr.addColorStop(0,'rgba(150,160,190,.1)');gr.addColorStop(1,'rgba(150,160,190,0)');ctx.fillStyle=gr;ctx.fillRect(x-280,y-280,560,560)}
-  ctx.restore();
+  // le brouillard : un voile, des nappes qui traînent au ras du sol — peint en petit (un quart de la taille), puis agrandi :
+  // c'est le même flou, pour seize fois moins de pixels à remplir
+  {const F=4,fc=cmFogC||(cmFogC=mk(Math.ceil(W/F),Math.ceil(H/F))),g=fc.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,fc.width,fc.height);g.scale(1/F,1/F);
+   g.fillStyle='rgba(120,132,165,.04)';g.fillRect(0,0,W,H);
+   for(let k=0;k<7;k++){const x=((k*230-t*(8+k*3)-cx*.3)%(W+700)+W+700)%(W+700)-350,y=CMF-cy-20+(k%3)*18;const gr=g.createRadialGradient(x,y,10,x,y,300);gr.addColorStop(0,'rgba(170,182,210,.12)');gr.addColorStop(1,'rgba(170,182,210,0)');g.fillStyle=gr;g.save();g.translate(x,y);g.scale(1,.32);g.translate(-x,-y);g.fillRect(x-300,y-300,600,600);g.restore()}
+   for(let k=0;k<4;k++){const x=((k*410-t*(5+k*2)-cx*.15)%(W+800)+W+800)%(W+800)-400,y=250+k*50-cy*.3;const gr=g.createRadialGradient(x,y,10,x,y,280);gr.addColorStop(0,'rgba(150,160,190,.1)');gr.addColorStop(1,'rgba(150,160,190,0)');g.fillStyle=gr;g.fillRect(x-280,y-280,560,560)}
+   ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(fc,0,0,W,H);ctx.restore()}
 }
+let cmFogC=null;

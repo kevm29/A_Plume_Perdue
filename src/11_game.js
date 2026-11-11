@@ -22,7 +22,7 @@ function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:Math.max(3,1.2+te
 function wear(){return S.run.wear||0}
 function loadLayers(i){
   const key=i+':'+RS;
-  for(const k in layerCache)if(k!==key&&!k.startsWith('0:'))delete layerCache[k];
+  for(const k in layerCache)if(k!==key&&!k.startsWith('0:')){const e=layerCache[k];freeLayer(e.far);freeLayer(e.mid);delete layerCache[k]}
   if(!layerCache[key]){const tmp=parseLevel(i);const prev=L;L=tmp;layerCache[key]={far:buildFar(tmp),mid:buildMid(tmp),windows:tmp.windows,turbines:tmp.turbines};L=prev}
   return layerCache[key];
 }
@@ -30,7 +30,10 @@ function computeRS(){RS=Math.min(2,Math.max(1,Math.round(scale*dpr*2)/2))}
 function songKey(i){const d=LEVELS[i];return's'+(d.w+1)+'-'+(i%4+1)}
 function startLevel(i){
   computeRS();if(typeof mGain!=='undefined'&&mGain)mGain.gain.value=.1;
-  G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
+  // les calques du niveau qu'on quitte : rendus à la carte graphique tout de suite (sinon, après quelques changements de niveau, le jeu rame)
+  const oldL=L;
+  G.li=i;L=parseLevel(i);const lay=loadLayers(i);
+  if(oldL&&oldL!==L){const keep=new Set();for(const k in layerCache){keep.add(layerCache[k].far);keep.add(layerCache[k].mid)}for(const k in oldL){const v=oldL[k];if(v&&v.chunks&&Array.isArray(v.chunks)&&!keep.has(v))freeLayer(v)}}L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
   MUS_OLD=false;SV=null;RFS=null;if(L.ferte)ferteLayers();if(L.s16)s16Layers();if(L.crecy)L.tiles=crecyTiles();if(L.cb)L.tiles=comblesTiles();if(L.pl)L.tiles=placeTiles();if(L.cm)L.tiles=cmTiles();
   {const tb=document.getElementById('tb');if(tb)tb.classList.toggle('ferte',!!L.ferte)}
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;

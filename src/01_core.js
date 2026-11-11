@@ -37,6 +37,8 @@ function mk(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Mat
 const LAYER_CHUNK=2048;
 function multiCtx(cs){const one=new Set(['createLinearGradient','createRadialGradient','createPattern','measureText','getImageData','isPointInPath']);
   return new Proxy({},{get(_,k){const v=cs[0][k];if(typeof v!=='function')return v;if(one.has(k))return(...a)=>cs[0][k](...a);return(...a)=>{let r;for(const c of cs)r=c[k](...a);return r}},set(_,k,v){for(const c of cs)c[k]=v;return true}})}
+/* libère tout de suite la mémoire image d'un calque (sans attendre le ramasse-miettes : la carte graphique reste encombrée sinon) */
+function freeLayer(l){if(l&&l.chunks)for(const ch of l.chunks){ch.c.width=0;ch.c.height=0}else if(l&&l.getContext){l.width=0;l.height=0}}
 function mkLayer(w,h){w=Math.ceil(w);h=Math.ceil(h);const chunks=[];for(let x=0;x<w;x+=LAYER_CHUNK){const c=mk(Math.min(LAYER_CHUNK+2,w-x),h),g=c.getContext('2d');g.translate(-x,0);chunks.push({x,c,g})}
   return{layer:{width:w,height:h,chunks},g:multiCtx(chunks.map(k=>k.g))}}
 /* copie d'une portion d'un calque découpé (coordonnées source en pixels du calque) */

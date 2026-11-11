@@ -80,6 +80,8 @@ function mk(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Mat
 const LAYER_CHUNK=2048;
 function multiCtx(cs){const one=new Set(['createLinearGradient','createRadialGradient','createPattern','measureText','getImageData','isPointInPath']);
   return new Proxy({},{get(_,k){const v=cs[0][k];if(typeof v!=='function')return v;if(one.has(k))return(...a)=>cs[0][k](...a);return(...a)=>{let r;for(const c of cs)r=c[k](...a);return r}},set(_,k,v){for(const c of cs)c[k]=v;return true}})}
+/* libère tout de suite la mémoire image d'un calque (sans attendre le ramasse-miettes : la carte graphique reste encombrée sinon) */
+function freeLayer(l){if(l&&l.chunks)for(const ch of l.chunks){ch.c.width=0;ch.c.height=0}else if(l&&l.getContext){l.width=0;l.height=0}}
 function mkLayer(w,h){w=Math.ceil(w);h=Math.ceil(h);const chunks=[];for(let x=0;x<w;x+=LAYER_CHUNK){const c=mk(Math.min(LAYER_CHUNK+2,w-x),h),g=c.getContext('2d');g.translate(-x,0);chunks.push({x,c,g})}
   return{layer:{width:w,height:h,chunks},g:multiCtx(chunks.map(k=>k.g))}}
 /* copie d'une portion d'un calque découpé (coordonnées source en pixels du calque) */
@@ -4005,7 +4007,7 @@ function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:Math.max(3,1.2+te
 function wear(){return S.run.wear||0}
 function loadLayers(i){
   const key=i+':'+RS;
-  for(const k in layerCache)if(k!==key&&!k.startsWith('0:'))delete layerCache[k];
+  for(const k in layerCache)if(k!==key&&!k.startsWith('0:')){const e=layerCache[k];freeLayer(e.far);freeLayer(e.mid);delete layerCache[k]}
   if(!layerCache[key]){const tmp=parseLevel(i);const prev=L;L=tmp;layerCache[key]={far:buildFar(tmp),mid:buildMid(tmp),windows:tmp.windows,turbines:tmp.turbines};L=prev}
   return layerCache[key];
 }
@@ -4013,7 +4015,10 @@ function computeRS(){RS=Math.min(2,Math.max(1,Math.round(scale*dpr*2)/2))}
 function songKey(i){const d=LEVELS[i];return's'+(d.w+1)+'-'+(i%4+1)}
 function startLevel(i){
   computeRS();if(typeof mGain!=='undefined'&&mGain)mGain.gain.value=.1;
-  G.li=i;L=parseLevel(i);const lay=loadLayers(i);L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
+  // les calques du niveau qu'on quitte : rendus à la carte graphique tout de suite (sinon, après quelques changements de niveau, le jeu rame)
+  const oldL=L;
+  G.li=i;L=parseLevel(i);const lay=loadLayers(i);
+  if(oldL&&oldL!==L){const keep=new Set();for(const k in layerCache){keep.add(layerCache[k].far);keep.add(layerCache[k].mid)}for(const k in oldL){const v=oldL[k];if(v&&v.chunks&&Array.isArray(v.chunks)&&!keep.has(v))freeLayer(v)}}L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
   MUS_OLD=false;SV=null;RFS=null;if(L.ferte)ferteLayers();if(L.s16)s16Layers();if(L.crecy)L.tiles=crecyTiles();if(L.cb)L.tiles=comblesTiles();if(L.pl)L.tiles=placeTiles();if(L.cm)L.tiles=cmTiles();
   {const tb=document.getElementById('tb');if(tb)tb.classList.toggle('ferte',!!L.ferte)}
   G.levelDeaths=0;G.corn=0;G.cornTotal=L.corn.length;G.medal=false;G.chase=false;G.bubbles=[];G.flash=0;G.flashT=3+rnd()*4;G.lt=0;
@@ -13967,12 +13972,15 @@ function cmOverlay(t){const C=L.cm;if(!C)return;const cx=Math.round(cam.x),cy=Ma
   // Marguerite et Joseph
   {const pcx=P.x+P.w/2,a=G.tombSeq?.85:clamp((pcx-174*T)/(5*T),0,1)*.75;if(a>0)cmCouple(ctx,t,a)}
   ctx.restore();
-  // le brouillard : un voile, des nappes qui traînent au ras du sol
-  ctx.save();ctx.fillStyle='rgba(120,132,165,.04)';ctx.fillRect(0,0,W,H);
-  for(let k=0;k<7;k++){const x=((k*230-t*(8+k*3)-cx*.3)%(W+700)+W+700)%(W+700)-350,y=CMF-cy-20+(k%3)*18;const gr=ctx.createRadialGradient(x,y,10,x,y,300);gr.addColorStop(0,'rgba(170,182,210,.12)');gr.addColorStop(1,'rgba(170,182,210,0)');ctx.fillStyle=gr;ctx.save();ctx.translate(x,y);ctx.scale(1,.32);ctx.translate(-x,-y);ctx.fillRect(x-300,y-300,600,600);ctx.restore()}
-  for(let k=0;k<4;k++){const x=((k*410-t*(5+k*2)-cx*.15)%(W+800)+W+800)%(W+800)-400,y=250+k*50-cy*.3;const gr=ctx.createRadialGradient(x,y,10,x,y,280);gr.addColorStop(0,'rgba(150,160,190,.1)');gr.addColorStop(1,'rgba(150,160,190,0)');ctx.fillStyle=gr;ctx.fillRect(x-280,y-280,560,560)}
-  ctx.restore();
+  // le brouillard : un voile, des nappes qui traînent au ras du sol — peint en petit (un quart de la taille), puis agrandi :
+  // c'est le même flou, pour seize fois moins de pixels à remplir
+  {const F=4,fc=cmFogC||(cmFogC=mk(Math.ceil(W/F),Math.ceil(H/F))),g=fc.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,fc.width,fc.height);g.scale(1/F,1/F);
+   g.fillStyle='rgba(120,132,165,.04)';g.fillRect(0,0,W,H);
+   for(let k=0;k<7;k++){const x=((k*230-t*(8+k*3)-cx*.3)%(W+700)+W+700)%(W+700)-350,y=CMF-cy-20+(k%3)*18;const gr=g.createRadialGradient(x,y,10,x,y,300);gr.addColorStop(0,'rgba(170,182,210,.12)');gr.addColorStop(1,'rgba(170,182,210,0)');g.fillStyle=gr;g.save();g.translate(x,y);g.scale(1,.32);g.translate(-x,-y);g.fillRect(x-300,y-300,600,600);g.restore()}
+   for(let k=0;k<4;k++){const x=((k*410-t*(5+k*2)-cx*.15)%(W+800)+W+800)%(W+800)-400,y=250+k*50-cy*.3;const gr=g.createRadialGradient(x,y,10,x,y,280);gr.addColorStop(0,'rgba(150,160,190,.1)');gr.addColorStop(1,'rgba(150,160,190,0)');g.fillStyle=gr;g.fillRect(x-280,y-280,560,560)}
+   ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(fc,0,0,W,H);ctx.restore()}
 }
+let cmFogC=null;
 
 /* =========================================================
    SOUVENIRS DE 1916 — 2-1 (Le sentier) et 2-3 (La zone rouge)
