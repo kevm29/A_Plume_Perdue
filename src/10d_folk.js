@@ -44,7 +44,7 @@ function fkArm(g,p,x,y,bend){g.strokeStyle=p.coat;g.lineWidth=7;g.lineCap='round
 function fkDraw(g,p,x,base,t,pose,o){o=o||{};const s=(p.h||116)/120,f=o.f||1;g.save();g.translate(x,base);g.scale(f*s,s);g.lineCap='round';
   if(pose==='front'||pose==='toilet'){fkFront(g,p,t,pose,o);g.restore();return}
   if(pose==='back'){fkBack(g,p,t,o);g.restore();return}
-  const sit=pose==='sit'||pose==='sitbang',walk=pose==='walk'?Math.sin(o.w||0):0;
+  const sit=pose==='sit'||pose==='sitbang'||pose==='sithand',walk=pose==='walk'?Math.sin(o.w||0):0;
   // les jambes
   g.strokeStyle=p.leg;g.lineWidth=8;
   if(sit){const hy=-30;g.beginPath();g.moveTo(-2,hy);g.lineTo(18,hy);g.lineTo(20,-4);g.moveTo(2,hy+1);g.lineTo(22,hy+1);g.lineTo(26,-4);g.stroke();fkShoes(g,24,30);g.translate(0,18)}
@@ -58,7 +58,7 @@ function fkDraw(g,p,x,base,t,pose,o){o=o||{};const s=(p.h||116)/120,f=o.f||1;g.s
   // le bras de devant, et ce qu'il tient
   if(o.noFront){}
   else if(pose==='up'){fkArm(g,p,14,-126+Math.sin(t*14+p.ph)*4)}
-  else if(pose==='hand'){fkArm(g,p,o.hx,o.hy,o.bend);if(o.hold)o.hold(g,o.hx,o.hy)}
+  else if(pose==='hand'||pose==='sithand'){fkArm(g,p,o.hx,o.hy,o.bend);if(o.hold)o.hold(g,o.hx,o.hy)}
   else if(pose==='strike'){fkArm(g,p,28,-76);if(o.hold)o.hold(g,28,-76)}
   else if(pose==='wind'){fkArm(g,p,8,-128);if(o.hold)o.hold(g,8,-128)}
   else if(pose==='fill'){fkArm(g,p,26,-74,[18,-92]);g.fillStyle='#1a1a1a';rr(g,22,-80,16,8,2);g.fill();g.fillRect(36,-78,10,3);g.strokeStyle='#1a1a1a';g.lineWidth=3;g.beginPath();g.moveTo(24,-74);g.quadraticCurveTo(10,-40,o.hose||-30,-60);g.stroke()}

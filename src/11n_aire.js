@@ -110,6 +110,11 @@ function aireBuild(Lv){
   poster(4250,236,140,130,'#1e2a3a',(x,y,w,h)=>{g.fillStyle='#e8d890';g.beginPath();g.moveTo(x+70,y+20);g.lineTo(x+82,y+48);g.lineTo(x+78,y+96);g.lineTo(x+62,y+96);g.lineTo(x+58,y+48);g.closePath();g.fill();g.fillStyle='#c8a848';g.fillRect(x+66,y+12,8,10);
     for(let k=0;k<8;k++){g.fillStyle='rgba(255,240,180,.8)';g.beginPath();g.arc(x+52+(k*13)%40,y+40+k*6,1.5,0,7);g.fill()}txt(/*v2*/'CHAMPAGNE',x+70,y+114,13,'#e8d890');txt(/*v2*/'à prix routier',x+70,y+126,9,'#a8b0c0')});
   poster(4520,330,110,70,'#2a6ab8',(x,y,w,h)=>{txt(/*v2*/'CARTES',x+55,y+24,12,'#fff');txt(/*v2*/'ROUTIÈRES',x+55,y+40,12,'#fff');txt(/*v2*/'2026',x+55,y+60,14,'#ffd040')});
+  // derrière la deuxième caisse aussi, des publicités
+  poster(7540,236,130,140,'#e8a020',(x,y,w,h)=>{g.fillStyle='#f4e2b0';rr(g,x+18,y+44,94,34,14);g.fill();g.fillStyle='#7a9a3a';g.fillRect(x+22,y+70,86,6);g.fillStyle='#c84a2a';g.fillRect(x+24,y+64,82,5);g.fillStyle='#e8c070';rr(g,x+18,y+76,94,14,6);g.fill();
+    txt(/*v2*/'SANDWICH',x+65,y+26,15,'#fff');txt(/*v2*/'+ BOISSON',x+65,y+108,11,'#fff');txt(/*v2*/'6,50 €',x+65,y+130,18,'#2a2a2e')});
+  poster(7880,250,120,110,'#2a8a5a',(x,y,w,h)=>{for(let k=0;k<5;k++){g.fillStyle=['#ffd040','#fff','#e8302a','#fff','#ffd040'][k];g.beginPath();g.arc(x+20+k*20,y+56,8,0,7);g.fill();g.fillStyle='#2a2a2e';g.font='bold 8px '+F_DISP;g.textAlign='center';g.fillText(String([7,13,21,34,42][k]),x+20+k*20,y+59)}
+    txt(/*v2*/'GRATTEZ,',x+60,y+24,13,'#fff');txt(/*v2*/'GAGNEZ !',x+60,y+40,13,'#ffd040');txt(/*v2*/'Jeux en caisse',x+60,y+92,10,'#e8f0e8')});
   // les gondoles : étagères, produits variés (bouteilles, boîtes, sachets), étiquettes de prix, fronton
   const prod=(x,y,k)=>{const cols=['#c83a2a','#e0b020','#2a6ab8','#3a8a4a','#e8e8e0','#8a3a8a','#e86a2a','#3ab0c8'],c1=cols[Math.floor(R()*8)];
     if(k==='bottle'){g.fillStyle=c1;rr(g,x,y-24,10,24,3);g.fill();g.fillRect(x+3,y-30,4,7);g.fillStyle='#f0ece4';g.fillRect(x+1,y-16,8,7);g.fillStyle='#2a2a2e';g.fillRect(x+3,y-32,4,3)}
@@ -211,10 +216,10 @@ function airePost(Lv){const D=Lv.def.aire;if(!D)return;const GY=D.G0*T;
     cash:D.cashiers.map(([a,b,top],i)=>({a,b,top,x:(a+b)/2,st:'idle',t:0,f:-1,seen:false,p:fkMake(41+i,{fem:true,coat:'#c83a2a',hat:null,apron:null})})),
     cust:D.customers.map((x,i)=>({x,p:fkMake(7+i*3,{bag:i?'cabas':null})})),
     tables:D.tables.map((x,i)=>({x,on:0,hit:0,p:[fkMake(100+i*2,Object.assign({h:134+(i%3)*4},DINERS[i*2%DINERS.length])),fkMake(101+i*2,Object.assign({h:132+(i%2)*6},DINERS[(i*2+1)%DINERS.length]))]})),
-    cart:{x:AIR_SALLE.route[0],dir:-1,st:'walk',t:0,p:fkMake(512,{fem:true,old:false,coat:'#3a6a8a',apron:'#e8e4d8',hat:null})},
+    carts:AIR_SALLE.routes.map(([ra,da],i)=>({ra,da,x:ra,dir:Math.sign(da-ra),st:'walk',t:i*1.3,p:fkMake(512+i*9,i?{fem:false,old:false,coat:'#5a7a3a',apron:'#e8e4d8',hat:null}:{fem:true,old:false,coat:'#3a6a8a',apron:'#e8e4d8',hat:null})})),
     pump:{x:1262,p:fkMake(77,{fem:false,old:false,coat:'#5a5a62',hat:'casquette',tie:null}),near:0},
     wc:{open:0,t:0,said:0},wcMan:fkMake(303,{fem:false,old:false,coat:'#e8e4d8',leg:'#2a3a5a',tie:'#8a2a2a',hat:null,glass:true}),
-    said:{},grace:0,coffee:0,fridgeOpen:1,jn:0,mosq:[]};
+    said:{},grace:0,coffee:0,fridgeOpen:1,jn:null,mosq:[]};
   for(const[x,r]of AIN.LAMPS)for(let k=0;k<14;k++)S.mosq.push({lx:x,ly:r*T+22,ph:k*1.7,r:10+(k*7)%22,sp:2+(k%5)*.7});
   Lv.aire=S;
   for(let r=10;r<=13;r++)Lv.g[r][Math.floor(D.door[0]/T)]='X';
@@ -226,7 +231,8 @@ function airePost(Lv){const D=Lv.def.aire;if(!D)return;const GY=D.G0*T;
   Lv.acts.push({kind:'secret',style:'wc',x:AIN.WC0+AIN.WCBUSY*AIN.WCW+80,y:-9999,hy:GY-86,open:0,t:0,used:false,q:[/*v2*/"Pardon, monsieur ! Je cherchais la sortie. Je n'ai rien vu : de toute façon, c'était flou."]});
 }
 /* la salle : deux portes de service, deux chariots de débarrassage ; la dame au chariot va de l'un à l'autre */
-const AIR_SALLE={doors:[8130,10880],racks:[8560,10400],route:[8560,8130]};
+/*v2*/ // deux chariots : à gauche entre le repose-plateaux et la porte, à droite pareil (le chariot reste du côté de la salle)
+const AIR_SALLE={doors:[8130,10880],racks:[8560,10400],routes:[[8560,8130],[10400,10880]]};
 /* les dîneurs : des tenues différentes (routier, costume, randonneuse, grand-mère, cuisinier en pause, ouvrier…) */
 const DINERS=[{hat:'casquette',coat:'#3a5a3a'},{fem:true,coat:'#a84a6a',scarf:'#e0b020'},{tie:'#2a3a6a',coat:'#2a2e3a',glass:true},{fem:true,old:true,hat:'paille',coat:'#7a6a52'},
   {coat:'#f0ece4',hat:'toque',apron:null},{vest:true,hat:null,coat:'#3a4a6a'},{fem:true,coat:'#3a6a8a',hat:'bonnet'},{old:true,coat:'#5a4a3a',hat:'beret',must:true},{coat:'#b85a3a',hat:null},{fem:true,coat:'#6a4a7a',glass:true}];
@@ -240,7 +246,8 @@ function aireAct(a){const S=L.aire;if(!S)return false;
   return false}
 const aireInside=x=>x>AIN.IN0-20&&x<AIN.IN1;
 function aireStep(dt){const S=L.aire;if(!S)return;const D=L.def.aire,GY=D.G0*T,hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6},pcx=P.x+P.w/2,pcy=P.y+P.h/2;let hit=null;
-  const jumped=(P.jumpN||0)!==S.jn;S.jn=P.jumpN||0;
+  // (à l'arrivée, le compteur de sauts du niveau précédent ne compte pas : les chiens dorment)
+  const jumped=S.jn!=null&&(P.jumpN||0)!==S.jn;S.jn=P.jumpN||0;
   // la porte automatique : il faut sauter devant le capteur
   {const[sx,sy]=D.sensor,dc=Math.floor(D.door[0]/T);if(!P.onGround&&pcx>sx-160&&pcx<sx+10&&P.y<sy+90){if(S.doorOpen<=0&&!G.sim)tone(1200,.08,'sine',.05);S.doorOpen=3.5}
    if(S.doorOpen>0){S.doorOpen-=dt;for(let r=10;r<=13;r++)L.g[r][dc]='.'}else if(!(pcx>D.door[0]-10&&pcx<D.door[1]+10))for(let r=10;r<=13;r++)L.g[r][dc]='X';
@@ -296,14 +303,15 @@ function aireStep(dt){const S=L.aire;if(!S)return;const D=L.def.aire,GY=D.G0*T,h
   // la hotte du bar à salades : des pics anti-pigeons sur le dessus
   {const[a,b]=D.hood;if(!P.dead&&overlap(hb,{x:a,y:7*T-18,w:b-a,h:16}))hit='spikes'}
   // la salle : les dîneurs tapent sur la table où Raymond s'est posé ; et on ne les touche pas
-  for(const tb of S.tables){const on=P.onGround&&pcx>tb.x&&pcx<tb.x+120&&Math.abs(P.y+P.h-(GY-2*T))<3;if(on){tb.on+=dt;if(tb.on>.55&&tb.hit<=0){tb.hit=.3;tb.on=0;if(!G.sim){noise(.12,400,.3,'lowpass');G.shake=Math.max(G.shake||0,2);bubble(tb.x+60,GY-150,pick(['Bam !','Dégage !','Sur la table ?!']),'#2a2420')}}}else tb.on=0;
-    if(tb.hit>0){tb.hit-=dt;if(on&&!P.dead)hit='dineur'}
+  for(const tb of S.tables){const on=P.onGround&&pcx>tb.x&&pcx<tb.x+120&&Math.abs(P.y+P.h-(GY-2*T))<3;if(on){tb.on+=dt;if(tb.on>.55&&tb.hit<=0){tb.hit=.42;tb.hx=pcx;tb.on=0;if(!G.sim){noise(.12,400,.3,'lowpass');G.shake=Math.max(G.shake||0,2);bubble(tb.x+60,GY-150,pick(['Bam !','Dégage !','Sur la table ?!']),'#2a2420')}}}else tb.on=0;
+    // le coup de journal roulé : levé, puis abattu sur la table là où se tient Raymond ; il ne touche qu'en retombant
+    if(tb.hit>0){tb.hit-=dt;if(tb.hit<.22&&on&&!P.dead&&Math.abs(pcx-tb.hx)<46)hit='dineur'}
     for(const cx of[tb.x-20,tb.x+140])if(!P.dead&&overlap(hb,{x:cx-12,y:GY-104,w:24,h:104}))hit='dineur2'}
   // la dame au chariot : du chariot de débarrassage à la porte, elle entre, ressort une seconde après, et repart
-  {const c=S.cart,[ra,da]=AIR_SALLE.route;c.t+=dt;
-   if(c.st==='walk'){const goal=c.dir<0?da:ra;c.x+=c.dir*70*dt;if((c.dir<0&&c.x<=goal)||(c.dir>0&&c.x>=goal)){c.x=goal;c.st=c.dir<0?'in':'load';c.t=0}}
-   else if(c.st==='in'&&c.t>1){c.st='walk';c.dir=1;c.t=0}
-   else if(c.st==='load'&&c.t>2.2){c.st='walk';c.dir=-1;c.t=0}
+  for(const c of S.carts){const ra=c.ra,da=c.da,toDoor=Math.sign(da-ra);c.t+=dt;
+   if(c.st==='walk'){const goal=c.dir===toDoor?da:ra;c.x+=c.dir*70*dt;if((c.dir<0&&c.x<=goal)||(c.dir>0&&c.x>=goal)){c.x=goal;c.st=c.dir===toDoor?'in':'load';c.t=0}}
+   else if(c.st==='in'&&c.t>1){c.st='walk';c.dir=-toDoor;c.t=0}
+   else if(c.st==='load'&&c.t>2.2){c.st='walk';c.dir=toDoor;c.t=0}
    if(c.st!=='in'&&!P.dead){const bx=c.x-c.dir*58;if(overlap(hb,{x:c.x-12,y:GY-126,w:24,h:126})||overlap(hb,{x:bx-30,y:GY-80,w:60,h:80}))hit='chariot'}}
   // les toilettes : la poignée du cabinet occupé (on saute dessus) ouvre la porte
   {const w=S.wc,hx=AIN.WC0+AIN.WCBUSY*AIN.WCW+80,hy=GY-86;w.t+=dt;
@@ -366,9 +374,14 @@ function drawAireMid(t){const S=L.aire;if(!S)return;const g=ctx,D=L.def.aire,GY=
   const binder=(g2,hx,hy)=>{g2.fillStyle='#2a4a8a';g2.save();g2.translate(hx,hy);g2.rotate(-.3);g2.fillRect(-4,-14,18,22);g2.fillStyle='#e8e4d8';g2.fillRect(-2,-12,3,18);g2.restore()};
   for(const w of S.cash)if(vis(w.x)){g.save();g.beginPath();g.rect(w.x-80,0,160,GY-84);g.clip();fkDraw(g,w.p,w.x,GY-26,t,w.st==='wind'?'wind':w.st==='strike'?'strike':'stand',{f:w.f,hold:w.st==='wind'||w.st==='strike'?binder:null});g.restore()}
   // dîneurs assis
-  for(const tb of S.tables)if(vis(tb.x))tb.p.forEach((p,k)=>{const cx=k?tb.x+140:tb.x-20,f=k?-1:1;aireChair(g,cx,GY,f);fkDraw(g,p,cx,GY,t,tb.hit>0?'sitbang':'sit',{f,eat:1,table:1,hold:(g2,hx,hy)=>{g2.fillStyle='#c8a060';g2.fillRect(hx-2,hy-3,10,3)}})});
+  for(const tb of S.tables)if(vis(tb.x))tb.p.forEach((p,k)=>{const cx=k?tb.x+140:tb.x-20,f=k?-1:1;aireChair(g,cx,GY,f);
+    if(tb.hit>0){/*v2*/ // les deux dîneurs abattent un journal roulé sur la table, à l'endroit où Raymond s'est posé
+      const u=clamp((.42-tb.hit)/.2,0,1),d=Math.max(30,(tb.hx-cx)*f),hx=Math.min(54,d*.55),hy=-150+u*62,ty=-80,tx=d;
+      fkDraw(g,p,cx,GY,t,'sithand',{f,table:1,hx,hy,bend:[hx*.5,hy-14],hold:(g2,x,y)=>{const ang=Math.atan2(ty-y-(1-u)*70,tx-x),len=Math.hypot(tx-x,ty-y)+8;g2.save();g2.translate(x,y);g2.rotate(ang);
+        g2.fillStyle='#cfc6aa';rr(g2,-4,-5,len,10,4);g2.fill();g2.fillStyle='rgba(30,26,20,.7)';for(let q=8;q<len-6;q+=9)g2.fillRect(q,-4,4,2);g2.strokeStyle='#2e2a22';g2.lineWidth=1.6;rr(g2,-4,-5,len,10,4);g2.stroke();g2.restore()}})}
+    else fkDraw(g,p,cx,GY,t,'sit',{f,eat:1,table:1,hold:(g2,hx,hy)=>{g2.fillStyle='#c8a060';g2.fillRect(hx-2,hy-3,10,3)}})});
   // la dame au chariot (elle le tire derrière elle) ; à la porte, elle disparaît une seconde
-  {const c=S.cart;if(vis(c.x)&&c.st!=='in'){const bx=c.x-c.dir*58;g.fillStyle='#9aa0a8';g.fillRect(bx-30,GY-84,4,78);g.fillRect(bx+26,GY-84,4,78);for(let k=0;k<3;k++){g.fillStyle='#b8bec6';g.fillRect(bx-30,GY-84+k*26,60,3);g.fillStyle=['#c8a060','#a8c8d8','#e8e4d8'][k];g.fillRect(bx-26,GY-90+k*26,52,6)}
+  for(const c of S.carts){if(vis(c.x)&&c.st!=='in'){const bx=c.x-c.dir*58;g.fillStyle='#9aa0a8';g.fillRect(bx-30,GY-84,4,78);g.fillRect(bx+26,GY-84,4,78);for(let k=0;k<3;k++){g.fillStyle='#b8bec6';g.fillRect(bx-30,GY-84+k*26,60,3);g.fillStyle=['#c8a060','#a8c8d8','#e8e4d8'][k];g.fillRect(bx-26,GY-90+k*26,52,6)}
      g.fillStyle='#2a2a2e';g.beginPath();g.arc(bx-26,GY-4,4,0,7);g.arc(bx+26,GY-4,4,0,7);g.fill();
      fkDraw(g,c.p,c.x,GY,t,c.st==='walk'?'walk':'stand',{f:c.dir,w:t*7,noFront:c.st==='walk'});if(c.st==='walk'){g.strokeStyle=c.p.coat;g.lineWidth=6;g.lineCap='round';g.beginPath();g.moveTo(c.x-c.dir*4,GY-104);g.lineTo(bx+c.dir*30,GY-80);g.stroke();g.lineCap='butt'}}}
   // le café qui coule

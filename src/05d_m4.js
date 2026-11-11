@@ -18,7 +18,7 @@ LEVELS.push((()=>{
   // les travaux : plots, camionnettes, camion-benne (le châssis ; la benne est animée), cabine
   const cones=[13240,13280,13640,14240,15920,15960,16560];for(const x of cones)g[G0-1][Math.floor(x/T0)]='X';
   const vans=[[13800,14040],[16700,16940]];for(const[a,b]of vans)block(a,b,3);
-  block(14400,14700,2);block(14700,14860,4);
+  block(14400,14680,2);block(14680,14840,4);   // benne et cabine calées sur la grille (la cabine dessinée = ses cases)
   // rats, corbeaux, cartels, paille, médaille, départ, sortie
   for(const[c,a,b]of[[336,332,344],[402,398,407]]){g[G0-1][c]='k';g[G0-1][a]='|';g[G0-1][b]='|'}
   for(const[c,r,ch]of[[252,7,'m'],[268,5,'n'],[284,4,'m'],[300,6,'n']])g[r][c]=ch;   // (le corbeau au-dessus du car scolaire vole assez haut pour qu'on passe dessous)
@@ -26,7 +26,7 @@ LEVELS.push((()=>{
   for(const[c,r]of[[20,7],[48,12],[90,12],[110,7],[150,12],[170,7],[214,12],[248,9],[262,10],[278,8],[306,10],[330,12],[349,9],[380,12],[396,12],[418,10],[428,12]])g[r][c]='o';
   g[7][289]='*';g[G0-1][3]='S';g[G0-1][434]='E';
   return {w:3,name:"L'autoroute vers l'Ouest",theme:'a4',exit:'post',exitLabel:"AIRE DE GUEUX",seed:131,rows:RR,camY:.38,
-    a4:{G0,bridges:[[2400,2760],[4800,5160],[7200,7560]],jamX:9800,jam,booth:[12640,12760],canopy:[12420,13020],vans,cones,tar:{x0:14400,x1:14700,c1:14860},
+    a4:{G0,bridges:[[2400,2760],[4800,5160],[7200,7560]],jamX:9800,jam,booth:[12640,12760],canopy:[12420,13020],vans,cones,tar:{x0:14400,x1:14680,c1:14840},
         roller:[15020,15820],workers:[16300,16345,16392],tyre:4990,engine:12260,exitX:17360},
     start:"Sur le dos d'un camion, en pleine nuit, à toute allure vers l'ouest. Le règlement n'a rien prévu : c'est donc autorisé.",
     hints:[],quips:[],

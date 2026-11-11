@@ -219,8 +219,9 @@ function a4Step(dt){const S=L.a4;if(!S)return;const D=L.def.a4,GY=D.G0*T,hb={x:P
   // le camion-benne : la benne se lève (et verse le goudron), redescend ; levée, elle barre le passage
   {const t=D.tar,u=G.lt%7,ang=u<2.2?0:u<3?(u-2.2)/.8:u<6.2?1:1-(u-6.2)/.8;S.bedA=ang;const up=ang>.25;
    const cols=[Math.floor((t.x1-140)/T),Math.floor((t.x1-100)/T),Math.floor((t.x1-60)/T)];
-   for(const c of cols)for(let r=4;r<=D.G0-4;r++)L.g[r][c]=up?'X':'.';
    for(let c=Math.floor(t.x0/T);c<Math.floor(t.x1/T);c++)L.g[D.G0-3][c]=up?'.':'X';
+   // levée, la benne barre le passage jusqu'au châssis : plus de vide où se glisser dessous
+   for(const c of cols)for(let r=4;r<=D.G0-3;r++)L.g[r][c]=up?'X':'.';
    if(up&&!P.dead&&pcx>t.x1-150&&pcx<t.x1-20&&P.y<(D.G0-3)*T&&P.y+P.h>4*T&&ang<.6)hit='benne';
    if(ang>.5&&!P.dead&&pcx>t.x0-40&&pcx<t.x0-6&&P.y+P.h>GY-150)hit='goudron';
    if(!S.said.travaux&&!G.sim&&pcx>13000){S.said.travaux=1;say("Des travaux, de nuit. Comme au front : on répare la route pendant que l'ennemi dort.",4)}}
