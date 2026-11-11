@@ -12212,6 +12212,8 @@ const CB={};
   CB.segs=[g.map(r=>r.join('')).join('\n')];{const d=LEVELS.find(d=>d.combles);if(d)d.segs=CB.segs}
   CB.beams=B;
   CB.webs26=[[20,12.4,2.8,4],[44.6,5.6,2.4,3.2],[63.6,11.5,2.2,4],[147,3.5,2.8,5],[189.2,4.6,2.6,3.6]];
+  /*v2*/ // en 2026, deux filets anti-pigeons tendus du plancher au toit : on ne passe qu'en 1914 (poutre 50-53, puis poutre 150-155)
+  CB.nets26=[49,156];CB.netCells=[];for(const c of CB.nets26)for(let r=1;r<CBR;r++)if((g[r][c]==='.'||g[r][c]==='=')&&!B.some(b=>b.e!=='b'&&r===b.r&&c>=b.c0&&c<=b.c1))CB.netCells.push([c,r,g[r][c]]);
   CB.webs14=[[31,9,2.4,3.4],[79.4,12.2,2.4,3.6],[163.6,12.6,2.6,2.8],[177.6,12.4,2.2,3.6],[9.6,16.2,2.2,2.8]];
   CB.trusses=[];for(let c=6;c<CBW-4;c+=12)if(c<92||c>128)CB.trusses.push(c);
   CB.rays=[[11,46],[33,30],[57,60],[78,70],[87,34],[133,40],[148,52],[166,36],[185,44]];
@@ -12263,8 +12265,11 @@ function comblesApplyEra(Lv,era){const C=Lv.cb;C.era=era;
   if(C.all){const f=a=>a.filter(o=>!o.era||o.era===era);Lv.rats=f(C.all.rats);C.pig=f(C.all.pig);C.owls=f(C.all.owls);C.squirrels=f(C.all.squirrels);C.chieurs=f(C.all.chieurs)}
   for(const b of C.dyn){b.st='ok';b.t=0;b.deb=[];for(let c=b.c0;c<=b.c1;c++)Lv.g[b.r][c]=cbActive(b,era)?'=':'.'}
   for(let c=200;c<=204;c++)Lv.g[0][c]=era===26?'.':'#';
+  for(const[c,r,o]of CB.netCells||[])Lv.g[r][c]=era===26?'X':o;
   C.webs=(era===26?CB.webs26:CB.webs14).map(([x,y,w,h])=>({x:x*T,y:y*T,w:w*T,h:h*T,shake:0}))}
-function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;if(era===14)achB('combles');comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
+function comblesSwitch(){const C=L.cb;if(!C||P.dead||C.end)return;const era=C.era===26?14:26;
+  // pas de retour en 2026 au beau milieu d'un filet
+  if(era===26&&(CB.nets26||[]).some(c=>P.x+P.w>c*T-2&&P.x<(c+1)*T+2)){if(!G.sim)tone(150,.12,'square',.05);return}if(era===14)achB('combles');comblesApplyEra(L,era);MUS_OLD=era===14;C.flash=1;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);tone(era===14?392:523,.5,'sine',.05,era===14?262:784,.02)}
   if(era===14&&!C.said.v14){C.said.v14=1;say("Septembre 1914. La charpente sent le bois neuf… presque. Il y a des poutres que je ne connaissais pas.",4.2)}}
 function comblesRespawn(){const C=L.cb;if(!C)return;{const e=(P.cp&&P.cp.era)||26;if(e!==C.era){comblesApplyEra(L,e);MUS_OLD=e===14}}C.drops=[];C.grace=1;C.talk=null;for(const o of C.owls){o.st='perch';o.x=o.hx;o.y=o.hy;o.cool=1.5}for(const p of C.pig)if(p.k==='deplume'){p.x=p.home;p.st='walk';p.chase=0;p.rt=0}
@@ -12534,6 +12539,12 @@ function drawComblesMid(t){const C=L.cb;if(!C)return;const g=ctx,vis=(x,y)=>x>ca
   for(const b of C.dyn){if(!cbActive(b,C.era))continue;const x=b.c0*T,len=(b.c1-b.c0+1)*T;if(x>cam.x+W+60||x+len<cam.x-60)continue;const fr=cbFragile(b,C.era);
     if(b.st==='gone'){for(const d of b.deb){g.save();g.translate(d.x,d.y);g.rotate(d.ra);g.fillStyle='#5e4630';g.fillRect(-9,-5,18,10);g.fillStyle='#2a1c10';g.fillRect(-9,3,18,2);g.restore()}continue}
     const sh=b.st==='shake'?Math.sin(b.t*70)*1.6:0;g.save();g.translate(sh,b.st==='shake'?b.t*4:0);cbBeam(g,x,b.r*T,len,true,true,fr,b.c0*31+b.r+(C.era===14?7:0));g.restore()}
+  // les filets anti-pigeons de 2026 : une maille fine, tendue du plancher au toit, avec ses attaches
+  if(C.era===26)for(const c of CB.nets26||[]){const x=c*T+T/2;if(!vis(x))continue;g.save();g.strokeStyle='rgba(30,34,38,.75)';g.lineWidth=1;
+    for(let y=T;y<CBR*T;y+=9){g.beginPath();g.moveTo(x-T/2,y);g.lineTo(x+T/2,y+9);g.moveTo(x+T/2,y);g.lineTo(x-T/2,y+9);g.stroke()}
+    g.strokeStyle='#2a2e32';g.lineWidth=3;g.beginPath();g.moveTo(x-T/2,T);g.lineTo(x-T/2,CBR*T);g.moveTo(x+T/2,T);g.lineTo(x+T/2,CBR*T);g.stroke();
+    g.fillStyle='#c8c8c0';for(let y=T*2;y<CBR*T;y+=T*3){g.fillRect(x-T/2-3,y,6,4);g.fillRect(x+T/2-3,y,6,4)}g.restore();
+    if(!C.said.filet&&!G.sim&&Math.abs(P.x+P.w/2-x)<160){C.said.filet=1;say(/*v2*/"Un filet anti-pigeons, du plancher jusqu'au toit. En 2026, on ne passe pas. En 1914, il n'y en avait pas.",4.2)}}
   // toiles d'araignée qui engluent
   for(const w of C.webs){if(!vis(w.x)&&!vis(w.x+w.w))continue;const cx=w.x+w.w/2,cy=w.y+w.h/2,sh=Math.sin(t*30)*w.shake*3;g.save();
     g.strokeStyle='rgba(232,226,210,.55)';g.lineWidth=1;const n=9;
