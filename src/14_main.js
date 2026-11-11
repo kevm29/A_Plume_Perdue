@@ -169,7 +169,12 @@ function vauxOverlays(){
 }
 /* le bouton maison du bandeau : la même chose qu'Échap (pause, puis reprise) */
 function homeClick(){const b=G.homeBox;return !!(G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)}
+/* surveillance de la fluidité : sur 2 s de jeu, si une image prend plus de 22 ms en moyenne, on baisse la résolution de 15 % */
+const PERF={n:0,sum:0};
+function perfWatch(raw){if(G.state!=='play'||G.t<2||document.hidden||raw>.25){PERF.n=0;PERF.sum=0;return}PERF.n++;PERF.sum+=raw;
+  if(PERF.sum>=2&&PERF.n>=20){const avg=PERF.sum/PERF.n;PERF.n=0;PERF.sum=0;if(avg>.022&&dpr>.76){DPR_CAP=Math.max(.75,Math.round(dpr*.85*100)/100);try{localStorage.setItem('apl-dprcap',DPR_CAP)}catch(e){}resize()}}}
 function frame(now){
+  const raw=(now-last)/1000;perfWatch(raw);
   const dt=Math.min(.05,(now-last)/1000);last=now;
   G.dtLast=dt;try{pollPad();update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);

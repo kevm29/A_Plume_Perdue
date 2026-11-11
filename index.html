@@ -54,11 +54,13 @@ const F_HAND='"La Belle Aurore", "Segoe Script", "Bradley Hand", cursive';
 const cv=document.getElementById('c');
 const ctx=cv.getContext('2d');
 let dpr=1,scale=1,offX=0,offY=0,RS=1;
+/* plafond de résolution réglé tout seul : si la machine peine, on dessine un peu moins fin (gardé d'une partie à l'autre) */
+let DPR_CAP=2;try{const v=parseFloat(localStorage.getItem('apl-dprcap'));if(v>=.75&&v<=2)DPR_CAP=v}catch(e){}
 
 function resize(){
   const w=innerWidth,h=innerHeight;
   // résolution interne plafonnée (≈ 2× la taille logique) : au-delà, le jeu rame sans gain visible
-  {const sc=Math.min(w/W,h/H);dpr=Math.min(window.devicePixelRatio||1,2,Math.max(1,1920/(W*sc)))}
+  {const sc=Math.min(w/W,h/H);dpr=Math.max(.75,Math.min(window.devicePixelRatio||1,2,Math.max(1,1920/(W*sc)),DPR_CAP))}
   cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
   cv.style.width=w+'px';cv.style.height=h+'px';
   scale=Math.min(w/W,h/H);offX=(w-W*scale)/2;offY=(h-H*scale)/2;
@@ -15673,7 +15675,12 @@ function vauxOverlays(){
 }
 /* le bouton maison du bandeau : la même chose qu'Échap (pause, puis reprise) */
 function homeClick(){const b=G.homeBox;return !!(G.click&&b&&G.click.x>b.x&&G.click.x<b.x+b.w&&G.click.y>b.y&&G.click.y<b.y+b.h)}
+/* surveillance de la fluidité : sur 2 s de jeu, si une image prend plus de 22 ms en moyenne, on baisse la résolution de 15 % */
+const PERF={n:0,sum:0};
+function perfWatch(raw){if(G.state!=='play'||G.t<2||document.hidden||raw>.25){PERF.n=0;PERF.sum=0;return}PERF.n++;PERF.sum+=raw;
+  if(PERF.sum>=2&&PERF.n>=20){const avg=PERF.sum/PERF.n;PERF.n=0;PERF.sum=0;if(avg>.022&&dpr>.76){DPR_CAP=Math.max(.75,Math.round(dpr*.85*100)/100);try{localStorage.setItem('apl-dprcap',DPR_CAP)}catch(e){}resize()}}}
 function frame(now){
+  const raw=(now-last)/1000;perfWatch(raw);
   const dt=Math.min(.05,(now-last)/1000);last=now;
   G.dtLast=dt;try{pollPad();update(dt);render()}catch(err){console.error(err)}
   requestAnimationFrame(frame);

@@ -11,11 +11,13 @@ const F_HAND='"La Belle Aurore", "Segoe Script", "Bradley Hand", cursive';
 const cv=document.getElementById('c');
 const ctx=cv.getContext('2d');
 let dpr=1,scale=1,offX=0,offY=0,RS=1;
+/* plafond de résolution réglé tout seul : si la machine peine, on dessine un peu moins fin (gardé d'une partie à l'autre) */
+let DPR_CAP=2;try{const v=parseFloat(localStorage.getItem('apl-dprcap'));if(v>=.75&&v<=2)DPR_CAP=v}catch(e){}
 
 function resize(){
   const w=innerWidth,h=innerHeight;
   // résolution interne plafonnée (≈ 2× la taille logique) : au-delà, le jeu rame sans gain visible
-  {const sc=Math.min(w/W,h/H);dpr=Math.min(window.devicePixelRatio||1,2,Math.max(1,1920/(W*sc)))}
+  {const sc=Math.min(w/W,h/H);dpr=Math.max(.75,Math.min(window.devicePixelRatio||1,2,Math.max(1,1920/(W*sc)),DPR_CAP))}
   cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
   cv.style.width=w+'px';cv.style.height=h+'px';
   scale=Math.min(w/W,h/H);offX=(w-W*scale)/2;offY=(h-H*scale)/2;
