@@ -61,7 +61,7 @@ function cmPost(Lv){
   Lv.exit={x:CMX.tomb*T-6,y:10*T,w:T+12,h:2*T};
   Lv.cps=[[59.5,CMF],[101.5,CMF],[137.5,CMF]].map(([c,y])=>({x:c*T,y,on:false}));
   // la paille
-  for(const[c,r]of[[8.5,10],[14,9],[20.5,8],[30,6],[38,6],[47,6],[55.5,7],[59.5,7],[61.5,3],[75,6],[78,6],[99.5,10],[107.5,8],[118,6],[123,5],[149.5,8],[158,6],[163,6],[172.5,9],[174.5,7],[176.5,2]])
+  for(const[c,r]of[[8.5,10],[14,9],[20.5,8],[30,6],[38,6],[47,6],[55.5,7],[59.5,7],[63.5,5],[75,6],[78,6],[99.5,10],[107.5,8],[118,6],[121,8],[149.5,8],[158,6],[163,6],[172.5,9],[174.5,7],[178.5,5]])   /*v2*/ /* plus de paille sous un hibou : elles sont sur les branches voisines ou la stèle d'à côté */
     Lv.corn.push({x:(c+.5)*T,y:(r+.5)*T,taken:false,ph:c*.7+r});
   // le secret : le vase renversé au pied de la vieille croix
   Lv.acts=Lv.acts||[];
@@ -72,7 +72,7 @@ function cmPost(Lv){
     const gh={a:a*T,b:b*T,hi:!!hi,sp,kind,line,x:lerp(a,b,.3+.4*((i*.37)%1))*T,dir:i%2?-1:1,f:i%2?-1:1,pause:0,yb0:yb,y:yb,ph:i*1.37,t:i*.9,li:{x:0,y:0,r:hi?150:120,i:.5}};
     Lv.lights.push(gh.li);return gh});
   // les hiboux, dans les deux tilleuls
-  C.owls=[{hx:61.5*T,hy:2.6*T},{hx:123.5*T,hy:6*T},{hx:176.5*T,hy:1.7*T}]   /*v2*/ // le troisième, perché sur la colonne brisée.map(o=>Object.assign(o,{x:o.hx,y:o.hy,st:'perch',t:0,cool:1.2,f:-1,n:0}));
+  C.owls=[{hx:61.5*T,hy:2.6*T},{hx:123.5*T,hy:6*T},{hx:176.5*T,hy:1.7*T}]/*v2*/ /* le troisième, perché sur la colonne brisée */.map(o=>Object.assign(o,{x:o.hx,y:o.hy,st:'perch',t:0,cool:1.2,f:-1,n:0}));
   // les rats, bornés par des butées
   Lv.rats=[];Lv.mark=new Set();
   for(const[a,b,x]of[[131,136,133]]){Lv.mark.add(a+',11');Lv.mark.add(b+',11');Lv.rats.push({kind:'rat',x:x*T-15,y:CMF-16,w:30,h:16,vx:95,vy:0,onGround:false,t:x*.37%9,sq:1+x%3,base:95})}
