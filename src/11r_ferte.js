@@ -146,12 +146,19 @@ function ferteFits(era){
   for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){if(c<0||c>=L.w)return false;if(SOLID.includes(g[r][c]))return false}
   return true;
 }
+/*v2*/ /* y a-t-il de quoi se poser sous Raymond dans l'autre époque (sol, planche, ponton) ? sinon, ce serait l'eau */
+function ferteGround(era){const F=L.ferte,g=F.E[era].g,c0=Math.floor((P.x+3)/T),c1=Math.floor((P.x+P.w-3)/T),r0=Math.max(0,Math.floor((P.y+P.h-2)/T));
+  for(let r=r0;r<g.length;r++)for(let c=c0;c<=c1;c++){const ch=g[r]&&g[r][c];if(!ch)continue;if(SOLID.includes(ch)||'=BAtp~fJ'.includes(ch))return true}
+  for(const m of F.E[era].movers||[])if(m.x<P.x+P.w&&m.x+m.w>P.x&&m.y>=P.y+P.h-6)return true;
+  return false}
 function ferteSwitch(){
   const F=L.ferte;if(!F||P.dead||F.cer.on)return;
   if(F.cool>0)return;
   const to=F.era===26?14:26;
-  if(to===14&&ferteFits(to))achB('ferte');
+  if(to===14&&ferteFits(to)&&ferteGround(to))achB('ferte');
   if(!ferteFits(to)){F.cool=.4;bubble(P.x+P.w/2,P.y-14,'…','#6a5a48');if(!F.said.block){F.said.block=1;say("Le souvenir résiste. De l'autre côté, quelque chose occupe déjà la place.",3.4)}SFX.bump&&SFX.bump();return}
+  // au-dessus de l'eau, sans rien pour se poser de l'autre côté : le souvenir résiste aussi
+  if(!ferteGround(to)){F.cool=.4;bubble(P.x+P.w/2,P.y-14,'…','#6a5a48');if(!F.said.water){F.said.water=1;say(/*v2*/"Le souvenir résiste. De l'autre côté, il n'y aurait que l'eau sous mes pattes.",3.4)}SFX.bump&&SFX.bump();return}
   ferteSet(to);F.cool=.35;F.flash=1;F.flashC=to;
   P.onMover=null;P.onGround=false;
   if(!G.sim){noise(.9,900,.18,'bandpass',0,.6);noise(1.6,260,.22,'lowpass',.05);tone(to===14?392:523,.5,'sine',.05,to===14?262:784,.02);if(to===14)setTimeout(()=>SFX.thunder(.25),120)}

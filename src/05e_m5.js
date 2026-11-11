@@ -8,7 +8,9 @@ LEVELS.push({w:4,name:"Le pigeonnier",theme:'crecy',exit:'none',exitLabel:"",see
 });
 LEVELS.push({w:4,name:"Les combles",theme:'combles',exit:'none',exitLabel:"",seed:131,rows:24,camY:.55,combles:true,
  start:"Les combles de l'église. Tout en haut, il y aura bien de quoi me mettre sur le toit. De là, je verrai toute la commune.",
- hints:[["LES COMBLES","En septembre 1914, la charpente n'était pas tout à fait la même."]],
+ hints:[],
+ /*v2*/ // le cartel, sur la première poutre
+ hintSpots:Lv=>[{x:8.5*T,y:20*T,h:[/*v2*/"ARTICLE 24 — LES COMBLES",/*v2*/"Raymond est déjà monté ici, en septembre 1914, et il s'en souvient très bien. La charpente n'était pas tout à fait la même : ses souvenirs connaissent peut-être le chemin."]}],
  quips:[],signs:[],
  segs:[]  // construits par 11t_combles.js
 });
