@@ -58,6 +58,18 @@ const SONGS={
     prog:'C A Dm G C A Dm G F F C A D G C C',
     mel:'E5:.5 G5:1 E5:.5 C5:1 D5:1 C#5:.5 E5:1 A5:.5 G5:2 F5:.5 E5:.5 D5:1 A4:1 D5:1 B4:1 D5:1 G5:2 E5:.5 G5:1 E5:.5 C6:1 G5:1 A5:.5 G5:.5 E5:1 C#5:2 D5:1 F5:1 A5:1 F5:1 G5:2 F5:1 D5:1 A5:1 C6:1 A5:1 F5:1 G5:.5 F5:.5 E5:1 D5:2 C5:1 E5:1 G5:1 E5:1 A5:2 C#5:2 D5:1 F#5:1 A5:1 F#5:1 G5:1 F5:1 D5:1 B4:1 C5:1 G4:1 E5:1 G5:1 C6:2 r:2'},
   // cantique de la cathédrale : mode de ré, flûte d'orgue sur un plein-jeu tenu
+  // 4-3 — la route sous la pluie : valse lente en ut mineur, boîte à musique puis clarinette
+  routepluie:{tempo:92,bpb:3,lead:['box', 'clar'],bass:'waltz',gap:2,
+    prog:'Cm Cm Fm Fm G G Cm Cm Ab Eb Fm Cm Fm G Cm Cm',
+    mel:'G4:1 C5:1 Eb5:1 G5:2 F5:.5 Eb5:.5 F5:1 Ab5:1 C6:1 C6:2 Bb5:.5 Ab5:.5 G5:1 F5:1 D5:1 B4:2 D5:1 Eb5:1.5 D5:.5 C5:1 C5:3 C5:1 Eb5:1 Ab5:1 G5:1.5 F5:.5 Eb5:1 Ab5:1 G5:1 F5:1 Eb5:2 C5:1 F5:1 Ab5:1 F5:1 D5:1.5 Eb5:.5 B4:1 C5:2 G4:1 C5:3'},
+  // 4-4 — barcarolle de la Marne : ré majeur, balancé comme une barque, clavecin en arpèges
+  barcarolle:{tempo:84,bpb:3,lead:['harpsi', 'box'],bass:'arpwind',gap:2,
+    prog:'D D G D Em A D D G G D Em A A D D',
+    mel:'A4:1.5 B4:.5 A4:1 F#5:2 E5:1 D5:1 G5:1 B5:1 A5:2 F#5:1 G5:1.5 F#5:.5 E5:1 C#5:1 E5:1 A5:1 F#5:1.5 E5:.5 D5:1 D5:2 r:1 B4:1 D5:1 G5:1 B5:2 A5:.5 G5:.5 F#5:1 A5:1 D6:1 B5:1.5 A5:.5 G5:1 E5:1 A5:1 C#6:1 A5:2 G5:1 F#5:1 E5:1 D5:1 D5:3'},
+  // 5-2 — Salve : façon plain-chant en ré, flûte d'orgue sur des accords tenus
+  salve:{tempo:60,bpb:4,lead:['pipe'],bass:'chorale',gap:2,
+    prog:'Dm Dm F C Dm Am G Dm F C Dm G Am Am Dm Dm',
+    mel:'D5:1 E5:1 F5:1 G5:1 A5:2 G5:1 F5:1 F5:1 G5:1 A5:2 G5:1 F5:1 E5:2 F5:1 E5:1 D5:2 E5:1 C5:1 A4:2 B4:1 C5:1 D5:2 D5:4 A5:1 C6:1 A5:2 G5:1 A5:1 G5:1 E5:1 F5:1 E5:1 D5:1 F5:1 G5:2 B4:2 C5:1 D5:1 E5:2 A4:2 C5:2 E5:1 F5:1 E5:1 D5:1 D5:4'},
   cantique:{tempo:66,bpb:4,lead:['pipe','pipe','box'],bass:'chorale',gap:2,
     prog:'Dm Dm C Dm F C Dm Am Dm Gm Dm C F C Dm Dm',
     mel:'D5:2 E5:1 F5:1 G5:2 F5:1 E5:1 E5:2 D5:1 C5:1 D5:4 F5:2 G5:1 A5:1 G5:2 F5:1 E5:1 F5:2 E5:1 D5:1 E5:4 A5:2 G5:1 F5:1 G5:2 F5:1 D5:1 F5:2 E5:1 D5:1 E5:2 D5:1 C5:1 F5:2 G5:1 A5:1 G5:2 E5:1 C5:1 D5:3 C5:1 D5:4'},
@@ -102,8 +114,8 @@ const LEVEL_SONGS={
   's2-1':{base:'sentier'},'s2-2':{base:'eoliennes'},
   's2-3':{base:'zonerouge'},'s2-4':{base:'complainte',tr:-2,tempo:70,lead:['box'],bass:'soft'},
   's3-1':{base:'train'},'s3-2':{base:'gare'},'s3-3':{base:'tango'},'s3-4':{base:'cantique'},
-  's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'orage',tempo:136,bass:'gallop'},'s4-3':{base:'orage',tr:-2,lead:['clar','pizz']},'s4-4':{base:'orage',tr:3,lead:['harpsi','box']},
-  's5-1':{base:'polka'},'s5-2':{base:'cantique',tr:-3,tempo:74,lead:['pipe','harpsi'],bass:'chorale'},'bal':{base:'valse',tempo:132,lead:['accord','box'],bass:'waltz'},'s5-3':{base:'musette'},'pl-java':{base:'java'},'s5-4':{base:'title',tempo:50,tr:-5,lead:['clar','box'],bass:'chorale'},
+  's4-1':{base:'orage',tempo:100,lead:['box','pizz']},'s4-2':{base:'orage',tempo:136,bass:'gallop'},'s4-3':{base:'routepluie'},'s4-4':{base:'barcarolle'},
+  's5-1':{base:'polka'},'s5-2':{base:'salve'},'bal':{base:'valse',tempo:132,lead:['accord','box'],bass:'waltz'},'s5-3':{base:'musette'},'pl-java':{base:'java'},'s5-4':{base:'title',tempo:50,tr:-5,lead:['clar','box'],bass:'chorale'},
   'vx-nuit':{base:'nuitA4'},'vx-route':{base:'route1916'},'vx-chambree':{base:'chambree'},'vx-aube':{base:'aube'},'vx-vol':{base:'vol1916'},'vx-reveil':{base:'nuitA4',tempo:66,tr:-3,lead:['box'],bass:'soft'},
   'chase':{base:'galop'},'title':{base:'title'}
 };
