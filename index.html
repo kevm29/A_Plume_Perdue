@@ -2103,7 +2103,7 @@ function buildFar(L){
   if(L.th.far==='train'){L.windows=[];L.turbines=[];return{width:1,height:1,chunks:[],rs:1}}   // le paysage du train est dessiné à part (11i_train.js)
   const R=mulberry(L.def.seed);
   const wpx=Math.ceil((L.wpx-W)*PF_FAR+W)+60,hpx=layerH(PF_FAR),yOff=hpx-600;
-  const BR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);g.scale(BR,BR);c.rs=BR;
+  const BR=Math.max(.6,Math.min(RS,1,Math.sqrt(8e6/(wpx*hpx)))),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);/* décor du fond : budget de mémoire graphique */g.scale(BR,BR);c.rs=BR;
   L.windows=[];L.turbines=[];
   if(yOff>0){const sk=g.createLinearGradient(0,0,0,yOff+60);const top=L.th.outdoor?L.th.sky[0]:shade(L.th.fog,-.1);sk.addColorStop(0,mix(top,'#000000',.25));sk.addColorStop(1,top);g.fillStyle=sk;g.fillRect(0,0,wpx,yOff+60);
     if(L.th.outdoor&&L.th.stars){const R2=mulberry(L.def.seed+77);g.fillStyle='rgba(255,255,255,.55)';for(let k=0;k<wpx*yOff/2500;k++)g.fillRect(R2()*wpx,R2()*yOff,1.2,1.2)}}
@@ -2117,7 +2117,7 @@ function buildMid(L){
   if(L.th.far==='train')return{width:1,height:1,chunks:[],rs:1};
   const th=L.th,R=mulberry(L.def.seed+5);
   const wpx=Math.ceil((L.wpx-W)*PF_MID+W)+60,hpx=layerH(PF_MID);
-  const BR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);g.scale(BR,BR);c.rs=BR;g.translate(0,Math.max(0,hpx-600));
+  const BR=Math.max(.6,Math.min(RS,1,Math.sqrt(8e6/(wpx*hpx)))),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);/* décor du fond : budget de mémoire graphique */g.scale(BR,BR);c.rs=BR;g.translate(0,Math.max(0,hpx-600));
   const base=th.outdoor?mix(th.sky[1],'#000000',.68):shade(th.fog,.14),rim=th.outdoor?'rgba(200,210,230,.14)':'rgba(170,195,215,.2)';
   let x=40+R()*120;
   const hz=th.horizon;
@@ -2290,7 +2290,10 @@ function buildTiles(L){
   if(L.def.theme==='train')return trainBuildTiles(L);
   const th=L.th,R=mulberry(L.def.seed+9);
   const wpx=L.wpx+DX+8,hpx=ROWS*T+PAD;
-  const TR=Math.min(RS,1.5),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);
+  // finesse des tuiles plafonnée par un budget de mémoire graphique (≈ 10 millions de pixels par calque) :
+  // les niveaux à souvenirs gardent deux jeux de tuiles, et au-delà la carte graphique sature et le jeu rame
+  const twoEras=L.def.ferte||L.def.crecy||L.def.combles||L.def.s16||(L.def.theme&&/14$|16$/.test(L.def.theme));
+  const TR=Math.max(.75,Math.min(RS,1.5,Math.sqrt((twoEras?7e6:10e6)/(wpx*hpx)))),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);
   if(!th.outdoor){
     for(let x=60;x<L.wpx;x+=180+R()*260){if(R()<.6)cobweb(g,x,-4,40+R()*40);else{g.strokeStyle='rgba(120,100,80,.5)';g.lineWidth=1.5;g.beginPath();g.moveTo(x,-10);g.quadraticCurveTo(x+30,60+R()*40,x+70,-10);g.stroke()}}
     for(let r=11;r<ROWS;r++)for(let cc=0;cc<L.w;cc++)if(L.g[r][cc]==='#'&&!isSolid(cc,r-1)){g.fillStyle=shade(th.wains,-.1);g.fillRect(cc*T+DX,r*T+DY-9,T,9);g.fillStyle=shade(th.wains,.25);g.fillRect(cc*T+DX,r*T+DY-9,T,1.5)}
@@ -4011,7 +4014,7 @@ function bubble(x,y,text,col){G.bubbles.push({x,y,text,t:0,max:Math.max(3,1.2+te
 function wear(){return S.run.wear||0}
 function loadLayers(i){
   const key=i+':'+RS;
-  for(const k in layerCache)if(k!==key&&!k.startsWith('0:')){const e=layerCache[k];freeLayer(e.far);freeLayer(e.mid);delete layerCache[k]}
+  for(const k in layerCache)if(k!==key){const e=layerCache[k];freeLayer(e.far);freeLayer(e.mid);delete layerCache[k]}
   if(!layerCache[key]){const tmp=parseLevel(i);const prev=L;L=tmp;layerCache[key]={far:buildFar(tmp),mid:buildMid(tmp),windows:tmp.windows,turbines:tmp.turbines};L=prev}
   return layerCache[key];
 }
@@ -4021,6 +4024,8 @@ function startLevel(i){
   computeRS();if(typeof mGain!=='undefined'&&mGain)mGain.gain.value=.1;
   // les calques du niveau qu'on quitte : rendus à la carte graphique tout de suite (sinon, après quelques changements de niveau, le jeu rame)
   const oldL=L;
+  // le décor de l'écran d'accueil n'est pas gardé pendant qu'on joue (il sera repeint au retour au menu)
+  if(typeof titleLv!=='undefined'&&titleLv&&i!==0){freeLayer(titleLv.tiles);titleLv=null}
   G.li=i;L=parseLevel(i);const lay=loadLayers(i);
   if(oldL&&oldL!==L){const keep=new Set();for(const k in layerCache){keep.add(layerCache[k].far);keep.add(layerCache[k].mid)}for(const k in oldL){const v=oldL[k];if(v&&v.chunks&&Array.isArray(v.chunks)&&!keep.has(v))freeLayer(v)}}L.far=lay.far;L.mid=lay.mid;L.windows=lay.windows;L.turbines=lay.turbines;L.tiles=buildTilesF(L);L.lgLayer=L.def.langlet?langletBuild(L):null;L.fcLayer=L.def.facade?facadeBuild(L):null;L.a4Layer=L.def.a4?a4Build(L):null;L.aireLayer=L.def.aire?aireBuild(L):null;
   MUS_OLD=false;SV=null;RFS=null;if(L.ferte)ferteLayers();if(L.s16)s16Layers();if(L.crecy)L.tiles=crecyTiles();if(L.cb)L.tiles=comblesTiles();if(L.pl)L.tiles=placeTiles();if(L.cm)L.tiles=cmTiles();
@@ -11515,7 +11520,7 @@ function ferteFogTex(){if(FFOG)return FFOG;
   const vig=mk(W,H),v=vig.getContext('2d');const vg=v.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);vg.addColorStop(0,'rgba(60,48,30,0)');vg.addColorStop(1,'rgba(60,48,30,.38)');v.fillStyle=vg;v.fillRect(0,0,W,H);
   return FFOG={fog,vig}}
 const FSPR={};
-function fSpr(g,key,w,h,ox,oy,x,y,fn){let c=FSPR[key];const rs=Math.max(1,RS);if(!c||c.rs!==rs){c=mk(Math.ceil(w*rs),Math.ceil(h*rs));const g2=c.getContext('2d');g2.scale(rs,rs);g2.translate(ox,oy);fn(g2);c.rs=rs;FSPR[key]=c}g.drawImage(c,x-ox,y-oy,w,h)}
+function fSpr(g,key,w,h,ox,oy,x,y,fn){let c=FSPR[key];const rs=Math.max(1,Math.min(1.5,RS));if(!c||c.rs!==rs){c=mk(Math.ceil(w*rs),Math.ceil(h*rs));const g2=c.getContext('2d');g2.scale(rs,rs);g2.translate(ox,oy);fn(g2);c.rs=rs;FSPR[key]=c}g.drawImage(c,x-ox,y-oy,w,h)}
 
 /* ---------- le tablier du pont de 2026 et son chantier ---------- */
 function fDeckBack(g,t){const x0=206*T,x1=230*T,y=8*T;g.save();// garde-corps du fond

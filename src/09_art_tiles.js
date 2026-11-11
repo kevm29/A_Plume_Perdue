@@ -25,7 +25,10 @@ function buildTiles(L){
   if(L.def.theme==='train')return trainBuildTiles(L);
   const th=L.th,R=mulberry(L.def.seed+9);
   const wpx=L.wpx+DX+8,hpx=ROWS*T+PAD;
-  const TR=Math.min(RS,1.5),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);
+  // finesse des tuiles plafonnée par un budget de mémoire graphique (≈ 10 millions de pixels par calque) :
+  // les niveaux à souvenirs gardent deux jeux de tuiles, et au-delà la carte graphique sature et le jeu rame
+  const twoEras=L.def.ferte||L.def.crecy||L.def.combles||L.def.s16||(L.def.theme&&/14$|16$/.test(L.def.theme));
+  const TR=Math.max(.75,Math.min(RS,1.5,Math.sqrt((twoEras?7e6:10e6)/(wpx*hpx)))),{layer:c,g}=mkLayer(wpx*TR,hpx*TR);g.scale(TR,TR);c.rs=TR;g.translate(0,PAD);
   if(!th.outdoor){
     for(let x=60;x<L.wpx;x+=180+R()*260){if(R()<.6)cobweb(g,x,-4,40+R()*40);else{g.strokeStyle='rgba(120,100,80,.5)';g.lineWidth=1.5;g.beginPath();g.moveTo(x,-10);g.quadraticCurveTo(x+30,60+R()*40,x+70,-10);g.stroke()}}
     for(let r=11;r<ROWS;r++)for(let cc=0;cc<L.w;cc++)if(L.g[r][cc]==='#'&&!isSolid(cc,r-1)){g.fillStyle=shade(th.wains,-.1);g.fillRect(cc*T+DX,r*T+DY-9,T,9);g.fillStyle=shade(th.wains,.25);g.fillRect(cc*T+DX,r*T+DY-9,T,1.5)}

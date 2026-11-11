@@ -631,7 +631,7 @@ function ferteFogTex(){if(FFOG)return FFOG;
   const vig=mk(W,H),v=vig.getContext('2d');const vg=v.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);vg.addColorStop(0,'rgba(60,48,30,0)');vg.addColorStop(1,'rgba(60,48,30,.38)');v.fillStyle=vg;v.fillRect(0,0,W,H);
   return FFOG={fog,vig}}
 const FSPR={};
-function fSpr(g,key,w,h,ox,oy,x,y,fn){let c=FSPR[key];const rs=Math.max(1,RS);if(!c||c.rs!==rs){c=mk(Math.ceil(w*rs),Math.ceil(h*rs));const g2=c.getContext('2d');g2.scale(rs,rs);g2.translate(ox,oy);fn(g2);c.rs=rs;FSPR[key]=c}g.drawImage(c,x-ox,y-oy,w,h)}
+function fSpr(g,key,w,h,ox,oy,x,y,fn){let c=FSPR[key];const rs=Math.max(1,Math.min(1.5,RS));if(!c||c.rs!==rs){c=mk(Math.ceil(w*rs),Math.ceil(h*rs));const g2=c.getContext('2d');g2.scale(rs,rs);g2.translate(ox,oy);fn(g2);c.rs=rs;FSPR[key]=c}g.drawImage(c,x-ox,y-oy,w,h)}
 
 /* ---------- le tablier du pont de 2026 et son chantier ---------- */
 function fDeckBack(g,t){const x0=206*T,x1=230*T,y=8*T;g.save();// garde-corps du fond

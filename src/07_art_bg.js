@@ -227,7 +227,7 @@ function buildFar(L){
   if(L.th.far==='train'){L.windows=[];L.turbines=[];return{width:1,height:1,chunks:[],rs:1}}   // le paysage du train est dessiné à part (11i_train.js)
   const R=mulberry(L.def.seed);
   const wpx=Math.ceil((L.wpx-W)*PF_FAR+W)+60,hpx=layerH(PF_FAR),yOff=hpx-600;
-  const BR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);g.scale(BR,BR);c.rs=BR;
+  const BR=Math.max(.6,Math.min(RS,1,Math.sqrt(8e6/(wpx*hpx)))),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);/* décor du fond : budget de mémoire graphique */g.scale(BR,BR);c.rs=BR;
   L.windows=[];L.turbines=[];
   if(yOff>0){const sk=g.createLinearGradient(0,0,0,yOff+60);const top=L.th.outdoor?L.th.sky[0]:shade(L.th.fog,-.1);sk.addColorStop(0,mix(top,'#000000',.25));sk.addColorStop(1,top);g.fillStyle=sk;g.fillRect(0,0,wpx,yOff+60);
     if(L.th.outdoor&&L.th.stars){const R2=mulberry(L.def.seed+77);g.fillStyle='rgba(255,255,255,.55)';for(let k=0;k<wpx*yOff/2500;k++)g.fillRect(R2()*wpx,R2()*yOff,1.2,1.2)}}
@@ -241,7 +241,7 @@ function buildMid(L){
   if(L.th.far==='train')return{width:1,height:1,chunks:[],rs:1};
   const th=L.th,R=mulberry(L.def.seed+5);
   const wpx=Math.ceil((L.wpx-W)*PF_MID+W)+60,hpx=layerH(PF_MID);
-  const BR=Math.min(RS,1),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);g.scale(BR,BR);c.rs=BR;g.translate(0,Math.max(0,hpx-600));
+  const BR=Math.max(.6,Math.min(RS,1,Math.sqrt(8e6/(wpx*hpx)))),{layer:c,g}=mkLayer(wpx*BR,hpx*BR);/* décor du fond : budget de mémoire graphique */g.scale(BR,BR);c.rs=BR;g.translate(0,Math.max(0,hpx-600));
   const base=th.outdoor?mix(th.sky[1],'#000000',.68):shade(th.fog,.14),rim=th.outdoor?'rgba(200,210,230,.14)':'rgba(170,195,215,.2)';
   let x=40+R()*120;
   const hz=th.horizon;
