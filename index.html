@@ -4178,7 +4178,7 @@ function stepPlay(dt){
     if(c.kind==='boar'){
       // le sanglier voit Raymond sur SA plateforme : il charge, et ses marcassins sortent de derrière lui
       const dx=pcx-(c.x+c.w/2),dir=Math.sign(c.vx)||1;
-      const same=!P.dead&&!G.cut&&P.onGround&&Math.abs((P.y+P.h)-(c.y+c.h))<8&&samePlatform(c.x+c.w/2,pcx,Math.floor((c.y+c.h-2)/T));
+      const same=!P.dead&&!G.cut&&P.onGround&&!(P.cp&&Math.abs(pcx-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26)&&Math.abs((P.y+P.h)-(c.y+c.h))<8&&samePlatform(c.x+c.w/2,pcx,Math.floor((c.y+c.h-2)/T));
       if(same&&Math.abs(dx)<420&&(Math.sign(dx)===dir||Math.abs(dx)<300)){if(Math.sign(dx)!==dir){c.vx=-c.vx}if(!(c.charge>0)&&!G.sim)SFX.grunt();c.charge=1.6;
         if(!c.spawned){c.spawned=true;for(let k=0;k<2;k++)L.rats.push({kind:'piglet',chase:true,x:c.x+c.w/2-dir*(18+k*16),y:c.y+c.h-12,w:22,h:12,vx:0,vy:-200-k*80,onGround:false,t:k,sq:1,delay:.35+k*.3,base:230});if(!G.sim&&!G.boarSaid){G.boarSaid=true;say("Des marcassins ! Ils me prennent pour un gland. Un gland décoré.",3.4)}}}
       c.charge=Math.max(0,(c.charge||0)-dt);
@@ -4207,6 +4207,9 @@ function stepPlay(dt){
       c.vx=dir*(c.base||95)*(c.alert>0?2.2:1);
     }
     const spd=Math.abs(c.vx)||95;
+    // le fanion où Raymond reprend est un abri : les rôdeurs font demi-tour avant d'y arriver
+    {const z=P.cp;if(z&&Math.abs(c.y+c.h-z.y)<26){const lo=z.x-CP_SAFE,hi=z.x+CP_SAFE,nx=c.x+c.vx*dt;
+      if(c.vx>0&&c.x+c.w<=lo+.5&&nx+c.w>lo)c.vx=-spd;else if(c.vx<0&&c.x>=hi-.5&&nx<hi)c.vx=spd}}
     if(moveX(c,c.vx*dt))c.vx=-(c.lastDir||1)*spd;
     c.lastDir=Math.sign(c.vx)||c.lastDir||1;
     c.onGround=false;moveY(c,c.vy*dt);
@@ -4291,7 +4294,9 @@ function stepPlay(dt){
   // un cartel s'affiche 3 s pleines, même si on s'en éloigne
   // un cartel croisé pour la première fois : le jeu se met en pause et le cartel s'ouvre, avec un bouton « Compris »
   if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0;if(hn>=0&&!G.sim&&!P.dead&&!(L.hintRead||(L.hintRead={}))[hn]){L.hintRead[hn]=1;G.hintPop=hn;G.hintPopT=0;G.state='hint';SFX.page()}}G.hintI=-1;
-  if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
+  // le chat (Bijou…) : il ne se réveille qu'après avoir été une seconde à l'écran ; hors de l'écran, il dort
+  if(K&&K.type==='cat'&&K.state==='sleep'){const on=Math.abs(K.x+K.w/2-(cam.x+W/2))<W/2-20&&K.y>cam.y-20&&K.y<cam.y+H;K.visT=on?(K.visT||0)+dt:0}
+  if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T&&(K.type!=='cat'||K.visT>=1)))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
   if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&trainExitOk()&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
@@ -4343,8 +4348,12 @@ function stepChaser(K,dt,pcx,pcy){
   }else if(K.state==='warn'){K.y-=40*dt;if(K.pt>.6){K.state='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*520;K.vy=dy/d*520;K.f=K.vx>=0?1:-1}}
   else if(K.state==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.9||K.y>ROWS*T-60){K.state='hover';K.pt=0}}
 }
+const CP_SAFE=64;
+/* à la reprise, un rôdeur posé sur le fanion est repoussé hors de l'abri, du côté où il était */
+function cpClearWalkers(){const z=P.cp;if(!z)return;for(const c of L.rats){if(c.chase||c.runner)continue;if(Math.abs(c.y+c.h-z.y)>=26)continue;
+  const cx=c.x+c.w/2;if(c.x+c.w>z.x-CP_SAFE&&c.x<z.x+CP_SAFE){if(cx<z.x){c.x=z.x-CP_SAFE-c.w-1;c.vx=-Math.abs(c.vx||95)}else{c.x=z.x+CP_SAFE+1;c.vx=Math.abs(c.vx||95)}}}}
 function respawn(){L.zrSeen=false;
-  resetPlayer();P.wake=.35;if(L.gare)gareRespawn();if(L.train)trainRespawn();if(L.lg)langletRespawn();if(L.fc)facadeRespawn();if(L.a4)a4Respawn();if(L.aire)aireRespawn();if(L.ferte)ferteRespawn();if(L.cb)comblesRespawn();if(L.pl)placeRespawn();if(L.cm)cmRespawn();if(L.s16)s16Respawn();
+  resetPlayer();P.wake=.35;cpClearWalkers();if(L.gare)gareRespawn();if(L.train)trainRespawn();if(L.lg)langletRespawn();if(L.fc)facadeRespawn();if(L.a4)a4Respawn();if(L.aire)aireRespawn();if(L.ferte)ferteRespawn();if(L.cb)comblesRespawn();if(L.pl)placeRespawn();if(L.cm)cmRespawn();if(L.s16)s16Respawn();
   const K=L.chaser;
   if(K){
     if(K.state==='dead'){}
@@ -4580,7 +4589,7 @@ function mechAfterMove(dt,vyBefore){
   if(P.mudCoat>0&&!onMud())P.mudCoat-=dt;
   if(onMud()&&Math.abs(P.vx)<40){P.mud=(P.mud||0)+dt;if(P.mud>1.5)return'mud'}else P.mud=Math.max(0,(P.mud||0)-dt*2);
   // rafales
-  if(L.def.gust&&L.gust.state==='blow'){const dir=L.def.gust.dir||-1;if(!sheltered(dir)){moveX(P,dir*L.def.gust.push*L.gust.k*(P.onGround?1:1.25)*dt)}}
+  if(L.def.gust&&L.gust.state==='blow'){const dir=L.def.gust.dir||-1;const atCp=P.cp&&P.onGround&&Math.abs(P.x+P.w/2-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26;/* le fanion abrite aussi du vent */if(!sheltered(dir)&&!atCp){moveX(P,dir*L.def.gust.push*L.gust.k*(P.onGround?1:1.25)*dt)}}
   // étourdi par l'onde d'une cloche
   if(P.stun>0)P.stun-=dt;
   if(L.meuse){const k=meuseAfterMove(dt);if(k)return k}
@@ -4598,7 +4607,8 @@ function mechAfterMove(dt,vyBefore){
 /* ---------- collisions mortelles ---------- */
 function mechHit(hb){
   const pcx=hb.x+hb.w/2,pcy=hb.y+hb.h/2;
-  for(const g of L.guards)if(g.sees){if(!G.sim){bubble(g.x+g.w/2,g.y-14,'Hé ! Toi !','#2a3a5a')}return'guard'}
+  const atCp=P.cp&&P.onGround&&Math.abs(P.x+P.w/2-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26;   // le fanion est un abri : on n'y est pas vu
+  if(!atCp)for(const g of L.guards)if(g.sees){if(!G.sim){bubble(g.x+g.w/2,g.y-14,'Hé ! Toi !','#2a3a5a')}return'guard'}
   for(const w of L.watchers)if(w.mode==='chase'&&w.k&&!hiddenNow()&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';
@@ -4812,12 +4822,14 @@ function actRespawn(){
 /* ---------- le chat aux yeux brillants : il guette, puis bondit ---------- */
 function watchReset(w){w.mode='sit';w.k=null;w.seen=false;w.t=0;w.state='closed';w.open=0}
 function watchStep(w,dt,pcx,pcy){
-  const onScreen=Math.abs(w.x-(cam.x+W/2))<W/2+30;
+  const onScreen=Math.abs(w.x-(cam.x+W/2))<W/2-20&&w.y-50>cam.y&&w.y<cam.y+H;
   if(w.mode==='sit'||!w.mode){
     w.mode='sit';
-    // il ne commence à guetter qu'une fois entré dans le champ : yeux toujours fermés à l'arrivée
-    if(!w.seen){w.state='closed';w.open=0;if(onScreen){w.seen=true;w.t=0}return}
-    w.t+=dt;const cyc=w.t%5.6;w.state=cyc<3.1?'closed':cyc<3.8?'warn':'open';
+    // hors de l'écran : les yeux restent fermés, toujours. Une fois à l'écran, il les ouvre une seconde plus tard
+    // (puis son cycle reprend : fermés 3,1 s, entrouverts, ouverts) ; s'il ressort de l'écran, il se rendort
+    if(!onScreen){w.seen=false;w.state='closed';w.open=0;return}
+    if(!w.seen){w.seen=true;w.t=0}
+    w.t+=dt;const cyc=(w.t+2.1)%5.6;w.state=cyc<3.1?'closed':cyc<3.8?'warn':'open';
     w.open=w.state==='open'?Math.min(1,(cyc-3.8)*6):w.state==='warn'?.18:0;
     const moving=Math.abs(P.vx)>35||!P.onGround;
     if(w.state==='open'&&w.open>.6&&!P.dead&&!G.cut&&moving&&Math.abs(w.x-pcx)<520&&Math.abs(w.y-pcy)<220&&!hiddenNow()){
@@ -4944,14 +4956,15 @@ function droneStep(K,dt,pcx,pcy){
   K.sp=K.sp||'scan';K.st=(K.st||0)+dt;
   if(K.sp==='aim')K.sa=Math.atan2(pcy-ey,pcx-ex);else K.sa=Math.PI/2+Math.sin(K.t*1.4)*.55;
   let a=Math.atan2(pcy-ey,pcx-ex)-K.sa;a=Math.atan2(Math.sin(a),Math.cos(a));
-  const inCone=!P.dead&&!fin&&Math.abs(a)<.3&&Math.hypot(pcx-ex,pcy-ey)<340&&!hiddenNow()&&droneLOS(ex,ey,pcx,pcy);
+  const atCp=P.cp&&P.onGround&&Math.abs(pcx-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26;   // le fanion est un abri
+  const inCone=!P.dead&&!fin&&!atCp&&Math.abs(a)<.3&&Math.hypot(pcx-ex,pcy-ey)<340&&!hiddenNow()&&droneLOS(ex,ey,pcx,pcy);
   if(inCone)L.zrSeen=true;
   if(K.sp==='scan'){K.lock=inCone?(K.lock||0)+dt:Math.max(0,(K.lock||0)-dt*2);if(K.lock>.45){K.sp='aim';K.st=0;K.lock=0;if(!G.sim){tone(1500,.08,'square',.06);setTimeout(()=>tone(1500,.08,'square',.06),140)}}}
   else if(K.sp==='aim'){if(K.st>.75){K.sp='cool';K.st=0;K.fire=.25;if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>noise(.05,2400,.3,'highpass'),k*45)}if(inCone)K.hitP=true}}
   else if(K.sp==='cool'&&K.st>1.4){K.sp='scan';K.st=0}
   if(K.fire>0)K.fire-=dt;
   // grenades
-  if(!fin&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260&&!hiddenNow()){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
+  if(!fin&&!atCp&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260&&!hiddenNow()){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
 }
 function grenadeStep(dt){
   if(!L.grenades)return;
@@ -6727,6 +6740,8 @@ function trainStep(dt){
   for(const b of Tn.bottles){const f=40*dt;const inHide=hideZ.some(([a,c])=>b.x>a&&b.x<c);
     if(inHide){if(Math.abs(b.vx)<45)b.vx=(Math.sign(b.vx)||Tn.dir)*45}else b.vx=Math.abs(b.vx)<=f?0:b.vx-Math.sign(b.vx)*f;b.x+=b.vx*dt;b.rot+=b.vx*dt/7;
     if(b.x<a3+8){b.x=a3+8;b.vx=Math.abs(b.vx)*.5}if(b.x>b3-8){b.x=b3-8;b.vx=-Math.abs(b.vx)*.5}
+    // le fanion de la voiture : ce qui roule rebondit dessus comme sur une cloison (on y reprend en paix)
+    {const z=P.cp;if(z&&Math.abs(z.y-TRN.FLOOR)<26&&z.x>a3&&z.x<b3){const lo=z.x-CP_SAFE,hi=z.x+CP_SAFE;if(b.x>lo&&b.x<hi){if(b.x<z.x){b.x=lo;b.vx=-Math.max(20,Math.abs(b.vx))}else{b.x=hi;b.vx=Math.max(20,Math.abs(b.vx))}}}}
     if(!P.dead&&Math.abs(b.x-pcx)<12&&P.y+P.h>TRN.FLOOR-12&&P.y<TRN.FLOOR)G.trainHit='bouteille'}
   // les voyageurs : horrifiés s'ils voient Raymond sauter devant eux
   const inside3=trIn(Tn,Tn.in3);
@@ -11687,7 +11702,8 @@ function crecyStep(dt){const C=L.crecy;if(!C)return;C.t+=dt;C.flash=Math.max(0,C
     if(u<.08&&!f.kicked){f.kicked=1;if(!G.sim&&Math.abs(px-a)<800)noise(.08,500,.12,'lowpass')}if(u>.5)f.kicked=0}
   // le vélo : un gamin casqué qui dévale la rue, de droite à gauche
   {const b=C.bike;if(b.pause>0){b.pause-=dt;if(b.pause<=0&&!G.sim&&Math.abs(px-b.x)<900){tone(1760,.08,'sine',.05);setTimeout(()=>tone(1760,.08,'sine',.05),140)}}
-    else{b.x+=b.dir*380*dt;if(b.x<181*T){b.x=181*T;b.dir=1;b.pause=1.1}if(b.x>214*T){b.x=214*T;b.dir=-1;b.pause=1.1}}}
+    else{b.x+=b.dir*380*dt;const lo=(P.cp&&Math.abs(P.cp.y-CGR*T)<26&&P.cp.x>181*T-80&&P.cp.x<214*T)?Math.max(181*T,P.cp.x+CP_SAFE+44):181*T;   // il fait demi-tour avant le fanion où Raymond reprend
+      if(b.x<lo){b.x=lo;b.dir=1;b.pause=1.1}if(b.x>214*T){b.x=214*T;b.dir=-1;b.pause=1.1}}}
   // la tondeuse robot
   {const m=C.mower;m.x+=m.dir*55*dt;if(m.x>177.6*T){m.dir=-1}if(m.x<167.8*T+60){m.dir=1}}
   if(C.linge.used&&C.linge.sx==null)C.linge.sx=clamp(P.x+P.w/2,204*T+10,210*T-10);

@@ -153,7 +153,7 @@ function mechAfterMove(dt,vyBefore){
   if(P.mudCoat>0&&!onMud())P.mudCoat-=dt;
   if(onMud()&&Math.abs(P.vx)<40){P.mud=(P.mud||0)+dt;if(P.mud>1.5)return'mud'}else P.mud=Math.max(0,(P.mud||0)-dt*2);
   // rafales
-  if(L.def.gust&&L.gust.state==='blow'){const dir=L.def.gust.dir||-1;if(!sheltered(dir)){moveX(P,dir*L.def.gust.push*L.gust.k*(P.onGround?1:1.25)*dt)}}
+  if(L.def.gust&&L.gust.state==='blow'){const dir=L.def.gust.dir||-1;const atCp=P.cp&&P.onGround&&Math.abs(P.x+P.w/2-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26;/* le fanion abrite aussi du vent */if(!sheltered(dir)&&!atCp){moveX(P,dir*L.def.gust.push*L.gust.k*(P.onGround?1:1.25)*dt)}}
   // étourdi par l'onde d'une cloche
   if(P.stun>0)P.stun-=dt;
   if(L.meuse){const k=meuseAfterMove(dt);if(k)return k}
@@ -171,7 +171,8 @@ function mechAfterMove(dt,vyBefore){
 /* ---------- collisions mortelles ---------- */
 function mechHit(hb){
   const pcx=hb.x+hb.w/2,pcy=hb.y+hb.h/2;
-  for(const g of L.guards)if(g.sees){if(!G.sim){bubble(g.x+g.w/2,g.y-14,'Hé ! Toi !','#2a3a5a')}return'guard'}
+  const atCp=P.cp&&P.onGround&&Math.abs(P.x+P.w/2-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26;   // le fanion est un abri : on n'y est pas vu
+  if(!atCp)for(const g of L.guards)if(g.sees){if(!G.sim){bubble(g.x+g.w/2,g.y-14,'Hé ! Toi !','#2a3a5a')}return'guard'}
   for(const w of L.watchers)if(w.mode==='chase'&&w.k&&!hiddenNow()&&overlap(hb,{x:w.k.x+5,y:w.k.y+4,w:w.k.w-10,h:w.k.h-4}))return'catwatch';
   for(const o of L.gargoyles)if(o.state==='jet'){const x0=o.dir>0?o.x+14:o.x-14-o.len;if(overlap(hb,{x:x0,y:o.y-2,w:o.len,h:12}))return'water'}
   for(const f of L.fires)if(overlap(hb,{x:f.x-14,y:f.y-44,w:28,h:44}))return'fire';

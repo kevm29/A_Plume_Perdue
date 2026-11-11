@@ -146,12 +146,14 @@ function actRespawn(){
 /* ---------- le chat aux yeux brillants : il guette, puis bondit ---------- */
 function watchReset(w){w.mode='sit';w.k=null;w.seen=false;w.t=0;w.state='closed';w.open=0}
 function watchStep(w,dt,pcx,pcy){
-  const onScreen=Math.abs(w.x-(cam.x+W/2))<W/2+30;
+  const onScreen=Math.abs(w.x-(cam.x+W/2))<W/2-20&&w.y-50>cam.y&&w.y<cam.y+H;
   if(w.mode==='sit'||!w.mode){
     w.mode='sit';
-    // il ne commence à guetter qu'une fois entré dans le champ : yeux toujours fermés à l'arrivée
-    if(!w.seen){w.state='closed';w.open=0;if(onScreen){w.seen=true;w.t=0}return}
-    w.t+=dt;const cyc=w.t%5.6;w.state=cyc<3.1?'closed':cyc<3.8?'warn':'open';
+    // hors de l'écran : les yeux restent fermés, toujours. Une fois à l'écran, il les ouvre une seconde plus tard
+    // (puis son cycle reprend : fermés 3,1 s, entrouverts, ouverts) ; s'il ressort de l'écran, il se rendort
+    if(!onScreen){w.seen=false;w.state='closed';w.open=0;return}
+    if(!w.seen){w.seen=true;w.t=0}
+    w.t+=dt;const cyc=(w.t+2.1)%5.6;w.state=cyc<3.1?'closed':cyc<3.8?'warn':'open';
     w.open=w.state==='open'?Math.min(1,(cyc-3.8)*6):w.state==='warn'?.18:0;
     const moving=Math.abs(P.vx)>35||!P.onGround;
     if(w.state==='open'&&w.open>.6&&!P.dead&&!G.cut&&moving&&Math.abs(w.x-pcx)<520&&Math.abs(w.y-pcy)<220&&!hiddenNow()){
@@ -278,14 +280,15 @@ function droneStep(K,dt,pcx,pcy){
   K.sp=K.sp||'scan';K.st=(K.st||0)+dt;
   if(K.sp==='aim')K.sa=Math.atan2(pcy-ey,pcx-ex);else K.sa=Math.PI/2+Math.sin(K.t*1.4)*.55;
   let a=Math.atan2(pcy-ey,pcx-ex)-K.sa;a=Math.atan2(Math.sin(a),Math.cos(a));
-  const inCone=!P.dead&&!fin&&Math.abs(a)<.3&&Math.hypot(pcx-ex,pcy-ey)<340&&!hiddenNow()&&droneLOS(ex,ey,pcx,pcy);
+  const atCp=P.cp&&P.onGround&&Math.abs(pcx-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26;   // le fanion est un abri
+  const inCone=!P.dead&&!fin&&!atCp&&Math.abs(a)<.3&&Math.hypot(pcx-ex,pcy-ey)<340&&!hiddenNow()&&droneLOS(ex,ey,pcx,pcy);
   if(inCone)L.zrSeen=true;
   if(K.sp==='scan'){K.lock=inCone?(K.lock||0)+dt:Math.max(0,(K.lock||0)-dt*2);if(K.lock>.45){K.sp='aim';K.st=0;K.lock=0;if(!G.sim){tone(1500,.08,'square',.06);setTimeout(()=>tone(1500,.08,'square',.06),140)}}}
   else if(K.sp==='aim'){if(K.st>.75){K.sp='cool';K.st=0;K.fire=.25;if(!G.sim){for(let k=0;k<6;k++)setTimeout(()=>noise(.05,2400,.3,'highpass'),k*45)}if(inCone)K.hitP=true}}
   else if(K.sp==='cool'&&K.st>1.4){K.sp='scan';K.st=0}
   if(K.fire>0)K.fire-=dt;
   // grenades
-  if(!fin&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260&&!hiddenNow()){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
+  if(!fin&&!atCp&&K.sp!=='aim'&&K.gt>3.3&&!P.dead&&Math.abs(pcx-ex)<260&&!hiddenNow()){K.gt=0;(L.grenades=L.grenades||[]).push({x:ex-4,y:ey,w:8,h:8,vx:(pcx-ex)*.6,vy:-60,t:0,b:0});if(!G.sim)tone(600,.15,'sine',.04,300)}
 }
 function grenadeStep(dt){
   if(!L.grenades)return;

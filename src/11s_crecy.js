@@ -125,7 +125,8 @@ function crecyStep(dt){const C=L.crecy;if(!C)return;C.t+=dt;C.flash=Math.max(0,C
     if(u<.08&&!f.kicked){f.kicked=1;if(!G.sim&&Math.abs(px-a)<800)noise(.08,500,.12,'lowpass')}if(u>.5)f.kicked=0}
   // le vélo : un gamin casqué qui dévale la rue, de droite à gauche
   {const b=C.bike;if(b.pause>0){b.pause-=dt;if(b.pause<=0&&!G.sim&&Math.abs(px-b.x)<900){tone(1760,.08,'sine',.05);setTimeout(()=>tone(1760,.08,'sine',.05),140)}}
-    else{b.x+=b.dir*380*dt;if(b.x<181*T){b.x=181*T;b.dir=1;b.pause=1.1}if(b.x>214*T){b.x=214*T;b.dir=-1;b.pause=1.1}}}
+    else{b.x+=b.dir*380*dt;const lo=(P.cp&&Math.abs(P.cp.y-CGR*T)<26&&P.cp.x>181*T-80&&P.cp.x<214*T)?Math.max(181*T,P.cp.x+CP_SAFE+44):181*T;   // il fait demi-tour avant le fanion où Raymond reprend
+      if(b.x<lo){b.x=lo;b.dir=1;b.pause=1.1}if(b.x>214*T){b.x=214*T;b.dir=-1;b.pause=1.1}}}
   // la tondeuse robot
   {const m=C.mower;m.x+=m.dir*55*dt;if(m.x>177.6*T){m.dir=-1}if(m.x<167.8*T+60){m.dir=1}}
   if(C.linge.used&&C.linge.sx==null)C.linge.sx=clamp(P.x+P.w/2,204*T+10,210*T-10);

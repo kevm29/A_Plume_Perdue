@@ -195,7 +195,7 @@ function stepPlay(dt){
     if(c.kind==='boar'){
       // le sanglier voit Raymond sur SA plateforme : il charge, et ses marcassins sortent de derrière lui
       const dx=pcx-(c.x+c.w/2),dir=Math.sign(c.vx)||1;
-      const same=!P.dead&&!G.cut&&P.onGround&&Math.abs((P.y+P.h)-(c.y+c.h))<8&&samePlatform(c.x+c.w/2,pcx,Math.floor((c.y+c.h-2)/T));
+      const same=!P.dead&&!G.cut&&P.onGround&&!(P.cp&&Math.abs(pcx-P.cp.x)<CP_SAFE&&Math.abs(P.y+P.h-P.cp.y)<26)&&Math.abs((P.y+P.h)-(c.y+c.h))<8&&samePlatform(c.x+c.w/2,pcx,Math.floor((c.y+c.h-2)/T));
       if(same&&Math.abs(dx)<420&&(Math.sign(dx)===dir||Math.abs(dx)<300)){if(Math.sign(dx)!==dir){c.vx=-c.vx}if(!(c.charge>0)&&!G.sim)SFX.grunt();c.charge=1.6;
         if(!c.spawned){c.spawned=true;for(let k=0;k<2;k++)L.rats.push({kind:'piglet',chase:true,x:c.x+c.w/2-dir*(18+k*16),y:c.y+c.h-12,w:22,h:12,vx:0,vy:-200-k*80,onGround:false,t:k,sq:1,delay:.35+k*.3,base:230});if(!G.sim&&!G.boarSaid){G.boarSaid=true;say("Des marcassins ! Ils me prennent pour un gland. Un gland décoré.",3.4)}}}
       c.charge=Math.max(0,(c.charge||0)-dt);
@@ -224,6 +224,9 @@ function stepPlay(dt){
       c.vx=dir*(c.base||95)*(c.alert>0?2.2:1);
     }
     const spd=Math.abs(c.vx)||95;
+    // le fanion où Raymond reprend est un abri : les rôdeurs font demi-tour avant d'y arriver
+    {const z=P.cp;if(z&&Math.abs(c.y+c.h-z.y)<26){const lo=z.x-CP_SAFE,hi=z.x+CP_SAFE,nx=c.x+c.vx*dt;
+      if(c.vx>0&&c.x+c.w<=lo+.5&&nx+c.w>lo)c.vx=-spd;else if(c.vx<0&&c.x>=hi-.5&&nx<hi)c.vx=spd}}
     if(moveX(c,c.vx*dt))c.vx=-(c.lastDir||1)*spd;
     c.lastDir=Math.sign(c.vx)||c.lastDir||1;
     c.onGround=false;moveY(c,c.vy*dt);
@@ -308,7 +311,9 @@ function stepPlay(dt){
   // un cartel s'affiche 3 s pleines, même si on s'en éloigne
   // un cartel croisé pour la première fois : le jeu se met en pause et le cartel s'ouvre, avec un bouton « Compris »
   if(hn!==G.hintNear){G.hintNear=hn;G.hintT=0;if(hn>=0&&!G.sim&&!P.dead&&!(L.hintRead||(L.hintRead={}))[hn]){L.hintRead[hn]=1;G.hintPop=hn;G.hintPopT=0;G.state='hint';SFX.page()}}G.hintI=-1;
-  if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T))wakeChaser(K);
+  // le chat (Bijou…) : il ne se réveille qu'après avoir été une seconde à l'écran ; hors de l'écran, il dort
+  if(K&&K.type==='cat'&&K.state==='sleep'){const on=Math.abs(K.x+K.w/2-(cam.x+W/2))<W/2-20&&K.y>cam.y-20&&K.y<cam.y+H;K.visT=on?(K.visT||0)+dt:0}
+  if(K&&K.state==='sleep'&&(K.type==='guardnet'?guardnetNear(K,pc.x):pc.x>L.triggerX+T&&(K.type!=='cat'||K.visT>=1)))wakeChaser(K);
   if(L.auto&&!L.auto.on&&pc.x>L.triggerX+T){L.auto.on=true;L.auto.x=cam.x;G.chase=true;setSong('chase');if(L.def.chaseQuip)say(L.def.chaseQuip,3.6)}
   if(L.exit&&!L.def.exitByAct&&(!L.def.exitGround||P.onGround)&&trainExitOk()&&overlap(hb,L.exit)){if((L.def.exit==='tomb'||L.def.exitLines)&&!G.sim){if(!G.tombSeq){G.tombSeq={t:0,i:-1};P.vx=0;P.facing=1}}else winLevel()}
 }
@@ -360,8 +365,12 @@ function stepChaser(K,dt,pcx,pcy){
   }else if(K.state==='warn'){K.y-=40*dt;if(K.pt>.6){K.state='dive';K.pt=0;const dx=pcx-(K.x+K.w/2),dy=pcy-(K.y+K.h/2),d=Math.hypot(dx,dy)||1;K.vx=dx/d*520;K.vy=dy/d*520;K.f=K.vx>=0?1:-1}}
   else if(K.state==='dive'){K.x+=K.vx*dt;K.y+=K.vy*dt;if(K.pt>.9||K.y>ROWS*T-60){K.state='hover';K.pt=0}}
 }
+const CP_SAFE=64;
+/* à la reprise, un rôdeur posé sur le fanion est repoussé hors de l'abri, du côté où il était */
+function cpClearWalkers(){const z=P.cp;if(!z)return;for(const c of L.rats){if(c.chase||c.runner)continue;if(Math.abs(c.y+c.h-z.y)>=26)continue;
+  const cx=c.x+c.w/2;if(c.x+c.w>z.x-CP_SAFE&&c.x<z.x+CP_SAFE){if(cx<z.x){c.x=z.x-CP_SAFE-c.w-1;c.vx=-Math.abs(c.vx||95)}else{c.x=z.x+CP_SAFE+1;c.vx=Math.abs(c.vx||95)}}}}
 function respawn(){L.zrSeen=false;
-  resetPlayer();P.wake=.35;if(L.gare)gareRespawn();if(L.train)trainRespawn();if(L.lg)langletRespawn();if(L.fc)facadeRespawn();if(L.a4)a4Respawn();if(L.aire)aireRespawn();if(L.ferte)ferteRespawn();if(L.cb)comblesRespawn();if(L.pl)placeRespawn();if(L.cm)cmRespawn();if(L.s16)s16Respawn();
+  resetPlayer();P.wake=.35;cpClearWalkers();if(L.gare)gareRespawn();if(L.train)trainRespawn();if(L.lg)langletRespawn();if(L.fc)facadeRespawn();if(L.a4)a4Respawn();if(L.aire)aireRespawn();if(L.ferte)ferteRespawn();if(L.cb)comblesRespawn();if(L.pl)placeRespawn();if(L.cm)cmRespawn();if(L.s16)s16Respawn();
   const K=L.chaser;
   if(K){
     if(K.state==='dead'){}

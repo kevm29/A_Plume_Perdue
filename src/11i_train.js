@@ -84,6 +84,8 @@ function trainStep(dt){
   for(const b of Tn.bottles){const f=40*dt;const inHide=hideZ.some(([a,c])=>b.x>a&&b.x<c);
     if(inHide){if(Math.abs(b.vx)<45)b.vx=(Math.sign(b.vx)||Tn.dir)*45}else b.vx=Math.abs(b.vx)<=f?0:b.vx-Math.sign(b.vx)*f;b.x+=b.vx*dt;b.rot+=b.vx*dt/7;
     if(b.x<a3+8){b.x=a3+8;b.vx=Math.abs(b.vx)*.5}if(b.x>b3-8){b.x=b3-8;b.vx=-Math.abs(b.vx)*.5}
+    // le fanion de la voiture : ce qui roule rebondit dessus comme sur une cloison (on y reprend en paix)
+    {const z=P.cp;if(z&&Math.abs(z.y-TRN.FLOOR)<26&&z.x>a3&&z.x<b3){const lo=z.x-CP_SAFE,hi=z.x+CP_SAFE;if(b.x>lo&&b.x<hi){if(b.x<z.x){b.x=lo;b.vx=-Math.max(20,Math.abs(b.vx))}else{b.x=hi;b.vx=Math.max(20,Math.abs(b.vx))}}}}
     if(!P.dead&&Math.abs(b.x-pcx)<12&&P.y+P.h>TRN.FLOOR-12&&P.y<TRN.FLOOR)G.trainHit='bouteille'}
   // les voyageurs : horrifiés s'ils voient Raymond sauter devant eux
   const inside3=trIn(Tn,Tn.in3);
