@@ -65,7 +65,7 @@ function medalVis(){return!!(L.medal&&!L.medal.taken&&!(L.medal.era&&L.cb&&L.med
 /* une médaille = une vie (pas en Super-Raymond ni en Dieu-Pigeon, où la paille est illimitée) */
 function medalLife(){if(!S.infinite)S.run.lives=(S.run.lives||0)+1}
 function die(kind,tiles){
-  if(P.dead)return;
+  if(P.dead)return;G.lastDeath=kind;
   if(kind==='obus'){obusBoom(P.x+P.w/2,P.y+P.h);tiles=null}if(kind==='elec')tiles=null;
   if(G.sim){P.dead=true;return}
   // Dieu-Pigeon : rien ne l'atteint ; s'il tombe hors du monde, il revient au cartel sans dommage
