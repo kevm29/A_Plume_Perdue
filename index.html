@@ -12686,8 +12686,8 @@ function placePost(Lv){
   if(!Lv.def.place)return;
   const S2=Lv.pl={pass:1,t:0,said:{},seq:null,beat:0,mus:.1};Lv.spawn={x:1.5*T,y:PLF};
   // la paille de chaque passage (on ne voit que celle du passage en cours)
-  const corn={1:[[10,4],[17.5,7],[24,7],[27,5],[24.5,2],[34.5,7],[41,4],[55,7],[60,4],[70,3],[80,6],[84,4],[90.5,7],[96,4],[103,6],[106,4],[114,4],[121,8],[124.5,3],[128,8]],
-    2:[[124.5,3],[114,4],[106,4],[100,10],[96,4],[88,7],[81.5,1],[70,9],[57,7],[46,10],[41,4],[32,7],[27,5],[21,10],[10,4],[5.5,6]],
+  const corn={1:[[10,4],[17.5,7],[24,7],[27,5],[24.5,2],[34.5,7],[41,4],[55,7],[60,4],[70,3],[80,6],[84,4],[90.5,7],[96,4],[103,6],[106,4],[114,4],[121,8],[106.5,11],[128,8]],   /*v2*/ // la paille du haut du manège est descendue au fanion d'avant (106,5)
+    2:[[106.5,11],[114,4],[106,4],[100,10],[96,4],[88,7],[81.5,1],[70,9],[57,7],[46,10],[41,4],[32,7],[27,5],[21,10],[10,4],[5.5,6]],
     3:[[9,9],[15.5,9],[27.5,10],[34.5,8],[44,10],[53,10],[70,9],[84,10],[88,9],[99,9],[112.5,9],[121,8],[127,8]],
     4:[[129,8],[114,4],[106,4],[101,9],[96,4],[82,6],[81.5,10],[80.5,10]]};
   for(const p in corn)for(const[c,r]of corn[p])Lv.corn.push({x:(c+.5)*T,y:(r+.5)*T,taken:false,ph:c*.7+r,pass:+p});
@@ -12708,7 +12708,7 @@ function plSetPass(Lv,n){
   for(const l of PLX.lamps){if(l.perch!=null)put(l.perch,5,'=');if(l.sp)for(const c of l.sp)put(c,5,'v')}
   for(const b of PLX.benches)prop('bench',b,b+1,11);
   box(PLX.stage.c0,PLX.stage.c1,10,11);plat(PLX.stage.c0,PLX.stage.c1,4);
-  plat(PLX.car.c0,PLX.car.c1,11);plat(120,128,4);
+  plat(PLX.car.c0,PLX.car.c1,11);plat(120,128,4);   // (le chapiteau porte, mais sa toile fait glisser : voir placeStep)
   // les toits des maisonnettes : praticables aux deux premiers passages (la pluie empêche ensuite d'y monter)
   S2.chalets=n<=3?PLX.chalets.map(c=>Object.assign({},c,{closing:n===3&&['primeur','vins','fleurs'].includes(c.k)})):[];
   if(n<=2){for(const c of PLX.chalets)plat(c.c,c.c+3,8);plat(54,56,8);box(63,64,8,9);box(76,77,8,9)}
@@ -12809,6 +12809,9 @@ function plCarPlace(Lv,dt){const S2=Lv.pl,C=PLX.car;S2.car.a+=S2.car.w*dt;
 function placeStep(dt){const S2=L.pl;if(!S2)return;S2.t+=dt;S2.beat+=dt;
   const pcx=P.x+P.w/2,pcy=P.y+P.h/2,hb={x:P.x+3,y:P.y+4,w:P.w-6,h:P.h-6},low=P.y+P.h>300;let hit=null;
   plCarPlace(L,dt);
+  /*v2*/ // la toile du chapiteau : on ne tient pas dessus, on glisse vers le bord et on retombe sur les chevaux
+  if(!P.dead&&Math.abs(P.y+P.h-4*T)<4&&P.x+P.w>120*T&&P.x<129*T&&(P.onGround||P.vy>=0)){const d=pcx<PLX.car.cx?-1:1;moveX(P,d*360*dt);P.coyote=0;P.jumpBuf=0;
+    if(!S2.said.toile&&!G.sim){S2.said.toile=1;say(/*v2*/"La toile du chapiteau glisse : impossible d'y tenir. Ce sera par les chevaux.",3.6)}}
   // sur la scène pendant que l'orchestre joue (premier et deuxième tour)
   {const on=S2.pass<=2&&P.onGround&&!P.dead&&Math.abs(P.y+P.h-10*T)<4&&pcx>PLX.stage.c0*T&&pcx<(PLX.stage.c1+1)*T;S2.stageT=on?(S2.stageT||0)+dt:0;if(on&&!G.sim){achBest('stage',Math.floor(S2.stageT));if(S2.stageT>=30)unlock('r10')}}
   // la musique de l'orchestre : plus fort près de la scène
