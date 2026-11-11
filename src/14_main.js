@@ -70,6 +70,7 @@ function update(dt){
     case'select':handleSelect();break;
     case'confirm':handleConfirm();break;
     case'ach':handleAch();break;
+    case'scores':handleScores();break;
     case'settings':handleSettings();break;
     case'intro':handleCards(dt);break;
     case'levelend':handleLetter(dt);break;
@@ -124,6 +125,7 @@ function render(){
     case'title':renderTitle(t);renderGrain();break;
     case'select':renderSelect(t);renderGrain();break;
     case'ach':renderAch(t);renderGrain();break;
+    case'scores':renderScores(t);renderGrain();break;
     case'settings':renderSettings(t);renderGrain();break;
     case'intro':renderCards(t);renderGrain();break;
     case'levelend':renderLetter(t);renderGrain();break;

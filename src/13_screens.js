@@ -13,6 +13,7 @@ function menuItems(){
     const it=[{label:'Nouvelle partie',act:()=>{newRun();startIntro()}}];
     if(S.unlocked>0)it.push({label:'Continuer',act:()=>{G.cutSeen=true;const li=Math.min(S.resume!=null?S.resume:S.unlocked,19);freshRun();startLevel(li)}});
     it.push({label:'Choisir un niveau',act:openSelect});
+    if(Object.keys(S.best||{}).length)it.push({label:/*v2*/'Scores',act:openScores});
     if(Object.keys(achState()).length)it.push({label:'Succès',act:openAch});
     it.push({label:'Paramètres',act:openSettings});
     return it;
@@ -61,7 +62,7 @@ function drawMenu(cx,y,gap){
   const it=menuItems();G.boxes=[];G.menuSel=Math.min(G.menuSel,it.length-1);
   ctx.save();ctx.textAlign='center';
   it.forEach((m,i)=>{const sel=i===G.menuSel;ctx.font=(sel?'26px ':'23px ')+F_DISP;const w=ctx.measureText(m.label).width;
-    const yy=y+i*gap;G.boxes.push({x:cx-w/2-30,y:yy-26,w:w+60,h:36,i});
+    const yy=y+i*(it.length>5?Math.min(gap,40):gap);G.boxes.push({x:cx-w/2-30,y:yy-26,w:w+60,h:36,i});
     ctx.fillStyle=sel?'#f2e8cf':'rgba(233,223,199,.62)';ctx.fillText(m.label,cx,yy);
     if(sel){ctx.fillStyle='#d9a441';ctx.save();ctx.translate(cx-w/2-22,yy-8);ctx.rotate(-.5);ctx.beginPath();ctx.ellipse(0,0,9,3.4,0,0,7);ctx.fill();ctx.restore()}});
   ctx.restore();
@@ -103,8 +104,11 @@ function renderSelect(t){
       const li=wi*4+lj,x=70+lj*210,yy=y+12;
       tile(li,x,yy,196,44,`${wi+1}–${lj+1}`,(li<=S.unlocked||S.best[li])?ln:'?????');
       if(selectOpen(li)||S.best[li]){const b=S.best[li],tot=levelTotals(li);ctx.save();if(!selectOpen(li))ctx.globalAlpha=.35;ctx.textAlign='right';ctx.font='11px '+F_DISP;ctx.fillStyle='#2a2420';
-        ctx.fillText(/*v2*/`Paille ${b?Math.min(b.corn,tot.corn):0}/${tot.corn}`,x+188,yy+16);
-        if(tot.medal){ctx.save();ctx.translate(x+178,yy+33);ctx.scale(.62,.62);if(!(b&&b.medal))ctx.filter='brightness(0)';drawMedal(ctx,0,0,0);ctx.restore()}ctx.restore()}
+        // compte avec icônes : paille, secrets, médaille (en couleur si trouvée, en noir sinon)
+        const st=SEC_TOT[li]||0,nc=b?Math.min(b.corn,tot.corn):0,ns=b?Math.min(b.secret||0,st):0;let rx=x+188;
+        if(tot.medal){ctx.save();ctx.translate(rx-7,yy+13);ctx.scale(.42,.42);if(!(b&&b.medal))ctx.filter='brightness(0)';drawMedal(ctx,0,0,0);ctx.restore();rx-=22}
+        if(st){const s2=`${ns}/${st}`;ctx.fillText(s2,rx,yy+16);rx-=ctx.measureText(s2).width+8;iconSecret(ctx,rx,yy+11,.9);rx-=12}
+        {const s1=`${nc}/${tot.corn}`;ctx.fillText(s1,rx,yy+16);rx-=ctx.measureText(s1).width+8;iconStraw(ctx,rx,yy+11,.8)}ctx.restore()}
     });
   });
   const ry=82+WORLDS.length*64+14;
