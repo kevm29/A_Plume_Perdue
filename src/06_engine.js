@@ -94,7 +94,8 @@ function parseLevel(i,ov){
 /* ---------- grille et collisions ---------- */
 let L=null;
 const SOLID='#XWD%R',SOLID_ART='#XWD';
-function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0||r>=ROWS)return'.';return L.g[r][c]}
+/* un mur plein qui touche le haut du niveau continue au-dessus : on ne le franchit pas par le haut */
+function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0){const t0=L.g[0][c];return(t0==='#'||t0==='W'||t0==='X')?t0:'.'}if(r>=ROWS)return'.';return L.g[r][c]}
 function isSolid(c,r){return SOLID.includes(tile(c,r))}
 function owTop(ch,c,r){if(ch==='f')return r!=null&&tile(c,r-1)!=='f'&&!(L.def.openTop&&L.def.openTop.some(([a,b])=>a===c&&b===r))?0:-1;return(ch==='='||ch==='B'||ch==='A'||ch==='t')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
 function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch,c,r)>=0}

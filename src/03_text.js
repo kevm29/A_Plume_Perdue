@@ -122,7 +122,7 @@ const WORLD_CARDS=[
   [{t:"Il a décidé de livrer la gifle.\nLe règlement est le règlement, même pour les goujats."},
    {t:"Raymond doit rentrer au pigeonnier Vasseur, à Crécy-la-Chapelle.\nMais il ne reconnaît plus le pays."},
    {t:"Des forêts ont poussé sur le front, des moulins géants sur les champs.\nCette végétation étonnante le gêne : il n'a plus un seul repère."},
-   {t:"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1915."},
+   {t:/*v2*/"Au loin, il aperçoit un clocher, le plus haut de la région.\nRaymond se souvient de l'avoir déjà croisé, en 1914."},
    {title:"MISSION 3 · LE CAP CÉLESTE",t:"Raymond décide de mettre le cap sur ce clocher. Il ne sait pas où il se trouve.\nC'est Reims."}],
   [{t:"Raymond repense à cette phrase rayée. Il n'en dit rien à personne.\nLes pigeons de Reims, eux, ne se taisent jamais."},
    {t:"Du haut de la cathédrale, Raymond aperçoit un grand axe qui file vers l'ouest.\nAu loin, il reconnaît les paysages."},

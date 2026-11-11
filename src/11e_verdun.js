@@ -51,7 +51,10 @@ function drawMoles(t){
     ctx.fillStyle='rgba(0,0,0,.2)';for(let k=0;k<5;k++)ctx.fillRect(x-14+k*7+sh,b-4-(k%2)*3,2,2)}
 }
 /* ---------- les chasseurs ---------- */
-const HUNT_RANGE=380,HUNT_AIM=.45,HUNT_COOL=1.3;
+const HUNT_RANGE=380,HUNT_AIM=.35,HUNT_COOL=1.3;
+/* un battement d'aile dans son cône suffit : le chasseur se lève et tire, même si Raymond s'est reposé entre-temps,
+   tant qu'il reste à portée (on ne s'échappe qu'en s'éloignant) */
+function inHuntRange(h,x,y){return Math.hypot(x-h.x,y-(h.y-80))<HUNT_RANGE&&y<h.y+10}
 function hunterFlying(){return !P.dead&&!P.onGround&&(P.flaps>0||P.gliding)}
 function inHuntCone(h,x,y){const gx=h.x,gy=h.y-80,dx=x-gx,dy=y-gy;return dy<-8&&Math.abs(dx)<=-dy&&Math.hypot(dx,dy)<HUNT_RANGE}
 function hunterStep(dt){
@@ -73,12 +76,12 @@ function hunterStep(dt){
     }else if(h.state==='aim'){
       h.peek=Math.min(1,h.peek+dt*6);h.aimT+=dt;
       const tx=h.tgt==='P'?pcx:h.tgt.x,ty=h.tgt==='P'?pcy:h.tgt.y;const want=Math.atan2(ty-(h.y-80),tx-h.x);h.ang+=(want-h.ang)*Math.min(1,dt*12);
-      const still=h.tgt==='P'?pIn:(!h.tgt.gone&&inHuntCone(h,h.tgt.x,h.tgt.y));
+      const still=h.tgt==='P'?(!P.dead&&!G.cut&&inHuntRange(h,pcx,pcy)):(!h.tgt.gone&&inHuntCone(h,h.tgt.x,h.tgt.y));
       if(!still&&h.aimT>.15){h.state='cool';h.aimT=0;h.cool=.5}
       else if(h.aimT>=HUNT_AIM){
         h.state='cool';h.cool=HUNT_COOL;h.flash=1;h.shotTo={x:tx,y:ty};
         if(!G.sim){noise(.16,2200,.7,'lowpass');noise(.6,380,.45,'lowpass',.02);G.shake=Math.max(G.shake||0,4)}
-        if(h.tgt==='P'){if(pIn)G.hunterHit=true}
+        if(h.tgt==='P'){if(still)G.hunterHit=true}
         else{const m=h.tgt;m.gone=true;L.fallen.push({x:m.x,y:m.y,vy:-60,vx:(m.x-h.x)*.4,rot:0,t:0});if(!G.sim){for(let k=0;k<8;k++)parts.push({type:'dust',x:m.x,y:m.y,vx:(rnd()-.5)*160,vy:(rnd()-.5)*160,life:0,max:.6})}
 }
       }

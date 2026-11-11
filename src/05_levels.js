@@ -230,7 +230,7 @@ LEVELS.push({w:0,name:"La galerie des insectes",tiroirAt:[64,4],sheetBase:0,them
 ############
 ############`]});
 
-LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:37,rows:21,camY:.42,
+LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:37,rows:21,camY:.72,
  stashCells:[[176,13]],fakeStash:[[176,13]],
  stashQuips:["Une planche cachée au-dessus du mammouth. Et de la paille. Quelqu'un a de l'humour, dans ce musée.","Un carton éventré. Le gardien n'a pas regardé dedans. Le gardien ne regarde jamais dans les cartons."],
  dark:{base:.9,period:3.4},

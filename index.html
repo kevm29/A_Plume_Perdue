@@ -895,7 +895,7 @@ LEVELS.push({w:0,name:"La galerie des insectes",tiroirAt:[64,4],sheetBase:0,them
 ############
 ############`]});
 
-LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:37,rows:21,camY:.42,
+LEVELS.push({w:0,name:"L'étage du mammouth",theme:'mammouth',exit:'door',seed:37,rows:21,camY:.72,
  stashCells:[[176,13]],fakeStash:[[176,13]],
  stashQuips:["Une planche cachée au-dessus du mammouth. Et de la paille. Quelqu'un a de l'humour, dans ce musée.","Un carton éventré. Le gardien n'a pas regardé dedans. Le gardien ne regarde jamais dans les cartons."],
  dark:{base:.9,period:3.4},
@@ -1834,7 +1834,8 @@ function parseLevel(i,ov){
 /* ---------- grille et collisions ---------- */
 let L=null;
 const SOLID='#XWD%R',SOLID_ART='#XWD';
-function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0||r>=ROWS)return'.';return L.g[r][c]}
+/* un mur plein qui touche le haut du niveau continue au-dessus : on ne le franchit pas par le haut */
+function tile(c,r){if(c<0||c>=L.w)return'W';if(r<0){const t0=L.g[0][c];return(t0==='#'||t0==='W'||t0==='X')?t0:'.'}if(r>=ROWS)return'.';return L.g[r][c]}
 function isSolid(c,r){return SOLID.includes(tile(c,r))}
 function owTop(ch,c,r){if(ch==='f')return r!=null&&tile(c,r-1)!=='f'&&!(L.def.openTop&&L.def.openTop.some(([a,b])=>a===c&&b===r))?0:-1;return(ch==='='||ch==='B'||ch==='A'||ch==='t')?0:(ch==='p'||ch==='~')?14:ch==='J'?(shutterOpen(c)?0:-1):-1}
 function groundAt(c,r){const ch=tile(c,r);return SOLID.includes(ch)||owTop(ch,c,r)>=0}
@@ -5336,7 +5337,10 @@ function drawMoles(t){
     ctx.fillStyle='rgba(0,0,0,.2)';for(let k=0;k<5;k++)ctx.fillRect(x-14+k*7+sh,b-4-(k%2)*3,2,2)}
 }
 /* ---------- les chasseurs ---------- */
-const HUNT_RANGE=380,HUNT_AIM=.45,HUNT_COOL=1.3;
+const HUNT_RANGE=380,HUNT_AIM=.35,HUNT_COOL=1.3;
+/* un battement d'aile dans son cône suffit : le chasseur se lève et tire, même si Raymond s'est reposé entre-temps,
+   tant qu'il reste à portée (on ne s'échappe qu'en s'éloignant) */
+function inHuntRange(h,x,y){return Math.hypot(x-h.x,y-(h.y-80))<HUNT_RANGE&&y<h.y+10}
 function hunterFlying(){return !P.dead&&!P.onGround&&(P.flaps>0||P.gliding)}
 function inHuntCone(h,x,y){const gx=h.x,gy=h.y-80,dx=x-gx,dy=y-gy;return dy<-8&&Math.abs(dx)<=-dy&&Math.hypot(dx,dy)<HUNT_RANGE}
 function hunterStep(dt){
@@ -5358,12 +5362,12 @@ function hunterStep(dt){
     }else if(h.state==='aim'){
       h.peek=Math.min(1,h.peek+dt*6);h.aimT+=dt;
       const tx=h.tgt==='P'?pcx:h.tgt.x,ty=h.tgt==='P'?pcy:h.tgt.y;const want=Math.atan2(ty-(h.y-80),tx-h.x);h.ang+=(want-h.ang)*Math.min(1,dt*12);
-      const still=h.tgt==='P'?pIn:(!h.tgt.gone&&inHuntCone(h,h.tgt.x,h.tgt.y));
+      const still=h.tgt==='P'?(!P.dead&&!G.cut&&inHuntRange(h,pcx,pcy)):(!h.tgt.gone&&inHuntCone(h,h.tgt.x,h.tgt.y));
       if(!still&&h.aimT>.15){h.state='cool';h.aimT=0;h.cool=.5}
       else if(h.aimT>=HUNT_AIM){
         h.state='cool';h.cool=HUNT_COOL;h.flash=1;h.shotTo={x:tx,y:ty};
         if(!G.sim){noise(.16,2200,.7,'lowpass');noise(.6,380,.45,'lowpass',.02);G.shake=Math.max(G.shake||0,4)}
-        if(h.tgt==='P'){if(pIn)G.hunterHit=true}
+        if(h.tgt==='P'){if(still)G.hunterHit=true}
         else{const m=h.tgt;m.gone=true;L.fallen.push({x:m.x,y:m.y,vy:-60,vx:(m.x-h.x)*.4,rot:0,t:0});if(!G.sim){for(let k=0;k<8;k++)parts.push({type:'dust',x:m.x,y:m.y,vx:(rnd()-.5)*160,vy:(rnd()-.5)*160,life:0,max:.6})}
 }
       }
