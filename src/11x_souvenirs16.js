@@ -211,7 +211,7 @@ function s16Act(){const Q=L.s16;if(!Q||Q.era!==16||P.dead)return;const lu=Q.luc,
   if(Q.caged){Q.caged=false;P.vy=-380;P.onGround=false;if(lu){lu.st='rise';lu.t=0;if(!G.sim){noise(.12,1600,.2,'bandpass');bubble(lu.x,lu.y-130,/*v2*/'Raymond ! Reviens ici !','#3a4a6a')}}return}
   for(const m of Q.mus){if(m.open||Math.abs(pc-m.x)>34||Math.abs(P.y+P.h-m.y)>48)continue;m.open=1;
     if(m.k==='seeds'){if(!Q.seeds.used)grantSecret(Q.seeds,m.y-30)}
-    else{const md=L.medal;if(md&&!md.taken){md.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();S.run.medals[G.li]=true;save();say(/*v2*/"Dans la musette de Castagnet, sous le tabac : une médaille. Il me la prête, dit-il. Je la lui rendrai après la guerre.",4.4)}}}}
+    else{const md=L.medal;if(md&&!md.taken){md.taken=true;G.medal=true;gotOf(G.li).m=true;medalLife();SFX.medal();S.run.medals[G.li]=true;save();say(/*v2*/"Dans la musette de Castagnet, sous le tabac : une médaille. Il me la prête, dit-il. Je la lui rendrai après la guerre.",4.4)}}}}
 function s16Respawn(){const S=L.s16;if(!S||S.era!==16)return;s16Cage();S.net=null}
 function s16Switch(){if(P.dead||SV)return;const pc=P.x+P.w/2;
   if(L.zr16){if(pc>133*T&&pc<153*T){G.state='intro';G.cards=SV_GAZ_CARDS;G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='play';svStart('gaz')}}return}

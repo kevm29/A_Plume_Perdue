@@ -103,10 +103,9 @@ function update(dt){
       if(G.exitT>1.1){
         const li=G.li;S.unlocked=Math.min(19,Math.max(S.unlocked,li+1));
         if(G.medal)S.run.medals[li]=true;
-        const gt=gotOf(li);
+        const gt=gotOf(li);if(G.replay&&G.replay.li===li){gt.d=Math.min(gt.d,G.replay.d);G.replay=null}
         S.run.stats[li]={corn:gt.c.length,cornTotal:G.cornTotal,medal:gt.m,hasMedal:!!L.medal,secFound:gt.sec.length,secTotal:L.secretTotal||0,deaths:gt.d};S.run.stats[li].points=levelPoints(S.run.stats[li]);S.run.stats[li].max=levelMax(S.run.stats[li]);
-        // après « Rejouer le niveau » : on garde la meilleure des deux tentatives
-        let shown=null;if(G.replay&&G.replay.li===li){const R=G.replay;G.replay=null;if(R.stats&&R.stats.points>S.run.stats[li].points){shown=S.run.stats[li];S.run.stats[li]=R.stats;S.run.got[li]=R.got||S.run.got[li];if(R.medal)S.run.medals[li]=true}}
+        const shown=null;
         const b=S.best[li]||{corn:0,medal:false,deaths:9999,points:0};S.best[li]={corn:Math.max(b.corn,gt.c.length),medal:b.medal||gt.m,secret:Math.max(b.secret||0,gt.sec.length),deaths:Math.min(b.deaths,gt.d),points:Math.max(b.points||0,S.run.stats[li].points)};save();achStraw();
         setSong('title');endOfLevel(li,shown);
       }

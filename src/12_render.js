@@ -184,7 +184,8 @@ function renderHUD(){
   ctx.font='17px '+F_DISP;ctx.textAlign='right';
   const nl=Math.max(0,S.run.lives),wr=Math.min(MAX_WEAR,S.run.wear||0);
   const ctw=ctx.measureText(`${G.corn}/${G.cornTotal}`).width;
-  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+(S.infinite?14+48:0)+8;
+  const lvW=(!S.infinite&&nl>0)?14+(nl<=3?nl*20:20+28):0;
+  const panelW=12+(L.medal?30:0)+ctw+12+22+12+MAX_WEAR*13+24+(S.infinite?14+48:0)+lvW+8;
   ctx.fillStyle='rgba(14,12,18,.6)';rr(ctx,bx-panelW,by,panelW,36,8);ctx.fill();
   ctx.strokeStyle='rgba(233,223,199,.15)';ctx.lineWidth=1;rr(ctx,bx-panelW+.5,by+.5,panelW-1,35,8);ctx.stroke();
   x-=12;
@@ -196,6 +197,9 @@ function renderHUD(){
     ctx.fillStyle=full?(warn?'rgba(200,48,42,'+(.6+.4*Math.sin(G.t*8))+')':'#d9a441'):'rgba(233,223,199,.18)';
     rr(ctx,cx-5,by+12,10,13,3);ctx.fill()}
   x-=MAX_WEAR*13+24;
+  // vies gagnées avec les médailles : une tête de pigeon par vie
+  if(!S.infinite&&nl>0){ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;
+    if(nl<=3){for(let k=0;k<nl;k++){lifeIcon(x-8,by+19);x-=20}}else{ctx.fillStyle='#e9dfc7';ctx.font='17px '+F_DISP;ctx.fillText('×'+nl,x,by+24);x-=28;lifeIcon(x+2,by+19);x-=20}}
   // Super-Raymond et Dieu-Pigeon : paille illimitée
   if(S.infinite){ctx.fillStyle='rgba(233,223,199,.25)';ctx.fillRect(x,by+8,1,20);x-=14;ctx.fillStyle='#d9a441';ctx.font='22px '+F_DISP;ctx.fillText('∞',x,by+26);x-=26;lifeIcon(x,by+19)}
   ctx.restore();

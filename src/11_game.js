@@ -60,6 +60,8 @@ function puff(x,y,n,straw){
 function obusBoom(x,y){if(G.sim)return;if(G.lt-(G.boomT||-9)<.4)return;G.boomT=G.lt;G.shake=18;noise(.9,240,.9,'lowpass');noise(.3,1400,.4,'bandpass');for(let i=0;i<24;i++){const a=-Math.PI*rnd(),sp=120+rnd()*320;parts.push({type:'dust',x,y:y-6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:.8+rnd()*.5})}parts.push({type:'ring',x,y:y-10,life:0,max:.4});G.flash=Math.max(G.flash,.35)}
 /* la médaille n'est là que dans son époque (5-2 : en 1914) */
 function medalVis(){return!!(L.medal&&!L.medal.taken&&!(L.medal.era&&L.cb&&L.medal.era!==L.cb.era))}
+/* une médaille = une vie (pas en Super-Raymond ni en Dieu-Pigeon, où la paille est illimitée) */
+function medalLife(){if(!S.infinite)S.run.lives=(S.run.lives||0)+1}
 function die(kind,tiles){
   if(P.dead)return;
   if(kind==='obus'){obusBoom(P.x+P.w/2,P.y+P.h);tiles=null}if(kind==='elec')tiles=null;
@@ -70,7 +72,10 @@ function die(kind,tiles){
   // chaque chute abîme Raymond d'un cran ; au-delà du 5e état, il perd la tête
   // (Super-Raymond : on meurt et on repart du cartel, mais on ne perd jamais de paille, donc jamais la tête)
   if(S.infinite){}
-  else if((S.run.wear||0)>=MAX_WEAR)G.gameOverPending=true;
+  else if((S.run.wear||0)>=MAX_WEAR){
+    // une médaille ramassée vaut une vie : au lieu de perdre la tête, Raymond la dépense et retrouve toute sa paille
+    if((S.run.lives||0)>0){S.run.lives--;S.run.wear=0;say(/*v2*/"Une médaille de moins, mais la tête toujours sur les épaules. Je me sens regarni.",3.6)}
+    else G.gameOverPending=true}
   else{S.run.wear=Math.min(MAX_WEAR,(S.run.wear||0)+1);if(S.run.wear>=MAX_WEAR)S.run.wasLow=true}
   save();
   G.shake=10;SFX.death();
@@ -293,7 +298,7 @@ function stepPlay(dt){
   const pc={x:pcx,y:P.y+P.h/2};
   for(const k of L.corn)if(!k.taken&&cornOn(k)&&Math.abs(k.x-pc.x)<20&&Math.abs(k.y-pc.y)<22){k.taken=true;G.corn++;{const gt=gotOf(G.li),ix=L.corn.indexOf(k);if(!gt.c.includes(ix))gt.c.push(ix)}SFX.straw();parts.push({type:'spark',x:k.x,y:k.y,life:0,max:.4});
     if((S.run.wear||0)>0){S.run.wear--;save();P.sx=1.15;P.sy=1.15;puff(pc.x,pc.y,6,true);if(!G.tuftSaid){G.tuftSaid=true;say(pick(TUFT_Q),3.4)}}}
-  if(medalVis()&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;SFX.medal();S.run.medals[G.li]=true;save();say(pick(MEDAL_Q),3.6)}
+  if(medalVis()&&Math.abs(L.medal.x-pc.x)<22&&Math.abs(L.medal.y-pc.y)<24){L.medal.taken=true;G.medal=true;gotOf(G.li).m=true;medalLife();SFX.medal();S.run.medals[G.li]=true;save();say(pick(MEDAL_Q),3.6)}
   for(const cp of L.cps)if(!cp.on&&!(cp.era&&L.cb&&cp.era!==L.cb.era)&&Math.abs(cp.x-pc.x)<22&&Math.abs(cp.y-P.y-P.h)<60){cp.on=true;P.cp={x:cp.x,y:cp.y,era:cp.era};SFX.check()}
   for(const q of L.quips)if(!q.fired&&pc.x>q.x){q.fired=true;say(L.def.quips[q.i],4.4)}
   // un cartel s'affiche trois secondes ; pour le relire, il faut s'en éloigner puis revenir

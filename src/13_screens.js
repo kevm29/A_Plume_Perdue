@@ -443,8 +443,9 @@ function handleLetter(dt){
   else{LE.after+=dt;if(go&&LE.after>.5){if(LE.li<LE.last){LE.li++;LE.chars=0;LE.done=false;LE.after=0;SFX.page();const pre=LEVELS[LE.li].letter.pre;if(pre){const keep=LE;G.state='intro';G.cards=[{t:pre,minT:.8}];G.card=0;G.cardT=0;G.fade=1;G.cardsDone=()=>{G.state='levelend';G.LE=keep;G.fade=1;SFX.page()}}}else afterLetter(LE.last)}}
 }
 /* rejouer le niveau qu'on vient de finir : tout revient en jeu ; on garde la meilleure des deux tentatives */
-function replayLevel(li){G.replay={li,stats:S.run.stats[li],got:S.run.got&&S.run.got[li],medal:S.run.medals&&S.run.medals[li]};
-  if(S.run.got)delete S.run.got[li];delete S.run.stats[li];if(S.run.medals)delete S.run.medals[li];save();G.cutSeen=true;startLevel(li)}
+/* rejouer : ce qui a déjà été trouvé (paille, médaille, secrets) reste acquis et n'est plus dans le niveau ;
+   le score de fin additionne l'ancien et le nouveau. Les accrocs : on garde la meilleure des deux tentatives. */
+function replayLevel(li){const gt=gotOf(li);G.replay={li,d:gt.d};gt.d=0;save();G.cutSeen=true;startLevel(li)}
 function renderLevelDone(t){
   const LE=G.LE,def=LEVELS[LE.li],st=LE.st;
   ctx.fillStyle='#1a120c';ctx.fillRect(0,0,W,H);
